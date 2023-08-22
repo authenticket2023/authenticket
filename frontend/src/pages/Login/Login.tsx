@@ -180,18 +180,33 @@ export function Login() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
               >
                 Log In
               </Button>
-              <Grid container>
+              <Grid container alignItems="center" justifyContent="center">
                 <Grid item>
-                  <Link href="/signUp" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
+                  <Typography variant="body2" style={{color:'#858585'}}>
+                    Don't have an account?{" "}
+                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
+                      {"Sign Up"}
+                    </Link>
+                  </Typography>
                 </Grid>
               </Grid>
-              <Copyright sx={{ mt: 5, mb: 5 }} />
+
+              <Grid container alignItems="center" justifyContent="center" style={{marginTop:8}}>
+                <Grid item>
+                  <Typography variant="body2" style={{color:'#858585'}}>
+                    Are you an organiser?{" "}
+                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
+                      {"Register here"}
+                    </Link>
+                  </Typography>
+                </Grid>
+              </Grid>
+              
+              <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
             </form>
           </Box>
         </Grid>
