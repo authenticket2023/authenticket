@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { ResponsiveAppBar } from '../../Navbar';
 import { Box, Grid, Typography } from '@mui/material';
-import backgroundImage from '../../images/logInBackground.jpeg';
 
 export const About = () => {
 
@@ -27,12 +26,6 @@ export const About = () => {
                 }}
             >
                 <Grid container sx={{marginTop:7,marginBottom:7, borderRadius:5, p:3}}>
-                <Grid item xs={5} sx={{
-                        backgroundImage: `url(${backgroundImage})`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundSize: 'cover',
-                    }}>
-                    </Grid>
                     <Grid item xs={7} >
                         <div style={{ width: "80%", margin: "auto", alignContent: "center", justifyContent: "center", marginTop: 5, height:"70vh" }}>
                             <Typography variant="h3" component="h1" gutterBottom sx={{ textAlign: "center" }}>

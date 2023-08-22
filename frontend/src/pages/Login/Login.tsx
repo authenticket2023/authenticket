@@ -8,17 +8,19 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import backgroundImage from '../../images/logInBackground.jpeg';
-import logo from '../../images/icon.png';
 import { useNavigate } from 'react-router-dom';
 import DownloadIcon from '@mui/icons-material/Download';
+
+//image downloads
+import logo from '../../images/logo(orange).png';
+import backgroundImage from '../../images/background.png';
 
 function Copyright(props: any) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="/login">
-        Bridgify
+        Authenticket
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -138,15 +140,14 @@ export function Login() {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/Login'>
-                <img src={logo} alt="Logo" width={28} height={28} style={{ marginLeft: -230, marginTop: -5, position: 'absolute' }} />
-                <span style={{ color: 'black', fontSize: 15, textAlign: 'left', marginTop: -1.5, marginLeft: -195, fontWeight: 500, position: 'absolute' }}>Bridgify</span>
+                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -200, marginTop: 10, position: 'absolute' }} />
               </a>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 8, marginBottom: -1.5 }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'#2E475D' }}>
               Hi there!
             </Typography>
-            <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
-              Welcome to Bridgify
+            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'#2E475D' }}>
+              Welcome to Authenticket
             </Typography>
             <form onSubmit={loginHandler}>
               <TextField
@@ -161,6 +162,7 @@ export function Login() {
                 error={emailError}
                 helperText={helperText}
                 onChange={handleEmail}
+                inputProps={{style : {color:'#2E475D'}}}
               />
               <TextField
                 margin="normal"
@@ -172,6 +174,7 @@ export function Login() {
                 id="password"
                 autoComplete="current-password"
                 onChange={handlePassword}
+                inputProps={{style : {color:'#2E475D'}}}
               />
               <Button
                 type="submit"
@@ -189,16 +192,6 @@ export function Login() {
                 </Grid>
               </Grid>
               <Copyright sx={{ mt: 5, mb: 5 }} />
-              <Grid container spacing={2}   direction="row" justifyContent="center" alignItems="center">
-                <Grid item xs={8}>
-                  <Link href="https://bridgify.s3.ap-southeast-1.amazonaws.com/mobile/Bridgify.apk">
-                    <Button variant="outlined" startIcon={<DownloadIcon />}>
-                      Download Our Mobile APP APK
-                    </Button>
-                  </Link>
-                </Grid>
-
-              </Grid>
             </form>
           </Box>
         </Grid>
