@@ -147,7 +147,7 @@ export function Login() {
               Hi there!
             </Typography>
             <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'#2E475D' }}>
-              Welcome to Authenticket
+              Welcome to AuthenTicket
             </Typography>
             <form onSubmit={loginHandler}>
               <TextField
