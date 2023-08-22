@@ -1,5 +1,6 @@
 package com.authenticket.authenticket;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,12 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthenTicketController {
     //@RequestMapping default to root directory
-    @RequestMapping
+    @GetMapping
     public String helloWorld(){
         return "Hello world";
     }
 
-    @RequestMapping("/goodbye")
+    @GetMapping("/goodbye")
     public String goodbye(){
         return "Goodbye";
     }

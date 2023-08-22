@@ -10,6 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="AuthenTicket" target="17" />
       <module name="AuthenTicket (1)" target="1.5" />
       <module name="AuthenTicket (2)" target="17" />
     </bytecodeTargetLevel>
