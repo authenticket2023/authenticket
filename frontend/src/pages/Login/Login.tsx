@@ -140,7 +140,7 @@ export function Login() {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/Login'>
-                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -200, marginTop: 10, position: 'absolute' }} />
+                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
               </a>
             </div>
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'#2E475D' }}>
