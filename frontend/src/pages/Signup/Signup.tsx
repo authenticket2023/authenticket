@@ -6,12 +6,12 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from '../../images/icon.png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
 
 //image download
 import backgroundImage from '../../images/background.png';
+import logo from '../../images/logo(orange).png';
 
 function Copyright(props: any) {
   return (
@@ -160,8 +160,7 @@ export function Signup() {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/logIn'>
-                <img src={logo} alt="Logo" width={28} height={28} style={{ marginLeft: -230, marginTop: -5, position: 'absolute' }} />
-                <span style={{ color: 'black', fontSize: 15, textAlign: 'left', marginTop: -1.5, marginLeft: -195, fontWeight: 500, position: 'absolute' }}>Bridgify</span>
+              <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
               </a>
               {/* <Button
                 type="submit"
@@ -172,7 +171,7 @@ export function Signup() {
                 Admin
               </Button> */}
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 11, marginBottom: 1 }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 11, marginBottom: 1, color: '#2E475D' }}>
               Create your account
             </Typography>
             <form onSubmit={signupHandler}>
