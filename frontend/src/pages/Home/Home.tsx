@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { ResponsiveAppBar } from '../../Navbar';
+import { ResponsiveAppBar, NavbarNotLoggedIn } from '../../Navbar';
 import { Box, Grid, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import backgroundImage from '../../images/background.png';
@@ -123,6 +123,7 @@ export const Home = () => {
                     <Navigate to="/Login" /> : <Navigate to="/Home" />
             }
             < ResponsiveAppBar />
+            < NavbarNotLoggedIn />
 
             <Background />
 

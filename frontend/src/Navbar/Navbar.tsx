@@ -13,7 +13,9 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useNavigate } from 'react-router-dom';
-import logo from '../images/icon-white.png';
+import logo from '../images/authenticket_logo.png';
+import { Grid, InputBase, Paper } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 export const ResponsiveAppBar = () => {
     let navigate = useNavigate();
@@ -192,6 +194,126 @@ export const ResponsiveAppBar = () => {
                             </MenuItem>
                         </Menu>
                     </Box>
+                </Toolbar>
+            </Container>
+        </AppBar>
+    );
+}
+
+export const NavbarNotLoggedIn = () => {
+    let navigate = useNavigate();
+
+    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElNav(event.currentTarget);
+    };
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null);
+    };
+
+    const handleHome = () => {
+        navigate('/');
+    }
+
+    const handleEvents = () => {
+        navigate('/');
+    }
+
+    const handleVenues = () => {
+        navigate('/');
+    }
+
+    const handleFAQ = () => {
+        navigate('/');
+    }
+
+    const handleLogin = () => {
+        navigate('/login');
+    }
+
+    const handleSupport = () => {
+        navigate('/');
+    }
+
+    const handleAbout = () => {
+        navigate('/');
+    }
+
+    return (
+        <AppBar position="sticky" style={{ background: '#FFFFFF' }} >
+            <Container maxWidth="xl">
+                <Toolbar disableGutters>
+                    <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
+
+                    {/* for hamburger bar */}
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, color: 'black' }}>
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleOpenNavMenu}
+                            color="inherit"
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={handleCloseNavMenu}
+                            sx={{
+                                display: { xs: 'block', md: 'none' },
+                            }}
+                        >
+                            <Button key='Home' onClick={handleHome} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
+                            <Button key='Events' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Events</Button>
+                            <Button key='Venues' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Venues</Button>
+                            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: 'black', display: 'block' }} >FAQ</Button>
+                            <Button key='Support' onClick={handleSupport} sx={{ my: 0, color: 'black', display: 'block' }} >Support</Button>
+                            <Button key='About' onClick={handleAbout} sx={{ my: 0, color: 'black', display: 'block' }} >About</Button>
+                            <Button key='Login' onClick={handleLogin} sx={{ my: 0, color: 'black', display: 'block' }} >Log In</Button>
+                        </Menu>
+                    </Box>
+
+                    <Box justifyContent="center" alignItems="center" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                        <Button key='Home' onClick={handleHome} sx={{ my: 2, color: 'black', display: 'block' }} >Home</Button>
+                        <Button key='Events' onClick={handleEvents} sx={{ my: 2, color: 'black', display: 'block' }} >Events</Button>
+                        <Button key='Venues' onClick={handleVenues} sx={{ my: 2, color: 'black', display: 'block' }} >Venues</Button>
+                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: 'black', display: 'block' }} >FAQ</Button>
+                        <Paper
+                            component="form"
+                            sx={{ p: '2px 4px', ml: 8, mr: 8 , display: 'flex', alignItems: 'center', border: '2px solid #FF5C35', borderRadius: 2.5, width: 400, height: 40 }}
+                        >
+                            <InputBase
+                                sx={{ ml: 1, flex: 1 }}
+                                placeholder="Search for Event"
+                                inputProps={{ 'aria-label': 'search for event' }}
+                            />
+                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                                <SearchIcon />
+                            </IconButton>
+                        </Paper>
+                        <Button key='login' onClick={handleLogin} sx={{ my: 2, color: 'black', display: 'block' }} >Log In</Button>
+                        <Button key='support' onClick={handleSupport} sx={{ my: 2, color: 'black', display: 'block' }} >Support</Button>
+                        <Button key='About' onClick={handleAbout} sx={{ my: 2, color: 'black', display: 'block' }} >About</Button>
+                    </Box>
+
                 </Toolbar>
             </Container>
         </AppBar>
