@@ -1,5 +1,4 @@
 package com.authenticket.authenticket.model;
 
-public class Public {
-
+public class AdminModel {
 }
