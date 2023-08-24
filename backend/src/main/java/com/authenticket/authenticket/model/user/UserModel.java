@@ -41,6 +41,7 @@ public class UserModel implements UserDetails {
     private LocalDateTime user_created_date;
     private LocalDateTime deleted_date;
     private String profile_image;
+    private Boolean enabled = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -76,7 +77,7 @@ public class UserModel implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return deleted_date == null;
+        return enabled;
     }
 }
 

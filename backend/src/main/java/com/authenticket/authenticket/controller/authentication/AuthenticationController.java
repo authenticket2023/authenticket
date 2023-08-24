@@ -3,10 +3,7 @@ package com.authenticket.authenticket.controller.authentication;
 import com.authenticket.authenticket.services.authentication.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,6 +17,11 @@ public class AuthenticationController {
             @RequestBody RegisterRequest request
     ){
         return ResponseEntity.ok(service.register(request));
+    }
+
+    @GetMapping(path = "/register/confirm")
+    public ResponseEntity<AuthenticationResponse> confirm(@RequestParam("token") String token){
+        return ResponseEntity.ok(service.confirmToken(token));
     }
 
     @PostMapping("/authenticate")
