@@ -1,43 +1,51 @@
 package com.authenticket.authenticket.service;
 
-import com.authenticket.authenticket.model.EventModel;
+import com.authenticket.authenticket.dto.event.EventDTO;
+import com.authenticket.authenticket.dto.event.EventDTOMapper;
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final EventDTOMapper eventDTOMapper;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, EventDTOMapper eventDTOMapper) {
         this.eventRepository = eventRepository;
+        this.eventDTOMapper = eventDTOMapper;
     }
 
-    public List<EventModel> findAllEvent() {
-        return eventRepository.findAll();
+    public List<EventDTO> findAllEvent() {
+        return eventRepository.findAll()
+                .stream()
+                .map(eventDTOMapper)
+                        .collect(Collectors.toList());
     }
 
-    public Optional<EventModel> findById(Long event_id) {
-        return eventRepository.findById(event_id);
+    public Optional<EventDTO> findById(Long event_id) {
+        return eventRepository.findById(event_id).map(eventDTOMapper);
     }
 
-    public EventModel saveEvent(EventModel eventModel) {
-        return eventRepository.save(eventModel);
+    public Event saveEvent(Event event) {
+        return eventRepository.save(event);
     }
 
-    public EventModel updateEvent(EventModel eventModel) {
-        return eventRepository.save(eventModel);
+    public Event updateEvent(Event event) {
+        return eventRepository.save(event);
     }
 
     public String deleteEvent(Long event_id) {
-        Optional<EventModel> eventOptional = eventRepository.findById(event_id);
+        Optional<Event> eventOptional = eventRepository.findById(event_id);
 
         if (eventOptional.isPresent()) {
-            EventModel event = eventOptional.get();
+            Event event = eventOptional.get();
             event.setDeletedAt(LocalDateTime.now());
             eventRepository.save(event);
             return "event deleted successfully";

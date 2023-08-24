@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "eventTest", schema = "dev")
 @Data
 @Builder
-public class EventModel extends BaseModel {
+public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -40,7 +40,7 @@ public class EventModel extends BaseModel {
 
     //Constructors
 
-    public EventModel(Long eventId, String eventName, String eventDescription, LocalDateTime eventDate, String eventLocation, String otherEventInfo) {
+    public Event(Long eventId, String eventName, String eventDescription, LocalDateTime eventDate, String eventLocation, String otherEventInfo) {
         this.eventId = eventId;
         this.eventName = eventName;
         this.eventDescription = eventDescription;
@@ -49,7 +49,7 @@ public class EventModel extends BaseModel {
         this.otherEventInfo = otherEventInfo;
     }
 
-    public EventModel() {
+    public Event() {
 
     }
 
@@ -57,7 +57,7 @@ public class EventModel extends BaseModel {
     //To String
     @Override
     public String toString() {
-        return "EventModel{" +
+        return "Event{" +
                 "eventId=" + eventId +
                 ", eventName='" + eventName + '\'' +
                 ", eventDescription='" + eventDescription + '\'' +

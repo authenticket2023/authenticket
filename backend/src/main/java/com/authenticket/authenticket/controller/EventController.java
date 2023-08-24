@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.controller;
 
-import com.authenticket.authenticket.model.EventModel;
+import com.authenticket.authenticket.dto.event.EventDTO;
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,23 +25,23 @@ public class EventController {
     }
 
     @GetMapping
-    public List<EventModel> findAllEvent() {
+    public List<EventDTO> findAllEvent() {
         return eventService.findAllEvent();
     }
 
     @GetMapping("/{event_id}")
-    public Optional<EventModel> findEventById(@PathVariable("event_id") Long event_id) {
+    public Optional<EventDTO> findEventById(@PathVariable("event_id") Long event_id) {
         return eventService.findById(event_id);
     }
 
     @PostMapping
-    public EventModel saveEvent(@RequestBody EventModel eventModel) {
-        return eventService.saveEvent(eventModel);
+    public Event saveEvent(@RequestBody Event event) {
+        return eventService.saveEvent(event);
     }
 
     @PutMapping
-    public EventModel updateEvent(@RequestBody EventModel eventModel) {
-        return eventService.updateEvent(eventModel);
+    public Event updateEvent(@RequestBody Event event) {
+        return eventService.updateEvent(event);
     }
 
     @DeleteMapping("/{event_id}")
