@@ -18,29 +18,29 @@ package com.authenticket.authenticket.model.user;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "app_user")
-public class UserModel implements UserDetails {
-
-
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
+@Table(name = "app_user", schema = "dev")
+public class User implements UserDetails {
     @Id
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence"
+            strategy = GenerationType.IDENTITY
     )
+    @Column(name = "user_id", nullable = false)
     private Long user_id;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+    @Column(name = "password", nullable = false)
     private String password;
-
+    @Column(name = "date_of_birth", nullable = false)
     private LocalDate date_of_birth;
-    private LocalDateTime user_created_date;
+    @Column(name = "user_created_date")
+    private LocalDateTime user_created_date = LocalDateTime.now();
+    @Column(name = "deleted_date")
     private LocalDateTime deleted_date;
+    @Column(name = "profile_image")
     private String profile_image;
+    @Column(name = "enabled")
     private Boolean enabled = false;
 
     @Override

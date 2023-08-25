@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.repository.user;
 
 
-import com.authenticket.authenticket.model.user.UserModel;
+import com.authenticket.authenticket.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,12 +12,12 @@ import java.util.*;
 
 @Repository
 @Transactional(readOnly = true)
-public interface UserRepository extends JpaRepository<UserModel, Long> {
-    Optional<UserModel> findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
 
     @Transactional
     @Modifying
-    @Query("UPDATE UserModel a " +
+    @Query("UPDATE User a " +
             "SET a.enabled = TRUE WHERE a.email = ?1")
     int enableAppUser(String email);
 }

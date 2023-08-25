@@ -1,13 +1,14 @@
 package com.authenticket.authenticket.services.authentication;
 
-import com.authenticket.authenticket.controller.authentication.AuthenticationRequest;
+import com.authenticket.authenticket.DTO.user.UserDTO;
+import com.authenticket.authenticket.DTO.user.UserDTOMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
-import com.authenticket.authenticket.controller.authentication.RegisterRequest;
-import com.authenticket.authenticket.model.user.UserModel;
+import com.authenticket.authenticket.model.user.User;
 import com.authenticket.authenticket.repository.user.UserRepository;
 import com.authenticket.authenticket.services.jwt.JwtService;
 import com.authenticket.authenticket.services.email.EmailSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository repository;
+
     //Registration
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -28,8 +30,12 @@ public class AuthenticationService {
     //Email Sender
     private final EmailSender emailSender;
 
-    public AuthenticationResponse register(RegisterRequest request) {
-        var user = UserModel.builder()
+    //UserDTO
+    private final UserDTOMapper userDTOMapper;
+
+    public ResponseEntity<AuthenticationResponse> register(User request) {
+        AuthenticationResponse badReq;
+        var user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -41,7 +47,13 @@ public class AuthenticationService {
         var existing = repository.findByEmail(request.getEmail())
                 .isPresent();
         if(existing){
-            throw new RuntimeException("User already exists");
+//            throw new IllegalStateException("User already exists");
+            badReq = AuthenticationResponse
+                    .builder()
+                    .message("User already exists")
+                    .build();
+
+            return ResponseEntity.status(400).body(badReq);
         }
 
         repository.save(user);
@@ -50,12 +62,14 @@ public class AuthenticationService {
         String link = "http://localhost:8080/api/auth/register/confirm?token=" + jwtToken;
         emailSender.send(request.getEmail(), buildEmail(request.getName(), link));
 
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
+        AuthenticationResponse goodReq = AuthenticationResponse.builder()
+                .message("Verification required")
                 .build();
+
+        return ResponseEntity.status(200).body(goodReq);
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> authenticate(User request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -64,33 +78,55 @@ public class AuthenticationService {
         );
 
         var user = repository.findByEmail(request.getEmail())
+//                .orElse(null);
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
+        //no exception here
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
+
+        AuthenticationResponse goodReq =  AuthenticationResponse.builder()
+                .message("welcome1 " + user.getName())
                 .token(jwtToken)
+                .userDetails(userDTOMapper.apply(user))
                 .build();
+        return ResponseEntity.status(200).body(goodReq);
     }
 
-    public AuthenticationResponse confirmToken(String token) {
+    public ResponseEntity<AuthenticationResponse> confirmToken(String token) {
+        AuthenticationResponse badReq;
         if (jwtService.isTokenExpired(token)) {
-           throw new IllegalStateException("token expired");
+//           throw new IllegalStateException("token expired");
+                badReq = AuthenticationResponse
+                        .builder()
+                        .message("Token expired")
+                        .build();
+
+                return ResponseEntity.status(403).body(badReq);
         }
 
         String email = jwtService.extractUsername(token);
-        System.out.println(email);
-        var user = repository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
 
+        var user = repository.findByEmail(email)
+//                .orElse(null);
+                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         if (user.getEnabled()){
-            throw new IllegalStateException("email already confirmed");
+//            throw new IllegalStateException("email already confirmed");
+            badReq = AuthenticationResponse
+                    .builder()
+                    .message("Email already confirmed")
+                    .build();
+
+            return ResponseEntity.status(400).body(badReq);
         }
 
         repository.enableAppUser(email);
 
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
+        AuthenticationResponse goodReq = AuthenticationResponse.builder()
+                .message("welcome " + user.getName())
                 .token(jwtToken)
+                .userDetails(userDTOMapper.apply(user))
                 .build();
+        return ResponseEntity.status(200).body(goodReq);
     }
 
     private String buildEmail(String name, String link) {
