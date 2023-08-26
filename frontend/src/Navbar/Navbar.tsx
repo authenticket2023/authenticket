@@ -12,90 +12,62 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { useNavigate } from 'react-router-dom';
-import logo from '../images/icon-white.png';
+import { Link, useNavigate } from 'react-router-dom';
+import logo from '../images/authenticket_logo.png';
+import { Grid, InputBase, Paper } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
-export const ResponsiveAppBar = () => {
+export const NavbarNotLoggedIn = () => {
     let navigate = useNavigate();
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-
-    let profileImage: any = window.localStorage.getItem('profileImage');
-    const profileImageSrc = `${process.env.REACT_APP_BACKEND_IMAGES_URL}/user_profile/${profileImage}`;
-
-
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
-    };
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
     };
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
 
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
-
-    const handledLogout = () => {
-        setAnchorElUser(null);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('accRole');
-        localStorage.removeItem('linkedElderly');
-        localStorage.removeItem('profileImage');
-        navigate('/login');
-    };
-
-    const handleHealth = () => {
-        navigate('/health');
-    }
-
     const handleHome = () => {
-        navigate('/Home');
+        navigate('/');
     }
 
-    const handleProfile = () => {
-        navigate('/profile');
+    const handleEvents = () => {
+        navigate('/Event');
+    }
+
+    const handleVenues = () => {
+        navigate('/Venue');
+    }
+
+    const handleFAQ = () => {
+        navigate('/FAQ');
+    }
+
+    const handleLogin = () => {
+        navigate('/login');
+    }
+
+    const handleSupport = () => {
+        navigate('/Support');
     }
 
     const handleAbout = () => {
-        navigate('/about');
+        navigate('/About');
     }
 
     return (
-        <AppBar position="sticky" style={{ background: '#30685E' }} >
+        <AppBar position="sticky" style={{ background: '#FFFFFF' }} >
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    {/* need to research on how to get rid of this logo when hamburger bar opens */}
+                <Link to="/Home">
                     <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="/Home"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'Roboto',
-                            fontWeight: 500,
-                            letterSpacing: 0,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                            fontSize: 15,
-                            marginLeft: -1.3
-                        }}
-                    >
-                        Bridgify
-                    </Typography>
-
-
+                </Link>
                     {/* for hamburger bar */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, color: 'black' }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -125,79 +97,45 @@ export const ResponsiveAppBar = () => {
                             }}
                         >
                             <Button key='Home' onClick={handleHome} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
-                            <Button key='Health' onClick={handleHealth} sx={{ my: 0, color: 'black', display: 'block' }} >Health</Button>
-                            <Button key='Profile' onClick={handleProfile} sx={{ my: 0, color: 'black', display: 'block' }} >Profile</Button>
+                            <Button key='Events' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Events</Button>
+                            <Button key='Venues' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Venues</Button>
+                            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: 'black', display: 'block' }} >FAQ</Button>
+                            <Button key='Support' onClick={handleSupport} sx={{ my: 0, color: 'black', display: 'block' }} >Support</Button>
                             <Button key='About' onClick={handleAbout} sx={{ my: 0, color: 'black', display: 'block' }} >About</Button>
+                            <Button key='Login' onClick={handleLogin} sx={{ my: 0, color: 'black', display: 'block' }} >Log In</Button>
                         </Menu>
                     </Box>
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href=""
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'Roboto',
-                            fontWeight: 700,
-                            letterSpacing: 0,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        Bridgify
-                    </Typography>
 
                     <Box justifyContent="center" alignItems="center" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHome} sx={{ my: 2, color: 'white', display: 'block' }} >Home</Button>
-                        <Button key='Health' onClick={handleHealth} sx={{ my: 2, color: 'white', display: 'block' }} >Health</Button>
-                        <Button key='Profile' onClick={handleProfile} sx={{ my: 2, color: 'white', display: 'block' }} >Profile</Button>
-                        <Button key='About' onClick={handleAbout} sx={{ my: 2, color: 'white', display: 'block' }} >About</Button>
+                        <Button key='Home' onClick={handleHome} sx={{ my: 2, color: 'black', display: 'block' }} >Home</Button>
+                        <Button key='Events' onClick={handleEvents} sx={{ my: 2, color: 'black', display: 'block' }} >Events</Button>
+                        <Button key='Venues' onClick={handleVenues} sx={{ my: 2, color: 'black', display: 'block' }} >Venues</Button>
+                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: 'black', display: 'block' }} >FAQ</Button>
+                        <Paper
+                            component="form"
+                            sx={{ p: '2px 4px', ml: 8, mr: 8 , display: 'flex', alignItems: 'center', border: '2px solid #FF5C35', borderRadius: 2.5, width: 400, height: 40 }}
+                        >
+                            <InputBase
+                                sx={{ ml: 1, flex: 1 }}
+                                placeholder="Search for Event"
+                                inputProps={{ 'aria-label': 'search for event' }}
+                            />
+                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                                <SearchIcon />
+                            </IconButton>
+                        </Paper>
+                        <Button key='login' onClick={handleLogin} sx={{ my: 2, color: 'black', display: 'block' }} >Log In</Button>
+                        <Button key='support' onClick={handleSupport} sx={{ my: 2, color: 'black', display: 'block' }} >Support</Button>
+                        <Button key='About' onClick={handleAbout} sx={{ my: 2, color: 'black', display: 'block' }} >About</Button>
                     </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src={profileImageSrc} />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            <MenuItem key='Profile' onClick={handleProfile}>
-                                <Typography textAlign="center">Profile</Typography>
-                            </MenuItem>
-                            <MenuItem key='Health' onClick={handleHealth}>
-                                <Typography textAlign="center">Health</Typography>
-                            </MenuItem>
-                            <MenuItem key='About' onClick={handleAbout}>
-                                <Typography textAlign="center">About</Typography>
-                            </MenuItem>
-                            <MenuItem key='Logout' onClick={handledLogout}>
-                                <Typography textAlign="center">Log out</Typography>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>
     );
 }
 
+//need modify
 export const ResponsiveAppBarAdmin = () => {
     let navigate = useNavigate();
 
