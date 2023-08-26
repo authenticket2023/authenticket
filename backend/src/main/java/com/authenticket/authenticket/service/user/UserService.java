@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.services.user;
+package com.authenticket.authenticket.service.user;
 
 import com.authenticket.authenticket.repository.user.UserRepository;
 import lombok.AllArgsConstructor;

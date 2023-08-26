@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.controller.authentication;
 
 import com.authenticket.authenticket.model.user.User;
-import com.authenticket.authenticket.services.authentication.AuthenticationService;
+import com.authenticket.authenticket.service.authentication.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

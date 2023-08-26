@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.services.jwt;
+package com.authenticket.authenticket.service.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

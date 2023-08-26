@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.services.email;
+package com.authenticket.authenticket.service.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

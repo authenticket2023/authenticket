@@ -1,11 +1,11 @@
-package com.authenticket.authenticket.services.authentication;
+package com.authenticket.authenticket.service.authentication;
 
 import com.authenticket.authenticket.DTO.user.UserDTOMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.user.User;
 import com.authenticket.authenticket.repository.user.UserRepository;
-import com.authenticket.authenticket.services.email.EmailService;
-import com.authenticket.authenticket.services.jwt.JwtService;
+import com.authenticket.authenticket.service.jwt.JwtService;
+import com.authenticket.authenticket.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;

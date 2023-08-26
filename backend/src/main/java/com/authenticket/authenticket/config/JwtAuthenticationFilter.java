@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.config;
 
-import com.authenticket.authenticket.services.jwt.JwtService;
+import com.authenticket.authenticket.service.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
