@@ -1,8 +1,8 @@
 package com.authenticket.authenticket.controller;
 
-import com.authenticket.authenticket.dto.event.EventDTO;
+import com.authenticket.authenticket.DTO.event.EventDTO;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.service.EventService;
+import com.authenticket.authenticket.service.event.EventService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

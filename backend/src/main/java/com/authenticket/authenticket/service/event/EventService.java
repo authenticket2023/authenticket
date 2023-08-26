@@ -1,7 +1,7 @@
-package com.authenticket.authenticket.service;
+package com.authenticket.authenticket.service.event;
 
-import com.authenticket.authenticket.dto.event.EventDTO;
-import com.authenticket.authenticket.dto.event.EventDTOMapper;
+import com.authenticket.authenticket.DTO.event.EventDTO;
+import com.authenticket.authenticket.DTO.event.EventDTOMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 import org.springframework.stereotype.Service;

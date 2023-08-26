@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.dto.event;
+package com.authenticket.authenticket.DTO.event;
 
 import com.authenticket.authenticket.model.Event;
 import org.springframework.stereotype.Service;

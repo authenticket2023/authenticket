@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.dto.event;
+package com.authenticket.authenticket.DTO.event;
 
 import java.time.LocalDateTime;
 
