@@ -18,7 +18,7 @@ target/
 *.iws
 *.iml
 *.ipr
-secrets.properties
+main/resources/secrets.properties
 
 ### NetBeans ###
 /nbproject/private/
