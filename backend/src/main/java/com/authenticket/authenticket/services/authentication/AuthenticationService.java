@@ -1,13 +1,13 @@
 package com.authenticket.authenticket.services.authentication;
 
-import com.authenticket.authenticket.DTO.user.UserDTO;
 import com.authenticket.authenticket.DTO.user.UserDTOMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.user.User;
 import com.authenticket.authenticket.repository.user.UserRepository;
+import com.authenticket.authenticket.services.email.EmailService;
 import com.authenticket.authenticket.services.jwt.JwtService;
-import com.authenticket.authenticket.services.email.EmailSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
+
+    @Value("${authenticket.api-port}")
+    private String apiPort;
     private final UserRepository repository;
 
     //Registration
@@ -28,7 +31,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     //Email Sender
-    private final EmailSender emailSender;
+    private final EmailService emailService;
 
     //UserDTO
     private final UserDTOMapper userDTOMapper;
@@ -59,8 +62,8 @@ public class AuthenticationService {
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
 
-        String link = "http://localhost:8080/api/auth/register/confirm?token=" + jwtToken;
-        emailSender.send(request.getEmail(), buildEmail(request.getName(), link));
+        String link = "http://localhost:" + apiPort + "/api/auth/register/confirm?token=" + jwtToken;
+        emailService.send(request.getEmail(), buildEmail(request.getName(), link));
 
         AuthenticationResponse goodReq = AuthenticationResponse.builder()
                 .message("Verification required")

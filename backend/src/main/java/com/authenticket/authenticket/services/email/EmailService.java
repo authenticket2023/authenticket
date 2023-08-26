@@ -12,12 +12,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class EmailService implements EmailSender {
+public class EmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
     private final JavaMailSender mailSender;
 
-    @Override
     @Async
     public void send(String to, String email){
         try {

@@ -35,7 +35,7 @@ public class User implements UserDetails {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate date_of_birth;
     @Column(name = "user_created_date")
-    private LocalDateTime user_created_date = LocalDateTime.now();
+    private LocalDate user_created_date = LocalDate.now();
     @Column(name = "deleted_date")
     private LocalDateTime deleted_date;
     @Column(name = "profile_image")
@@ -46,7 +46,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority("user");
+                new SimpleGrantedAuthority("USER");
         return Collections.singletonList(authority);
     }
 
