@@ -1,4 +1,4 @@
 package com.authenticket.authenticket.model;
 
-public class TicketModel {
+public class Ticket {
 }

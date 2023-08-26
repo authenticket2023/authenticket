@@ -1,4 +1,4 @@
 package com.authenticket.authenticket.model;
 
-public class EventOrganiserModel {
+public class EventOrganiser {
 }
