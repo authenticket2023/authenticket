@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.service.event;
 
-import com.authenticket.authenticket.DTO.event.EventDTO;
-import com.authenticket.authenticket.DTO.event.EventDTOMapper;
+import com.authenticket.authenticket.dto.event.EventDto;
+import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 import org.springframework.stereotype.Service;
@@ -15,21 +15,21 @@ import java.util.stream.Collectors;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final EventDTOMapper eventDTOMapper;
+    private final EventDtoMapper eventDTOMapper;
 
-    public EventService(EventRepository eventRepository, EventDTOMapper eventDTOMapper) {
+    public EventService(EventRepository eventRepository, EventDtoMapper eventDTOMapper) {
         this.eventRepository = eventRepository;
         this.eventDTOMapper = eventDTOMapper;
     }
 
-    public List<EventDTO> findAllEvent() {
+    public List<EventDto> findAllEvent() {
         return eventRepository.findAll()
                 .stream()
                 .map(eventDTOMapper)
                         .collect(Collectors.toList());
     }
 
-    public Optional<EventDTO> findById(Long event_id) {
+    public Optional<EventDto> findById(Long event_id) {
         return eventRepository.findById(event_id).map(eventDTOMapper);
     }
 

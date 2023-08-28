@@ -1,9 +1,9 @@
-package com.authenticket.authenticket.DTO.event;
+package com.authenticket.authenticket.dto.event;
 
 import java.time.LocalDateTime;
 
 //currently only hides the deleted at field
-public record EventDTO(Long eventId,
+public record EventDto(Long eventId,
                        String eventName,
                        String eventDescription,
                        LocalDateTime eventDate,

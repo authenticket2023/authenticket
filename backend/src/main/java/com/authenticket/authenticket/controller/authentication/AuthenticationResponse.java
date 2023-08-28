@@ -1,13 +1,10 @@
 package com.authenticket.authenticket.controller.authentication;
 
-import com.authenticket.authenticket.DTO.user.UserDTO;
+import com.authenticket.authenticket.dto.user.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
-
-import java.time.LocalDate;
 
 @Data
 @Builder
@@ -17,5 +14,5 @@ public class AuthenticationResponse {
 
     private String message;
     private String token;
-    private UserDTO userDetails;
+    private UserDto userDetails;
 }

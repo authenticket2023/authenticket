@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.service.authentication;
 
-import com.authenticket.authenticket.DTO.user.UserDTOMapper;
+import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.user.User;
 import com.authenticket.authenticket.repository.user.UserRepository;
@@ -34,7 +34,7 @@ public class AuthenticationService {
     private final EmailService emailService;
 
     //UserDTO
-    private final UserDTOMapper userDTOMapper;
+    private final UserDtoMapper userDTOMapper;
 
     public ResponseEntity<AuthenticationResponse> register(User request) {
         AuthenticationResponse badReq;
