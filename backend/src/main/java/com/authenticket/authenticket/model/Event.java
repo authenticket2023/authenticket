@@ -5,11 +5,14 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Table(name = "eventTest", schema = "dev")
+
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "event_test", schema = "dev")
+@EqualsAndHashCode(callSuper = true)
 public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,36 +40,6 @@ public class Event extends BaseEntity {
 
 //    @Column(name = "event_image", columnDefinition = "VARCHAR[]")
 //    private String[] eventImage;
-
-    //Constructors
-
-    public Event(Long eventId, String eventName, String eventDescription, LocalDateTime eventDate, String eventLocation, String otherEventInfo) {
-        this.eventId = eventId;
-        this.eventName = eventName;
-        this.eventDescription = eventDescription;
-        this.eventDate = eventDate;
-        this.eventLocation = eventLocation;
-        this.otherEventInfo = otherEventInfo;
-    }
-
-    public Event() {
-
-    }
-
-
-    //To String
-    @Override
-    public String toString() {
-        return "Event{" +
-                "eventId=" + eventId +
-                ", eventName='" + eventName + '\'' +
-                ", eventDescription='" + eventDescription + '\'' +
-                ", eventDate=" + eventDate +
-                ", eventLocation='" + eventLocation + '\'' +
-                ", otherEventInfo='" + otherEventInfo + '\'' +
-                '}';
-    }
-
     // Other methods
 }
 
