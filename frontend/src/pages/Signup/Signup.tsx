@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from '../../images/icon.png';
+import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
 
@@ -18,7 +18,7 @@ function Copyright(props: any) {
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="/signup">
-        Bridgify
+        AuthenTicket
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -35,17 +35,6 @@ const myTheme = createTheme({
     }
   }
 });
-
-// const { palette } = createTheme();
-// const { augmentColor } = palette;
-// const createColor = (mainColor) => augmentColor({color: { main: mainColor }});
-// const theme = createTheme({
-//     palette: {
-//         darkGreen: createColor('#588061'),
-//         lightPink :createColor('#FEF9F9'),
-//         pink: createColor('#E7B5AC'),
-//     },
-// });
 
 export function Signup() {
 
@@ -161,16 +150,8 @@ export function Signup() {
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/logIn'>
                 <img src={logo} alt="Logo" width={28} height={28} style={{ marginLeft: -230, marginTop: -5, position: 'absolute' }} />
-                <span style={{ color: 'black', fontSize: 15, textAlign: 'left', marginTop: -1.5, marginLeft: -195, fontWeight: 500, position: 'absolute' }}>Bridgify</span>
+                <span style={{ color: 'black', fontSize: 15, textAlign: 'left', marginTop: -1.5, marginLeft: -195, fontWeight: 500, position: 'absolute' }}>AuthenTicket</span>
               </a>
-              {/* <Button
-                type="submit"
-                variant="outlined"
-                color='inherit'
-                sx={{ mt: 3, mb: 2, fontWeight: 500, borderRadius: 8, position: 'absolute', top: 30, right: 80 }}
-              >
-                Admin
-              </Button> */}
             </div>
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 11, marginBottom: 1 }}>
               Create your account
