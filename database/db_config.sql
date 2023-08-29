@@ -1,19 +1,20 @@
-DROP TABLE IF EXISTS dev.User;
-DROP TABLE IF EXISTS dev.Event_Organiser;
+DROP TABLE IF EXISTS dev.Ticket;
+DROP TABLE IF EXISTS dev.Ticket_Categories;
 DROP TABLE IF EXISTS dev.Event;
-DROP TABLE IF EXISTS dev.Ticket_Categories;
-DROP TABLE IF EXISTS dev.Ticket_Categories;
-DROP TABLE IF EXISTS dev.dev.Ticket;
+DROP TABLE IF EXISTS dev.Event_Organiser;
+DROP TABLE IF EXISTS dev.User;
 
 CREATE TABLE dev.User (
     user_id SERIAL PRIMARY KEY,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
-    date_of_birth DATE,
+    date_of_birth DATE NOT NULL,
     user_created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_date TIMESTAMP,
-    profile_image VARCHAR(255)
+    profile_image VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE dev.Event_Organiser (
@@ -24,8 +25,9 @@ CREATE TABLE dev.Event_Organiser (
     description TEXT,
     verified BOOLEAN,
     logo_image VARCHAR(255),
-    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_deleted TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE dev.Event (
@@ -33,11 +35,13 @@ CREATE TABLE dev.Event (
     organiser_id INTEGER REFERENCES dev.Event_Organiser(organiser_id),
     event_name VARCHAR(255) NOT NULL,
     event_description TEXT,
-    event_date TIMESTAMP,
+    event_date TIMESTAMP NOT NULL,
     event_location VARCHAR(255),
     other_event_info TEXT,
     event_image VARCHAR(255)[],
-    deleted_date TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE dev.Ticket_Categories (
