@@ -2,7 +2,7 @@ package com.authenticket.authenticket.service.authentication;
 
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
-import com.authenticket.authenticket.model.user.User;
+import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.user.UserRepository;
 import com.authenticket.authenticket.service.jwt.JwtService;
 import com.authenticket.authenticket.service.email.EmailService;

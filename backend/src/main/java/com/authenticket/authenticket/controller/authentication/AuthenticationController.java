@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.controller.authentication;
 
-import com.authenticket.authenticket.model.user.User;
+import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.service.authentication.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class AuthenticationController {
         return service.confirmToken(token);
     }
 
-    @PostMapping("/authenticate")
+    @GetMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody User user
     ){
