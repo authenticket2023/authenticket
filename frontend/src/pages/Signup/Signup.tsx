@@ -18,7 +18,7 @@ function Copyright(props: any) {
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
       <Link color="inherit" href="/signup">
-        Bridgify
+        AuthenTicket
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -217,7 +217,7 @@ export function Signup() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
               >
                 Create Account
               </Button>
