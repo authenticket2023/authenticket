@@ -1,10 +1,7 @@
-package com.authenticket.authenticket.model.user;
+package com.authenticket.authenticket.model;
 
         import jakarta.persistence.*;
-        import lombok.AllArgsConstructor;
-        import lombok.Builder;
-        import lombok.Data;
-        import lombok.NoArgsConstructor;
+        import lombok.*;
         import org.springframework.security.core.GrantedAuthority;
         import org.springframework.security.core.authority.SimpleGrantedAuthority;
         import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +15,9 @@ package com.authenticket.authenticket.model.user;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "app_user", schema = "dev")
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails{
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -34,10 +32,6 @@ public class User implements UserDetails {
     private String password;
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate date_of_birth;
-    @Column(name = "user_created_date")
-    private LocalDate user_created_date = LocalDate.now();
-    @Column(name = "deleted_date")
-    private LocalDateTime deleted_date;
     @Column(name = "profile_image")
     private String profile_image;
     @Column(name = "enabled")
@@ -62,17 +56,17 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return deleted_date == null;
+        return enabled;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return deleted_date == null;
+        return enabled;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return deleted_date == null;
+        return enabled;
     }
 
     @Override
