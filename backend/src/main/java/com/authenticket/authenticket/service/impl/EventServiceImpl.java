@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.service.event;
+package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.event.EventDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
@@ -12,12 +12,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class EventService {
+public class EventServiceImpl {
 
     private final EventRepository eventRepository;
     private final EventDtoMapper eventDTOMapper;
 
-    public EventService(EventRepository eventRepository, EventDtoMapper eventDTOMapper) {
+    public EventServiceImpl(EventRepository eventRepository, EventDtoMapper eventDTOMapper) {
         this.eventRepository = eventRepository;
         this.eventDTOMapper = eventDTOMapper;
     }

@@ -1,11 +1,9 @@
-package com.authenticket.authenticket.service.authentication;
+package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.user.UserRepository;
-import com.authenticket.authenticket.service.jwt.JwtService;
-import com.authenticket.authenticket.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationServiceImpl {
 
     @Value("${authenticket.api-port}")
     private String apiPort;
@@ -25,13 +23,13 @@ public class AuthenticationService {
 
     //Registration
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtServiceImpl;
 
     //Authentication
     private final AuthenticationManager authenticationManager;
 
     //Email Sender
-    private final EmailService emailService;
+    private final EmailServiceImpl emailServiceImpl;
 
     //UserDTO
     private final UserDtoMapper userDTOMapper;
@@ -60,10 +58,10 @@ public class AuthenticationService {
         }
 
         repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtServiceImpl.generateToken(user);
 
         String link = "http://localhost:" + apiPort + "/api/auth/register/confirm?token=" + jwtToken;
-        emailService.send(request.getEmail(), buildEmail(request.getName(), link));
+        emailServiceImpl.send(request.getEmail(), buildEmail(request.getName(), link));
 
         AuthenticationResponse goodReq = AuthenticationResponse.builder()
                 .message("Verification required")
@@ -84,7 +82,7 @@ public class AuthenticationService {
 //                .orElse(null);
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         //no exception here
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtServiceImpl.generateToken(user);
 
         AuthenticationResponse goodReq =  AuthenticationResponse.builder()
                 .message("welcome1 " + user.getName())
@@ -96,7 +94,7 @@ public class AuthenticationService {
 
     public ResponseEntity<AuthenticationResponse> confirmToken(String token) {
         AuthenticationResponse badReq;
-        if (jwtService.isTokenExpired(token)) {
+        if (jwtServiceImpl.isTokenExpired(token)) {
 //           throw new IllegalStateException("token expired");
                 badReq = AuthenticationResponse
                         .builder()
@@ -106,7 +104,7 @@ public class AuthenticationService {
                 return ResponseEntity.status(403).body(badReq);
         }
 
-        String email = jwtService.extractUsername(token);
+        String email = jwtServiceImpl.extractUsername(token);
 
         var user = repository.findByEmail(email)
 //                .orElse(null);
@@ -123,7 +121,7 @@ public class AuthenticationService {
 
         repository.enableAppUser(email);
 
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtServiceImpl.generateToken(user);
         AuthenticationResponse goodReq = AuthenticationResponse.builder()
                 .message("welcome " + user.getName())
                 .token(jwtToken)

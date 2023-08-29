@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.service.email;
+package com.authenticket.authenticket.service.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class EmailService {
-    private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
+public class EmailServiceImpl {
+    private final static Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     private final JavaMailSender mailSender;
 
