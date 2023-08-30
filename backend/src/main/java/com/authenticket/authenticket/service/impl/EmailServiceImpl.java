@@ -2,10 +2,9 @@ package com.authenticket.authenticket.service.impl;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,11 +12,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class EmailServiceImpl {
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
-    private final JavaMailSenderImpl mailSender;
+    @Autowired
+    private JavaMailSenderImpl mailSender;
 
     @Value("${authenticket.smtp-username}")
     private String smtpUsername;
@@ -32,7 +31,7 @@ public class EmailServiceImpl {
             helper.setText(email, true);
             helper.setTo(to);
             helper.setSubject("Confirm your email");
-            helper.setFrom("authenticket2023@hotmail.com");
+            helper.setFrom(smtpUsername);
             mailSender.setUsername(smtpUsername);
             mailSender.setPassword(smtpPassword);
             mailSender.send(mimeMessage);
