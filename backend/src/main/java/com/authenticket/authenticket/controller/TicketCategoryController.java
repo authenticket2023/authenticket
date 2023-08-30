@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 @RequestMapping("/ticket-category")
+
 public class TicketCategoryController {
     @GetMapping("/test")
     public String test() {

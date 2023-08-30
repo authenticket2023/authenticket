@@ -3,8 +3,8 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.User;
-import com.authenticket.authenticket.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.authenticket.authenticket.repository.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,32 +14,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl {
 
     @Value("${authenticket.api-port}")
     private String apiPort;
-
-    @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
 
     //Registration
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtServiceImpl jwtServiceImpl;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtServiceImpl jwtServiceImpl;
 
     //Authentication
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     //Email Sender
-    @Autowired
-   private EmailServiceImpl emailServiceImpl;
+    private final EmailServiceImpl emailServiceImpl;
 
     //UserDTO
-    @Autowired
-    private UserDtoMapper userDTOMapper;
+    private final UserDtoMapper userDTOMapper;
 
     public ResponseEntity<AuthenticationResponse> register(User request) {
         AuthenticationResponse badReq;

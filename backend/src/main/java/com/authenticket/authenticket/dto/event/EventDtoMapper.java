@@ -2,6 +2,7 @@ package com.authenticket.authenticket.dto.event;
 
 import com.authenticket.authenticket.model.Event;
 import org.springframework.stereotype.Service;
+
 import java.util.function.Function;
 
 @Service
