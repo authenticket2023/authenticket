@@ -15,10 +15,11 @@ import java.util.stream.Collectors;
 @Service
 public class EventServiceImpl {
 
+    @Autowired
+    private EventRepository eventRepository;
 
-    private final EventRepository eventRepository;
-
-    private final EventDtoMapper eventDTOMapper;
+    @Autowired
+    private EventDtoMapper eventDTOMapper;
 
     public EventServiceImpl(EventRepository eventRepository, EventDtoMapper eventDTOMapper) {
         this.eventRepository = eventRepository;
