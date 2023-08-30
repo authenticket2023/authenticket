@@ -7,7 +7,9 @@ public record ConfigProperties(
         String apiVersion,
         String secretKey,
         String databaseId,
-        String apiPort
+        String apiPort,
+        String smtpUsername,
+        String smtpPassword
 
 
 ) {
