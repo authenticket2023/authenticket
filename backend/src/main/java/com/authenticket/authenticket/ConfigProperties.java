@@ -7,7 +7,8 @@ public record ConfigProperties(
         String apiVersion,
         String secretKey,
         String databaseId,
-        String apiPort
+        String apiPort,
+        String S3BucketName
 
 
 ) {

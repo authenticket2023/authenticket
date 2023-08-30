@@ -4,6 +4,7 @@ import com.authenticket.authenticket.dto.event.EventDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class EventService {
 
     private final EventRepository eventRepository;
+
     private final EventDtoMapper eventDTOMapper;
 
     public EventService(EventRepository eventRepository, EventDtoMapper eventDTOMapper) {

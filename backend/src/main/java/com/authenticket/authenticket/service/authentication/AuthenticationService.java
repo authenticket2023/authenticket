@@ -7,6 +7,7 @@ import com.authenticket.authenticket.repository.user.UserRepository;
 import com.authenticket.authenticket.service.jwt.JwtService;
 import com.authenticket.authenticket.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,19 +22,25 @@ public class AuthenticationService {
 
     @Value("${authenticket.api-port}")
     private String apiPort;
+
+    @Autowired
     private final UserRepository repository;
 
     //Registration
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
     private final JwtService jwtService;
 
     //Authentication
     private final AuthenticationManager authenticationManager;
 
     //Email Sender
+    @Autowired
     private final EmailService emailService;
 
     //UserDTO
+    @Autowired
     private final UserDtoMapper userDTOMapper;
 
     public ResponseEntity<AuthenticationResponse> register(User request) {
