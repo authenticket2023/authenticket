@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class EventServiceImpl {
 
+
     private final EventRepository eventRepository;
 
     private final EventDtoMapper eventDTOMapper;

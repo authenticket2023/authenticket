@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 @RequestMapping("/event-organiser")
-
 public class EventOrganiserController {
     @GetMapping("/test")
     public String test() {

@@ -1,24 +1,19 @@
 package com.authenticket.authenticket.controller;
 
-import com.amazonaws.HttpMethod;
 import com.authenticket.authenticket.service.AmazonS3Service;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
-
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/aws")
-@RequiredArgsConstructor
 public class AmazonController {
 
     @Autowired
-    private final AmazonS3Service service;
+    private AmazonS3Service service;
 
 
     @PostMapping("/uploadFile")

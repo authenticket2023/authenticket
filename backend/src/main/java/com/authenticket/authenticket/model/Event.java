@@ -19,10 +19,6 @@ public class Event extends BaseEntity {
     @Column(name = "event_id")
     private Long eventId;
 
-    //    @ManyToOne
-//    @JoinColumn(name = "organiser_id", referencedColumnName = "organiser_id")
-//    private EventOrganiser organiser;
-
     @Column(name = "event_name", nullable = false)
     private String eventName;
 
@@ -37,9 +33,5 @@ public class Event extends BaseEntity {
 
     @Column(name = "other_event_info")
     private String otherEventInfo;
-
-//    @Column(name = "event_image", columnDefinition = "VARCHAR[]")
-//    private String[] eventImage;
-    // Other methods
 }
 
