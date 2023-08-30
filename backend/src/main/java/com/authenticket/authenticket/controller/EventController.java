@@ -2,7 +2,7 @@ package com.authenticket.authenticket.controller;
 
 import com.authenticket.authenticket.dto.event.EventDto;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.service.event.EventService;
+import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +13,9 @@ import java.util.Optional;
 @RequestMapping("/api/event")
 
 public class EventController {
-    private final EventService eventService;
+    private final EventServiceImpl eventService;
 
-    public EventController(EventService eventService) {
+    public EventController(EventServiceImpl eventService) {
         this.eventService = eventService;
     }
 
