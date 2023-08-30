@@ -2,7 +2,6 @@ package com.authenticket.authenticket.dto.user;
 
 import com.authenticket.authenticket.model.User;
 import org.springframework.stereotype.Service;
-
 import java.util.function.Function;
 
 @Service

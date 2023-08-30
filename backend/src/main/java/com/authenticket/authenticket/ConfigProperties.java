@@ -8,9 +8,8 @@ public record ConfigProperties(
         String secretKey,
         String databaseId,
         String apiPort,
+        String S3BucketName,
         String smtpUsername,
         String smtpPassword
-
-
 ) {
 }
