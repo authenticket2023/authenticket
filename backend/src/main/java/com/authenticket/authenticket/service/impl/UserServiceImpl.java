@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.service.user;
+package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.repository.user.UserRepository;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserServiceImpl implements UserDetailsService {
 
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
     private final UserRepository userRepository;

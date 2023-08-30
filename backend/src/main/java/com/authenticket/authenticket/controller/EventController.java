@@ -2,19 +2,18 @@ package com.authenticket.authenticket.controller;
 
 import com.authenticket.authenticket.dto.event.EventDto;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.service.event.EventService;
-import lombok.RequiredArgsConstructor;
+import com.authenticket.authenticket.service.impl.EventServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/event")
-@RequiredArgsConstructor
 public class EventController {
-    private final EventService eventService;
+    @Autowired
+    private EventServiceImpl eventService;
 
     @GetMapping("/test")
     public String test() {

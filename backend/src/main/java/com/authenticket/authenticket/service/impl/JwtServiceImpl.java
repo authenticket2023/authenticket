@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.service.jwt;
+package com.authenticket.authenticket.service.impl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.function.Function;
 
 @Service
-public class JwtService {
+public class JwtServiceImpl {
     @Value("${authenticket.secret-key}")
     public String SECRET_KEY;
     public String extractUsername(String token) {
