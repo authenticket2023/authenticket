@@ -10,6 +10,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { grey } from '@mui/material/colors';
 import Container from '@mui/material';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
+import Cards from './Cards';
 
 export const Home = () => {
     useEffect(() => {
@@ -49,6 +52,9 @@ export const Home = () => {
         },
     }));
 
+    const cards = [
+        
+      ];
 
     return (
         <>
@@ -56,7 +62,7 @@ export const Home = () => {
                 < NavbarNotLoggedIn />
                 <Paper>
                 </Paper>
-                <Paper elevation={2}
+                <Paper elevation={24}
                     sx={{
                         position: 'relative',
                         backgroundColor: 'grey.800',
@@ -100,7 +106,7 @@ export const Home = () => {
                                 <br />
                                 <Search>
                                     <SearchIconWrapper>
-                                        <SearchIcon sx={{color: "#3b3b3b"}} />
+                                        <SearchIcon sx={{ color: "#3b3b3b" }} />
                                     </SearchIconWrapper>
                                     <StyledInputBase
                                         placeholder="Search…"
@@ -115,6 +121,66 @@ export const Home = () => {
                         </Grid>
                     </Grid>
                 </Paper>
+            </div>
+            <div>
+                <Carousel
+                    additionalTransfrom={0}
+                    arrows
+                    autoPlaySpeed={3000}
+                    centerMode={false}
+                    className=""
+                    containerClass="container"
+                    dotListClass=""
+                    draggable
+                    focusOnSelect={false}
+                    infinite
+                    itemClass=""
+                    keyBoardControl
+                    minimumTouchDrag={80}
+                    partialVisible
+                    pauseOnHover
+                    renderArrowsWhenDisabled={false}
+                    renderButtonGroupOutside={false}
+                    renderDotsOutside={false}
+                    responsive={{
+                        desktop: {
+                            breakpoint: {
+                                max: 3000,
+                                min: 1024
+                            },
+                            items: 3,
+                            partialVisibilityGutter: 40
+                        },
+                        mobile: {
+                            breakpoint: {
+                                max: 464,
+                                min: 0
+                            },
+                            items: 1,
+                            partialVisibilityGutter: 30
+                        },
+                        tablet: {
+                            breakpoint: {
+                                max: 1024,
+                                min: 464
+                            },
+                            items: 2,
+                            partialVisibilityGutter: 30
+                        }
+                    }}
+                    rewind={false}
+                    rewindWithAnimation={false}
+                    rtl={false}
+                    shouldResetAutoplay
+                    showDots={false}
+                    sliderClass=""
+                    slidesToSlide={1}
+                    swipeable
+                >
+                    {cards.map((post) => (
+              <Cards key={post.title} post={post} />
+            ))}
+                </Carousel>
             </div>
         </>
     )
