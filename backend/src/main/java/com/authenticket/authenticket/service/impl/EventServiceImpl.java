@@ -6,6 +6,7 @@ import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
+import com.authenticket.authenticket.service.AmazonS3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +26,15 @@ public class EventServiceImpl {
 
     @Autowired
     private EventUpdateDtoMapper eventUpdateDtoMapper;
+
+    @Autowired
+    private AmazonS3Service amazonS3Service;
+
     public List<EventDisplayDto> findAllEvent() {
         return eventRepository.findAll()
                 .stream()
                 .map(eventDisplayDTOMapper)
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     public Optional<EventDisplayDto> findEventById(Integer eventId) {
@@ -37,8 +42,6 @@ public class EventServiceImpl {
     }
 
     public Event saveEvent(Event event) {
-
-
         return eventRepository.save(event);
     }
 
@@ -61,6 +64,10 @@ public class EventServiceImpl {
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
+            if(event.getDeletedAt()!=null){
+                return "event already deleted";
+            }
+
             event.setDeletedAt(LocalDateTime.now());
             eventRepository.save(event);
             return "event deleted successfully";
@@ -69,20 +76,28 @@ public class EventServiceImpl {
         return "error: event deleted unsuccessfully";
     }
 
-    public String removeEvent(Integer eventId){
+    public String removeEvent(Integer eventId) {
 
         Optional<Event> eventOptional = eventRepository.findById(eventId);
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
+            if (event.getEventImage() != null) {
+                try {
+                    amazonS3Service.deleteFile(event.getEventImage(), "event_images");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
             eventRepository.deleteById(eventId);
             return "event removed successfully";
         }
         return "error: event does not exist";
 
     }
-    
-    public Event approveEvent(Integer eventId, Integer adminId){
+
+    public Event approveEvent(Integer eventId, Integer adminId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
 
         if (eventOptional.isPresent()) {
@@ -92,4 +107,5 @@ public class EventServiceImpl {
             return event;
         }
         return null;
-}}
+    }
+}
