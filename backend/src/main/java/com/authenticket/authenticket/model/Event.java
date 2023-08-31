@@ -41,7 +41,8 @@ public class Event extends BaseEntity {
     private LocalDateTime ticketSaleDate;
 
     @Column(name = "approved_by")
-    private Boolean approved_by = false;
+    private Integer approvedBy = null;
+
 
 }
 

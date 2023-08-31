@@ -7,12 +7,16 @@ import java.util.*;
 public interface EventService {
 
     List<Event> findAllEvent();
-    Optional<Event> findById(Integer event_id);
+    Optional<Event> findById(Integer eventId);
     Event saveEvent (Event event);
     Event updateEvent (Event event);
 
     //updates deleted_at field with datetime, DOES NOT really remove the event
-    String deleteEvent (Integer event_id);
+    String deleteEvent (Integer eventId);
+    //actually removes the event
+    String removeEvent (Integer eventId);
 
-    String removeEvent (Integer event_id);
+    Event approveEvent (Integer eventId, Integer adminId);
+
+    Event rejectEvent (Integer eventId);
 }

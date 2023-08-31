@@ -1,19 +1,31 @@
 package com.authenticket.authenticket.controller;
 
-import com.authenticket.authenticket.dto.event.EventDto;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.dto.event.EventDisplayDto;
+import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.service.AmazonS3Service;
+import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/event")
-public class EventController {
+public class EventController extends Utility {
     @Autowired
     private EventServiceImpl eventService;
+
+    @Autowired
+    private AmazonS3Service amazonS3Service;
 
     @GetMapping("/test")
     public String test() {
@@ -21,28 +33,97 @@ public class EventController {
     }
 
     @GetMapping
-    public List<EventDto> findAllEvent() {
+    public List<EventDisplayDto> findAllEvent() {
         return eventService.findAllEvent();
     }
 
-    @GetMapping("/{event_id}")
-    public Optional<EventDto> findEventById(@PathVariable("event_id") Long event_id) {
-        return eventService.findById(event_id);
+    @GetMapping("/{eventId}")
+    public Optional<EventDisplayDto> findEventById(@PathVariable("eventId") Integer eventId) {
+        return eventService.findEventById(eventId);
     }
 
     @PostMapping
-    public Event saveEvent(@RequestBody Event event) {
-        return eventService.saveEvent(event);
+    public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
+                                       @RequestParam("eventName") String eventName,
+                                       @RequestParam(value = "eventDescription") String eventDescription,
+                                       @RequestParam(value = "eventDate") LocalDateTime eventDate,
+                                       @RequestParam(value = "eventLocation") String eventLocation,
+                                       @RequestParam(value = "otherEventInfo") String otherEventInfo,
+                                       @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate) {
+        String imageName;
+        Event savedEvent;
+        try {
+            //save event first without image name to get the event id
+            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null, ticketSaleDate, null);
+            savedEvent = eventService.saveEvent(newEvent);
+
+            //generating the file name with the extension
+            String fileExtension = getFileExtension(file.getContentType());
+            imageName = savedEvent.getEventId() + fileExtension;
+            //update event with image name and save to db again
+            savedEvent.setEventImage(imageName);
+            eventService.saveEvent(savedEvent);
+
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error saving event");
+        }
+
+
+        try {
+            amazonS3Service.uploadFile(file, imageName, "event_images");
+            // delete event from db if got error saving image
+        } catch (AmazonS3Exception e) {
+            eventService.deleteEvent(savedEvent.getEventId());
+            String errorCode = e.getErrorCode();
+            if ("AccessDenied".equals(errorCode)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied to Amazon S3");
+            } else if ("NoSuchBucket".equals(errorCode)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("S3 bucket not found");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during S3 interaction");
+            }
+        } catch (Exception e) {
+            eventService.deleteEvent(savedEvent.getEventId());
+            return ResponseEntity.badRequest().body("Error uploading event image");
+        }
+
+        return ResponseEntity.ok(savedEvent);
     }
 
     @PutMapping
-    public Event updateEvent(@RequestBody Event event) {
-        return eventService.updateEvent(event);
+    public ResponseEntity<?> updateEvent(@RequestParam("eventId") Integer eventId,
+                                         @RequestParam("eventName") String eventName,
+                                         @RequestParam(value = "eventDescription") String eventDescription,
+                                         @RequestParam(value = "eventDate") LocalDateTime eventDate,
+                                         @RequestParam(value = "eventLocation") String eventLocation,
+                                         @RequestParam(value = "otherEventInfo") String otherEventInfo,
+                                         @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate) {
+        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo,  ticketSaleDate);
+        Event event = eventService.updateEvent(eventUpdateDto);
+        if(event!= null){
+            return ResponseEntity.ok(event);
+        }
+        return ResponseEntity.badRequest().body("update not successfull");
+
+
+
     }
 
-    @DeleteMapping("/{event_id}")
-    public String deleteEvent(@PathVariable("event_id") Long event_id) {
-        return eventService.deleteEvent(event_id);
+    @PutMapping("/{eventId}")
+    public String deleteEvent(@PathVariable("eventId") Integer eventId) {
+        return eventService.deleteEvent(eventId);
     }
+
+    @DeleteMapping("/{eventId}")
+    public String removeEvent(@PathVariable("eventId") Integer eventId) {
+        return eventService.removeEvent(eventId);
+    }
+
+    @PutMapping("/approve")
+    public ResponseEntity<?> approveEvent(@RequestParam(value = "eventId") Integer eventId, @RequestParam(value = "approvedBy") Integer approvedBy) {
+        return ResponseEntity.ok(eventService.approveEvent(eventId, approvedBy));
+    }
+
 
 }
