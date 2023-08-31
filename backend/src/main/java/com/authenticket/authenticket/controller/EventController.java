@@ -121,8 +121,10 @@ public class EventController extends Utility {
         Event event = eventService.updateEvent(eventUpdateDto);
         if(event!= null){
             return ResponseEntity.ok(event);
+        } else{
+            return ResponseEntity.status(404).body("event not found, update not successful");
+
         }
-        return ResponseEntity.badRequest().body("update not successfull");
 
 
 
@@ -140,7 +142,13 @@ public class EventController extends Utility {
 
     @PutMapping("/approve")
     public ResponseEntity<?> approveEvent(@RequestParam(value = "eventId") Integer eventId, @RequestParam(value = "approvedBy") Integer approvedBy) {
-        return ResponseEntity.ok(eventService.approveEvent(eventId, approvedBy));
+        Event event = eventService.approveEvent(eventId, approvedBy);
+        if(event == null){
+            return ResponseEntity.status(404).body("update unsuccessful, event does not exist");
+        } else{
+            return ResponseEntity.ok(event);
+
+        }
     }
 
 

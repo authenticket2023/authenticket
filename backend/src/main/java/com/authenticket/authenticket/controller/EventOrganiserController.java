@@ -59,7 +59,7 @@ public class EventOrganiserController extends Utility {
 
             return ResponseEntity.ok(events);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("The organiser with ID %d does not have associated events.", organiserId));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId));
 
     }
 

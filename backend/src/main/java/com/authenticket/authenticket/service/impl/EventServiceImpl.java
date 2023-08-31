@@ -83,8 +83,9 @@ public class EventServiceImpl implements EventService {
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
+            String imageName = event.getEventImage();
             if (event.getEventImage() != null) {
-                    amazonS3Service.deleteFile(event.getEventImage(), "event_organiser_profile");
+                    amazonS3Service.deleteFile(imageName, "event_organiser_profile");
             }
             eventRepository.deleteById(eventId);
             return "event removed successfully";
