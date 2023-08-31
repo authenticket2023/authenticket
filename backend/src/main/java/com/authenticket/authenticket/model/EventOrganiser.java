@@ -3,7 +3,6 @@ package com.authenticket.authenticket.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +33,14 @@ public class EventOrganiser extends BaseEntity {
     private String description;
 
     @Column(name = "verified_by")
-    private Integer verifiedBy = null;
+    private Integer verifiedBy;
 
     @Column(name = "logo_image")
     private String logoImage;
 
-
-//    @OneToMany(mappedBy = "organiser_id")
-//    private List<Event> events = new ArrayList<>();
-
-
-
+    @OneToMany( mappedBy = "organiser")
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Event> events = new ArrayList<>();
 
 
 }

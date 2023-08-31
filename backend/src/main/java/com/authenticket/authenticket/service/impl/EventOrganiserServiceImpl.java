@@ -1,10 +1,11 @@
 package com.authenticket.authenticket.service.impl;
 
 
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDtoMapper;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDtoMapper;
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +39,16 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
                 .stream()
                 .map(eventOrganiserDisplayDtoMapper)
                 .collect(Collectors.toList());
+    }
+
+    public List<Event> findAllEventsByOrganiser(Integer organiserId){
+        EventOrganiser organiser = eventOrganiserRepository.findById(organiserId).orElse(null);
+
+        if (organiser != null) {
+            return organiser.getEvents();
+        }
+
+        return new ArrayList<>();
     }
 
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {
@@ -66,16 +78,16 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
 
         if (eventOrganiserOptional.isPresent()) {
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
-            if(eventOrganiser.getDeletedAt()!=null){
+            if (eventOrganiser.getDeletedAt() != null) {
                 return "event organiser already deleted";
             }
 
             eventOrganiser.setDeletedAt(LocalDateTime.now());
             eventOrganiserRepository.save(eventOrganiser);
-            return "event deleted successfully";
+            return "event organiser deleted successfully";
         }
 
-        return "error: event deleted unsuccessfully";
+        return "error: event organiser deleted unsuccessfully";
     }
 
     public String removeEventOrganiser(Integer organiserId) {
@@ -84,17 +96,17 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
 
         if (eventOrganiserOptional.isPresent()) {
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
-            if (eventOrganiser.getLogoImage() != null) {
-                try {
-                    amazonS3Service.deleteFile(eventOrganiser.getLogoImage(), "event_organiser_profile");
-                } catch (Exception e) {
-                    e.printStackTrace();
+            String logoImage = eventOrganiser.getLogoImage();
+
+                eventOrganiserRepository.deleteById(organiserId);
+                if (logoImage != null) {
+                    amazonS3Service.deleteFile(logoImage, "event_organiser_profile");
                 }
-            }
-            eventOrganiserRepository.deleteById(organiserId);
-            return "event removed successfully";
+
+
+            return "event organiser removed successfully";
         }
-        return "error: event does not exist";
+        return "error: event organiser does not exist";
 
     }
 

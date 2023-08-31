@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,8 +42,16 @@ public class Event extends BaseEntity {
     private LocalDateTime ticketSaleDate;
 
     @Column(name = "approved_by")
-    private Integer approvedBy = null;
+    private Integer approvedBy;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
 
+    @JoinColumn(name = "organiser_id",nullable = false)
+    private EventOrganiser organiser;
+//
+//
+//    public Event(Integer eventId, String eventName, String eventDescription, LocalDateTime eventDate, String eventLocation, String otherEventInfo, String eventImage, LocalDateTime ticketSaleDate, EventOrganiser eventOrganiser) {
+//    }
 }
 

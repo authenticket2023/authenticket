@@ -4,18 +4,21 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.model.EventOrganiser;
 
 import com.authenticket.authenticket.service.impl.EventOrganiserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +52,17 @@ public class EventOrganiserController extends Utility {
 
     }
 
+    @GetMapping("/events/{organiserId}")
+    public ResponseEntity<?> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId) {
+        List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
+        if(!events.isEmpty()){
+
+            return ResponseEntity.ok(events);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("The organiser with ID %d does not have associated events.", organiserId));
+
+    }
+
     @PostMapping
     public ResponseEntity<?> saveEventOrganiser(@RequestParam("file") MultipartFile file,
                                                 @RequestParam("name") String name,
@@ -60,7 +74,7 @@ public class EventOrganiserController extends Utility {
         EventOrganiser savedEventOrganiser;
         try {
             //save eventOrganiser first without image name to get the eventOrganiser id
-            EventOrganiser newEventOrganiser = new EventOrganiser(null, name, password, email, description,verifiedBy,null);
+            EventOrganiser newEventOrganiser = new EventOrganiser(null, name, password, email, description,verifiedBy,null,null);
             savedEventOrganiser = eventOrganiserService.saveEventOrganiser(newEventOrganiser);
 
             //generating the file name with the extension
@@ -118,8 +132,15 @@ public class EventOrganiserController extends Utility {
     }
 
     @DeleteMapping("/{organiserId}")
-    public String removeEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
-        return eventOrganiserService.removeEventOrganiser(organiserId);
+    public ResponseEntity<?> removeEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
+        try{
+        return ResponseEntity.ok(eventOrganiserService.removeEventOrganiser(organiserId));}
+        catch(DataIntegrityViolationException e){
+            return ResponseEntity.status(409).body(String.format("The organiser with ID %d cannot be deleted because it has associated events.", organiserId));
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getClass());
+        }
     }
 
     @PutMapping("/verify")

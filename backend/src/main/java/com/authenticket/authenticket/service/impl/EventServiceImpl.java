@@ -43,7 +43,7 @@ public class EventServiceImpl implements EventService {
     }
 
     public Event saveEvent(Event event) {
-        return eventRepository.save(event);
+     return eventRepository.save(event);
     }
 
     public Event updateEvent(EventUpdateDto eventUpdateDto) {
@@ -74,7 +74,7 @@ public class EventServiceImpl implements EventService {
             return "event deleted successfully";
         }
 
-        return "error: event deleted unsuccessfully";
+        return "error: event deleted unsuccessfully, event might not exist";
     }
 
     public String removeEvent(Integer eventId) {
@@ -84,12 +84,7 @@ public class EventServiceImpl implements EventService {
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             if (event.getEventImage() != null) {
-                try {
-                    amazonS3Service.deleteFile(event.getEventImage(), "event_images");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                    amazonS3Service.deleteFile(event.getEventImage(), "event_organiser_profile");
             }
             eventRepository.deleteById(eventId);
             return "event removed successfully";

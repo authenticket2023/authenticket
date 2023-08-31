@@ -5,10 +5,13 @@ import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.model.EventOrganiser;
+import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,9 @@ public class EventController extends Utility {
 
     @Autowired
     private AmazonS3Service amazonS3Service;
+
+    @Autowired
+    private EventOrganiserRepository eventOrganiserRepository;
 
     @GetMapping("/test")
     public String test() {
@@ -55,12 +61,15 @@ public class EventController extends Utility {
                                        @RequestParam(value = "eventDate") LocalDateTime eventDate,
                                        @RequestParam(value = "eventLocation") String eventLocation,
                                        @RequestParam(value = "otherEventInfo") String otherEventInfo,
-                                       @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate) {
+                                       @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate,
+                                       @RequestParam(value = "organiserId") Integer organiserId) {
         String imageName;
         Event savedEvent;
+        EventOrganiser eventOrganiser = eventOrganiserRepository.findById(organiserId).orElse(null);
+
         try {
             //save event first without image name to get the event id
-            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null, ticketSaleDate, null);
+            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null, ticketSaleDate, null, eventOrganiser);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -71,8 +80,11 @@ public class EventController extends Utility {
             eventService.saveEvent(savedEvent);
 
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving event");
+        }catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("Organiser does not exist in the database");
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body("error saving event");
         }
 
 
