@@ -64,6 +64,8 @@ public class AmazonS3Service {
             fileName = "event_images/" + imageName;
         } else if (fileType.equals("user_profile")){
             fileName = "user_profile/" + imageName ;
+        } else if (fileType.equals("event_organiser_profile")){
+            fileName = "event_organiser_profile/" + imageName ;
         } else {
             //exception handling
             return null;
@@ -85,6 +87,8 @@ public class AmazonS3Service {
             fileName = "event_images/" + imageName;
         } else if (fileType.equals("user_profile")){
             fileName = "user_profile/" + imageName;
+        } else if (fileType.equals("event_organiser_profile")){
+            fileName = "event_organiser_profile/" + imageName ;
         } else {
             //exception handling
             return null;

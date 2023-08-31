@@ -3,6 +3,7 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
@@ -38,8 +39,13 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/{eventId}")
-    public Optional<EventDisplayDto> findEventById(@PathVariable("eventId") Integer eventId) {
-        return eventService.findEventById(eventId);
+    public ResponseEntity<?> findEventById(@PathVariable("eventId") Integer eventId) {
+        Optional<EventDisplayDto> eventDisplayDtoOptional = eventService.findEventById(eventId);
+        if(eventDisplayDtoOptional.isPresent()){
+            return ResponseEntity.ok(eventDisplayDtoOptional.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event Not Found");
+
     }
 
     @PostMapping

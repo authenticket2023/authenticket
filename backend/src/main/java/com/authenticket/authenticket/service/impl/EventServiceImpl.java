@@ -7,6 +7,7 @@ import com.authenticket.authenticket.dto.event.EventUpdateDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
+import com.authenticket.authenticket.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class EventServiceImpl {
+public class EventServiceImpl implements EventService {
 
     @Autowired
     private EventRepository eventRepository;
