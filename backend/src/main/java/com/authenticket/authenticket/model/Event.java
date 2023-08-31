@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_test", schema = "dev")
+@Table(name = "event", schema = "dev")
 @EqualsAndHashCode(callSuper = true)
 public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
-    private Long eventId;
+    private Integer eventId;
 
     @Column(name = "event_name", nullable = false)
     private String eventName;
@@ -33,5 +33,15 @@ public class Event extends BaseEntity {
 
     @Column(name = "other_event_info")
     private String otherEventInfo;
+
+    @Column(name = "event_image")
+    private String eventImage;
+
+    @Column(name = "ticket_sale_date")
+    private LocalDateTime ticketSaleDate;
+
+    @Column(name = "approved_by")
+    private Boolean approved_by = false;
+
 }
 

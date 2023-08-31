@@ -21,10 +21,6 @@ public class EventServiceImpl {
     @Autowired
     private EventDtoMapper eventDTOMapper;
 
-    public EventServiceImpl(EventRepository eventRepository, EventDtoMapper eventDTOMapper) {
-        this.eventRepository = eventRepository;
-        this.eventDTOMapper = eventDTOMapper;
-    }
 
     public List<EventDto> findAllEvent() {
         return eventRepository.findAll()
@@ -33,7 +29,7 @@ public class EventServiceImpl {
                         .collect(Collectors.toList());
     }
 
-    public Optional<EventDto> findById(Long event_id) {
+    public Optional<EventDto> findById(Integer event_id) {
         return eventRepository.findById(event_id).map(eventDTOMapper);
     }
 
@@ -45,7 +41,8 @@ public class EventServiceImpl {
         return eventRepository.save(event);
     }
 
-    public String deleteEvent(Long event_id) {
+
+    public String deleteEvent(Integer event_id) {
         Optional<Event> eventOptional = eventRepository.findById(event_id);
 
         if (eventOptional.isPresent()) {
@@ -56,5 +53,18 @@ public class EventServiceImpl {
         }
 
         return "error: event deleted unsuccessfully";
+    }
+
+    public String removeEvent(Integer event_id){
+
+        Optional<Event> eventOptional = eventRepository.findById(event_id);
+
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            eventRepository.deleteById(event_id);
+            return "event removed successfully";
+        }
+        return "error: event does not exist";
+
     }
 }

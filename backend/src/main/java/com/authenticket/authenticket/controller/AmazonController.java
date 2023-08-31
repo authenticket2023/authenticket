@@ -18,22 +18,20 @@ public class AmazonController {
 
     @PostMapping("/uploadFile")
     public ResponseEntity<String>  fileUpload(@RequestParam(value = "file") MultipartFile file,
-                                              @RequestParam(value = "user") String user,
+                                              @RequestParam(value = "imageName") String imageName,
                                               @RequestParam(value = "file-type") String fileType){
-        return new ResponseEntity<> (service.uploadFile(file, user, fileType), HttpStatus.OK);
+        return new ResponseEntity<> (service.uploadFile(file, imageName, fileType), HttpStatus.OK);
     }
     @DeleteMapping("/deleteFile")
-    public ResponseEntity<String> fileDelete(@RequestParam(value = "name") String imageName,
-                                             @RequestParam(value = "user") String user,
+    public ResponseEntity<String> fileDelete(@RequestParam(value = "imageName") String imageName,
                                              @RequestParam(value = "file-type") String fileType) {
-        return new ResponseEntity<> (service.deleteFile(imageName, user, fileType), HttpStatus.OK);
+        return new ResponseEntity<> (service.deleteFile(imageName, fileType), HttpStatus.OK);
     }
 
     @GetMapping("/displayFile")
-    public ResponseEntity<String>  fileDisplay(@RequestParam(value = "name") String imageName,
-                                              @RequestParam(value = "user") String user,
+    public ResponseEntity<String>  fileDisplay(@RequestParam(value = "imageName") String imageName,
                                               @RequestParam(value = "file-type") String fileType){
-        return new ResponseEntity<> (service.displayFile(imageName, user, fileType), HttpStatus.OK);
+        return new ResponseEntity<> (service.displayFile(imageName, fileType), HttpStatus.OK);
     }
 
 }

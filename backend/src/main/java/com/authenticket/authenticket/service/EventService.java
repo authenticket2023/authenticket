@@ -7,8 +7,12 @@ import java.util.*;
 public interface EventService {
 
     List<Event> findAllEvent();
-    Optional<Event> findById(Long event_id);
+    Optional<Event> findById(Integer event_id);
     Event saveEvent (Event event);
     Event updateEvent (Event event);
-    String deleteEvent (Long event_id);
+
+    //updates deleted_at field with datetime, DOES NOT really remove the event
+    String deleteEvent (Integer event_id);
+
+    String removeEvent (Integer event_id);
 }
