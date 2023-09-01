@@ -7,43 +7,31 @@ import { Sheet } from '@mui/joy';
 import dayjs, { Dayjs } from 'dayjs';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-export function EventDetails(props: any) {
+export function EventDetails(props : any) {
 
-    useEffect(() => {
-    }, []);
-    //get today's date with format YYYY-MM-DD HH:mm:ss
-    const today = new Date(),
-        date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + today.getHours() + ':' + today.getHours() + ':' + today.getMinutes();
-
-    const [name, setName] = useState('');
-    const [eventDate, setEventDate] = React.useState<Dayjs>(dayjs(date));
-    const [saleDate, setSaleDate] = React.useState<Dayjs>(dayjs(date));
-    const [eventDescription, setEventDescription] = useState('');
-    const [otherInfo, setOtherInfo] = useState('');
-    const [ticketNumber, setTicketNumber] = useState(0);
-
-    const handleName = (event: any) => {
-        setName(event.target.value);
+    const handleEventName = (event: any) => {
+        props.setEventName(event.target.value);
     };
 
     const handleEventDescription = (event: any) => {
-        setEventDescription(event.target.value);
+        props.setEventDescription(event.target.value);
+        
     };
 
     const handleEventDate = (newDate: Dayjs | null) => {
-        setEventDate(dayjs(newDate))
+        props.setEventDate(dayjs(newDate))
     };
 
     const handleTicketNumber = (event: any) => {
-        setTicketNumber(event.target.value);
+        props.setTicketNumber(event.target.value);
     };
 
     const handleSaleDate = (newDate: Dayjs | null) => {
-        setSaleDate(dayjs(newDate))
+        props.setSaleDate(dayjs(newDate))
     };
 
     const handleOtherInfo = (event: any) => {
-        setOtherInfo(event.target.value);
+        props.setOtherInfo(event.target.value);
     };
 
 
@@ -59,19 +47,19 @@ export function EventDetails(props: any) {
                             required
                             label="Event name"
                             fullWidth
-                            value={name}
-                            onChange={handleName}
+                            value={props.eventName}
+                            onChange={handleEventName}
                         />
                     </Grid>
 
                     <Grid item xs={12} sm={4}>
-                        <BasicDatePicker onDateChange={handleEventDate} value={eventDate} label="Event Date" />
+                        <BasicDatePicker onDateChange={handleEventDate} value={dayjs(props.currentDateTime)} label="Event Date" />
                     </Grid>
 
                     <Grid item xs={12} sm={12}>
                         <TextareaAutosize minRows="7" onChange={handleEventDescription}
                             style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
-                            id='Description' className='StyledTextarea' value={eventDescription} placeholder="Event Description" />
+                            id='Description' className='StyledTextarea' value={props.eventDescription} placeholder="Event Description" />
                     </Grid>
                 </Grid>
                 <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
@@ -85,12 +73,12 @@ export function EventDetails(props: any) {
                             required
                             label="Number of Ticket Avaliable"
                             fullWidth
-                            value={ticketNumber}
+                            value={Number(props.ticketNumber)}
                             onChange={handleTicketNumber}
                         />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <BasicDatePicker onDateChange={handleSaleDate} value={saleDate} label="Ticket Sale Date" />
+                        <BasicDatePicker onDateChange={handleSaleDate} value={dayjs(props.currentDateTime)} label="Ticket Sale Date" />
                     </Grid>
                 </Grid>
 
@@ -101,7 +89,7 @@ export function EventDetails(props: any) {
                     <Grid item xs={12} sm={12}>
                         <TextareaAutosize minRows="7" onChange={handleOtherInfo}
                             style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
-                            className='StyledTextarea' value={otherInfo} placeholder="Other Event Info" />
+                            className='StyledTextarea' value={props.otherInfo} placeholder="Other Event Info" />
                     </Grid>
 
                 </Grid>
@@ -139,21 +127,15 @@ const artist = [
 
 export function VenueArtist(props: any) {
 
-    useEffect(() => {
-    }, []);
-
-    const [venue, setVenue] = useState('');
-    const [artistList, setartistList] = useState<string[]>([]);
-
     const handleVenue = (event: any) => {
-        setVenue(event.target.value);
+        props.setVenue(event.target.value);
     };
 
     const handleArtist = (event: any) => {
         const {
             target: { value },
         } = event;
-        setartistList(
+        props.setartistList(
             // On autofill we get a stringified value.
             typeof value === 'string' ? value.split(',') : value,
         );
@@ -172,7 +154,7 @@ export function VenueArtist(props: any) {
                             <FormControl fullWidth>
                                 <InputLabel>Event Venue</InputLabel>
                                 <Select
-                                    value={venue}
+                                    value={props.venue}
                                     label="Event Venue"
                                     onChange={handleVenue}
                                 >
@@ -202,7 +184,7 @@ export function VenueArtist(props: any) {
                             <InputLabel >Artist</InputLabel>
                             <Select
                                 multiple
-                                value={artistList}
+                                value={props.artistList}
                                 onChange={handleArtist}
                                 input={<OutlinedInput label="Artist" />}
                                 renderValue={(selected) => selected.join(', ')}
@@ -210,7 +192,7 @@ export function VenueArtist(props: any) {
                             >
                                 {artist.map((artist) => (
                                     <MenuItem key={artist} value={artist}>
-                                        <Checkbox checked={artistList.indexOf(artist) > -1} />
+                                        <Checkbox checked={props.artistList.indexOf(artist) > -1} />
                                         <ListItemText primary={artist} />
                                     </MenuItem>
                                 ))}
@@ -230,11 +212,10 @@ export function EventPoster(props: any) {
     useEffect(() => {
     }, []);
 
-    const [selectedFiles, setSelectedFiles] = useState([]);
     const handleFileChange = (event: any) => {
         // Get the selected files from the input
         const files = event.target.files;
-        setSelectedFiles(Array.from(files));
+        props.setSelectedFiles(Array.from(files));
     };
 
     return (
@@ -267,9 +248,9 @@ export function EventPoster(props: any) {
                 <Grid item xs={6}>
                     <Grid container spacing={2} sx={{ marginLeft: 2 }}>
                         <Grid item xs={12}></Grid>
-                        {selectedFiles.length > 0 && (
+                        {props.selectedFiles.length > 0 && (
                             <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
-                                {selectedFiles.map((file, index) => (
+                                {props.selectedFiles.map((file:any, index:any) => (
                                     <ImageListItem key={index}>
                                         <img
                                             src={`${URL.createObjectURL(file)}?w=164&h=164&fit=crop&auto=format`}

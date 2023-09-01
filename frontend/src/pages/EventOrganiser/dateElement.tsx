@@ -24,7 +24,6 @@ export default function BasicDatePicker({ onDateChange, value, label }: BasicDat
         label={label}
         format="YYYY-MM-DD HH:mm:ss"
         value={value}
-
         disablePast
         onChange={handleDatePickerChange} 
       />
