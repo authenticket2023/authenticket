@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { NavbarNotLoggedIn } from '../../Navbar';
+import { NavbarNotLoggedIn, NavbarOrganiser, NavbarAdmin } from '../../Navbar';
 
 export const Home = () => {
     useEffect(() => {
@@ -9,6 +9,8 @@ export const Home = () => {
     return (
         <div>
             < NavbarNotLoggedIn />
+            < NavbarOrganiser />
+            < NavbarAdmin />
             <h1>
                 Home Page under construction ...
             </h1>

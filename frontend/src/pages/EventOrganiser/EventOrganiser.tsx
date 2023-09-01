@@ -92,9 +92,6 @@ export const EventOrganiser = () => {
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
-                            <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
-                                Step {activeStep + 1}
-                            </Typography>
                             {activeStep == 0 ? <EventDetails /> : null}
                             {activeStep == 1 ? <VenueArtist /> : null}
                             {activeStep == 2 ? <EventPoster /> : null}
