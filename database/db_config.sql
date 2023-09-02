@@ -18,9 +18,9 @@ CREATE TABLE dev.App_User (
     user_created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     profile_image VARCHAR(255),
 	enabled BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(6)
 );
 
 CREATE TABLE dev.Admin (
@@ -35,13 +35,13 @@ CREATE TABLE dev.Event_Organiser (
     name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT,
+    description VARCHAR(255),
     verified_by INTEGER REFERENCES dev.Admin(admin_id),
     logo_image VARCHAR(255),
 	enabled BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(6)
 );
 
 CREATE TABLE dev.Venue (
@@ -49,18 +49,18 @@ CREATE TABLE dev.Venue (
     venue_name VARCHAR(255) NOT NULL,
     venue_location VARCHAR(255) NOT NULL,
     venue_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(6)
 );
 
 CREATE TABLE dev.Artist (
     artist_id SERIAL PRIMARY KEY,
     artist_name VARCHAR(255) NOT NULL,
     artist_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(6)
 );
 
 CREATE TABLE dev.Event (
@@ -68,18 +68,18 @@ CREATE TABLE dev.Event (
     organiser_id INTEGER REFERENCES dev.Event_Organiser(organiser_id),
     venue_id INTEGER REFERENCES dev.Venue(venue_id),
     event_name VARCHAR(255) NOT NULL,
-    event_description TEXT,
+    event_description VARCHAR(255),
     event_date TIMESTAMP NOT NULL,
     event_location VARCHAR(255),
-    other_event_info TEXT,
+    other_event_info VARCHAR(255),
     total_tickets INTEGER,
     total_tickets_sold INTEGER,
     event_image VARCHAR(255),
     ticket_sale_date TIMESTAMP,
     approved_by INTEGER REFERENCES dev.Admin(admin_id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(6)
     CONSTRAINT positive_total_tickets CHECK (total_tickets >= 0),
     CONSTRAINT positive_total_tickets_sold CHECK (total_tickets_sold >= 0),
     CONSTRAINT positive_date CHECK (ticket_sale_date >= created_at)
@@ -95,9 +95,9 @@ CREATE TABLE dev.Notification (
     event_id INTEGER REFERENCES dev.Event(event_id),
     notification_type VARCHAR(255)  NOT NULL,
     message VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP
+    created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(6)
 );
 
 CREATE TABLE dev.Ticket_Categories (
