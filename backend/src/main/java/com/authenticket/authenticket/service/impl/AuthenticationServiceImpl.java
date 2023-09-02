@@ -47,7 +47,7 @@ public class AuthenticationServiceImpl {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .date_of_birth(request.getDate_of_birth())
+                .dateOfBirth(request.getDateOfBirth())
                 .enabled(false)
                 //role of user to take note of
                 .build();

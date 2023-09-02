@@ -6,8 +6,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Data
 @Builder
@@ -15,13 +17,13 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "app_user", schema = "dev")
-public class User extends BaseEntity implements UserDetails{
+@Table(name = "Admin", schema = "dev")
+public class Admin extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
     )
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "admin_id", nullable = false)
     private int userId;
     @Column(name = "name", nullable = false)
     private String name;
@@ -29,17 +31,11 @@ public class User extends BaseEntity implements UserDetails{
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "date_of_birth", nullable = false)
-    private LocalDate dateOfBirth;
-    @Column(name = "profile_image")
-    private String profileImage;
-    @Column(name = "enabled")
-    private Boolean enabled = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority("USER");
+                new SimpleGrantedAuthority("ADMIN");
         return Collections.singletonList(authority);
     }
 
@@ -55,25 +51,25 @@ public class User extends BaseEntity implements UserDetails{
 
     @Override
     public boolean isAccountNonExpired() {
-        return enabled;
+        return false;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return enabled;
+        return false;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return enabled;
+        return false;
     }
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
 
-//    @OneToMany(mappedBy = "user")
-//    private List<Ticket> tickets = new ArrayList<>();
-}
+    @OneToMany(mappedBy = "admin")
+    private List<EventOrganiser> eventOrganiser = new ArrayList<>();
 
+}
