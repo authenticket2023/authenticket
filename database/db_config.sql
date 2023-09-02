@@ -72,9 +72,17 @@ CREATE TABLE dev.Event (
     event_date TIMESTAMP NOT NULL,
     event_location VARCHAR(255),
     other_event_info TEXT,
+    total_tickets INTEGER,
+    total_tickets_sold INTEGER,
+    event_image VARCHAR(255),
+    ticket_sale_date TIMESTAMP,
+    approved_by INTEGER REFERENCES dev.Admin(admin_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
+    CONSTRAINT positive_total_tickets CHECK (total_tickets >= 0),
+    CONSTRAINT positive_total_tickets_sold CHECK (total_tickets_sold >= 0),
+    CONSTRAINT positive_date CHECK (ticket_sale_date >= created_at)
 );
 
 CREATE TABLE dev.Artist_Event (
