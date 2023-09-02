@@ -1,8 +1,13 @@
 DROP TABLE IF EXISTS dev.Ticket;
 DROP TABLE IF EXISTS dev.Ticket_Categories;
+DROP TABLE IF EXISTS dev.Notification;
+DROP TABLE IF EXISTS dev.Artist_Event;
 DROP TABLE IF EXISTS dev.Event;
+DROP TABLE IF EXISTS dev.Artist;
+DROP TABLE IF EXISTS dev.Venue;
 DROP TABLE IF EXISTS dev.Event_Organiser;
 DROP TABLE IF EXISTS dev.App_User;
+DROP TABLE IF EXISTS dev.Admin;
 
 CREATE TABLE dev.App_User (
     user_id SERIAL PRIMARY KEY,
@@ -17,11 +22,12 @@ CREATE TABLE dev.App_User (
     deleted_at TIMESTAMP
 );
 
-CREATE TABLE dev.Admin {
+CREATE TABLE dev.Admin (
     admin_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    
-}
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE
+);
 
 CREATE TABLE dev.Event_Organiser (
     organiser_id SERIAL PRIMARY KEY,
@@ -29,8 +35,27 @@ CREATE TABLE dev.Event_Organiser (
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
-    verified BOOLEAN,
+    verified_by INTEGER REFERENCES dev.Admin(admin_id),
     logo_image VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+CREATE TABLE dev.Venue (
+    venue_id SERIAL PRIMARY KEY,
+    venue_name VARCHAR(255) NOT NULL,
+    venue_location VARCHAR(255) NOT NULL,
+    venue_image VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+CREATE TABLE dev.Artist (
+    artist_id SERIAL PRIMARY KEY,
+    artist_name VARCHAR(255) NOT NULL,
+    artist_image VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
@@ -39,11 +64,27 @@ CREATE TABLE dev.Event_Organiser (
 CREATE TABLE dev.Event (
     event_id SERIAL PRIMARY KEY,
     organiser_id INTEGER REFERENCES dev.Event_Organiser(organiser_id),
+    venue_id INTEGER REFERENCES dev.Venue(venue_id),
     event_name VARCHAR(255) NOT NULL,
     event_description TEXT,
     event_date TIMESTAMP NOT NULL,
     event_location VARCHAR(255),
     other_event_info TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+CREATE TABLE dev.Artist_Event (
+    event_id INTEGER REFERENCES dev.Event(event_id),
+    artist_id INTEGER REFERENCES dev.Artist(artist_id)
+);
+
+CREATE TABLE dev.Notification (
+    notification_id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES dev.Event(event_id),
+    notification_type VARCHAR(255)  NOT NULL,
+    message VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
@@ -65,8 +106,3 @@ CREATE TABLE dev.Ticket (
     event_id INTEGER REFERENCES dev.Event(event_id),
     category_id INTEGER REFERENCES dev.Ticket_Categories(category_id)
 );
-
-
-
-
-
