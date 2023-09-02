@@ -36,6 +36,9 @@ public class EventOrganiser extends BaseEntity {
     @Column(name = "logo_image")
     private String logoImage;
 
+    @Column(name = "enabled")
+    private Boolean enabled = false;
+
     @OneToMany( mappedBy = "organiser")
 //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Event> events = new ArrayList<>();

@@ -24,7 +24,7 @@ public class Admin extends BaseEntity implements UserDetails {
             strategy = GenerationType.IDENTITY
     )
     @Column(name = "admin_id", nullable = false)
-    private int userId;
+    private Integer adminId;
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "email", nullable = false, unique = true)
@@ -71,5 +71,4 @@ public class Admin extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "admin")
     private List<EventOrganiser> eventOrganiser = new ArrayList<>();
-
 }

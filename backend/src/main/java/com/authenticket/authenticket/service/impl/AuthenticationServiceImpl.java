@@ -4,6 +4,7 @@ import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
+import com.authenticket.authenticket.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationServiceImpl {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${authenticket.api-port}")
     private String apiPort;

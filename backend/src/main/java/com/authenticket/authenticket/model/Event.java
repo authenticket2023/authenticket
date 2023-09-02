@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,13 +12,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_test", schema = "dev")
+@Table(name = "event", schema = "dev")
 @EqualsAndHashCode(callSuper = true)
 public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
-    private Long eventId;
+    private Integer eventId;
 
     @Column(name = "event_name", nullable = false)
     private String eventName;
@@ -33,5 +34,20 @@ public class Event extends BaseEntity {
 
     @Column(name = "other_event_info")
     private String otherEventInfo;
+
+    @Column(name = "event_image")
+    private String eventImage;
+
+    @Column(name = "ticket_sale_date")
+    private LocalDateTime ticketSaleDate;
+
+    @Column(name = "approved_by")
+    private Integer approvedBy;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+
+    @JoinColumn(name = "organiser_id",nullable = false)
+    private EventOrganiser organiser;
 }
 

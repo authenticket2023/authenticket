@@ -4,6 +4,7 @@ import com.authenticket.authenticket.dto.event.EventDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
+import com.authenticket.authenticket.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +14,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class EventServiceImpl {
+public class EventServiceImpl implements EventService {
 
+    @Autowired
+    private EventRepository eventRepository;
 
-    private final EventRepository eventRepository;
-
-    private final EventDtoMapper eventDTOMapper;
-
-    public EventServiceImpl(EventRepository eventRepository, EventDtoMapper eventDTOMapper) {
-        this.eventRepository = eventRepository;
-        this.eventDTOMapper = eventDTOMapper;
-    }
+    @Autowired
+    private EventDtoMapper eventDTOMapper;
 
     public List<EventDto> findAllEvent() {
         return eventRepository.findAll()

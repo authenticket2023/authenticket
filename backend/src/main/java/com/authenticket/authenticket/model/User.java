@@ -22,7 +22,7 @@ public class User extends BaseEntity implements UserDetails{
             strategy = GenerationType.IDENTITY
     )
     @Column(name = "user_id", nullable = false)
-    private int userId;
+    private Integer userId;
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "email", nullable = false, unique = true)
