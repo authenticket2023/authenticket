@@ -27,7 +27,10 @@ CREATE TABLE dev.Admin (
     admin_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE
+    email VARCHAR(255) NOT NULL UNIQUE,
+	created_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP(6)
 );
 
 CREATE TABLE dev.Event_Organiser (
