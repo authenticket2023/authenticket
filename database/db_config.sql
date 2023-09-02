@@ -17,6 +17,7 @@ CREATE TABLE dev.App_User (
     date_of_birth DATE NOT NULL,
     user_created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     profile_image VARCHAR(255),
+	enabled BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
@@ -37,6 +38,7 @@ CREATE TABLE dev.Event_Organiser (
     description TEXT,
     verified_by INTEGER REFERENCES dev.Admin(admin_id),
     logo_image VARCHAR(255),
+	enabled BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
