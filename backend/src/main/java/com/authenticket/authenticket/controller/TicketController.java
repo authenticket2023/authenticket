@@ -2,6 +2,7 @@ package com.authenticket.authenticket.controller;
 
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketUpdateDto;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.model.TicketCategory;
@@ -57,19 +58,12 @@ public class TicketController {
     public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Long userId,
                                        @RequestParam(value = "eventId") Integer eventId,
                                        @RequestParam(value = "categoryId") Integer categoryId) {
-        Ticket savedTicket;
-        try {
-            User user = userRepository.findById(userId).orElse(null);
-            Event event = eventRepository.findById(eventId).orElse(null);
-            TicketCategory ticketCategory = ticketCategoryRepository.findById(categoryId).orElse(null);
 
-            Ticket newTicket = new Ticket(null, user, event, ticketCategory);
-            savedTicket = ticketService.saveTicket(newTicket);
+        User user = userRepository.findById(userId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket: User not found"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket: Event not found"));
+        TicketCategory ticketCategory = ticketCategoryRepository.findById(categoryId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket: TicketCategory not found"));
 
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving ticket");
-        }
+        Ticket savedTicket = ticketService.saveTicket(new Ticket(null, user, event, ticketCategory));
 
         return ResponseEntity.ok(savedTicket);
     }

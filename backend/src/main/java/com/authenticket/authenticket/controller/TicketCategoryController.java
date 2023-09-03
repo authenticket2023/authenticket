@@ -2,6 +2,7 @@ package com.authenticket.authenticket.controller;
 
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDto;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.TicketCategory;
 import com.authenticket.authenticket.repository.EventRepository;
@@ -49,16 +50,9 @@ public class TicketCategoryController {
                                         @RequestParam(value = "name") String name,
                                         @RequestParam(value = "price") Double price,
                                         @RequestParam(value = "availableTickets") Integer availableTickets) {
-        TicketCategory savedTicketCategory;
-        try {
-            Event event = eventRepository.findById(eventId).orElse(null);
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket Category: Event not found"));
 
-            TicketCategory newTicketCategory = new TicketCategory(null, event, name, price, availableTickets);
-            savedTicketCategory = ticketCategoryService.saveTicketCategory(newTicketCategory);
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving ticket category");
-        }
+        TicketCategory savedTicketCategory = ticketCategoryService.saveTicketCategory(new TicketCategory(null, event, name, price, availableTickets));
 
         return ResponseEntity.ok(savedTicketCategory);
     }
