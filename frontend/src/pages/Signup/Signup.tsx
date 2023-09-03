@@ -13,6 +13,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import moment from 'moment';
 
 //image download
 import backgroundImage from '../../images/background.png';
@@ -43,21 +44,28 @@ const myTheme = createTheme({
 export function Signup() {
 
   let navigate = useNavigate();
-  //validation method
+
+  //validation methods
   const validateEmail = (email : any) => {
     // Regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
+  
+  const validateDob = (dob : any) => {
+    return dob < new Date(new Date().toDateString());
+  }
 
 
   //variables
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [dob, setDob] = useState('');
   //validation
   const [emailError, setEmailError] = useState(false);
   const [helperText, setHelperText] = useState('');
+  const [dobError, setDobError] = useState(false);
   //error , warning , info , success
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType] : any= useState('info');
@@ -73,31 +81,45 @@ export function Signup() {
   const handleName = (e: any) => {
     setName(e.target.value);
   }
+  const handleDob = (e: any) => {
+    moment(e, 'YYYY-MM-DD');
+    setDob(e);
+  }
 
   const signupHandler = async (event: any) => {
     event.preventDefault();
     if (!validateEmail(email)) {
       setEmailError(true);
-      setHelperText('Please enter a valid email address.');
+      setHelperText('Please enter a valid email address');
       return;
-    }else {
+    } else {
       setEmailError(false);
       setHelperText('');
     }
+    // if(!validateDob(dob)) {
+    //   setDobError(true);
+    //   setHelperText('Please enter a valid date of birth');
+    //   return;
+    // } else {
+    //   setDobError(false);
+    //   setHelperText('');
+    // }
+
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_PRODUCTION_URL}/User/signup`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/register`, {
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
       body: JSON.stringify({
+        "name": name,
         "email": email,
         "password": password,
-        "name": name,
+        "date_of_birth": dob,
       })
     })
       .then(async (response) => {
-        if (response.status != 200) {
+        if (response.status !== 200) {
           const signupResponse = await response.json();
           //show alert msg
           setOpenSnackbar(true);
@@ -106,7 +128,7 @@ export function Signup() {
         } else {
           setOpenSnackbar(true);
           setAlertType('success');
-          setAlertMsg(`Email ${email} sign up successfully! Redirecting to login page.`);
+          setAlertMsg(`Email ${email} sign up successful! An email will be sent shortly, please verify your account`);
           setTimeout(() => {
             navigate('/login');
           }, 2000);
@@ -177,10 +199,13 @@ export function Signup() {
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker 
                   label="Date of Birth"
+                  onChange={handleDob}
                   slotProps={{
                     textField: {
                     required: true,
                     fullWidth: true,
+                    error: dobError,
+                    helperText: helperText,
                     },
                   }}
                   />
