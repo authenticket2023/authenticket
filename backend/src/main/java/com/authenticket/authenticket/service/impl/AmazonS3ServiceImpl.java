@@ -31,6 +31,14 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
     @Value("${authenticket.S3-bucket-name}")
     private String bucketName;
 
+    public String generateUrl(String fileName, HttpMethod http){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MINUTE, 1);
+        URL url = amazonS3.generatePresignedUrl(bucketName, fileName, cal.getTime(), http);
+        return url.toString();
+    }
+
     private File convertMultiPartFileToFile (MultipartFile file){
         File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
         try (FileOutputStream fos = new FileOutputStream(convertFile)){
@@ -41,16 +49,21 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return convertFile;
     }
 
-    public String uploadFile(MultipartFile file, String user, String fileType){
+
+
+    public String uploadFile(MultipartFile file, String imageName, String fileType){
         if(!amazonS3.doesBucketExistV2(bucketName)){
             return "Bucket does not exist";
         }
 
+
         String fileName;
         if(fileType.equals("event_images")){
-            fileName = "event_images/" + user + file.getOriginalFilename();
+            fileName = "event_images/" + imageName;
         } else if (fileType.equals("user_profile")){
-            fileName = "user_profile/" + user + "_profile_pic";
+            fileName = "user_profile/" + imageName ;
+        } else if (fileType.equals("event_organiser_profile")){
+            fileName = "event_organiser_profile/" + imageName ;
         } else {
             //exception handling
             return null;
@@ -63,15 +76,17 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return "File upload: " +fileName;
     }
 
-    public String deleteFile(String imageName, String user, String fileType) {
+    public String deleteFile(String imageName, String fileType) {
         if(!amazonS3.doesBucketExistV2(bucketName)){
             return "Bucket does not exist";
         }
         String fileName;
         if(fileType.equals("event_images")){
-            fileName = "event_images/" + user + imageName;
+            fileName = "event_images/" + imageName;
         } else if (fileType.equals("user_profile")){
-            fileName = "user_profile/" + user + "_profile_pic";
+            fileName = "user_profile/" + imageName;
+        } else if (fileType.equals("event_organiser_profile")){
+            fileName = "event_organiser_profile/" + imageName ;
         } else {
             //exception handling
             return null;
@@ -80,18 +95,18 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return "File deleted: " +fileName;
     }
 
-    public String displayFile(String imageName, String user, String fileType) {
+    public String displayFile(String imageName, String fileType) {
         if(!amazonS3.doesBucketExistV2(bucketName)){
             return "Bucket does not exist";
         }
         String fileName;
         if(fileType.equals("event_images")){
-            fileName = "event_images/" + user + imageName;
+            fileName = "event_images/" + imageName;
         } else if (fileType.equals("user_profile")){
-            fileName = "user_profile/" + user + "_profile_pic";
+            fileName = "user_profile/" + imageName;
         } else {
             //exception handling
-            return null;
+            return "No Image Found";
         }
         return "https://authenticket.s3.ap-southeast-1.amazonaws.com/" +fileName;
     }

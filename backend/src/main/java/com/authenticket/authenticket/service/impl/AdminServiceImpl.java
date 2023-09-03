@@ -8,6 +8,9 @@ import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +18,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl implements AdminService, UserDetailsService {
+
+    private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
 
     @Autowired
     private EventOrganiserRepository eventOrganiserRepository;
@@ -61,5 +66,11 @@ public class AdminServiceImpl implements AdminService {
             return eventOrg;
         }
         return null;
+    }
+
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return adminRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        String.format(USER_NOT_FOUND_MSG, email)));
     }
 }
