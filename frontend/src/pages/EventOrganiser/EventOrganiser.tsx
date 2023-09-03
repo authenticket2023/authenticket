@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { EventDetails, VenueArtist, EventPoster } from './steps';
 import dayjs, { Dayjs } from 'dayjs';
+import { Alert, Snackbar } from '@mui/material';
 
 const steps = ['Event Details', 'Venue & Artist', 'Event Poster'];
 
@@ -35,7 +36,6 @@ export const EventOrganiser = () => {
         return completedSteps() === totalSteps();
     };
 
-    //TODO: need add validation
     const handleNext = () => {
         const newActiveStep =
             isLastStep() && !allStepsCompleted()
@@ -54,7 +54,9 @@ export const EventOrganiser = () => {
         setActiveStep(step);
     };
 
+    //TODO: need add validation
     const handleComplete = () => {
+        console.log(activeStep);
         const newCompleted = completed;
         newCompleted[activeStep] = true;
         setCompleted(newCompleted);
@@ -77,7 +79,7 @@ export const EventOrganiser = () => {
     const [eventDescription, setEventDescription] = useState('');
     const [otherInfo, setOtherInfo] = useState('');
     const [ticketNumber, setTicketNumber] = useState(0);
-    
+
     //for venue & artist
     const [venue, setVenue] = useState('');
     const [artistList, setartistList] = useState<string[]>([]);
@@ -88,8 +90,16 @@ export const EventOrganiser = () => {
 
     //for testing
     useEffect(() => {
-        console.log(eventName)
-    }, [eventName]);
+        console.log(currentDateTime)
+    }, []);
+
+    //for pop up message => error , warning , info , success
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
 
     return (
         <div>
@@ -118,32 +128,36 @@ export const EventOrganiser = () => {
                     ) : (
                         <React.Fragment>
 
-                            {activeStep == 0 ? <EventDetails 
-                            currentDateTime={currentDateTime}
-                            eventName={eventName}
-                            eventDescription={eventDescription}
-                            ticketNumber={ticketNumber}
-                            otherInfo={otherInfo}
-                            setEventName={setEventName} 
-                            setEventDescription={setEventDescription}
-                            setEventDate={setEventDate}
-                            setTicketNumber={setTicketNumber}
-                            setSaleDate={setSaleDate}
-                            setOtherInfo={setOtherInfo}/> 
-                            : null}
+                            {activeStep == 0 ? <EventDetails
+                                currentDateTime={currentDateTime}
+                                eventName={eventName}
+                                eventDate={eventDate}
+                                eventDescription={eventDescription}
+                                ticketNumber={ticketNumber}
+                                saleDate={saleDate}
+                                otherInfo={otherInfo}
+                                setEventName={setEventName}
+                                setEventDescription={setEventDescription}
+                                setEventDate={setEventDate}
+                                setTicketNumber={setTicketNumber}
+                                setSaleDate={setSaleDate}
+                                setOtherInfo={setOtherInfo}
+                                handleComplete={handleComplete} 
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
+                                : null}
 
-                            {activeStep == 1 ? <VenueArtist 
-                            venue={venue}
-                            otherVenue={otherVenue}
-                            artistList={artistList}
-                            setVenue={setVenue}
-                            setartistList={setartistList}
-                            setOtherVenue={setOtherVenue}
+                            {activeStep == 1 ? <VenueArtist
+                                venue={venue}
+                                otherVenue={otherVenue}
+                                artistList={artistList}
+                                setVenue={setVenue}
+                                setartistList={setartistList}
+                                setOtherVenue={setOtherVenue}
                             /> : null}
 
-                            {activeStep == 2 ? <EventPoster 
-                            selectedFiles={selectedFiles}
-                            setSelectedFiles={setSelectedFiles}
+                            {activeStep == 2 ? <EventPoster
+                                selectedFiles={selectedFiles}
+                                setSelectedFiles={setSelectedFiles}
                             /> : null}
 
                             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -165,17 +179,25 @@ export const EventOrganiser = () => {
                                             Step {activeStep + 1} already completed
                                         </Typography>
                                     ) : (
-                                        <Button onClick={handleComplete}>
-                                            {completedSteps() === totalSteps() - 1
-                                                ? 'Finish'
-                                                : 'Complete Step'}
-                                        </Button>
+                                        // <Button onClick={handleComplete}>
+                                        //     {completedSteps() === totalSteps() - 1
+                                        //         ? 'Finish'
+                                        //         : 'Complete Step'}
+                                        // </Button>
+                                        null
                                     ))}
                             </Box>
                         </React.Fragment>
                     )}
                 </div>
             </Box>
+
+            {/* success / error feedback */}
+            <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
         </div>
 
     );

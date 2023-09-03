@@ -13,7 +13,7 @@ interface BasicDatePickerProps {
   label: String;
 }
 
-export default function BasicDatePicker({ onDateChange, value, label }: BasicDatePickerProps) {
+export default function BasicDatePicker({ onDateChange, value, label}: BasicDatePickerProps) {
   const handleDatePickerChange = (newValue: Dayjs | null) => {
     onDateChange(newValue); // Call the parent's onDateChange prop directly here
   };

@@ -34,68 +34,91 @@ export function EventDetails(props: any) {
         props.setOtherInfo(event.target.value);
     };
 
+    const handleConfirm = (event: any) => {
+        event.preventDefault();
+        if (!(dayjs(props.eventDate).isAfter(dayjs(props.currentDateTime)) && dayjs(props.saleDate).isAfter(dayjs(props.currentDateTime)))) {
+            //show alert msg
+            props.setOpenSnackbar(true);
+            props.setAlertType('error');
+            props.setAlertMsg("Invlid event/sale date!!!");
+        } else if (props.ticketNumber == 0) {
+            //show alert msg
+            props.setOpenSnackbar(true);
+            props.setAlertType('error');
+            props.setAlertMsg("Invlid number of ticket avaliable cannot be 0!!!");
+        }
+        else {
+            //mean all the input is correct
+            props.handleComplete();
+        }
+    };
+
 
     return (
-        <Box sx={{ mt: 2 }}>
-            <Sheet>
-                <Typography variant="h6" gutterBottom sx={{ mb: 1 }}>
-                    Basic Information
-                </Typography>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={8}>
-                        <TextField
-                            required
-                            label="Event name"
-                            fullWidth
-                            value={props.eventName}
-                            onChange={handleEventName}
-                        />
+        <form onSubmit={(handleConfirm)}>
+            <Box sx={{ mt: 2 }}>
+                <Sheet>
+                    <Typography variant="h6" gutterBottom sx={{ mb: 1 }}>
+                        Basic Information
+                    </Typography>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={8}>
+                            <TextField
+                                required
+                                label="Event name"
+                                fullWidth
+                                value={props.eventName}
+                                onChange={handleEventName}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sm={4}>
+                            <BasicDatePicker onDateChange={handleEventDate} value={dayjs(props.eventDate)} label="Event Date" />
+                        </Grid>
+
+                        <Grid item xs={12} sm={12}>
+                            <TextareaAutosize required minRows="7" onChange={handleEventDescription}
+                                style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
+                                id='Description' className='StyledTextarea' value={props.eventDescription} placeholder="Event Description" />
+                        </Grid>
+                    </Grid>
+                    <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
+                        Ticket Information
+                    </Typography>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={8}>
+                            <TextField
+                                type='number'
+                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                required
+                                label="Number of Ticket Avaliable"
+                                fullWidth
+                                value={Number(props.ticketNumber)}
+                                onChange={handleTicketNumber}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <BasicDatePicker onDateChange={handleSaleDate} value={dayjs(props.saleDate)} label="Ticket Sale Date" />
+                        </Grid>
                     </Grid>
 
-                    <Grid item xs={12} sm={4}>
-                        <BasicDatePicker onDateChange={handleEventDate} value={dayjs(props.currentDateTime)} label="Event Date" />
-                    </Grid>
+                    <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
+                        Other Information
+                    </Typography>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={12}>
+                            <TextareaAutosize minRows="7" onChange={handleOtherInfo}
+                                style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
+                                className='StyledTextarea' value={props.otherInfo} placeholder="Other Event Info" />
+                        </Grid>
 
-                    <Grid item xs={12} sm={12}>
-                        <TextareaAutosize minRows="7" onChange={handleEventDescription}
-                            style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
-                            id='Description' className='StyledTextarea' value={props.eventDescription} placeholder="Event Description" />
                     </Grid>
-                </Grid>
-                <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
-                    Ticket Information
-                </Typography>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={8}>
-                        <TextField
-                            type='number'
-                            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                            required
-                            label="Number of Ticket Avaliable"
-                            fullWidth
-                            value={Number(props.ticketNumber)}
-                            onChange={handleTicketNumber}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <BasicDatePicker onDateChange={handleSaleDate} value={dayjs(props.currentDateTime)} label="Ticket Sale Date" />
-                    </Grid>
-                </Grid>
-
-                <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
-                    Other Information
-                </Typography>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={12}>
-                        <TextareaAutosize minRows="7" onChange={handleOtherInfo}
-                            style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
-                            className='StyledTextarea' value={props.otherInfo} placeholder="Other Event Info" />
-                    </Grid>
-
-                </Grid>
-            </Sheet>
-        </Box>
-
+                </Sheet>
+                <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
+                    <Button type='submit' fullWidth variant="contained" sx={{ p: 1.5, textTransform: "none", fontSize: "16px" }}>COMPLETE STEP</Button>
+                </Sheet>
+            </Box>
+        </form>
     )
 }
 
