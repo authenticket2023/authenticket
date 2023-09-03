@@ -70,7 +70,7 @@ export function Login() {
       setHelperText('');
     }
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_PRODUCTION_URL}/user/login`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/authenticate`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -88,18 +88,12 @@ export function Login() {
           const loginResponse = await response.json();
           const data = loginResponse.data;
           //pass the info to the local storage, so other page can access them
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('userName', data.name);
-          localStorage.setItem('accRole', data.accRole);
-          localStorage.setItem('linkedElderly', data.linkedElderly);
-          localStorage.setItem('profileImage', data.profileImage);
+          localStorage.setItem('accessToken', data.token);
           localStorage.setItem('email', data.email);
+          localStorage.setItem('username', data.name);
+          localStorage.setItem('dob', data.date_of_birth);
+          localStorage.setItem('profileImage', data.profile_image);
 
-          if (data.accRole == 'Admin') {
-            navigate('/home-admin');
-          } else {
-            navigate('/home');
-          }
         }
 
       })
