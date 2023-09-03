@@ -9,6 +9,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 
 //image download
 import backgroundImage from '../../images/background.png';
@@ -169,6 +173,19 @@ export function Signup() {
                 size="medium"
                 onChange={handleName}
               />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DatePicker']}>
+                  <DatePicker 
+                  label="Date of Birth"
+                  slotProps={{
+                    textField: {
+                    required: true,
+                    fullWidth: true,
+                    },
+                  }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
               <TextField
                 margin="normal"
                 required
@@ -204,11 +221,24 @@ export function Signup() {
               </Button>
               <Grid container>
                 <Grid item>
-                  <Link href="/logIn" variant="body2">
-                    {"Already have an account? Log In"}
-                  </Link>
+                  <Typography variant="body2" style={{color:'#858585'}}>
+                    Already have an account?{" "}
+                    <Link href="/logIn" variant="body2" style={{color:'#2E475D'}}>
+                      {"Log In"}
+                    </Link>
+                  </Typography>
                 </Grid>
               </Grid>
+
+              <Grid item>
+                  <Typography variant="body2" style={{color:'#858585'}}>
+                    Are you an organiser?{" "}
+                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
+                      {"Register here"}
+                    </Link>
+                  </Typography>
+                </Grid>
+
               <Copyright sx={{ mt: 5 }} />
 
               <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
