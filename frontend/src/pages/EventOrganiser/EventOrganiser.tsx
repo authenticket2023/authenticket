@@ -35,6 +35,7 @@ export const EventOrganiser = () => {
         return completedSteps() === totalSteps();
     };
 
+    //TODO: need add validation
     const handleNext = () => {
         const newActiveStep =
             isLastStep() && !allStepsCompleted()
@@ -80,14 +81,15 @@ export const EventOrganiser = () => {
     //for venue & artist
     const [venue, setVenue] = useState('');
     const [artistList, setartistList] = useState<string[]>([]);
+    const [otherVenue, setOtherVenue] = useState('');
 
     //for EventPoster
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     //for testing
     useEffect(() => {
-        console.log(selectedFiles)
-    }, [selectedFiles]);
+        console.log(eventName)
+    }, [eventName]);
 
     return (
         <div>
@@ -132,9 +134,11 @@ export const EventOrganiser = () => {
 
                             {activeStep == 1 ? <VenueArtist 
                             venue={venue}
+                            otherVenue={otherVenue}
                             artistList={artistList}
                             setVenue={setVenue}
                             setartistList={setartistList}
+                            setOtherVenue={setOtherVenue}
                             /> : null}
 
                             {activeStep == 2 ? <EventPoster 

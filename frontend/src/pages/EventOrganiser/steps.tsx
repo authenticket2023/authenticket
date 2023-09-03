@@ -7,7 +7,7 @@ import { Sheet } from '@mui/joy';
 import dayjs, { Dayjs } from 'dayjs';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-export function EventDetails(props : any) {
+export function EventDetails(props: any) {
 
     const handleEventName = (event: any) => {
         props.setEventName(event.target.value);
@@ -15,7 +15,7 @@ export function EventDetails(props : any) {
 
     const handleEventDescription = (event: any) => {
         props.setEventDescription(event.target.value);
-        
+
     };
 
     const handleEventDate = (newDate: Dayjs | null) => {
@@ -127,8 +127,22 @@ const artist = [
 
 export function VenueArtist(props: any) {
 
+    //to detect change on props.venue
+    useEffect(() => {
+        if (props.venue == 'Other') {
+            setShowOtherVenue(true);
+        } else {
+            setShowOtherVenue(false);
+        }
+    }, [props.venue]);
+
+    const [showOtherVenue, setShowOtherVenue] = useState(false);
     const handleVenue = (event: any) => {
         props.setVenue(event.target.value);
+    };
+
+    const handleOtherVenue = (event: any) => {
+        props.setOtherVenue(event.target.value);
     };
 
     const handleArtist = (event: any) => {
@@ -167,6 +181,17 @@ export function VenueArtist(props: any) {
                             </FormControl>
                         </Box>
                     </Grid>
+                    {showOtherVenue ?
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                required
+                                label="Other venue"
+                                fullWidth
+                                value={props.otherVenue}
+                                onChange={handleOtherVenue}
+                            />
+                        </Grid>
+                        : null}
                 </Grid>
 
                 <Grid container>
@@ -250,7 +275,7 @@ export function EventPoster(props: any) {
                         <Grid item xs={12}></Grid>
                         {props.selectedFiles.length > 0 && (
                             <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
-                                {props.selectedFiles.map((file:any, index:any) => (
+                                {props.selectedFiles.map((file: any, index: any) => (
                                     <ImageListItem key={index}>
                                         <img
                                             src={`${URL.createObjectURL(file)}?w=164&h=164&fit=crop&auto=format`}
