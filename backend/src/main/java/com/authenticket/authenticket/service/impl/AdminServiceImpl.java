@@ -2,7 +2,6 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
-import com.authenticket.authenticket.dto.admin.AdminUpdateDto;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.AdminRepository;
@@ -33,20 +32,20 @@ public class AdminServiceImpl implements AdminService {
                 .map(adminDtoMapper)
                 .collect(Collectors.toList());
     }
-    public Optional<AdminDisplayDto> findEventById(Integer adminId) {
+    public Optional<AdminDisplayDto> findById(Integer adminId) {
         return adminRepository.findById(adminId).map(adminDtoMapper);
     }
     public Admin saveAdmin(Admin admin){
         return adminRepository.save(admin);
     }
-    public Admin updateAdmin(AdminUpdateDto adminUpdateDto){
-        Optional<Admin> adminOptional = adminRepository.findById(adminUpdateDto.adminId());
+    public AdminDisplayDto updateAdmin(Admin newAdmin){
+        Optional<Admin> adminOptional = adminRepository.findByEmail(newAdmin.getEmail());
 
         if(adminOptional.isPresent()){
             Admin existingAdmin = adminOptional.get();
-            adminDtoMapper.update(adminUpdateDto, existingAdmin);
+            adminDtoMapper.update(newAdmin, existingAdmin);
             adminRepository.save(existingAdmin);
-            return existingAdmin;
+            return adminDtoMapper.apply(existingAdmin);
         }
 
         return null;

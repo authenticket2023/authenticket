@@ -10,17 +10,17 @@ public class AdminDtoMapper implements Function<Admin, AdminDisplayDto> {
     public AdminDisplayDto apply(Admin admin) {
         return new AdminDisplayDto(
                 admin.getAdminId(),
-                admin.getUsername(),
+                admin.getName(),
                 admin.getEmail()
         );
     }
 
-    public void update(AdminUpdateDto dto, Admin admin){
-        if(dto.name() != null){
-            admin.setName(dto.name());
+    public void update(Admin newAdmin, Admin oldAdmin){
+        if(newAdmin.getName() != null){
+            oldAdmin.setName(newAdmin.getName());
         }
-        if(dto.password() != null){
-            admin.setPassword(dto.password());
+        if(newAdmin.getPassword() != null){
+            oldAdmin.setPassword(newAdmin.getPassword());
         }
     }
 }
