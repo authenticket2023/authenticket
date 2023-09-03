@@ -46,8 +46,7 @@ export function EventDetails(props: any) {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Invlid number of ticket avaliable cannot be 0!!!");
-        }
-        else {
+        } else {
             //mean all the input is correct
             props.handleComplete();
         }
@@ -178,80 +177,92 @@ export function VenueArtist(props: any) {
         );
     };
 
+    const handleConfirm = (event: any) => {
+        event.preventDefault();
+        props.handleComplete();
+    };
+
     return (
-        <Box sx={{ mt: 2 }}>
-            {/* Venue */}
-            <Sheet sx={{ marginTop: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
-                    Veneue
-                </Typography>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={4}>
-                        <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth>
-                                <InputLabel>Event Venue</InputLabel>
+        <form onSubmit={handleConfirm}>
+
+            <Box sx={{ mt: 2 }}>
+                {/* Venue */}
+                <Sheet sx={{ marginTop: 2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
+                        Veneue
+                    </Typography>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={4}>
+                            <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Event Venue</InputLabel>
+                                    <Select
+                                        value={props.venue}
+                                        label="Event Venue"
+                                        onChange={handleVenue}
+                                        required
+                                    >
+                                        <MenuItem value={"Venue 1"}>Venue 1</MenuItem>
+                                        <MenuItem value={"Venue 2"}>Venue 2</MenuItem>
+                                        <MenuItem value={"Venue 3"}>Venue 3</MenuItem>
+                                        <MenuItem value={"Venue 4"}>Venue 4</MenuItem>
+                                        <MenuItem value={"Other"}>Other</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        </Grid>
+                        {showOtherVenue ?
+                            <Grid item xs={12} sm={4}>
+                                <TextField
+                                    required
+                                    label="Other venue"
+                                    fullWidth
+                                    value={props.otherVenue}
+                                    onChange={handleOtherVenue}
+                                />
+                            </Grid>
+                            : null}
+                    </Grid>
+
+                    <Grid container>
+                        <Typography> Here will show 3D</Typography>
+                    </Grid>
+                </Sheet>
+                {/* Artist */}
+                <Sheet sx={{ marginTop: 2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
+                        Artist
+                    </Typography>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={9}>
+                            <FormControl sx={{}} fullWidth>
+                                <InputLabel >Artist</InputLabel>
                                 <Select
-                                    value={props.venue}
-                                    label="Event Venue"
-                                    onChange={handleVenue}
+                                    required
+                                    multiple
+                                    value={props.artistList}
+                                    onChange={handleArtist}
+                                    input={<OutlinedInput label="Artist" />}
+                                    renderValue={(selected) => selected.join(', ')}
+                                    MenuProps={MenuProps}
                                 >
-                                    <MenuItem value={"Venue 1"}>Venue 1</MenuItem>
-                                    <MenuItem value={"Venue 2"}>Venue 2</MenuItem>
-                                    <MenuItem value={"Venue 3"}>Venue 3</MenuItem>
-                                    <MenuItem value={"Venue 4"}>Venue 4</MenuItem>
-                                    <MenuItem value={"Other"}>Other</MenuItem>
+                                    {artist.map((artist) => (
+                                        <MenuItem key={artist} value={artist}>
+                                            <Checkbox checked={props.artistList.indexOf(artist) > -1} />
+                                            <ListItemText primary={artist} />
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
-                        </Box>
-                    </Grid>
-                    {showOtherVenue ?
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                required
-                                label="Other venue"
-                                fullWidth
-                                value={props.otherVenue}
-                                onChange={handleOtherVenue}
-                            />
                         </Grid>
-                        : null}
-                </Grid>
-
-                <Grid container>
-                    <Typography> Here will show 3D</Typography>
-                </Grid>
-            </Sheet>
-            {/* Artist */}
-            <Sheet sx={{ marginTop: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
-                    Artist
-                </Typography>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={9}>
-                        <FormControl sx={{}} fullWidth>
-                            <InputLabel >Artist</InputLabel>
-                            <Select
-                                multiple
-                                value={props.artistList}
-                                onChange={handleArtist}
-                                input={<OutlinedInput label="Artist" />}
-                                renderValue={(selected) => selected.join(', ')}
-                                MenuProps={MenuProps}
-                            >
-                                {artist.map((artist) => (
-                                    <MenuItem key={artist} value={artist}>
-                                        <Checkbox checked={props.artistList.indexOf(artist) > -1} />
-                                        <ListItemText primary={artist} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
                     </Grid>
-                </Grid>
 
+                </Sheet>
+            </Box>
+            <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
+                <Button type='submit' fullWidth variant="contained" sx={{ p: 1.5, textTransform: "none", fontSize: "16px" }}>COMPLETE STEP</Button>
             </Sheet>
-        </Box>
-
+        </form>
     )
 }
 
@@ -266,55 +277,71 @@ export function EventPoster(props: any) {
         props.setSelectedFiles(Array.from(files));
     };
 
-    return (
-        <Box sx={{ mt: 2 }}>
-            <Grid container spacing={2}>
-                <Grid item xs={6} sx={{}}>
-                    <Grid container spacing={2} sx={{}}>
-                        <Grid item xs={12}>
+    const handleConfirm = (event: any) => {
+        event.preventDefault();
+        if (props.selectedFiles.length == 0) {
+            //show alert msg
+            props.setOpenSnackbar(true);
+            props.setAlertType('error');
+            props.setAlertMsg("Need at least one event poster!!!");
+        } else {
+            props.handleComplete();
+        }
+    };
 
-                            <Button
-                                variant="outlined"
-                                component="label"
-                                sx={{ marginBottom: 2 }}
-                                size='large'
-                                startIcon={<CloudUploadIcon />}
-                                fullWidth
-                            >
-                                Upload Event Poster
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleFileChange}
-                                    accept="image/*"
-                                    multiple
-                                />
-                            </Button>
+    return (
+        <form onSubmit={handleConfirm}>
+            <Box sx={{ mt: 2 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={6} sx={{}}>
+                        <Grid container spacing={2} sx={{}}>
+                            <Grid item xs={12}>
+
+                                <Button
+                                    variant="outlined"
+                                    component="label"
+                                    sx={{ marginBottom: 2 }}
+                                    size='large'
+                                    startIcon={<CloudUploadIcon />}
+                                    fullWidth
+                                >
+                                    Upload Event Poster
+                                    <input
+                                        type="file"
+                                        hidden
+                                        onChange={handleFileChange}
+                                        accept="image/*"
+                                        multiple
+                                    />
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Grid container spacing={2} sx={{ marginLeft: 2 }}>
+                            <Grid item xs={12}></Grid>
+                            {props.selectedFiles.length > 0 && (
+                                <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
+                                    {props.selectedFiles.map((file: any, index: any) => (
+                                        <ImageListItem key={index}>
+                                            <img
+                                                src={`${URL.createObjectURL(file)}?w=164&h=164&fit=crop&auto=format`}
+                                                srcSet={`${URL.createObjectURL(file)}`}
+                                                alt={`Selected ${index + 1}`}
+                                                loading="lazy"
+                                            />
+                                        </ImageListItem>
+                                    ))}
+                                </ImageList>
+
+                            )}
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                    <Grid container spacing={2} sx={{ marginLeft: 2 }}>
-                        <Grid item xs={12}></Grid>
-                        {props.selectedFiles.length > 0 && (
-                            <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
-                                {props.selectedFiles.map((file: any, index: any) => (
-                                    <ImageListItem key={index}>
-                                        <img
-                                            src={`${URL.createObjectURL(file)}?w=164&h=164&fit=crop&auto=format`}
-                                            srcSet={`${URL.createObjectURL(file)}`}
-                                            alt={`Selected ${index + 1}`}
-                                            loading="lazy"
-                                        />
-                                    </ImageListItem>
-                                ))}
-                            </ImageList>
-
-                        )}
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Box>
-
+            </Box>
+            <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
+                <Button type='submit' fullWidth variant="contained" sx={{ p: 1.5, textTransform: "none", fontSize: "16px" }}>COMPLETE STEP</Button>
+            </Sheet>
+        </form>
     )
 }

@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { EventDetails, VenueArtist, EventPoster } from './steps';
 import dayjs, { Dayjs } from 'dayjs';
 import { Alert, Snackbar } from '@mui/material';
+import { Sheet } from '@mui/joy';
 
 const steps = ['Event Details', 'Venue & Artist', 'Event Poster'];
 
@@ -90,7 +91,6 @@ export const EventOrganiser = () => {
 
     //for testing
     useEffect(() => {
-        console.log(currentDateTime)
     }, []);
 
     //for pop up message => error , warning , info , success
@@ -99,6 +99,18 @@ export const EventOrganiser = () => {
     const [alertMsg, setAlertMsg] = useState('');
     const handleSnackbarClose = () => {
         setOpenSnackbar(false);
+    };
+
+    const handleCreateEvent = () => {
+        //for testing
+        console.log('---Step 1-----')
+        console.log('Event Name:' + eventName + ' |Event date:' + eventDate + ' |Sale date:' +  saleDate);
+        console.log('---Step 2-----')
+        console.log('Venue:' + venue + ' |Artist list:' + artistList + '|other venue:' +otherVenue);
+        console.log('---Step 3-----')
+        console.log(selectedFiles);
+        
+        //TODO: call backend to create events
     };
 
     return (
@@ -120,10 +132,9 @@ export const EventOrganiser = () => {
                             <Typography sx={{ mt: 2, mb: 1 }}>
                                 All steps completed - you&apos;re finished
                             </Typography>
-                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                <Box sx={{ flex: '1 1 auto' }} />
-                                <Button onClick={handleReset}>Reset</Button>
-                            </Box>
+                            <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
+                                <Button onClick={handleCreateEvent} fullWidth variant="contained" sx={{ p: 1.5, textTransform: "none", fontSize: "16px" }}>Create Event</Button>
+                            </Sheet>
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
@@ -142,7 +153,7 @@ export const EventOrganiser = () => {
                                 setTicketNumber={setTicketNumber}
                                 setSaleDate={setSaleDate}
                                 setOtherInfo={setOtherInfo}
-                                handleComplete={handleComplete} 
+                                handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
                                 : null}
 
@@ -153,11 +164,14 @@ export const EventOrganiser = () => {
                                 setVenue={setVenue}
                                 setartistList={setartistList}
                                 setOtherVenue={setOtherVenue}
+                                handleComplete={handleComplete}
                             /> : null}
 
                             {activeStep == 2 ? <EventPoster
                                 selectedFiles={selectedFiles}
                                 setSelectedFiles={setSelectedFiles}
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
                             /> : null}
 
                             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
@@ -179,11 +193,6 @@ export const EventOrganiser = () => {
                                             Step {activeStep + 1} already completed
                                         </Typography>
                                     ) : (
-                                        // <Button onClick={handleComplete}>
-                                        //     {completedSteps() === totalSteps() - 1
-                                        //         ? 'Finish'
-                                        //         : 'Complete Step'}
-                                        // </Button>
                                         null
                                     ))}
                             </Box>
