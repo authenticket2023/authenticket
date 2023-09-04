@@ -40,7 +40,6 @@ public class EventOrganiser extends BaseEntity {
     private Boolean enabled = false;
 
     @OneToMany( mappedBy = "organiser")
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Event> events = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -51,6 +50,7 @@ public class EventOrganiser extends BaseEntity {
 
     @Transient
     private Integer adminId;
+
 
     public void setAdmin(Admin admin) {
         this.admin = admin;
