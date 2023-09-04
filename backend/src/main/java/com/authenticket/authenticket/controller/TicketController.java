@@ -51,7 +51,8 @@ public class TicketController {
         if(ticketDisplayDtoOptional.isPresent()){
             return ResponseEntity.ok(ticketDisplayDtoOptional.get());
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket Not Found");
+
+        throw new ApiRequestException("Ticket ID not found");
     }
 
     @PostMapping
@@ -78,7 +79,8 @@ public class TicketController {
         if(ticket!= null){
             return ResponseEntity.ok(ticket);
         }
-        return ResponseEntity.badRequest().body("update not successfull");
+
+        throw new ApiRequestException("Ticket ID not found");
     }
 
 //    @PutMapping("/{ticketId}")
@@ -88,6 +90,9 @@ public class TicketController {
 
     @DeleteMapping("/{ticketId}")
     public String removeTicket(@PathVariable("ticketId") Integer ticketId) {
-        return ticketService.removeTicket(ticketId);
+        if (ticketService.removeTicket(ticketId)) {
+            return "Ticket removed successfully.";
+        }
+        throw new ApiRequestException("Failed to remove ticket");
     }
 }

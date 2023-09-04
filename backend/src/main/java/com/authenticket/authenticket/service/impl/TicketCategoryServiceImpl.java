@@ -88,14 +88,14 @@ public class TicketCategoryServiceImpl {
 //        return "error: event deleted unsuccessfully, event might not exist";
 //    }
 
-    public String removeTicketCategory(Integer categoryId) {
+    public Boolean removeTicketCategory(Integer categoryId) {
 
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);
 
         if (ticketCategoryOptional.isPresent()) {
             ticketCategoryRepository.deleteById(categoryId);
-            return "ticket category removed successfully";
+            return true;
         }
-        return "error: ticket category does not exist";
+        return false;
     }
 }

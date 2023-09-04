@@ -71,14 +71,14 @@ public class TicketServiceImpl {
 //        return "error: event deleted unsuccessfully, event might not exist";
 //    }
 
-    public String removeTicket(Integer ticketId) {
+    public Boolean removeTicket(Integer ticketId) {
 
         Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
 
         if (ticketOptional.isPresent()) {
             ticketRepository.deleteById(ticketId);
-            return "ticket removed successfully";
+            return true;
         }
-        return "error: ticket does not exist";
+        return false;
     }
 }

@@ -68,7 +68,7 @@ public class TicketCategoryController {
         if(ticketCategory!= null){
             return ResponseEntity.ok(ticketCategory);
         }
-        return ResponseEntity.badRequest().body("update not successfull");
+        throw new ApiRequestException("Ticket Category not found");
     }
 
 //    @PutMapping("/{ticketId}")
@@ -78,6 +78,9 @@ public class TicketCategoryController {
 
     @DeleteMapping("/{categoryId}")
     public String removeTicketCategory(@PathVariable("categoryId") Integer categoryId) {
-        return ticketCategoryService.removeTicketCategory(categoryId);
+        if(ticketCategoryService.removeTicketCategory(categoryId)) {
+            return "Ticket Category removed successfully.";
+        }
+        throw new ApiRequestException("Failed to remove ticket category");
     }
 }
