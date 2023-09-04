@@ -36,12 +36,12 @@ public class UserController {
         return userService.findById(user_id);
     }
 
-    @PutMapping("/updateUser")
+    @PutMapping("/updateUserProfile")
     public UserDisplayDto updateUser(@RequestBody User newUser) {
         return userService.updateUser(newUser);
     }
 
-    @DeleteMapping("/{userId}")
+    @PutMapping("/{userId}")
     public String removeUser(@PathVariable("userId") Integer userId) {
         return userService.removeUser(userId);
     }
