@@ -86,13 +86,16 @@ export function Login() {
         } else {
 
           const loginResponse = await response.json();
-          const data = loginResponse.data;
           //pass the info to the local storage, so other page can access them
-          localStorage.setItem('accessToken', data.token);
-          localStorage.setItem('email', data.email);
-          localStorage.setItem('username', data.name);
-          localStorage.setItem('dob', data.date_of_birth);
-          localStorage.setItem('profileImage', data.profile_image);
+          localStorage.setItem('accessToken', loginResponse.token);
+          localStorage.setItem('email', loginResponse.userDetails.email);
+          localStorage.setItem('username', loginResponse.userDetails.name);
+          localStorage.setItem('dob', loginResponse.userDetails.date_of_birth);
+          localStorage.setItem('profileImage', loginResponse.userDetails.profile_image);
+
+          
+
+          navigate('/Home');
 
         }
 
