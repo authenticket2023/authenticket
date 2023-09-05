@@ -45,25 +45,6 @@ public class EventOrganiser extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
 
-    @JoinColumn(name = "verified_by",nullable = false)
+    @JoinColumn(name = "approved_by",nullable = false)
     private Admin admin;
-
-    @Transient
-    private Integer adminId;
-
-
-    public void setAdmin(Admin admin) {
-        this.admin = admin;
-        setAdminId(admin.getAdminId());
-    }
-    public Integer getAdminId(){
-        if (admin != null){
-            return admin.getAdminId();
-        }
-        return adminId;
-    }
-
-    public void setAdminId(Integer adminId) {
-        this.adminId = adminId;
-    }
 }

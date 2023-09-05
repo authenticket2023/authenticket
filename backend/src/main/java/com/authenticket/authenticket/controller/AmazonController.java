@@ -30,7 +30,7 @@ public class AmazonController {
 
     @GetMapping("/displayFile")
     public ResponseEntity<String>  fileDisplay(@RequestParam(value = "imageName") String imageName,
-                                               @RequestParam(value = "file-type") String fileType){
+                                              @RequestParam(value = "file-type") String fileType){
         return new ResponseEntity<> (service.displayFile(imageName, fileType), HttpStatus.OK);
     }
 

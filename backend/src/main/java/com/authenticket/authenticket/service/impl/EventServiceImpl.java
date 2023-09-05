@@ -1,9 +1,11 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.authenticket.authenticket.dto.event.EventDto;
+import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
+import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
+import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,38 +21,85 @@ public class EventServiceImpl implements EventService {
     @Autowired
     private EventRepository eventRepository;
 
+
     @Autowired
     private EventDtoMapper eventDTOMapper;
 
-    public List<EventDto> findAllEvent() {
+    @Autowired
+    private AmazonS3Service amazonS3Service;
+
+    public List<EventDisplayDto> findAllEvent() {
         return eventRepository.findAll()
                 .stream()
                 .map(eventDTOMapper)
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
-    public Optional<EventDto> findById(Long event_id) {
-        return eventRepository.findById(event_id).map(eventDTOMapper);
+    public Optional<EventDisplayDto> findEventById(Integer eventId) {
+        return eventRepository.findById(eventId).map(eventDTOMapper);
     }
 
     public Event saveEvent(Event event) {
-        return eventRepository.save(event);
+     return eventRepository.save(event);
     }
 
-    public Event updateEvent(Event event) {
-        return eventRepository.save(event);
+    public Event updateEvent(EventUpdateDto eventUpdateDto) {
+        Optional<Event> eventOptional = eventRepository.findById(eventUpdateDto.eventId());
+
+        if (eventOptional.isPresent()) {
+            Event existingEvent = eventOptional.get();
+            eventDTOMapper.update(eventUpdateDto, existingEvent);
+            eventRepository.save(existingEvent);
+            return existingEvent;
+        }
+
+        return null;
     }
 
-    public String deleteEvent(Long event_id) {
-        Optional<Event> eventOptional = eventRepository.findById(event_id);
+
+    public String deleteEvent(Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
+            if(event.getDeletedAt()!=null){
+                return "event already deleted";
+            }
+
             event.setDeletedAt(LocalDateTime.now());
             eventRepository.save(event);
             return "event deleted successfully";
         }
 
-        return "error: event deleted unsuccessfully";
+        return "error: event deleted unsuccessfully, event might not exist";
+    }
+
+    public String removeEvent(Integer eventId) {
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            String imageName = event.getEventImage();
+            if (event.getEventImage() != null) {
+                    amazonS3Service.deleteFile(imageName, "event_organiser_profile");
+            }
+            eventRepository.deleteById(eventId);
+            return "event removed successfully";
+        }
+        return "error: event does not exist";
+
+    }
+
+    public Event approveEvent(Integer eventId, Integer adminId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            event.setApprovedBy(adminId);
+            eventRepository.save(event);
+            return event;
+        }
+        return null;
     }
 }
