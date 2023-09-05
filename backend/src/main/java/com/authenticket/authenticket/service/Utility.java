@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.service;
 
+import com.authenticket.authenticket.controller.GeneralApiResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class Utility {
@@ -17,7 +18,20 @@ public class Utility {
         return null; // Unsupported file type
     }
 
-    protected String generateRandomPassword() {
+    public String generateRandomPassword() {
         return RandomStringUtils.randomAlphanumeric(12);
+    }
+
+    public GeneralApiResponse<Object> generateApiResponse(Object data, String message) {
+        if (data == null) {
+            return GeneralApiResponse.builder()
+                    .message(message)
+                    .build();
+        } else {
+            return GeneralApiResponse.builder()
+                    .message(message)
+                    .data(data)
+                    .build();
+        }
     }
 }
