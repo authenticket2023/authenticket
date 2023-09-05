@@ -122,7 +122,7 @@ export function Signup() {
     }
     if(!validatePassword(password)){
       setPasswordError(true);
-      setPasswordHelperText('Please enter a valid password.Password Requirements:\n1.At least one alphabetic character (uppercase or lowercase)\n2.At least one digit\n3.Minimum length of 8 characters');
+      setPasswordHelperText('Please enter a valid password. Password Requirements:\n1.At least one alphabetic character (uppercase or lowercase)\n2.At least one digit\n3.Minimum length of 8 characters');
       return;
     } else {
       setPasswordError(false);
