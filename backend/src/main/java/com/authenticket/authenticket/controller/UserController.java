@@ -60,7 +60,7 @@ public class UserController extends Utility {
     @PutMapping("/{userId}")
     public ResponseEntity<GeneralApiResponse> removeUser(@PathVariable("userId") Integer userId) {
             userService.deleteUser(userId);
-            return ResponseEntity.ok(generateApiResponse(null, String.format("User%d Deleted Successfully", userId)));
+            return ResponseEntity.ok(generateApiResponse(null, String.format("User %d Deleted Successfully", userId)));
 
     }
 
@@ -69,8 +69,13 @@ public class UserController extends Utility {
                                              @RequestParam("imageName") String imageName,
                                              @RequestParam("userId") Integer userId) {
         try{
-            amazonS3Service.uploadFile(profileImage, imageName, "user_profile");
-            return ResponseEntity.ok(generateApiResponse(userService.updateProfileImage(imageName, userId),"Profile Image Uploaded Successfully."));
+            if(userRepository.findById(userId).isPresent()){
+                amazonS3Service.uploadFile(profileImage, imageName, "user_profile");
+                return ResponseEntity.ok(generateApiResponse(userService.updateProfileImage(imageName, userId),"Profile Image Uploaded Successfully."));
+            } else {
+                return ResponseEntity.status(400).body(generateApiResponse(userService.updateProfileImage(imageName, userId),"Profile Image Uploaded Failed."));
+            }
+
         } catch (AmazonS3Exception e) {
         String errorCode = e.getErrorCode();
         if ("AccessDenied".equals(errorCode)) {

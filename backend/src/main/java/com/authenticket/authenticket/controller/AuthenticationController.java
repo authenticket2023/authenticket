@@ -39,8 +39,6 @@ public class AuthenticationController extends Utility{
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome"));
         } catch (AwaitingVerificationException | IllegalStateException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, e.getMessage()));
-        } catch (Exception e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Something went wrong" + e.getMessage()));
         }
     }
 
@@ -59,9 +57,6 @@ public class AuthenticationController extends Utility{
         }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));
-        }
-        catch (Exception e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Something went wrong" + e.getClass()));
         }
     }
 }

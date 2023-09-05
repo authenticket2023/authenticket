@@ -11,6 +11,7 @@ import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -81,12 +82,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public AuthenticationResponse authenticate(User request)
             throws  UsernameNotFoundException {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+
+
 
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
@@ -116,11 +120,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.enableAppUser(email);
 
         var jwtToken = jwtServiceImpl.generateToken(user);
-        AuthenticationResponse goodReq = AuthenticationResponse.builder()
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .userDetails(userDTOMapper.apply(user))
                 .build();
-        return goodReq;
     }
 
     private String buildEmail(String name, String link) {
