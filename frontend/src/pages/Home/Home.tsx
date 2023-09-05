@@ -18,7 +18,11 @@ import BearCarousel, {
 } from "bear-react-carousel";
 
 export const Home = () => {
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
+
+
+  const syncCarouselRefA = React.useRef<BearCarousel>(null);
+  const syncCarouselRefB = React.useRef<BearCarousel>(null);
 
   const images = [
     { id: 1, color: "green" },
@@ -45,13 +49,68 @@ export const Home = () => {
     return (
       <BearCarousel
         data={bearSlideItemData}
-        height="250px"
+        height="400px"
         isEnableNavButton
-        isEnablePagination
-        isDebug
+        ref={syncCarouselRefA}
+        syncCarouselRef={syncCarouselRefB}
       />
     );
   };
+
+  const featureText = [
+    { id: 1, text: "green" },
+    { id: 2, text: "blue" },
+    { id: 3, text: "gray" },
+    { id: 4, text: "white" },
+    { id: 5, text: "black" },
+    { id: 6, text: "yellow" },
+    { id: 7, text: "purple" },
+    { id: 8, text: "red" },
+  ]
+
+  const TextAnimationsCarousel = () => {
+    const slideItemData: TBearSlideItemDataList = featureText.map(row => {
+      return {
+        key: row.id,
+        children: <Box bgcolor="#FF5C35" marginTop={8}>
+          <Typography variant="h6" color="white" marginLeft={2}>
+            Hot Now
+          </Typography>
+          <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
+            Lauv: the between albums tour
+          </Typography>
+          <Typography variant="subtitle2" justifyItems="center" color="white">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta
+            earum ullam repellat minus, cumque, tempore fugit officia delectus
+            omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto
+            maiores reprehenderit veritatis eveniet possimus ex odio? Reiciendis, ducimus.
+            Placeat recusandae nulla nisi vitae est quod libero sint? Laborum, at maiores.
+          </Typography>
+          <Box marginTop={2} marginLeft={2}>
+            <Button
+              variant="outlined"
+              sx={{ color: "white", borderColor: "white" }}
+            >
+              Get tickets
+            </Button>
+          </Box>
+        </Box>
+      };
+    });
+    return (
+      <BearCarousel
+        data={slideItemData}
+        height="400px"
+        isEnablePagination
+        isEnableNavButton
+        ref={syncCarouselRefB}
+        syncCarouselRef={syncCarouselRefA}
+      />
+    );
+  };
+
+
 
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -115,7 +174,7 @@ export const Home = () => {
               min: 1024,
             },
             items: 3,
-            partialVisibilityGutter: 40,
+            partialVisibilityGutter: 20,
           },
           mobile: {
             breakpoint: {
@@ -146,28 +205,28 @@ export const Home = () => {
         <Box>
           <Grid container>
             <Grid item>
-              <img src="https://picsum.photos/275/150" />
+              <img src="https://picsum.photos/400/250" />
             </Grid>
           </Grid>
         </Box>
         <Box>
           <Grid container marginRight={5}>
             <Grid item>
-              <img src="https://picsum.photos/275/150" />
+              <img src="https://picsum.photos/400/250" />
             </Grid>
           </Grid>
         </Box>
         <Box>
           <Grid container marginRight={5}>
             <Grid item>
-              <img src="https://picsum.photos/275/150" />
+              <img src="https://picsum.photos/400/250" />
             </Grid>
           </Grid>
         </Box>
         <Box>
           <Grid container marginRight={5}>
             <Grid item>
-              <img src="https://picsum.photos/275/150" />
+              <img src="https://picsum.photos/400/250" />
             </Grid>
           </Grid>
         </Box>
@@ -273,21 +332,24 @@ export const Home = () => {
         </Grid>
       </Grid>
       <Box bgcolor="#FF5C35" marginTop={12}>
-        <Grid container justifyContent="center">
+        <Grid container alignItems='center' justifyContent='center'>
           <Grid item xs={5} marginTop={4} marginBottom={4}>
             <CustomBanner></CustomBanner>
           </Grid>
-          <Grid item xs={5} marginTop={8} marginLeft={4}>
-            <Typography variant="h6" color="white" marginLeft={2}>
+          <Grid item xs={5} marginLeft={4}>
+            {/* <Typography variant="h6" color="white" marginLeft={2}>
               Hot Now
             </Typography>
-            <Typography variant="h5" color="white" sx={{ fontWeight: "bold" }}>
+            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
               Lauv: the between albums tour
             </Typography>
             <Typography variant="subtitle2" justifyItems="center" color="white">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta
               earum ullam repellat minus, cumque, tempore fugit officia delectus
               omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto
+              maiores reprehenderit veritatis eveniet possimus ex odio? Reiciendis, ducimus.
+              Placeat recusandae nulla nisi vitae est quod libero sint? Laborum, at maiores.
             </Typography>
             <Box marginTop={2} marginLeft={2}>
               <Button
@@ -296,7 +358,8 @@ export const Home = () => {
               >
                 Get tickets
               </Button>
-            </Box>
+            </Box> */}
+            <TextAnimationsCarousel></TextAnimationsCarousel>
           </Grid>
         </Grid>
       </Box>
@@ -308,6 +371,7 @@ export const Home = () => {
           <TicketCarousel></TicketCarousel>
         </Grid>
       </Grid>
+      <TextAnimationsCarousel></TextAnimationsCarousel>
     </>
   );
 };
