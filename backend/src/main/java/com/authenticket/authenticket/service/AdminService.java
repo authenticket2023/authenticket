@@ -1,9 +1,7 @@
 package com.authenticket.authenticket.service;
 
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
-//import com.authenticket.authenticket.dto.admin.AdminUpdateDto;
 import com.authenticket.authenticket.model.Admin;
-import com.authenticket.authenticket.model.EventOrganiser;
 
 import java.util.List;
 import java.util.Optional;

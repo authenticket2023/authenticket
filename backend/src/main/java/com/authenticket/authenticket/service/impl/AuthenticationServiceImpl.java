@@ -2,6 +2,8 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
+import com.authenticket.authenticket.exception.AwaitingVerificationException;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
@@ -49,7 +51,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private UserDtoMapper userDTOMapper;
 
-    public ResponseEntity<AuthenticationResponse> register(User request) {
+    public void register(User request)
+            throws AlreadyExistsException{
         AuthenticationResponse badReq;
         var user = User.builder()
                 .name(request.getName())
@@ -60,17 +63,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 //role of user to take note of
                 .build();
 
-        var existingUser = userRepository.findByEmail(request.getEmail())
-                .isPresent();
-//        var existingAdmin = adminRepository.findByEmail()
-        if(existingUser){
-//            throw new IllegalStateException("User already exists");
-            badReq = AuthenticationResponse
-                    .builder()
-                    .message("User already exists")
-                    .build();
+        var existingUser = userRepository.findByEmail(request.getEmail());
 
-            return ResponseEntity.status(400).body(badReq);
+        if(existingUser.isPresent()){
+            if(existingUser.get().getEnabled() == false){
+                throw new AlreadyExistsException("Verification needed");
+            }
+            throw new AlreadyExistsException("User already exists");
         }
 
         userRepository.save(user);
@@ -78,15 +77,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String link = "http://localhost:" + apiPort + "/api/auth/register/confirm?token=" + jwtToken;
         emailServiceImpl.send(request.getEmail(), buildEmail(request.getName(), link));
-
-        AuthenticationResponse goodReq = AuthenticationResponse.builder()
-                .message("Verification required")
-                .build();
-
-        return ResponseEntity.status(200).body(goodReq);
     }
 
-    public ResponseEntity<AuthenticationResponse> authenticate(User request) {
+    public AuthenticationResponse authenticate(User request)
+            throws  UsernameNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -95,55 +89,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
 
         var user = userRepository.findByEmail(request.getEmail())
-//                .orElse(null);
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-        //no exception here
         var jwtToken = jwtServiceImpl.generateToken(user);
 
-        AuthenticationResponse goodReq =  AuthenticationResponse.builder()
-                .message("welcome1 " + user.getName())
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .userDetails(userDTOMapper.apply(user))
                 .build();
-        return ResponseEntity.status(200).body(goodReq);
     }
 
-    public ResponseEntity<AuthenticationResponse> confirmToken(String token) {
+    public AuthenticationResponse confirmToken(String token)
+        throws AwaitingVerificationException, IllegalStateException{
         AuthenticationResponse badReq;
         if (jwtServiceImpl.isTokenExpired(token)) {
-//           throw new IllegalStateException("token expired");
-                badReq = AuthenticationResponse
-                        .builder()
-                        .message("Token expired")
-                        .build();
-
-                return ResponseEntity.status(403).body(badReq);
+                throw new AwaitingVerificationException("Token expired");
         }
 
         String email = jwtServiceImpl.extractUsername(token);
 
         var user = userRepository.findByEmail(email)
-//                .orElse(null);
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         if (user.getEnabled()){
-//            throw new IllegalStateException("email already confirmed");
-            badReq = AuthenticationResponse
-                    .builder()
-                    .message("Email already confirmed")
-                    .build();
-
-            return ResponseEntity.status(400).body(badReq);
+            throw new IllegalStateException("Email already confirmed");
         }
 
         userRepository.enableAppUser(email);
 
         var jwtToken = jwtServiceImpl.generateToken(user);
         AuthenticationResponse goodReq = AuthenticationResponse.builder()
-                .message("welcome " + user.getName())
                 .token(jwtToken)
                 .userDetails(userDTOMapper.apply(user))
                 .build();
-        return ResponseEntity.status(200).body(goodReq);
+        return goodReq;
     }
 
     private String buildEmail(String name, String link) {

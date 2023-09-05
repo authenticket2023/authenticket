@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 
 public interface AuthenticationService {
-    ResponseEntity<AuthenticationResponse> register(User request);
-    ResponseEntity<AuthenticationResponse> authenticate(User request);
-    ResponseEntity<AuthenticationResponse> confirmToken(String token);
+    void register(User request);
+    AuthenticationResponse authenticate(User request);
+    AuthenticationResponse confirmToken(String token);
 }
