@@ -50,11 +50,7 @@ public class TicketCategoryController {
                                         @RequestParam(value = "name") String name,
                                         @RequestParam(value = "price") Double price,
                                         @RequestParam(value = "availableTickets") Integer availableTickets) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket Category: Event not found"));
-
-        TicketCategory savedTicketCategory = ticketCategoryService.saveTicketCategory(new TicketCategory(null, event, name, price, availableTickets));
-
-        return ResponseEntity.ok(savedTicketCategory);
+        return ResponseEntity.ok(ticketCategoryService.saveTicketCategory(eventId, name, price, availableTickets));
     }
 
     @PutMapping
@@ -63,12 +59,9 @@ public class TicketCategoryController {
                                                   @RequestParam(value = "name") String name,
                                                   @RequestParam(value = "price") Double price,
                                                   @RequestParam(value = "availableTickets") Integer availableTickets) {
-        TicketCategoryUpdateDto ticketCategoryUpdateDto = new TicketCategoryUpdateDto(categoryId, eventId, name, price, availableTickets);
-        TicketCategory ticketCategory = ticketCategoryService.updateTicketCategory(ticketCategoryUpdateDto);
-        if(ticketCategory!= null){
-            return ResponseEntity.ok(ticketCategory);
-        }
-        throw new ApiRequestException("Ticket Category not found");
+        TicketCategory ticketCategory = ticketCategoryService.updateTicketCategory(categoryId, eventId, name, price, availableTickets);
+
+        return ResponseEntity.ok(ticketCategory);
     }
 
 //    @PutMapping("/{ticketId}")
@@ -78,9 +71,7 @@ public class TicketCategoryController {
 
     @DeleteMapping("/{categoryId}")
     public String removeTicketCategory(@PathVariable("categoryId") Integer categoryId) {
-        if(ticketCategoryService.removeTicketCategory(categoryId)) {
-            return "Ticket Category removed successfully.";
-        }
-        throw new ApiRequestException("Failed to remove ticket category");
+        ticketCategoryService.removeTicketCategory(categoryId);
+        return "Ticket Category removed successfully.";
     }
 }

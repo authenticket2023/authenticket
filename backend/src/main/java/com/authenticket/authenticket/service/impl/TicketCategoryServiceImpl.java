@@ -4,6 +4,7 @@ import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDtoMapper;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDto;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDtoMapper;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.TicketCategory;
 import com.authenticket.authenticket.repository.EventRepository;
@@ -50,11 +51,16 @@ public class TicketCategoryServiceImpl {
 //        return ticketCategoryRepository.findByEvent(event).map(ticketCategoryDisplayDtoMapper);
     }
 
-    public TicketCategory saveTicketCategory(TicketCategory ticketCategory) {
+    public TicketCategory saveTicketCategory(Integer eventId, String name, Double price, Integer availableTickets) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket Category: Event not found"));
+
+        TicketCategory ticketCategory = new TicketCategory(null, event, name, price, availableTickets);
         return ticketCategoryRepository.save(ticketCategory);
     }
 
-    public TicketCategory updateTicketCategory(TicketCategoryUpdateDto ticketCategoryUpdateDto) {
+    public TicketCategory updateTicketCategory(Integer categoryId, Integer eventId, String name, Double price, Integer availableTickets) {
+        TicketCategoryUpdateDto ticketCategoryUpdateDto = new TicketCategoryUpdateDto(categoryId, eventId, name, price, availableTickets);
+
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(ticketCategoryUpdateDto.categoryId());
 
         if (ticketCategoryOptional.isPresent()) {
@@ -64,7 +70,7 @@ public class TicketCategoryServiceImpl {
             return existingTicketCategory;
         }
 
-        return null;
+        throw new ApiRequestException("Ticket Category not found");
     }
 
 
@@ -85,14 +91,13 @@ public class TicketCategoryServiceImpl {
 //        return "error: event deleted unsuccessfully, event might not exist";
 //    }
 
-    public Boolean removeTicketCategory(Integer categoryId) {
-
+    public void removeTicketCategory(Integer categoryId) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);
 
         if (ticketCategoryOptional.isPresent()) {
             ticketCategoryRepository.deleteById(categoryId);
-            return true;
+        } else {
+            throw new ApiRequestException("Failed to remove ticket category");
         }
-        return false;
     }
 }

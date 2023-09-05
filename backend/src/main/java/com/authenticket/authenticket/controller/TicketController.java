@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.controller;
 
+import com.amazonaws.Response;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketUpdateDto;
 import com.authenticket.authenticket.exception.ApiRequestException;
@@ -26,15 +27,6 @@ public class TicketController {
     @Autowired
     private TicketServiceImpl ticketService;
 
-    @Autowired
-    private TicketCategoryRepository ticketCategoryRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private EventRepository eventRepository;
-
     @GetMapping("/test")
     public String test() {
         return "test successful";
@@ -46,26 +38,15 @@ public class TicketController {
     }
 
     @GetMapping("/{ticketId}")
-    public ResponseEntity<?> findTicketById(@PathVariable("ticketId") Integer eventId) {
-        Optional<TicketDisplayDto> ticketDisplayDtoOptional = ticketService.findTicketById(eventId);
-        if(ticketDisplayDtoOptional.isPresent()){
-            return ResponseEntity.ok(ticketDisplayDtoOptional.get());
-        }
-
-        throw new ApiRequestException("Ticket ID not found");
+    public ResponseEntity<?> findTicketById(@PathVariable("ticketId") Integer ticketId) {
+        return ResponseEntity.ok(ticketService.findTicketById(ticketId));
     }
 
     @PostMapping
     public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Integer userId,
                                        @RequestParam(value = "eventId") Integer eventId,
                                        @RequestParam(value = "categoryId") Integer categoryId) {
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket: User not found"));
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket: Event not found"));
-        TicketCategory ticketCategory = ticketCategoryRepository.findById(categoryId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket: TicketCategory not found"));
-
-        Ticket savedTicket = ticketService.saveTicket(new Ticket(null, user, event, ticketCategory));
-
+        Ticket savedTicket = ticketService.saveTicket(userId, eventId, categoryId);
         return ResponseEntity.ok(savedTicket);
     }
 
@@ -74,13 +55,8 @@ public class TicketController {
                                           @RequestParam(value = "userId") Integer userId,
                                           @RequestParam(value = "eventId") Integer eventId,
                                           @RequestParam(value = "categoryId") Integer categoryId) {
-        TicketUpdateDto ticketUpdateDto = new TicketUpdateDto(ticketId, userId, eventId, categoryId);
-        Ticket ticket = ticketService.updateTicket(ticketUpdateDto);
-        if(ticket!= null){
-            return ResponseEntity.ok(ticket);
-        }
-
-        throw new ApiRequestException("Ticket ID not found");
+        Ticket ticket = ticketService.updateTicket(ticketId, userId, eventId, categoryId);
+        return ResponseEntity.ok(ticket);
     }
 
 //    @PutMapping("/{ticketId}")
@@ -90,9 +66,7 @@ public class TicketController {
 
     @DeleteMapping("/{ticketId}")
     public String removeTicket(@PathVariable("ticketId") Integer ticketId) {
-        if (ticketService.removeTicket(ticketId)) {
-            return "Ticket removed successfully.";
-        }
-        throw new ApiRequestException("Failed to remove ticket");
+        ticketService.removeTicket(ticketId);
+        return "Ticket removed successfully.";
     }
 }
