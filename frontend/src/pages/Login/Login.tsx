@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Alert, Snackbar } from '@mui/material';
 
 //image downloads
 import logo from '../../images/logo(orange).png';
@@ -52,6 +52,13 @@ export function Login() {
   //validation
   const [emailError, setEmailError] = useState(false);
   const [helperText, setHelperText] = useState('');
+  //for pop up message => error , warning , info , success
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertType, setAlertType]: any = useState('info');
+  const [alertMsg, setAlertMsg] = useState('');
+  const handleSnackbarClose = () => {
+      setOpenSnackbar(false);
+  };
 
   const handleEmail = (e: any) => {
     setEmail(e.target.value);
@@ -81,9 +88,7 @@ export function Login() {
       })
     })
       .then(async (response) => {
-        if (response.status != 200) {
-          window.alert("Email/Password invalid!");
-        } else {
+        if (response.status == 200) {
 
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them
@@ -96,6 +101,8 @@ export function Login() {
           
 
           navigate('/Home');
+
+        } else {
 
         }
 
@@ -207,6 +214,14 @@ export function Login() {
             </form>
           </Box>
         </Grid>
+
+        {/* error feedback */}
+        <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+            {alertMsg}
+          </Alert>
+        </Snackbar>
+
       </Grid>
     </ThemeProvider>
   );
