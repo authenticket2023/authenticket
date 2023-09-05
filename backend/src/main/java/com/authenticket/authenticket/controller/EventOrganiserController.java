@@ -3,6 +3,7 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
@@ -39,62 +40,56 @@ public class EventOrganiserController extends Utility {
     }
 
 
-
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllEventOrganiser() {
+        try{
         List<EventOrganiserDisplayDto> eventOrganiserList = eventOrganiserService.findAllEventOrganisers();
-        GeneralApiResponse<Object> req;
         if(eventOrganiserList.isEmpty()){
-            req = GeneralApiResponse
-                    .builder()
-                    .message("No Events Found").build();
-
+            return ResponseEntity.ok(generateApiResponse(eventOrganiserList, "No event organisers found."));
 
         } else{
-            req = GeneralApiResponse
-                    .builder()
-                    .message("Events successfully returned.").data(eventOrganiserList).build();
+            return ResponseEntity.ok(generateApiResponse(eventOrganiserList, "Event organisers successfully returned."));
+
+        }}catch(Exception e){
+            return ResponseEntity.badRequest().body(generateApiResponse(null, "Error getting the event organisers"));
         }
-        return ResponseEntity.ok(req);
     }
 
     @GetMapping("/{organiserId}")
     public ResponseEntity<?> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
         Optional<EventOrganiserDisplayDto> organiserDisplayDtoOptional = eventOrganiserService.findOrganiserById(organiserId);
-        if(organiserDisplayDtoOptional.isPresent()){
-            return ResponseEntity.ok(organiserDisplayDtoOptional.get());
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("The organiser with ID %d does not exist", organiserId));
+        return organiserDisplayDtoOptional.map(eventDisplayDto -> ResponseEntity.ok(generateApiResponse(eventDisplayDto, String.format("Event organiser %d successfully returned.", organiserId)))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event organiser with id %d not found", organiserId))));
 
     }
 
     @GetMapping("/events/{organiserId}")
     public ResponseEntity<?> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId) {
-        List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
-        if(!events.isEmpty()){
-            return ResponseEntity.ok(events);
+        try {
+            List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
+            if (!events.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(events, String.format("All events hosted by organiser %d retrieved successfully", organiserId)));
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId));
-
     }
 
     @PostMapping
     public ResponseEntity<?> saveEventOrganiser(@RequestParam("name") String name,
                                        @RequestParam("email") String email,
                                        @RequestParam("description") String description) {
-        EventOrganiser savedEventOrganiser;
         try {
             //save eventOrganiser first without image name to get the eventOrganiser id
             EventOrganiser newEventOrganiser = new EventOrganiser(null, name,  passwordEncoder.encode(generateRandomPassword()), email, description,null,null,null,null);
-            savedEventOrganiser = eventOrganiserService.saveEventOrganiser(newEventOrganiser);
+            EventOrganiser savedEventOrganiser = eventOrganiserService.saveEventOrganiser(newEventOrganiser);
+            return ResponseEntity.ok(generateApiResponse(savedEventOrganiser,"Event organiser created successfully"));
 
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving event organiser" + e.getClass());
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
         }
 
-
-        return ResponseEntity.ok(savedEventOrganiser);
     }
 
     @PutMapping
@@ -102,13 +97,18 @@ public class EventOrganiserController extends Utility {
                                                   @RequestParam("name") String name,
                                                   @RequestParam(value = "description") String description,
                                                   @RequestParam(value = "password") String password) {
-        EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name,description,password);
-        EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
-        if(eventOrganiser!= null){
-            return ResponseEntity.ok(eventOrganiser);
-        }
-        return ResponseEntity.badRequest().body("update not successful");
+        try {
+            EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password);
+            EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
+            if (eventOrganiser != null) {
+                return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
+            } else {
+                return ResponseEntity.badRequest().body(generateApiResponse(null, "Event organiser update unsuccessful"));
+            }
 
+        } catch(Exception e){
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
 
     }
 
@@ -127,17 +127,18 @@ public class EventOrganiserController extends Utility {
             if(eventOrganiser !=null){
                 amazonS3Service.uploadFile(file,imageName,"event_organiser_profile");
             } else{
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event Organiser does not exist");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "Event Organiser does not exist, file upload fail"));
             }
 
         }catch (AmazonS3Exception e) {
             String errorCode = e.getErrorCode();
             if ("AccessDenied".equals(errorCode)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied to Amazon S3");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
             } else if ("NoSuchBucket".equals(errorCode)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("S3 bucket not found");
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred during S3 interaction");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction."));
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error uploading event organiser image");
@@ -150,8 +151,18 @@ public class EventOrganiserController extends Utility {
 
 
     @PutMapping("/{organiserId}")
-    public String deleteEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
-        return eventOrganiserService.deleteEventOrganiser(organiserId);
+    public ResponseEntity<GeneralApiResponse<Object>> deleteEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
+//        return eventOrganiserService.deleteEventOrganiser(organiserId);
+
+        try {
+            //if delete is successful
+            eventOrganiserService.deleteEventOrganiser(organiserId);
+            return ResponseEntity.ok(generateApiResponse(null, String.format("Event Organiser%d Deleted Successfully", organiserId)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, e.getMessage()));
+        } catch (AlreadyDeletedException e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{organiserId}")

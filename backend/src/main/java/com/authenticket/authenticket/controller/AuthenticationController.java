@@ -48,7 +48,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @GetMapping("/authenticate")
+    @PostMapping("/authenticate")
     public ResponseEntity<GeneralApiResponse> authenticate(
             @RequestBody User user
     ){
