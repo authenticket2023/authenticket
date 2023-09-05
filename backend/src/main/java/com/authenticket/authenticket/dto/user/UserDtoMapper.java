@@ -8,7 +8,7 @@ import java.util.function.Function;
 public class UserDtoMapper implements Function<User, UserDto> {
     public UserDto apply(User user){
         return new UserDto(
-                user.getName(), user.getEmail(), user.getDate_of_birth(), user.getProfile_image()
+                user.getName(), user.getEmail(), user.getDate_of_birth(), user.getProfile_image(), user.getEnabled()
         );
     }
 }

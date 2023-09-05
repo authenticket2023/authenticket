@@ -77,7 +77,7 @@ public class AuthenticationServiceImpl {
         return ResponseEntity.status(200).body(goodReq);
     }
 
-    public ResponseEntity<AuthenticationResponse> authenticate(User request) {
+    public ResponseEntity<AuthenticationResponse> authenticate(User request) throws UsernameNotFoundException {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -86,9 +86,21 @@ public class AuthenticationServiceImpl {
         );
 
         var user = repository.findByEmail(request.getEmail())
-//                .orElse(null);
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
+                .orElse(null);
+//                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         //no exception here
+        if (user == null){
+            AuthenticationResponse badReq =  AuthenticationResponse.builder()
+                    .message("user doesn't exist")
+                    .build();
+            return ResponseEntity.status(401).body(badReq);
+        }
+        if(!user.getEnabled()){
+            AuthenticationResponse badReq =  AuthenticationResponse.builder()
+                    .message("You have yet to verify your email")
+                    .build();
+            return ResponseEntity.status(401).body(badReq);
+        }
         var jwtToken = jwtServiceImpl.generateToken(user);
 
         AuthenticationResponse goodReq =  AuthenticationResponse.builder()
