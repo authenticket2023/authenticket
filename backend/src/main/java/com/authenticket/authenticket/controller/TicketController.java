@@ -56,7 +56,7 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Long userId,
+    public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Integer userId,
                                        @RequestParam(value = "eventId") Integer eventId,
                                        @RequestParam(value = "categoryId") Integer categoryId) {
 
@@ -71,7 +71,7 @@ public class TicketController {
 
     @PutMapping
     public ResponseEntity<?> updateTicket(@RequestParam(value = "ticketId") Integer ticketId,
-                                          @RequestParam(value = "userId") Long userId,
+                                          @RequestParam(value = "userId") Integer userId,
                                           @RequestParam(value = "eventId") Integer eventId,
                                           @RequestParam(value = "categoryId") Integer categoryId) {
         TicketUpdateDto ticketUpdateDto = new TicketUpdateDto(ticketId, userId, eventId, categoryId);

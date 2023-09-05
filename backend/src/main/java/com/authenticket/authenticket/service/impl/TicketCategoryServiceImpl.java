@@ -25,9 +25,6 @@ public class TicketCategoryServiceImpl {
     private TicketCategoryDisplayDtoMapper ticketCategoryDisplayDtoMapper;
 
     @Autowired
-    private TicketCategoryUpdateDtoMapper ticketCategoryUpdateDtoMapper;
-
-    @Autowired
     private EventRepository eventRepository;
 
     public List<TicketCategoryDisplayDto> findAllTicketCategory() {
@@ -62,7 +59,7 @@ public class TicketCategoryServiceImpl {
 
         if (ticketCategoryOptional.isPresent()) {
             TicketCategory existingTicketCategory = ticketCategoryOptional.get();
-            ticketCategoryUpdateDtoMapper.apply(ticketCategoryUpdateDto, existingTicketCategory);
+            ticketCategoryDisplayDtoMapper.update(ticketCategoryUpdateDto, existingTicketCategory);
             ticketCategoryRepository.save(existingTicketCategory);
             return existingTicketCategory;
         }

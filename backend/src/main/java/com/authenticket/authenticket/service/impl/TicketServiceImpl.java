@@ -21,10 +21,6 @@ public class TicketServiceImpl {
     @Autowired
     private TicketDisplayDtoMapper ticketDisplayDtoMapper;
 
-    @Autowired
-    private TicketUpdateDtoMapper ticketUpdateDtoMapper;
-
-
     public List<TicketDisplayDto> findAllTicket() {
         return ticketRepository.findAll()
                 .stream()
@@ -45,7 +41,7 @@ public class TicketServiceImpl {
 
         if (ticketOptional.isPresent()) {
             Ticket existingTicket = ticketOptional.get();
-            ticketUpdateDtoMapper.apply(ticketUpdateDto, existingTicket);
+            ticketDisplayDtoMapper.update(ticketUpdateDto, existingTicket);
             ticketRepository.save(existingTicket);
             return existingTicket;
         }
