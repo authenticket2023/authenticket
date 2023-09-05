@@ -3,7 +3,10 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.User;
+import com.authenticket.authenticket.repository.AdminRepository;
+import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.repository.UserRepository;
+import com.authenticket.authenticket.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +17,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationServiceImpl {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${authenticket.api-port}")
     private String apiPort;
 
+    // User repos
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
+    @Autowired
+    private AdminRepository adminRepository;
+    @Autowired
+    private EventOrganiserRepository organiserRepository;
 
     //Registration
     @Autowired
@@ -47,14 +55,15 @@ public class AuthenticationServiceImpl {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .date_of_birth(request.getDate_of_birth())
+                .dateOfBirth(request.getDateOfBirth())
                 .enabled(false)
                 //role of user to take note of
                 .build();
 
-        var existing = repository.findByEmail(request.getEmail())
+        var existingUser = userRepository.findByEmail(request.getEmail())
                 .isPresent();
-        if(existing){
+//        var existingAdmin = adminRepository.findByEmail()
+        if(existingUser){
 //            throw new IllegalStateException("User already exists");
             badReq = AuthenticationResponse
                     .builder()
@@ -64,7 +73,7 @@ public class AuthenticationServiceImpl {
             return ResponseEntity.status(400).body(badReq);
         }
 
-        repository.save(user);
+        userRepository.save(user);
         var jwtToken = jwtServiceImpl.generateToken(user);
 
         String link = "http://localhost:" + apiPort + "/api/auth/register/confirm?token=" + jwtToken;
@@ -85,7 +94,7 @@ public class AuthenticationServiceImpl {
                 )
         );
 
-        var user = repository.findByEmail(request.getEmail())
+        var user = userRepository.findByEmail(request.getEmail())
 //                .orElse(null);
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         //no exception here
@@ -113,7 +122,7 @@ public class AuthenticationServiceImpl {
 
         String email = jwtServiceImpl.extractUsername(token);
 
-        var user = repository.findByEmail(email)
+        var user = userRepository.findByEmail(email)
 //                .orElse(null);
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         if (user.getEnabled()){
@@ -126,7 +135,7 @@ public class AuthenticationServiceImpl {
             return ResponseEntity.status(400).body(badReq);
         }
 
-        repository.enableAppUser(email);
+        userRepository.enableAppUser(email);
 
         var jwtToken = jwtServiceImpl.generateToken(user);
         AuthenticationResponse goodReq = AuthenticationResponse.builder()

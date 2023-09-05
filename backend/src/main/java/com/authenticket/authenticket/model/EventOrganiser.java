@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,18 +33,37 @@ public class EventOrganiser extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "approved_by")
-    private Integer approvedBy;
-
     @Column(name = "logo_image")
     private String logoImage;
 
+    @Column(name = "enabled")
+    private Boolean enabled = false;
+
     @OneToMany( mappedBy = "organiser")
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Event> events = new ArrayList<>();
 
-    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+
+    @JoinColumn(name = "approved_by",nullable = false)
+    private Admin admin;
+
+    @Transient
+    private Integer adminId;
 
 
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+        setAdminId(admin.getAdminId());
+    }
+    public Integer getAdminId(){
+        if (admin != null){
+            return admin.getAdminId();
+        }
+        return adminId;
+    }
+
+    public void setAdminId(Integer adminId) {
+        this.adminId = adminId;
+    }
 }
-

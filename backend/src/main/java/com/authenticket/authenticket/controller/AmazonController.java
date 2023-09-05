@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.controller;
 
-import com.authenticket.authenticket.service.AmazonS3Service;
+import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AmazonController {
 
     @Autowired
-    private AmazonS3Service service;
+    private AmazonS3ServiceImpl service;
 
 
     @PostMapping("/uploadFile")

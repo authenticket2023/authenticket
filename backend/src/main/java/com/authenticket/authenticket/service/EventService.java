@@ -3,6 +3,7 @@ package com.authenticket.authenticket.service;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.repository.EventRepository;
 
 import java.util.*;
 
