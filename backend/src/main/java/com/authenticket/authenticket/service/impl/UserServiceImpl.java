@@ -29,9 +29,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private UserDtoMapper userDtoMapper;
 
-    @Autowired
-    private AmazonS3ServiceImpl amazonS3Service;
-
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException{
         return userRepository.findByEmail(email)
@@ -40,13 +37,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public Optional<UserDisplayDto> findById(Integer userId) {
-        return Optional.empty();
+        return userRepository.findById(userId).map(userDtoMapper);
     }
 
     public UserDisplayDto updateUser(User newUser){
         Optional<User> userOptional = userRepository.findByEmail(newUser.getEmail());
 
         if(userOptional.isPresent()){
+            System.out.println("hello");
             User existingUser = userOptional.get();
             userDtoMapper.update(newUser, existingUser);
             userRepository.save(existingUser);

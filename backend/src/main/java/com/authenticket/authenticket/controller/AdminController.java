@@ -46,7 +46,7 @@ public class AdminController extends Utility {
 
     @GetMapping("/{admin_id}")
     public ResponseEntity<GeneralApiResponse> findAdminById(@PathVariable("admin_id") Integer admin_id){
-        Optional<AdminDisplayDto> adminDisplayDto = adminService.findById(admin_id);
+        Optional<AdminDisplayDto> adminDisplayDto = adminService.findAdminById(admin_id);
         if(adminDisplayDto.isPresent()){
             return ResponseEntity.status(200).body(generateApiResponse(adminDisplayDto.get(), "Admin found"));
         }
@@ -77,7 +77,7 @@ public class AdminController extends Utility {
 
     @PutMapping("/updateAdmin")
     public ResponseEntity<GeneralApiResponse> updateAdmin(@RequestBody Admin newAdmin){
-        if(adminRepository.findById(newAdmin.getAdminId()).isPresent()){
+        if(adminRepository.findByEmail(newAdmin.getEmail()).isPresent()){
             AdminDisplayDto updatedAdmin = adminService.updateAdmin(newAdmin);
             return ResponseEntity.status(200).body(generateApiResponse(updatedAdmin, "admin has been successfully updated"));
         }

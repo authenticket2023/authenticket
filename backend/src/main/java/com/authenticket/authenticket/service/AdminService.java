@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface AdminService {
     List<AdminDisplayDto> findAllAdmin();
-    Optional<AdminDisplayDto> findById(Integer adminId);
+    Optional<AdminDisplayDto> findAdminById(Integer adminId);
     Admin saveAdmin(Admin admin);
     AdminDisplayDto updateAdmin(Admin newAdmin);
 

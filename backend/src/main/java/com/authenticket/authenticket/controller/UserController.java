@@ -39,16 +39,17 @@ public class UserController extends Utility {
 
     @GetMapping("/{user_id}")
     public ResponseEntity<GeneralApiResponse> findUserById(@PathVariable("user_id") Integer user_id) {
+        System.out.println("hello");
         Optional<UserDisplayDto> userDisplayDto = userService.findById(user_id);
         if(userDisplayDto.isPresent()){
             return ResponseEntity.status(200).body(generateApiResponse(userDisplayDto.get(), "User found"));
         }
-        return ResponseEntity.status(200).body(generateApiResponse(null, "User does not exist"));
+        return ResponseEntity.status(400).body(generateApiResponse(null, "User does not exist"));
     }
 
     @PutMapping("/updateUserProfile")
     public ResponseEntity<GeneralApiResponse> updateUser(@RequestBody User newUser) {
-        if(userRepository.findById(newUser.getUserId()).isPresent()){
+        if(userRepository.findByEmail(newUser.getEmail()).isPresent()){
             UserDisplayDto updatedUser = userService.updateUser(newUser);
             return ResponseEntity.status(200).body(generateApiResponse(updatedUser, "User has been successfully updated"));
         }
