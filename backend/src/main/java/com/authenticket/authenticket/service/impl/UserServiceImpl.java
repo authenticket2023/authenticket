@@ -71,8 +71,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return "error: user deleted unsuccessfully, user might not exist";
     }
 
-    public UserDisplayDto updateProfileImage(String filename, String userEmail){
-        Optional<User> userOptional = userRepository.findByEmail(userEmail);
+    public UserDisplayDto updateProfileImage(String filename, Integer userId){
+        Optional<User> userOptional = userRepository.findById(userId);
 
         if(userOptional.isPresent()){
             User existingUser = userOptional.get();

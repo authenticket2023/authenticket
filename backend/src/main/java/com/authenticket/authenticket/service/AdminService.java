@@ -14,6 +14,5 @@ public interface AdminService {
     Admin saveAdmin(Admin admin);
     AdminDisplayDto updateAdmin(Admin newAdmin);
 
-    //would include registering of EventOrganiser
-    EventOrganiser approveEventOrganiser (Integer organiserId, Admin admin);
+    //would include verifying registering of EventOrganiser
 }

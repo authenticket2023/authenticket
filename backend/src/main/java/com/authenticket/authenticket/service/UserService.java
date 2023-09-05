@@ -13,6 +13,6 @@ public interface UserService {
     UserDisplayDto updateUser(User newUser);
     //    Admin updateAdmin (AdminDto adminDto);
     String removeUser(Integer userId);
-    UserDisplayDto updateProfileImage(String filename, String userEmail);
+    UserDisplayDto updateProfileImage(String filename, Integer userId);
     // buy tickets
 }

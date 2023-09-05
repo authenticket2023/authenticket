@@ -1,5 +1,7 @@
-package com.authenticket.authenticket.controller.authentication;
+package com.authenticket.authenticket.controller;
 
+import com.authenticket.authenticket.controller.GeneralApiResponse;
+import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.service.impl.AuthenticationServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,6 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody User user
     ){
-
         return service.register(user);
     }
 

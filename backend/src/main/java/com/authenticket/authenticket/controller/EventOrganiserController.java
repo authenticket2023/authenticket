@@ -67,8 +67,8 @@ public class EventOrganiserController extends Utility {
 
     @PostMapping
     public ResponseEntity<?> saveEventOrganiser(@RequestParam("name") String name,
-                                       @RequestParam(value = "email") String email,
-                                       @RequestParam(value = "description") String description) {
+                                       @RequestParam("email") String email,
+                                       @RequestParam("description") String description) {
         EventOrganiser savedEventOrganiser;
         try {
             //save eventOrganiser first without image name to get the eventOrganiser id

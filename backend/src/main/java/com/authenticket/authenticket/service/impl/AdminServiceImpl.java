@@ -56,18 +56,6 @@ public class AdminServiceImpl implements AdminService, UserDetailsService {
         return null;
     }
 
-    public EventOrganiser approveEventOrganiser(Integer organiserId, Admin admin) {
-        Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
-
-        if (eventOrganiserOptional.isPresent() ) {
-            EventOrganiser eventOrg = eventOrganiserOptional.get();
-            eventOrg.setAdmin(admin);
-            eventOrganiserRepository.save(eventOrg);
-            return eventOrg;
-        }
-        return null;
-    }
-
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(

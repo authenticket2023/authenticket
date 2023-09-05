@@ -49,9 +49,9 @@ public class UserController {
     @PutMapping("/updateUserImage")
     public UserDisplayDto updateProfileImage(@RequestParam("profileImage")MultipartFile profileImage,
                                              @RequestParam("imageName") String imageName,
-                                             @RequestParam("userEmail") String userEmail) {
+                                             @RequestParam("userId") Integer userId) {
         amazonS3Service.uploadFile(profileImage, imageName, "user_profile");
-        return userService.updateProfileImage(imageName, userEmail);
+        return userService.updateProfileImage(imageName, userId);
     }
 
 }

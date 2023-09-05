@@ -32,11 +32,12 @@ public class Admin extends BaseEntity implements UserDetails {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
+    private String role = "ADMIN";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority("ADMIN");
+                new SimpleGrantedAuthority(role);
         return Collections.singletonList(authority);
     }
 

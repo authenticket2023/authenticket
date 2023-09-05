@@ -35,6 +35,7 @@ public class User extends BaseEntity implements UserDetails{
     private String profileImage;
     @Column(name = "enabled")
     private Boolean enabled = false;
+    private String role = "USER";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
