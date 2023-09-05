@@ -32,8 +32,8 @@ public class EventOrganiser extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "verified_by")
-    private Integer verifiedBy;
+    @Column(name = "approved_by")
+    private Integer approvedBy;
 
     @Column(name = "logo_image")
     private String logoImage;
@@ -41,6 +41,8 @@ public class EventOrganiser extends BaseEntity {
     @OneToMany( mappedBy = "organiser")
 //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Event> events = new ArrayList<>();
+
+    
 
 
 }

@@ -114,10 +114,10 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
 
         if (eventOrganiserOptional.isPresent()) {
-            EventOrganiser event = eventOrganiserOptional.get();
-            event.setVerifiedBy(adminId);
-            eventOrganiserRepository.save(event);
-            return event;
+            EventOrganiser eventOrganiser = eventOrganiserOptional.get();
+            eventOrganiser.setApprovedBy(adminId);
+            eventOrganiserRepository.save(eventOrganiser);
+            return eventOrganiser;
         }
         return null;
     }

@@ -3,6 +3,7 @@ package com.authenticket.authenticket.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
 import java.time.LocalDateTime;
 
@@ -46,9 +47,17 @@ public class Event extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
-
     @JoinColumn(name = "organiser_id",nullable = false)
     private EventOrganiser organiser;
+
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JsonIgnore
+//    @JoinColumn(name = "venue_id")
+//    private Venue venue;
+//
+//    //https://www.baeldung.com/jpa-many-to-many
+//    @ManyToMany
+//    private ArrayList<Artist> artistList;
 //
 //
 //    public Event(Integer eventId, String eventName, String eventDescription, LocalDateTime eventDate, String eventLocation, String otherEventInfo, String eventImage, LocalDateTime ticketSaleDate, EventOrganiser eventOrganiser) {

@@ -1,9 +1,8 @@
 package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.event.EventDisplayDtoMapper;
+import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
-import com.authenticket.authenticket.dto.event.EventUpdateDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -23,10 +22,7 @@ public class EventServiceImpl implements EventService {
     private EventRepository eventRepository;
 
     @Autowired
-    private EventDisplayDtoMapper eventDisplayDTOMapper;
-
-    @Autowired
-    private EventUpdateDtoMapper eventUpdateDtoMapper;
+    private EventDtoMapper eventDTOMapper;
 
     @Autowired
     private AmazonS3Service amazonS3Service;
@@ -34,12 +30,12 @@ public class EventServiceImpl implements EventService {
     public List<EventDisplayDto> findAllEvent() {
         return eventRepository.findAll()
                 .stream()
-                .map(eventDisplayDTOMapper)
+                .map(eventDTOMapper)
                 .collect(Collectors.toList());
     }
 
     public Optional<EventDisplayDto> findEventById(Integer eventId) {
-        return eventRepository.findById(eventId).map(eventDisplayDTOMapper);
+        return eventRepository.findById(eventId).map(eventDTOMapper);
     }
 
     public Event saveEvent(Event event) {
@@ -51,7 +47,7 @@ public class EventServiceImpl implements EventService {
 
         if (eventOptional.isPresent()) {
             Event existingEvent = eventOptional.get();
-            eventUpdateDtoMapper.apply(eventUpdateDto, existingEvent);
+            eventDTOMapper.update(eventUpdateDto, existingEvent);
             eventRepository.save(existingEvent);
             return existingEvent;
         }
