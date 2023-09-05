@@ -3,6 +3,8 @@ package com.authenticket.authenticket.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
 @Table(name = "event_organiser", schema = "dev")
 @EqualsAndHashCode(callSuper = true)
 public class EventOrganiser extends BaseEntity {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "organiser_id")
@@ -44,7 +48,8 @@ public class EventOrganiser extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
-
-    @JoinColumn(name = "approved_by",nullable = false)
+    @JoinColumn(name = "approved_by")
     private Admin admin;
+
+
 }

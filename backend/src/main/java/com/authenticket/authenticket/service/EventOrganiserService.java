@@ -15,13 +15,14 @@ public interface EventOrganiserService {
     Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId);
     EventOrganiser saveEventOrganiser (EventOrganiser eventOrganiser);
     EventOrganiser updateEventOrganiser (EventOrganiserUpdateDto eventOrganiserUpdateDto);
+    EventOrganiser updateEventOrganiserImage (Integer organiserId,String filename);
 
     //updates deleted_at field with datetime, DOES NOT really remove the event
     String deleteEventOrganiser (Integer organiserId);
     //actually removes the event
     String removeEventOrganiser (Integer organiserId);
 
-    EventOrganiser verifyOrganiser (Integer organiserId, Integer adminId);
+    EventOrganiser approveOrganiser(Integer organiserId, Integer adminId);
 
 //    EventOrganiser rejectOrganiser (Integer organiserId);
 }

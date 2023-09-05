@@ -2,11 +2,12 @@ package com.authenticket.authenticket.service.impl;
 
 
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDtoMapper;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDtoMapper;
+import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
+import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventOrganiserService;
@@ -26,18 +27,19 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
     private EventOrganiserRepository eventOrganiserRepository;
 
     @Autowired
-    private EventOrganiserDisplayDtoMapper eventOrganiserDisplayDtoMapper;
-
-    @Autowired
-    private EventOrganiserUpdateDtoMapper eventOrganiserUpdateDtoMapper;
+    private EventOrganiserDtoMapper eventOrganiserDtoMapper;
+    
 
     @Autowired
     private AmazonS3Service amazonS3Service;
+    
+    @Autowired
+    private AdminRepository adminRepository;
 
     public List<EventOrganiserDisplayDto> findAllEventOrganisers() {
         return eventOrganiserRepository.findAll()
                 .stream()
-                .map(eventOrganiserDisplayDtoMapper)
+                .map(eventOrganiserDtoMapper)
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +54,7 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
     }
 
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {
-        return eventOrganiserRepository.findById(organiserId).map(eventOrganiserDisplayDtoMapper);
+        return eventOrganiserRepository.findById(organiserId).map(eventOrganiserDtoMapper);
     }
 
     public EventOrganiser saveEventOrganiser(EventOrganiser eventOrganiser) {
@@ -64,7 +66,7 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
 
         if (eventOrganiserOptional.isPresent()) {
             EventOrganiser existingEventOrganiser = eventOrganiserOptional.get();
-            eventOrganiserUpdateDtoMapper.apply(eventOrganiserUpdateDto, existingEventOrganiser);
+            eventOrganiserDtoMapper.update(eventOrganiserUpdateDto, existingEventOrganiser);
             eventOrganiserRepository.save(existingEventOrganiser);
             return existingEventOrganiser;
         }
@@ -72,6 +74,20 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
         return null;
     }
 
+    @Override
+    public EventOrganiser updateEventOrganiserImage(Integer organiserId,String filename) {
+        Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
+
+        if (eventOrganiserOptional.isPresent()) {
+            EventOrganiser eventOrganiser = eventOrganiserOptional.get();
+            eventOrganiser.setLogoImage(filename);
+            eventOrganiserRepository.save(eventOrganiser);
+            return eventOrganiser;
+        } else{
+            return null;
+        }
+
+    }
 
     public String deleteEventOrganiser(Integer organiserId) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
@@ -110,12 +126,13 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
 
     }
 
-    public EventOrganiser verifyOrganiser(Integer organiserId, Integer adminId) {
+    public EventOrganiser approveOrganiser(Integer organiserId, Integer adminId) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
+        Optional<Admin> adminOptional = adminRepository.findById(adminId);
 
-        if (eventOrganiserOptional.isPresent()) {
+        if (eventOrganiserOptional.isPresent() && adminOptional.isPresent()) {
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
-            eventOrganiser.setApprovedBy(adminId);
+            eventOrganiser.setAdmin(adminOptional.get());
             eventOrganiserRepository.save(eventOrganiser);
             return eventOrganiser;
         }
