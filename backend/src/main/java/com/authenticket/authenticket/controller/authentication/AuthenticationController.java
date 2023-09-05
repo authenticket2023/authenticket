@@ -27,7 +27,7 @@ public class AuthenticationController {
         return service.confirmToken(token);
     }
 
-    @GetMapping("/authenticate")
+    @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody User user
     ){

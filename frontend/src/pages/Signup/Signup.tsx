@@ -17,6 +17,7 @@ import moment from 'moment';
 
 //image download
 import backgroundImage from '../../images/background.png';
+import dayjs from 'dayjs';
 
 function Copyright(props: any) {
   return (
@@ -53,9 +54,19 @@ export function Signup() {
   };
   
   const validateDob = (dob : any) => {
-    return dob < new Date(new Date().toDateString());
+    //get today's date with format YYYY-MM-DD
+    const today = new Date(),
+        currentDateTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
+      return dayjs(dob).isBefore(dayjs(currentDateTime));
+      
   }
 
+  const validatePassword = (password : any) => {
+    // Regular expression to validate password
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  }
 
   //variables
   const [email, setEmail] = useState('');
@@ -64,8 +75,11 @@ export function Signup() {
   const [dob, setDob] = useState('');
   //validation
   const [emailError, setEmailError] = useState(false);
-  const [helperText, setHelperText] = useState('');
+  const [emailHelperText, setEmailHelperText] = useState('');
   const [dobError, setDobError] = useState(false);
+  const [dobHelperText, setDobHelperText] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordHelperText, setPasswordHelperText] = useState('');
   //error , warning , info , success
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType] : any= useState('info');
@@ -88,22 +102,32 @@ export function Signup() {
 
   const signupHandler = async (event: any) => {
     event.preventDefault();
+
+    //checking validations, returning error message if conditions not met
     if (!validateEmail(email)) {
       setEmailError(true);
-      setHelperText('Please enter a valid email address');
+      setEmailHelperText('Please enter a valid email address');
       return;
     } else {
       setEmailError(false);
-      setHelperText('');
+      setEmailHelperText('');
     }
-    // if(!validateDob(dob)) {
-    //   setDobError(true);
-    //   setHelperText('Please enter a valid date of birth');
-    //   return;
-    // } else {
-    //   setDobError(false);
-    //   setHelperText('');
-    // }
+    if(!validateDob(dob)) {
+      setDobError(true);
+      setDobHelperText('Please enter a valid date of birth');
+      return;
+    } else {
+      setDobError(false);
+      setDobHelperText('');
+    }
+    if(!validatePassword(password)){
+      setPasswordError(true);
+      setPasswordHelperText('Please enter a valid password\nPassword Requirements:\n1.At least one alphabetic character (uppercase or lowercase)\n2.At least one digit\n3.Minimum length of 8 characters');
+      return;
+    } else {
+      setPasswordError(false);
+      setPasswordHelperText('');
+    }
 
     // //calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/register`, {
@@ -200,12 +224,14 @@ export function Signup() {
                   <DatePicker 
                   label="Date of Birth"
                   onChange={handleDob}
+                  disableFuture
+                  format="YYYY-MM-DD"
                   slotProps={{
                     textField: {
                     required: true,
                     fullWidth: true,
                     error: dobError,
-                    helperText: helperText,
+                    helperText: dobHelperText,
                     },
                   }}
                   />
@@ -222,7 +248,7 @@ export function Signup() {
                 autoFocus
                 size="medium"
                 error={emailError}
-                helperText={helperText}
+                helperText={emailHelperText}
                 onChange={handleEmail}
               />
               <TextField
@@ -234,6 +260,8 @@ export function Signup() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                error={passwordError}
+                helperText={passwordHelperText}
                 onChange={handlePassword}
               />
               <Button
