@@ -11,11 +11,9 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../images/authenticket_logo.png';
-import { Grid, InputBase, Paper } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import logo from '../images/logo(orange).png';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 export const NavbarNotLoggedIn = () => {
     let navigate = useNavigate();
@@ -60,14 +58,14 @@ export const NavbarNotLoggedIn = () => {
     }
 
     return (
-        <AppBar position="sticky" style={{ background: '#FFFFFF' }} >
+        <AppBar position="sticky" style={{ background: '#000000' }} >
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                <Link to="/Home">
-                    <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
-                </Link>
-                    {/* for hamburger bar */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, color: 'black' }}>
+                    <Link to="/Home">
+                        <img src={logo} alt="Logo" width={60} height={40} style={{ marginLeft: 20, marginRight: -8 }}></img>
+                    </Link>
+                    {/* for hamburger bar => dont know why bg color not working */}
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none', backgroundColor: 'black'}}}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -93,40 +91,56 @@ export const NavbarNotLoggedIn = () => {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                display: { xs: 'block', md: 'none'},
                             }}
                         >
                             <Button key='Home' onClick={handleHome} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
                             <Button key='Events' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Events</Button>
                             <Button key='Venues' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Venues</Button>
                             <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: 'black', display: 'block' }} >FAQ</Button>
-                            <Button key='Support' onClick={handleSupport} sx={{ my: 0, color: 'black', display: 'block' }} >Support</Button>
-                            <Button key='About' onClick={handleAbout} sx={{ my: 0, color: 'black', display: 'block' }} >About</Button>
+                            {/* <Button key='Support' onClick={handleSupport} sx={{ my: 0, color: 'white', display: 'block' }} >Support</Button>
+                            <Button key='About' onClick={handleAbout} sx={{ my: 0, color: 'white', display: 'block' }} >About</Button> */}
                             <Button key='Login' onClick={handleLogin} sx={{ my: 0, color: 'black', display: 'block' }} >Log In</Button>
                         </Menu>
                     </Box>
 
-                    <Box justifyContent="center" alignItems="center" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHome} sx={{ my: 2, color: 'black', display: 'block' }} >Home</Button>
-                        <Button key='Events' onClick={handleEvents} sx={{ my: 2, color: 'black', display: 'block' }} >Events</Button>
-                        <Button key='Venues' onClick={handleVenues} sx={{ my: 2, color: 'black', display: 'block' }} >Venues</Button>
-                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: 'black', display: 'block' }} >FAQ</Button>
-                        <Paper
-                            component="form"
-                            sx={{ p: '2px 4px', ml: 8, mr: 8 , display: 'flex', alignItems: 'center', border: '2px solid #FF5C35', borderRadius: 2.5, width: 400, height: 40 }}
-                        >
-                            <InputBase
-                                sx={{ ml: 1, flex: 1 }}
-                                placeholder="Search for Event"
-                                inputProps={{ 'aria-label': 'search for event' }}
-                            />
-                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                                <SearchIcon />
-                            </IconButton>
-                        </Paper>
-                        <Button key='login' onClick={handleLogin} sx={{ my: 2, color: 'black', display: 'block' }} >Log In</Button>
-                        <Button key='support' onClick={handleSupport} sx={{ my: 2, color: 'black', display: 'block' }} >Support</Button>
-                        <Button key='About' onClick={handleAbout} sx={{ my: 2, color: 'black', display: 'block' }} >About</Button>
+                    <Typography
+                        variant="h5"
+                        noWrap
+                        component="a"
+                        href=""
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'flex', md: 'none' },
+                            flexGrow: 1,
+                            fontFamily: 'Roboto',
+                            fontWeight: 700,
+                            letterSpacing: 0,
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        AuthenTicket
+                    </Typography>
+
+                    <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                        <Button key='Home' onClick={handleHome} sx={{ my: 2, ml: 4, color: 'white', display: 'block' }} >Home</Button>
+                        <Button key='Events' onClick={handleEvents} sx={{ my: 2, color: 'white', display: 'block' }} >Events</Button>
+                        <Button key='Venues' onClick={handleVenues} sx={{ my: 2, color: 'white', display: 'block' }} >Venues</Button>
+                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: 'white', display: 'block' }} >FAQ</Button>
+                    </Box>
+
+                    <Box justifyContent="right" alignItems="right" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, marginRight:5 }}>
+                        <IconButton type="button" onClick={handleLogin} sx={{
+                            p: '5px', color: 'white', border: '1px solid',
+                            borderColor: 'white',
+                            borderRadius: 15,
+                        }}>
+                            <AccountCircleOutlinedIcon sx={{ mr: 1, ml: 1 }} />
+                            <Typography sx={{ mr: 1 }}>
+                                LOGIN
+                            </Typography>
+                        </IconButton>
                     </Box>
 
                 </Toolbar>
@@ -135,8 +149,7 @@ export const NavbarNotLoggedIn = () => {
     );
 }
 
-//need modify
-export const ResponsiveAppBarAdmin = () => {
+export const NavbarOrganiser = () => {
     let navigate = useNavigate();
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -167,55 +180,178 @@ export const ResponsiveAppBarAdmin = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userName');
         localStorage.removeItem('accRole');
-        localStorage.removeItem('linkedElderly');
+        localStorage.removeItem('profileImage');
+        navigate('/login');
+    };
+
+    const handleHomeOrganiser = () => {
+        navigate('/HomeOrganiser');
+    }
+
+    const handleEventOrganiser = () => {
+        navigate('/EventOrganiser');
+    }
+
+    return (
+        <AppBar position="sticky" style={{ background: '#000000' }} >
+            <Container maxWidth="xl">
+                <Toolbar disableGutters>
+                    <Link to="/HomeOrganiser">
+                        <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
+                    </Link>
+
+                    {/* for hamburger bar */}
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={handleOpenNavMenu}
+                            color="inherit"
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorElNav}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(anchorElNav)}
+                            onClose={handleCloseNavMenu}
+                            sx={{
+                                display: { xs: 'block', md: 'none' },
+                            }}
+                        >
+                            <Button key='Home' onClick={handleHomeOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
+                            <Button key='Event' onClick={handleEventOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Event</Button>
+                        </Menu>
+                    </Box>
+                    <Typography
+                        variant="h5"
+                        noWrap
+                        component="a"
+                        href=""
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'flex', md: 'none' },
+                            flexGrow: 1,
+                            fontFamily: 'Roboto',
+                            fontWeight: 700,
+                            letterSpacing: 0,
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        }}
+                    >
+                        AuthenTicket
+                    </Typography>
+
+                    <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml:4, display: { xs: 'none', md: 'flex' } }}>
+                        <Button key='Home' onClick={handleHomeOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Home</Button>
+                        <Button key='Event' onClick={handleEventOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Event</Button>
+                    </Box>
+
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Open settings">
+                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                <Avatar alt="Remy Sharp" src={profileImageSrc} />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: '45px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseUserMenu}
+                        >
+                            <MenuItem key='Event' onClick={handleEventOrganiser}>
+                                <Typography textAlign="center">Event</Typography>
+                            </MenuItem>
+                            <MenuItem key='Logout' onClick={handledLogout}>
+                                <Typography textAlign="center">Log out</Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                </Toolbar>
+            </Container>
+        </AppBar>
+    );
+}
+
+export const NavbarAdmin = () => {
+    let navigate = useNavigate();
+
+    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+
+    let profileImage: any = window.localStorage.getItem('profileImage');
+    const profileImageSrc = `${process.env.REACT_APP_BACKEND_IMAGES_URL}/user_profile/${profileImage}`;
+
+
+    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElNav(event.currentTarget);
+    };
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
+
+    const handledLogout = () => {
+        setAnchorElUser(null);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('accRole');
         localStorage.removeItem('profileImage');
         navigate('/login');
     };
 
     const handleHomeAdmin = () => {
-        navigate('/Home-admin');
+        navigate('/HomeAdmin');
     }
 
-    const handleElderlyAdmin = () => {
-        navigate('/Elderly-admin');
+    const handleArtistAdmin = () => {
+        navigate('/ArtistAdmin');
     }
 
-    const handlePostAdmin = () => {
-        navigate('/Post-admin');
+    const handleEventAdmin = () => {
+        navigate('/EventAdmin');
     }
 
-    const handleRecordAdmin = () => {
-        navigate('/Record-admin');
+    const handleVenueAdmin = () => {
+        navigate('/VenueAdmin');
     }
-
-
-
 
     return (
-        <AppBar position="sticky" style={{ background: '#30685E' }} >
+        <AppBar position="sticky" style={{ background: '#000000' }} >
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="/Home-admin"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            fontFamily: 'Roboto',
-                            fontWeight: 500,
-                            letterSpacing: 0,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                            fontSize: 15,
-                            marginLeft: -1.3
-                        }}
-                    >
-                        Bridgify
-                    </Typography>
-
+                    <Link to="/HomeAdmin">
+                        <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
+                    </Link>
 
                     {/* for hamburger bar */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -248,10 +384,9 @@ export const ResponsiveAppBarAdmin = () => {
                             }}
                         >
                             <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
-                            <Button key='Elderly' onClick={handleElderlyAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Elderly</Button>
-                            <Button key='Post' onClick={handlePostAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Post</Button>
-                            <Button key='Record' onClick={handleRecordAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Records</Button>
-
+                            <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Artist</Button>
+                            <Button key='Event' onClick={handleEventAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Event</Button>
+                            <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Venue</Button>
                         </Menu>
                     </Box>
                     <Typography
@@ -270,14 +405,14 @@ export const ResponsiveAppBarAdmin = () => {
                             textDecoration: 'none',
                         }}
                     >
-                        Bridgify
+                        AuthenTicket
                     </Typography>
 
-                    <Box justifyContent="center" alignItems="center" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml:4, display: { xs: 'none', md: 'flex' } }}>
                         <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Home</Button>
-                        <Button key='Elderly' onClick={handleElderlyAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Elderly</Button>
-                        <Button key='Post' onClick={handlePostAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Post</Button>
-                        <Button key='Record' onClick={handleRecordAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Record</Button>
+                        <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Artist</Button>
+                        <Button key='Event' onClick={handleEventAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Event</Button>
+                        <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0, color: 'white', display: 'block' }} >Venue</Button>
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -302,14 +437,14 @@ export const ResponsiveAppBarAdmin = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            <MenuItem key='Elderly' onClick={handleElderlyAdmin}>
-                                <Typography textAlign="center">Elderly</Typography>
+                            <MenuItem key='Artist' onClick={handleArtistAdmin}>
+                                <Typography textAlign="center">Artist</Typography>
                             </MenuItem>
-                            <MenuItem key='Post' onClick={handlePostAdmin}>
-                                <Typography textAlign="center">Post</Typography>
+                            <MenuItem key='Event' onClick={handleEventAdmin}>
+                                <Typography textAlign="center">Event</Typography>
                             </MenuItem>
-                            <MenuItem key='Record' onClick={handleRecordAdmin}>
-                                <Typography textAlign="center">Record</Typography>
+                            <MenuItem key='Event' onClick={handleVenueAdmin}>
+                                <Typography textAlign="center">Venue</Typography>
                             </MenuItem>
                             <MenuItem key='Logout' onClick={handledLogout}>
                                 <Typography textAlign="center">Log out</Typography>
