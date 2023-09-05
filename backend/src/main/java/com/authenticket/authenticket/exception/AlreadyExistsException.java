@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.exception;
 
-public class AlreadyExistsException extends RuntimeException{
+public class AlreadyExistsException extends ApiRequestException{
     public AlreadyExistsException(String message) {
         super(message);
     }

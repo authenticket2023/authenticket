@@ -4,6 +4,8 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -89,21 +91,21 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
 
     }
 
-    public String deleteEventOrganiser(Integer organiserId) {
+    public void deleteEventOrganiser(Integer organiserId) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
 
         if (eventOrganiserOptional.isPresent()) {
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
             if (eventOrganiser.getDeletedAt() != null) {
-                return "event organiser already deleted";
+                throw new AlreadyDeletedException("Event organiser already deleted");
             }
 
             eventOrganiser.setDeletedAt(LocalDateTime.now());
             eventOrganiserRepository.save(eventOrganiser);
-            return "event organiser deleted successfully";
-        }
 
-        return "error: event organiser deleted unsuccessfully";
+        } else {
+            throw new NonExistentException("Event organiser does not exists");
+        }
     }
 
     public String removeEventOrganiser(Integer organiserId) {

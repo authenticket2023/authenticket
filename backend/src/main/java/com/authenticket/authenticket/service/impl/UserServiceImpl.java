@@ -2,6 +2,8 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
@@ -54,21 +56,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return null;
     }
 
-    public String removeUser(Integer userId){
+    public void deleteUser(Integer userId){
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if(user.getDeletedAt()!=null){
-                return "user already deleted";
+                throw new AlreadyDeletedException("User already deleted");
             }
 
             user.setDeletedAt(LocalDateTime.now());
             userRepository.save(user);
-            return "user deleted successfully";
+        } else {
+            throw new NonExistentException("User does not exists");
         }
-
-        return "error: user deleted unsuccessfully, user might not exist";
     }
 
     public UserDisplayDto updateProfileImage(String filename, Integer userId){

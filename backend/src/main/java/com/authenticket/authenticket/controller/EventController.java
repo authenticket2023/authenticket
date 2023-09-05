@@ -100,6 +100,7 @@ public class EventController extends Utility {
             // delete event from db if got error saving image
         } catch (AmazonS3Exception e) {
             eventService.deleteEvent(savedEvent.getEventId());
+
             String errorCode = e.getErrorCode();
             if ("AccessDenied".equals(errorCode)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
@@ -125,7 +126,7 @@ public class EventController extends Utility {
                                          @RequestParam(value = "eventLocation") String eventLocation,
                                          @RequestParam(value = "otherEventInfo") String otherEventInfo,
                                          @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate) {
-        try {
+
             EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate);
             Event event = eventService.updateEvent(eventUpdateDto);
 
@@ -134,11 +135,6 @@ public class EventController extends Utility {
             } else {
                 return ResponseEntity.status(404).body(generateApiResponse(null, "Event not found, update not successful."));
             }
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
-        }
-
     }
 
     @PutMapping("/{eventId}")
@@ -149,11 +145,7 @@ public class EventController extends Utility {
             return ResponseEntity.ok(generateApiResponse(null, String.format("Event %d Deleted Successfully", eventId)));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, e.getMessage()));
-        } catch (AlreadyDeletedException e) {
-            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
         }
-
-
     }
 
     //response not handled yet

@@ -4,6 +4,7 @@ import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -70,7 +71,7 @@ public class EventServiceImpl implements EventService {
             event.setDeletedAt(LocalDateTime.now());
             eventRepository.save(event);
         } else {
-            throw new IllegalArgumentException("Event does not exists");
+            throw new NonExistentException("Event does not exists");
         }
 
     }

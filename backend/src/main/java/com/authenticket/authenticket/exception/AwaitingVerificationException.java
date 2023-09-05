@@ -1,7 +1,6 @@
 package com.authenticket.authenticket.exception;
 
-public class AwaitingVerificationException extends RuntimeException{
-    private String userLabel;
+public class AwaitingVerificationException extends ApiRequestException{
     public AwaitingVerificationException(String message) {
         super(message);
     }
