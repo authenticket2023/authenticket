@@ -72,7 +72,7 @@ export const EventOrganiser = () => {
     //for EventDetails
     //get today's date with format YYYY-MM-DD HH:mm:ss
     const today = new Date(),
-        currentDateTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + today.getHours() + ':' + today.getHours() + ':' + today.getMinutes();
+        currentDateTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
 
     const [eventName, setEventName] = useState('');
     const [eventDate, setEventDate] = React.useState<Dayjs>(dayjs(currentDateTime));
