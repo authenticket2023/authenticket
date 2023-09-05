@@ -41,8 +41,21 @@ public class EventOrganiserController extends Utility {
 
 
     @GetMapping
-    public List<EventOrganiserDisplayDto> findAllEventOrganiser() {
-        return eventOrganiserService.findAllEventOrganisers();
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEventOrganiser() {
+        List<EventOrganiserDisplayDto> eventOrganiserList = eventOrganiserService.findAllEventOrganisers();
+        GeneralApiResponse<Object> req;
+        if(eventOrganiserList.isEmpty()){
+            req = GeneralApiResponse
+                    .builder()
+                    .message("No Events Found").build();
+
+
+        } else{
+            req = GeneralApiResponse
+                    .builder()
+                    .message("Events successfully returned.").data(eventOrganiserList).build();
+        }
+        return ResponseEntity.ok(req);
     }
 
     @GetMapping("/{organiserId}")

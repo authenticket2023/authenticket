@@ -3,6 +3,7 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -40,7 +41,7 @@ public class EventServiceImpl implements EventService {
     }
 
     public Event saveEvent(Event event) {
-     return eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
     public Event updateEvent(EventUpdateDto eventUpdateDto) {
@@ -57,21 +58,21 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    public String deleteEvent(Integer eventId) {
+    public void deleteEvent(Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
-            if(event.getDeletedAt()!=null){
-                return "event already deleted";
+            if (event.getDeletedAt() != null) {
+                throw new AlreadyDeletedException("Event already deleted");
             }
 
             event.setDeletedAt(LocalDateTime.now());
             eventRepository.save(event);
-            return "event deleted successfully";
+        } else {
+            throw new IllegalArgumentException("Event does not exists");
         }
 
-        return "error: event deleted unsuccessfully, event might not exist";
     }
 
     public String removeEvent(Integer eventId) {
@@ -82,7 +83,7 @@ public class EventServiceImpl implements EventService {
             Event event = eventOptional.get();
             String imageName = event.getEventImage();
             if (event.getEventImage() != null) {
-                    amazonS3Service.deleteFile(imageName, "event_organiser_profile");
+                amazonS3Service.deleteFile(imageName, "event_organiser_profile");
             }
             eventRepository.deleteById(eventId);
             return "event removed successfully";

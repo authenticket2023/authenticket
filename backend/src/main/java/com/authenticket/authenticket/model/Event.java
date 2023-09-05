@@ -1,10 +1,8 @@
 package com.authenticket.authenticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
 
 import java.time.LocalDateTime;
 
@@ -43,12 +41,18 @@ public class Event extends BaseEntity {
     @Column(name = "ticket_sale_date")
     private LocalDateTime ticketSaleDate;
 
+    @Column(name = "total_tickets")
+    private Integer totalTickets;
+
+    @Column(name = "total_tickets_sold")
+    private Integer totalTicketsSold = 0;
+
     @Column(name = "approved_by")
     private Integer approvedBy;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
-    @JoinColumn(name = "organiser_id",nullable = false)
+    @JoinColumn(name = "organiser_id", nullable = false)
     private EventOrganiser organiser;
 
 //    @ManyToOne(fetch = FetchType.EAGER)

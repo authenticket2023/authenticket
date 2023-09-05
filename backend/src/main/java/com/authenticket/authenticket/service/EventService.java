@@ -15,7 +15,7 @@ public interface EventService {
     Event updateEvent (EventUpdateDto eventUpdateDto);
 
     //updates deleted_at field with datetime, DOES NOT really remove the event
-    String deleteEvent (Integer eventId);
+    void deleteEvent (Integer eventId);
     //actually removes the event
     String removeEvent (Integer eventId);
 
