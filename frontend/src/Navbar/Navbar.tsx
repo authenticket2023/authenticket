@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '../images/authenticket_logo.png';
+import logo from '../images/logo(orange).png';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 export const NavbarNotLoggedIn = () => {
@@ -62,7 +62,7 @@ export const NavbarNotLoggedIn = () => {
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Link to="/Home">
-                        <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
+                        <img src={logo} alt="Logo" width={60} height={40} style={{ marginLeft: 20, marginRight: -8 }}></img>
                     </Link>
                     {/* for hamburger bar => dont know why bg color not working */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none', backgroundColor: 'black'}}}>
@@ -130,7 +130,7 @@ export const NavbarNotLoggedIn = () => {
                         <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: 'white', display: 'block' }} >FAQ</Button>
                     </Box>
 
-                    <Box justifyContent="right" alignItems="right" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                    <Box justifyContent="right" alignItems="right" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, marginRight:5 }}>
                         <IconButton type="button" onClick={handleLogin} sx={{
                             p: '5px', color: 'white', border: '1px solid',
                             borderColor: 'white',
