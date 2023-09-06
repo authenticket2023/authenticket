@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,11 +29,11 @@ public class Artist extends BaseEntity {
     @Column(name = "artist_image", nullable = true)
     private String artistImage;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "artist_event",
-            joinColumns = @JoinColumn(name = "artist_id", referencedColumnName = "artist_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "event_id"))
-    private Set<Event> events;
+    @ManyToMany(mappedBy ="artists", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinTable(
+//            name = "artist_event",
+//            joinColumns = @JoinColumn(name = "artist_id", referencedColumnName = "artist_id"),
+//            inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "event_id"))
+    private Set<Event> events = new HashSet<>();
 }
 

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,21 +116,21 @@ public class EventServiceImpl implements EventService {
     }
 
     public EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId) {
-        Optional<Artist> artistOptional = artistRepository.findById(artistId);
         Optional<Event> eventOptional = eventRepository.findById(eventId);
-
+        Optional<Artist> artistOptional = artistRepository.findById(artistId);
+        System.out.println("artist: " + artistId);
+        System.out.println("event: " +eventId);
         if (artistOptional.isPresent() && eventOptional.isPresent()) {
-            Event event = eventOptional.get();
             Artist artist = artistOptional.get();
-            if(!event.getArtists().contains(artist)){
+            Event event = eventOptional.get();
+            Set<Artist> artistSet= event.getArtists();
+            if(!artistSet.contains(artist)){
 
-            event.getArtists().add(artist); // Add artistId to the join table
+                artistSet.add(artist);
+                event.setArtists(artistSet);
 
-//            artist.getEvents().add(event);
-            eventRepository.save(event);
-//            artistRepository.save(artist);
-            return eventDTOMapper.apply(event);
-//            return artistDtoMapper.apply(artist);
+                eventRepository.save(event);
+                return eventDTOMapper.apply(event);
             } else {
                 throw new AlreadyExistsException("Artist already linked to stated event");
             }

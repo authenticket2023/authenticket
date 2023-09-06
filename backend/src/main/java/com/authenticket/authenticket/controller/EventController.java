@@ -187,7 +187,6 @@ public class EventController extends Utility {
     }
     @PutMapping("/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
-            //Artist and event shown in response
             @RequestParam("artistId") Integer artistId,
             @RequestParam("eventId") Integer eventId) {
         EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);

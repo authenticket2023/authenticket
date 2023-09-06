@@ -7,6 +7,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -62,15 +63,15 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
-    @ManyToMany(mappedBy= "events", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinTable(
-//            name = "artist_event",
-//            joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "event_id"),
-//            inverseJoinColumns = @JoinColumn(name = "artist_id", referencedColumnName = "artist_id"))
-    Set<Artist> artists;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            schema = "dev",
+            name = "artist_event",
+            joinColumns = {@JoinColumn(name = "event_id")},
+            inverseJoinColumns = {@JoinColumn(name = "artist_id")})
+    Set<Artist> artists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
     @JoinColumn(name="type_id",nullable = false)
     private EventType eventType;
 
