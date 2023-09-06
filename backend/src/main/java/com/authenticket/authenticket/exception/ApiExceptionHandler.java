@@ -30,10 +30,9 @@ public class ApiExceptionHandler extends Utility {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ApiException apiException = new ApiException(
-                e.getMessage() + e.getClass()
+                e.getMessage() + ": " + e.getClass()
         );
 
         return new ResponseEntity<>(apiException, status);
     }
-
 }
