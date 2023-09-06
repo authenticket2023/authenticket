@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import java.util.Set;
 
 @Data
 @Builder
@@ -55,7 +56,23 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "organiser_id", nullable = false)
     private EventOrganiser organiser;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(
+            name = "artist_event",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "artist_id"))
+    Set<Artist> artists;
+
+    //    @ManyToOne(fetch = FetchType.EAGER)
 //    @JsonIgnore
 //    @JoinColumn(name = "venue_id")
 //    private Venue venue;

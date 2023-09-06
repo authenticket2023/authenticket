@@ -7,7 +7,9 @@ import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
+import com.authenticket.authenticket.model.Venue;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
+import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
@@ -34,6 +36,9 @@ public class EventController extends Utility {
 
     @Autowired
     private EventOrganiserRepository eventOrganiserRepository;
+
+    @Autowired
+    private VenueRepository venueRepository;
 
     @GetMapping("/test")
     public String test() {
@@ -74,10 +79,11 @@ public class EventController extends Utility {
         String imageName;
         Event savedEvent;
         EventOrganiser eventOrganiser = eventOrganiserRepository.findById(organiserId).orElse(null);
+        Venue venue = venueRepository.findById(1).get();
 
         try {
             //save event first without image name to get the event id
-            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null, ticketSaleDate, totalTickets, null, null, eventOrganiser);
+            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null, ticketSaleDate, totalTickets, null, null, eventOrganiser, venue, null);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
