@@ -10,8 +10,7 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
     public ArtistDisplayDto apply(Artist artist){
         return new ArtistDisplayDto(
                 artist.getArtistName(),
-                artist.getArtistImage(),
-                artist.getEvents()
+                artist.getArtistImage()
         );
     }
 
