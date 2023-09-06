@@ -20,10 +20,6 @@ import BearCarousel, {
 export const Home = () => {
   useEffect(() => { }, []);
 
-
-  const syncCarouselRefA = React.useRef<BearCarousel>(null);
-  const syncCarouselRefB = React.useRef<BearCarousel>(null);
-
   const images = [
     { id: 1, color: "green" },
     { id: 2, color: "blue" },
@@ -50,9 +46,9 @@ export const Home = () => {
       <BearCarousel
         data={bearSlideItemData}
         height="400px"
-        isEnableNavButton
-        ref={syncCarouselRefA}
-        syncCarouselRef={syncCarouselRefB}
+        isEnableLoop
+        isDebug
+        isEnableAutoPlay
       />
     );
   };
@@ -74,7 +70,7 @@ export const Home = () => {
         key: row.id,
         children: <Box bgcolor="#FF5C35" marginTop={8}>
           <Typography variant="h6" color="white" marginLeft={2}>
-            Hot Now
+            Featured
           </Typography>
           <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
             Lauv: the between albums tour
@@ -102,10 +98,9 @@ export const Home = () => {
       <BearCarousel
         data={slideItemData}
         height="400px"
-        isEnablePagination
-        isEnableNavButton
-        ref={syncCarouselRefB}
-        syncCarouselRef={syncCarouselRefA}
+        isEnableAutoPlay
+        isEnableLoop
+        isDebug
       />
     );
   };
@@ -337,28 +332,6 @@ export const Home = () => {
             <CustomBanner></CustomBanner>
           </Grid>
           <Grid item xs={5} marginLeft={4}>
-            {/* <Typography variant="h6" color="white" marginLeft={2}>
-              Hot Now
-            </Typography>
-            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-              Lauv: the between albums tour
-            </Typography>
-            <Typography variant="subtitle2" justifyItems="center" color="white">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta
-              earum ullam repellat minus, cumque, tempore fugit officia delectus
-              omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto
-              maiores reprehenderit veritatis eveniet possimus ex odio? Reiciendis, ducimus.
-              Placeat recusandae nulla nisi vitae est quod libero sint? Laborum, at maiores.
-            </Typography>
-            <Box marginTop={2} marginLeft={2}>
-              <Button
-                variant="outlined"
-                sx={{ color: "white", borderColor: "white" }}
-              >
-                Get tickets
-              </Button>
-            </Box> */}
             <TextAnimationsCarousel></TextAnimationsCarousel>
           </Grid>
         </Grid>
@@ -367,11 +340,10 @@ export const Home = () => {
         Recently Added
       </Typography>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid item xs={12} marginBottom={8}>
           <TicketCarousel></TicketCarousel>
         </Grid>
       </Grid>
-      <TextAnimationsCarousel></TextAnimationsCarousel>
     </>
   );
 };
