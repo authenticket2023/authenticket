@@ -20,7 +20,8 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getTicketSaleDate(),
                 event.getCreatedAt(),
                 event.getUpdatedAt(),
-                event.getArtists());
+                event.getArtists(),
+                event.getEventTicketCategorySet());
     }
 
     public void update(EventUpdateDto dto, Event event) {

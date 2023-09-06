@@ -4,6 +4,9 @@ package com.authenticket.authenticket.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,4 +22,8 @@ public class TicketCategory extends BaseEntity {
 
     @Column(name = "category_name", nullable = false)
     private String categoryName;
+
+    @OneToMany
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
+    Set<EventTicketCategory> eventTicketCategorySet = new HashSet<>();
 }

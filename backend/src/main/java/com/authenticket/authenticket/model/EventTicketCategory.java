@@ -1,9 +1,18 @@
 package com.authenticket.authenticket.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "event_ticket_category")
+@Table(name = "event_ticket_category", schema = "dev")
+@IdClass(EventTicketCategoryId.class)
 public class EventTicketCategory {
     @Id
     @ManyToOne

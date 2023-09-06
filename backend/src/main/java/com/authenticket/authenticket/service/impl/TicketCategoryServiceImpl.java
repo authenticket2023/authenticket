@@ -3,15 +3,13 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDtoMapper;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDto;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.ApiRequestException;
-import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.TicketCategory;
-import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +34,11 @@ public class TicketCategoryServiceImpl {
     }
 
     public TicketCategory saveTicketCategory(String name) {
-        TicketCategory ticketCategory = new TicketCategory(null, name);
+        Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findByCategoryName(name);
+        if (ticketCategoryOptional.isPresent()) {
+            throw new AlreadyExistsException("Ticket Category with name '" + name + "'already exists");
+        }
+        TicketCategory ticketCategory = new TicketCategory(null, name, null);
         return ticketCategoryRepository.save(ticketCategory);
     }
 
