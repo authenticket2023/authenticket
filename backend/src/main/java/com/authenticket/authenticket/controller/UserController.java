@@ -38,9 +38,8 @@ public class UserController extends Utility {
     }
 
     @GetMapping("/{user_id}")
-    public ResponseEntity<GeneralApiResponse> findUserById(@PathVariable("user_id") Integer user_id) {
-        System.out.println("hello");
-        Optional<UserDisplayDto> userDisplayDto = userService.findById(user_id);
+    public ResponseEntity<GeneralApiResponse> findUserById(@PathVariable("user_id") Integer userId) {
+        Optional<UserDisplayDto> userDisplayDto = userService.findById(userId);
         if(userDisplayDto.isPresent()){
             return ResponseEntity.status(200).body(generateApiResponse(userDisplayDto.get(), "User found"));
         }
@@ -77,16 +76,16 @@ public class UserController extends Utility {
             }
 
         } catch (AmazonS3Exception e) {
-        String errorCode = e.getErrorCode();
-        if ("AccessDenied".equals(errorCode)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
-        } else if ("NoSuchBucket".equals(errorCode)) {
+            String errorCode = e.getErrorCode();
+            if ("AccessDenied".equals(errorCode)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
+            } else if ("NoSuchBucket".equals(errorCode)) {
 
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction."));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction."));
+            }
         }
-    }
 
     }
 

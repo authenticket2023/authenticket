@@ -1,14 +1,10 @@
 package com.authenticket.authenticket.controller;
 
-import com.authenticket.authenticket.controller.GeneralApiResponse;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
-import com.authenticket.authenticket.exception.AlreadyExistsException;
-import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.AwaitingVerificationException;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AuthenticationServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;

@@ -50,6 +50,4 @@ public class EventOrganiser extends BaseEntity {
     @JsonIgnore
     @JoinColumn(name = "approved_by")
     private Admin admin;
-
-
 }

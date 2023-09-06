@@ -1,8 +1,6 @@
 package com.authenticket.authenticket.dto.venue;
 
-import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.model.Venue;
-import jakarta.persistence.Column;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;

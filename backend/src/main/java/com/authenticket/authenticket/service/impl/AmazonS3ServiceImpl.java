@@ -64,6 +64,10 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
             fileName = "user_profile/" + imageName ;
         } else if (fileType.equals("event_organiser_profile")){
             fileName = "event_organiser_profile/" + imageName ;
+        } else if (fileType.equals("venue_image")){
+            fileName = "venue_image/" + imageName ;
+        }else if (fileType.equals("artist_image")){
+            fileName = "artist_image/" + imageName ;
         } else {
             //exception handling
             return null;

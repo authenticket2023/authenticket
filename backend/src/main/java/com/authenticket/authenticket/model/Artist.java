@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -23,10 +24,15 @@ public class Artist extends BaseEntity {
     @Column(name = "artist_name", nullable = false)
     private String artistName;
 
-    @Column(name = "artist_image")
+    @Column(name = "artist_image", nullable = true)
     private String artistImage;
 
     @ManyToMany
-    Set<Event> events;
+    @JoinTable(
+            name = "artist_event",
+            joinColumns = @JoinColumn(name = "artist_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private Set<Event> events = new HashSet<>();
 }
 
