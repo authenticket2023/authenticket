@@ -3,8 +3,8 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.repository.ArtistRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -33,6 +33,12 @@ public class EventOrganiserController extends Utility {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+//    @Autowired
+//    private ArtistEventRepository artistEventRepository;
+
+    @Autowired
+    private ArtistRepository artistRepository;
 
     @GetMapping("/test")
     public String test() {
@@ -69,6 +75,19 @@ public class EventOrganiserController extends Utility {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
 
     }
+
+//    @GetMapping("/events/findMappedOrganisers")
+//    public ResponseEntity<GeneralApiResponse> findMappedOrganisers() {
+//        List<ArtistEvent> artistEventList = artistEventRepository.findAll();
+//
+//        List<Artist> artists = artistRepository.findAll();
+//
+//        if (!events.isEmpty()) {
+//            return ResponseEntity.ok(generateApiResponse(events, String.format("All events hosted by organiser %d retrieved successfully", organiserId)));
+//        }
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
+//
+//    }
 
     @PostMapping
     public ResponseEntity<?> saveEventOrganiser(@RequestParam("name") String name,
@@ -137,7 +156,7 @@ public class EventOrganiserController extends Utility {
 
 
     @PutMapping("/{organiserId}")
-    public ResponseEntity<GeneralApiResponse<Object>> deleteEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
+    public ResponseEntity<GeneralApiResponse> deleteEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
 //        return eventOrganiserService.deleteEventOrganiser(organiserId);
 
 

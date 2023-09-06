@@ -121,6 +121,7 @@ public class EventServiceImpl implements EventService {
         System.out.println("artist: " + artistId);
         System.out.println("event: " +eventId);
         if (artistOptional.isPresent() && eventOptional.isPresent()) {
+            System.out.println("hello");
             Artist artist = artistOptional.get();
             Event event = eventOptional.get();
             Set<Artist> artistSet= event.getArtists();

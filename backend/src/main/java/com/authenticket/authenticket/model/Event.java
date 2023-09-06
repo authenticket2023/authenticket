@@ -63,13 +63,18 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
+//    @Getter
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             schema = "dev",
             name = "artist_event",
             joinColumns = {@JoinColumn(name = "event_id")},
             inverseJoinColumns = {@JoinColumn(name = "artist_id")})
-    Set<Artist> artists = new HashSet<>();
+    private Set<Artist> artists;
+
+//    public void setArtists(Set<Artist> artist){
+//        this.artists = artist;
+//    }
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="type_id",nullable = false)

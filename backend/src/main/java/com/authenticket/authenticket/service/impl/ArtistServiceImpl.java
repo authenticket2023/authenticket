@@ -24,7 +24,7 @@ public class ArtistServiceImpl {
     @Autowired
     private ArtistDtoMapper artistDtoMapper;
 
-    public List<ArtistDisplayDto> findAllEventOrganisers() {
+    public List<ArtistDisplayDto> findAllArtists() {
         return artistRepository.findAll()
                 .stream()
                 .map(artistDtoMapper)

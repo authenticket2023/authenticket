@@ -5,7 +5,8 @@ import com.authenticket.authenticket.model.Event;
 import java.util.Set;
 
 public record ArtistDisplayDto(String artistName,
-                               String artistImage) {
+                               String artistImage,
+                               Set<Event> eventSet) {
 }
 
 

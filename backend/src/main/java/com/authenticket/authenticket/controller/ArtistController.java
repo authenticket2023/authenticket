@@ -38,7 +38,7 @@ public class ArtistController extends Utility {
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllArtist() {
 
-        List<ArtistDisplayDto> artistList = artistService.findAllEventOrganisers();
+        List<ArtistDisplayDto> artistList = artistService.findAllArtists();
         if(artistList.isEmpty()){
             return ResponseEntity.ok(generateApiResponse(artistList, "No artists found."));
 

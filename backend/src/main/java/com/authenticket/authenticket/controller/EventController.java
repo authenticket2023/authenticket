@@ -1,12 +1,13 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
+import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
+import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.EventTypeRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
@@ -32,10 +34,10 @@ public class EventController extends Utility {
     private EventServiceImpl eventService;
 
     @Autowired
-    private ArtistServiceImpl artistService;
+    private AmazonS3Service amazonS3Service;
 
     @Autowired
-    private AmazonS3Service amazonS3Service;
+    private EventRepository eventRepository;
 
     @Autowired
     private EventOrganiserRepository eventOrganiserRepository;
@@ -45,6 +47,9 @@ public class EventController extends Utility {
 
     @Autowired
     private EventTypeRepository eventTypeRepository;
+
+    @Autowired
+    private EventDtoMapper eventDtoMapper;
 
     @GetMapping("/test")
     public String test() {
@@ -189,11 +194,25 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
             @RequestParam("artistId") Integer artistId,
             @RequestParam("eventId") Integer eventId) {
-        EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
-        if (artist != null) {
-            return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
-        } else {
-            return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
+        try{
+            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
+            if (artist != null) {
+                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
+            } else {
+                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
+            }
+        } catch (DataIntegrityViolationException | StackOverflowError e){
+            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+        }
+    }
+
+    @GetMapping("/getAssignedEvents")
+    public ResponseEntity<GeneralApiResponse> getAssignEvents(){
+        try{
+            List<Object[]> assignedObjects = eventRepository.getAssignedEvent();
+            return ResponseEntity.ok(generateApiResponse(eventDtoMapper.mapAssignedEvent(assignedObjects), "Assigned events returned"));
+        } catch(DataIntegrityViolationException e){
+            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
         }
     }
 
