@@ -12,9 +12,15 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
     @Autowired
     private PasswordEncoder passwordEncoder;
     public EventOrganiserDisplayDto apply(EventOrganiser organiser) {
+        Integer adminId = null;
+
+        if(organiser.getAdmin()!=null){
+            adminId = organiser.getAdmin().getAdminId();
+        }
+
         return new EventOrganiserDisplayDto(
                 organiser.getOrganiserId(), organiser.getName(), organiser.getEmail(),
-                organiser.getDescription(), organiser.getAdmin().getAdminId(), organiser.getLogoImage(),
+                organiser.getDescription(), adminId, organiser.getLogoImage(),
                 organiser.getCreatedAt(), organiser.getUpdatedAt());
     }
 
