@@ -10,6 +10,4 @@ import java.util.Optional;
 
 @Repository
 public interface TicketCategoryRepository extends JpaRepository<TicketCategory, Integer> {
-
-    List<TicketCategory> findByEvent(Event event);
 }

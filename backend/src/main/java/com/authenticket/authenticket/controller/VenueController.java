@@ -74,5 +74,4 @@ public class VenueController extends Utility {
         amazonS3Service.uploadFile(venueImage, imageName, "user_profile");
         return venueService.updateVenueImage(imageName, venueId);
     }
-
 }

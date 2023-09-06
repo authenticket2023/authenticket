@@ -3,7 +3,6 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
 import com.authenticket.authenticket.dto.ticket.TicketUpdateDto;
-import com.authenticket.authenticket.dto.ticket.TicketUpdateDtoMapper;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Ticket;
@@ -14,7 +13,6 @@ import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

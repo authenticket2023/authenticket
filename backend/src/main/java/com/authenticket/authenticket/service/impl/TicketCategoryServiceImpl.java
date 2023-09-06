@@ -3,7 +3,6 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDtoMapper;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDto;
-import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDtoMapper;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.TicketCategory;
@@ -25,9 +24,6 @@ public class TicketCategoryServiceImpl {
     @Autowired
     private TicketCategoryDisplayDtoMapper ticketCategoryDisplayDtoMapper;
 
-    @Autowired
-    private EventRepository eventRepository;
-
     public List<TicketCategoryDisplayDto> findAllTicketCategory() {
         return ticketCategoryRepository.findAll()
                 .stream()
@@ -39,27 +35,13 @@ public class TicketCategoryServiceImpl {
         return ticketCategoryRepository.findById(categoryId).map(ticketCategoryDisplayDtoMapper);
     }
 
-    public List<TicketCategoryDisplayDto> findTicketCategoryByEvent(Integer eventId) {
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null) {
-            return Collections.emptyList(); // Return an empty list if the event is not found
-        }
-        return ticketCategoryRepository.findByEvent(event)
-                .stream()
-                .map(ticketCategoryDisplayDtoMapper)
-                .collect(Collectors.toList());
-//        return ticketCategoryRepository.findByEvent(event).map(ticketCategoryDisplayDtoMapper);
-    }
-
-    public TicketCategory saveTicketCategory(Integer eventId, String name, Double price, Integer availableTickets) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new ApiRequestException("Error Saving Ticket Category: Event not found"));
-
-        TicketCategory ticketCategory = new TicketCategory(null, event, name, price, availableTickets);
+    public TicketCategory saveTicketCategory(String name) {
+        TicketCategory ticketCategory = new TicketCategory(null, name);
         return ticketCategoryRepository.save(ticketCategory);
     }
 
-    public TicketCategory updateTicketCategory(Integer categoryId, Integer eventId, String name, Double price, Integer availableTickets) {
-        TicketCategoryUpdateDto ticketCategoryUpdateDto = new TicketCategoryUpdateDto(categoryId, eventId, name, price, availableTickets);
+    public TicketCategory updateTicketCategory(Integer categoryId, String name) {
+        TicketCategoryUpdateDto ticketCategoryUpdateDto = new TicketCategoryUpdateDto(categoryId, name);
 
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(ticketCategoryUpdateDto.categoryId());
 
