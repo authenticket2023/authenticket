@@ -9,8 +9,10 @@ import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
+import com.authenticket.authenticket.model.EventType;
 import com.authenticket.authenticket.model.Venue;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
+import com.authenticket.authenticket.repository.EventTypeRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
@@ -44,6 +46,9 @@ public class EventController extends Utility {
     @Autowired
     private VenueRepository venueRepository;
 
+    @Autowired
+    private EventTypeRepository eventTypeRepository;
+
     @GetMapping("/test")
     public String test() {
         return "test successful";
@@ -73,25 +78,31 @@ public class EventController extends Utility {
     @PostMapping
     public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
                                        @RequestParam("eventName") String eventName,
-                                       @RequestParam(value = "eventDescription") String eventDescription,
-                                       @RequestParam(value = "eventDate") LocalDateTime eventDate,
-                                       @RequestParam(value = "eventLocation") String eventLocation,
-                                       @RequestParam(value = "otherEventInfo") String otherEventInfo,
-                                       @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate,
-                                       @RequestParam(value = "totalTickets") Integer totalTickets,
-                                       @RequestParam(value = "organiserId") Integer organiserId,
-                                       @RequestParam(value = "venueId") Integer venueId) {
+                                       @RequestParam("eventDescription") String eventDescription,
+                                       @RequestParam("eventDate") LocalDateTime eventDate,
+                                       @RequestParam("eventLocation") String eventLocation,
+                                       @RequestParam("otherEventInfo") String otherEventInfo,
+                                       @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
+                                       @RequestParam("totalTickets") Integer totalTickets,
+                                       @RequestParam("organiserId") Integer organiserId,
+                                       @RequestParam("venueId") Integer venueId,
+                                       @RequestParam("typeId") Integer typeId,
+                                       @RequestParam("artistId") String[] artistId) {
         String imageName;
         Event savedEvent;
         EventOrganiser eventOrganiser = eventOrganiserRepository.findById(organiserId).orElse(null);
         Venue venue = venueRepository.findById(venueId).orElse(null);
+        EventType eventType = eventTypeRepository.findById(typeId).orElse(null);
         if (venue == null) {
             throw new NonExistentException("Venue does not exist");
+        } else if (eventType == null){
+            throw new NonExistentException("Event Type does not exist");
         }
 
         try {
             //save event first without image name to get the event id
-            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null, ticketSaleDate, totalTickets, null, null, eventOrganiser, venue, null);
+            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null,
+                    ticketSaleDate, totalTickets, 0, null, eventOrganiser, venue, null, eventType);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -129,7 +140,7 @@ public class EventController extends Utility {
             return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
         }
 
-        return ResponseEntity.ok(savedEvent);
+        return ResponseEntity.ok(generateApiResponse(savedEvent, "Event created successfully."));
     }
 
     @PutMapping
@@ -141,14 +152,14 @@ public class EventController extends Utility {
                                          @RequestParam(value = "otherEventInfo") String otherEventInfo,
                                          @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate) {
 
-            EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate);
-            Event event = eventService.updateEvent(eventUpdateDto);
+        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate);
+        Event event = eventService.updateEvent(eventUpdateDto);
 
-            if (event != null) {
-                return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
-            } else {
-                return ResponseEntity.status(404).body(generateApiResponse(null, "Event not found, update not successful."));
-            }
+        if (event != null) {
+            return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
+        } else {
+            return ResponseEntity.status(404).body(generateApiResponse(null, "Event not found, update not successful."));
+        }
     }
 
     @PutMapping("/{eventId}")

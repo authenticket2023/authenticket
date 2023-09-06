@@ -9,15 +9,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_category", schema = "dev")
+@Table(name = "event_type", schema = "dev")
 @EqualsAndHashCode(callSuper = true)
-public class EventCategory extends BaseEntity {
+public class EventType extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Integer categoryId;
+    @Column(name = "type_id")
+    private Integer eventTypeId;
 
-    @Column(name = "category_name", nullable = false)
-    private String categoryName;
+    @Column(name = "type_name", nullable = false)
+    private String eventTypeName;
 }
 
