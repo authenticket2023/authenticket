@@ -7,10 +7,11 @@ import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Artist;
-import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.ArtistRepository;
 import com.authenticket.authenticket.repository.EventRepository;
+import com.authenticket.authenticket.repository.EventTicketCategoryRepository;
+import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private ArtistRepository artistRepository;
+
+    @Autowired
+    private TicketCategoryRepository ticketCategoryRepository;
+
+    @Autowired
+    private EventTicketCategoryRepository eventTicketCategoryRepository;
 
     @Autowired
     private EventDtoMapper eventDTOMapper;
@@ -139,6 +146,37 @@ public class EventServiceImpl implements EventService {
                 throw new NonExistentException("Artist does not exists");
             } else {
                 throw new NonExistentException("Event does not exists");
+            }
+        }
+    }
+
+    public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
+        if (categoryOptional.isPresent() && eventOptional.isPresent()) {
+            TicketCategory ticketCategory = categoryOptional.get();
+            Event event = eventOptional.get();
+
+            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Set<EventTicketCategory> eventTicketCategorySet = event.getEventTicketCategorySet();
+
+            if(eventTicketCategoryOptional.isEmpty()){
+                EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat);
+                eventTicketCategoryRepository.save(eventTicketCategory);
+
+                eventTicketCategorySet.add(new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat));
+                event.setEventTicketCategorySet(eventTicketCategorySet);
+
+                eventRepository.save(event);
+                return eventDTOMapper.apply(event);
+            } else {
+                throw new AlreadyExistsException("Ticket Category already linked to stated event");
+            }
+        } else {
+            if (categoryOptional.isEmpty()){
+                throw new NonExistentException("Category does not exist");
+            } else {
+                throw new NonExistentException("Event does not exist");
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.exception.NonExistentException;
@@ -99,7 +98,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null,
-                    ticketSaleDate, totalTickets, 0, null, eventOrganiser, venue, null, eventType);
+                    ticketSaleDate, totalTickets, 0, null, eventOrganiser, venue, null, eventType, null);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -185,6 +184,7 @@ public class EventController extends Utility {
 
         }
     }
+
     @PutMapping("/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
             @RequestParam("artistId") Integer artistId,
@@ -194,6 +194,21 @@ public class EventController extends Utility {
             return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
         } else {
             return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
+        }
+    }
+
+    @PutMapping("/addTicketCategory")
+    public ResponseEntity<GeneralApiResponse> addTicketCategory(
+            @RequestParam("catId") Integer catId,
+            @RequestParam("eventId") Integer eventId,
+            @RequestParam("price") Double price,
+            @RequestParam("availableTickets") Integer availableTickets,
+            @RequestParam("totalTicketsPerCat") Integer totalTicketsPerCat) {
+        EventDisplayDto eventDisplayDto = eventService.addTicketCategory(catId, eventId, price, availableTickets, totalTicketsPerCat);
+        if (eventDisplayDto != null) {
+            return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully added to event"));
+        } else {
+            return ResponseEntity.status(401).body(generateApiResponse(null, "Ticket Category failed to be added"));
         }
     }
 

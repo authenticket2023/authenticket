@@ -1,7 +1,6 @@
 package com.authenticket.authenticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -74,6 +73,22 @@ public class Event extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="type_id",nullable = false)
     private EventType eventType;
+
+    @OneToMany
+    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
+    Set<EventTicketCategory> eventTicketCategorySet = new HashSet<>();
+
+//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinTable(name = "event_ticket_category", joinColumns = {@JoinColumn(table = "event",
+//            name = "event_id",
+//            referencedColumnName = "event_id"),
+//            @JoinColumn(table = "ticket_categories",
+//                    name = "category_id",
+//                    referencedColumnName = "category_id")},
+//            inverseJoinColumns = {@JoinColumn(table = "event",
+//                    name="event_id",
+//                    referencedColumnName = "event_id")})
+//    Set<EventTicketCategory> eventTicketCategorySet = new HashSet<>();
 
     //    @ManyToOne(fetch = FetchType.EAGER)
 //    @JsonIgnore
