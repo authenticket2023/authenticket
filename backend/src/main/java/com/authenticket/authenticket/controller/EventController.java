@@ -4,7 +4,9 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
+import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.Venue;
@@ -13,6 +15,7 @@ import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
+import com.authenticket.authenticket.service.impl.VenueServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -75,11 +79,15 @@ public class EventController extends Utility {
                                        @RequestParam(value = "otherEventInfo") String otherEventInfo,
                                        @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate,
                                        @RequestParam(value = "totalTickets") Integer totalTickets,
-                                       @RequestParam(value = "organiserId") Integer organiserId) {
+                                       @RequestParam(value = "organiserId") Integer organiserId,
+                                       @RequestParam(value = "venueId") Integer venueId) {
         String imageName;
         Event savedEvent;
         EventOrganiser eventOrganiser = eventOrganiserRepository.findById(organiserId).orElse(null);
-        Venue venue = venueRepository.findById(1).get();
+        Venue venue = venueRepository.findById(venueId).orElse(null);
+        if (venue == null) {
+            throw new NonExistentException("Venue does not exist");
+        }
 
         try {
             //save event first without image name to get the event id
