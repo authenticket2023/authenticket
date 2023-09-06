@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -61,11 +62,11 @@ public class Event extends BaseEntity {
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "artist_event",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "artist_id"))
+    @ManyToMany(mappedBy= "events", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinTable(
+//            name = "artist_event",
+//            joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "event_id"),
+//            inverseJoinColumns = @JoinColumn(name = "artist_id", referencedColumnName = "artist_id"))
     Set<Artist> artists;
 
     @ManyToOne(fetch = FetchType.EAGER)

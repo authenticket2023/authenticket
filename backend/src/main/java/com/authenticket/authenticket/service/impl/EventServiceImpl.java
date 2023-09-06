@@ -1,11 +1,15 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.model.Artist;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.repository.ArtistRepository;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
@@ -23,9 +27,14 @@ public class EventServiceImpl implements EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private ArtistRepository artistRepository;
 
     @Autowired
     private EventDtoMapper eventDTOMapper;
+
+    @Autowired
+    private ArtistDtoMapper artistDtoMapper;
 
     @Autowired
     private AmazonS3Service amazonS3Service;
@@ -104,4 +113,33 @@ public class EventServiceImpl implements EventService {
         }
         return null;
     }
+
+    public EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId) {
+        Optional<Artist> artistOptional = artistRepository.findById(artistId);
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+        if (artistOptional.isPresent() && eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            Artist artist = artistOptional.get();
+            if(!event.getArtists().contains(artist)){
+
+            event.getArtists().add(artist); // Add artistId to the join table
+
+//            artist.getEvents().add(event);
+            eventRepository.save(event);
+//            artistRepository.save(artist);
+            return eventDTOMapper.apply(event);
+//            return artistDtoMapper.apply(artist);
+            } else {
+                throw new AlreadyExistsException("Artist already linked to stated event");
+            }
+        } else {
+            if (artistOptional.isEmpty()){
+                throw new NonExistentException("Artist does not exists");
+            } else {
+                throw new NonExistentException("Event does not exists");
+            }
+        }
+    }
+
 }

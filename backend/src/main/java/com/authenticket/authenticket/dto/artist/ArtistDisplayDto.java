@@ -1,9 +1,13 @@
 package com.authenticket.authenticket.dto.artist;
 
-import java.time.LocalDate;
+import com.authenticket.authenticket.model.Event;
+
+import java.util.Set;
 
 public record ArtistDisplayDto(String artistName,
-                               String artistImage) {
+                               String artistImage,
+
+                               Set<Event> eventList) {
 }
 
 

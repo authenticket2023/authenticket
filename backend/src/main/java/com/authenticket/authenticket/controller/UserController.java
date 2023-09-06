@@ -37,8 +37,8 @@ public class UserController extends Utility {
         return "test successful";
     }
 
-    @GetMapping("/{user_id}")
-    public ResponseEntity<GeneralApiResponse> findUserById(@PathVariable("user_id") Integer userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<GeneralApiResponse> findUserById(@PathVariable("userId") Integer userId) {
         Optional<UserDisplayDto> userDisplayDto = userService.findById(userId);
         if(userDisplayDto.isPresent()){
             return ResponseEntity.status(200).body(generateApiResponse(userDisplayDto.get(), "User found"));

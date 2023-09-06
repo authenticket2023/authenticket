@@ -48,6 +48,6 @@ public class EventOrganiser extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
-    @JoinColumn(name = "approved_by")
+    @JoinColumn(name = "approved_by", nullable = true)
     private Admin admin;
 }

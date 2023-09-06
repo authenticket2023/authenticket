@@ -2,6 +2,7 @@ package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.model.Artist;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 @RestController
 @RequestMapping(path = "/api/artist")
@@ -33,9 +35,22 @@ public class ArtistController extends Utility {
         return "test successful";
     }
 
+    @GetMapping
+    public ResponseEntity<GeneralApiResponse<Object>> findAllArtist() {
+
+        List<ArtistDisplayDto> artistList = artistService.findAllEventOrganisers();
+        if(artistList.isEmpty()){
+            return ResponseEntity.ok(generateApiResponse(artistList, "No artists found."));
+
+        } else{
+            return ResponseEntity.ok(generateApiResponse(artistList, "Artists successfully returned."));
+
+        }
+    }
+
     @GetMapping("/{artistId}")
     public ResponseEntity<GeneralApiResponse> findArtistById(@PathVariable("artistId") Integer artistId) {
-        Optional<ArtistDisplayDto> artistDisplayDto = artistService.findById(artistId);
+        Optional<ArtistDisplayDto> artistDisplayDto = artistService.findByArtistId(artistId);
         if(artistDisplayDto.isPresent()){
             return ResponseEntity.status(200).body(generateApiResponse(artistDisplayDto.get(), "User found"));
         }
@@ -58,30 +73,31 @@ public class ArtistController extends Utility {
 
     }
 
-//    @PutMapping("/updateUserImage")
-//    public ResponseEntity<GeneralApiResponse<Object>> updateProfileImage(@RequestParam("profileImage") MultipartFile profileImage,
-//                                                                         @RequestParam("imageName") String imageName,
-//                                                                         @RequestParam("userId") Integer userId) {
-//        try{
-//            if(userRepository.findById(userId).isPresent()){
-//                amazonS3Service.uploadFile(profileImage, imageName, "user_profile");
-//                return ResponseEntity.ok(generateApiResponse(userService.updateProfileImage(imageName, userId),"Profile Image Uploaded Successfully."));
-//            } else {
-//                return ResponseEntity.status(400).body(generateApiResponse(userService.updateProfileImage(imageName, userId),"Profile Image Uploaded Failed."));
-//            }
-//
-//        } catch (AmazonS3Exception e) {
-//            String errorCode = e.getErrorCode();
-//            if ("AccessDenied".equals(errorCode)) {
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
-//            } else if ("NoSuchBucket".equals(errorCode)) {
-//
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
-//            } else {
-//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction."));
-//            }
-//        }
-//
-//    }
+    @PutMapping("/updateArtistImage")
+    public ResponseEntity<GeneralApiResponse<Object>> updateArtistImage(@RequestParam("artistImage") MultipartFile artistImage,
+                                                                         @RequestParam("imageName") String imageName,
+                                                                         @RequestParam("artistId") Integer artistId) {
+        try{
+            if(artistRepository.findById(artistId).isPresent()){
+                amazonS3Service.uploadFile(artistImage, imageName, "artist_image");
+                return ResponseEntity.ok(generateApiResponse(artistService.updateArtistImage(imageName, artistId),"Artist Image Uploaded Successfully."));
+            } else {
+                return ResponseEntity.status(400).body(generateApiResponse(artistService.updateArtistImage(imageName, artistId),"Artist Image Uploaded Failed."));
+            }
+
+        } catch (AmazonS3Exception e) {
+            String errorCode = e.getErrorCode();
+            if ("AccessDenied".equals(errorCode)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
+            } else if ("NoSuchBucket".equals(errorCode)) {
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction."));
+            }
+        }
+    }
+
+
 
 }

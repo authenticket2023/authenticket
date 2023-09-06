@@ -2,6 +2,7 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Artist;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -21,7 +24,14 @@ public class ArtistServiceImpl {
     @Autowired
     private ArtistDtoMapper artistDtoMapper;
 
-    public Optional<ArtistDisplayDto> findById(Integer artistId) {
+    public List<ArtistDisplayDto> findAllEventOrganisers() {
+        return artistRepository.findAll()
+                .stream()
+                .map(artistDtoMapper)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<ArtistDisplayDto> findByArtistId(Integer artistId) {
         return artistRepository.findById(artistId).map(artistDtoMapper);
     }
 
@@ -70,4 +80,6 @@ public class ArtistServiceImpl {
         }
         return null;
     }
+
+
 }

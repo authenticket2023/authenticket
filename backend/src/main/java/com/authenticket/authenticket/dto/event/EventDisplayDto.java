@@ -1,6 +1,9 @@
 package com.authenticket.authenticket.dto.event;
 
+import com.authenticket.authenticket.model.Artist;
+
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public record EventDisplayDto(Integer eventId,
                               String eventName,
@@ -10,7 +13,8 @@ public record EventDisplayDto(Integer eventId,
                               String otherEventInfo,
                               LocalDateTime ticketSaleDate,
                               LocalDateTime createdAt,
-                              LocalDateTime updatedAt
+                              LocalDateTime updatedAt,
+                              Set<Artist> artistSet
 //                       LocalDateTime deletedAt
 ) {
 }

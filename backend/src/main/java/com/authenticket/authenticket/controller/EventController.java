@@ -1,23 +1,18 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
-import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.EventOrganiser;
-import com.authenticket.authenticket.model.EventType;
-import com.authenticket.authenticket.model.Venue;
+import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.repository.EventTypeRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
+import com.authenticket.authenticket.service.impl.ArtistServiceImpl;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
-import com.authenticket.authenticket.service.impl.VenueServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -25,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +30,9 @@ import java.util.Optional;
 public class EventController extends Utility {
     @Autowired
     private EventServiceImpl eventService;
+
+    @Autowired
+    private ArtistServiceImpl artistService;
 
     @Autowired
     private AmazonS3Service amazonS3Service;
@@ -130,7 +127,6 @@ public class EventController extends Utility {
             if ("AccessDenied".equals(errorCode)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
             } else if ("NoSuchBucket".equals(errorCode)) {
-
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction."));
@@ -189,6 +185,17 @@ public class EventController extends Utility {
 
         }
     }
-
+    @PutMapping("/addArtistToEvent")
+    public ResponseEntity<GeneralApiResponse> addArtistToEvent(
+            //Artist and event shown in response
+            @RequestParam("artistId") Integer artistId,
+            @RequestParam("eventId") Integer eventId) {
+        EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
+        if (artist != null) {
+            return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
+        } else {
+            return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
+        }
+    }
 
 }
