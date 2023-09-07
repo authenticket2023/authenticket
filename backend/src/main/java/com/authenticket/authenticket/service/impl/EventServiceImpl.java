@@ -64,6 +64,21 @@ public class EventServiceImpl implements EventService {
         return null;
     }
 
+    public List<EventHomeDto> findRecentlyAddedEvents(){
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByOrderByCreatedAtDesc());
+
+    };
+    public List<EventHomeDto> findFeaturedEvents(){
+        return null;
+    };
+    public List<EventHomeDto> findBestSellerEvents(){
+        return null;
+    };
+    public List<EventHomeDto> findUpcomingEvents(){
+        LocalDateTime currentDate = LocalDateTime.now();
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByTicketSaleDateAfterOrderByTicketSaleDateAsc(currentDate));
+    };
+
     public Event saveEvent(Event event) {
         return eventRepository.save(event);
     }

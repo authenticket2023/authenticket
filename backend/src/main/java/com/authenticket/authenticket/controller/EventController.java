@@ -92,6 +92,28 @@ public class EventController extends Utility {
 
     }
 
+    @GetMapping("/recently-added")
+    public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
+        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
+        if(eventList == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No recently added events found")));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
+
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
+        List<EventHomeDto> eventList = eventService.findUpcomingEvents();
+        if(eventList == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No upcoming events found")));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
+
+    }
+
+
+
     @PostMapping
     public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
                                        @RequestParam("eventName") String eventName,

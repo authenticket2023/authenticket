@@ -48,6 +48,20 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventTicketCategorySet());
     }
 
+    public EventHomeDto applyEventHomeDto(Event event) {
+        return new EventHomeDto(
+                event.getEventId(),
+                event.getEventName(),
+                event.getEventDescription(),
+                event.getEventImage());
+    }
+
+    public List<EventHomeDto> mapEventHomeDto(List<Event> eventList) {
+        return eventList.stream()
+                .map(this::applyEventHomeDto)
+                .collect(Collectors.toList());
+    }
+
     public void update(EventUpdateDto dto, Event event) {
         if (dto.eventName() != null) {
             event.setEventName(dto.eventName());
@@ -123,11 +137,5 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 eventTypeName
         );
     }
-
-//    public List<OverallEventDto> mapOverallEventDto(List<Object[]> eventObjects) {
-//        return eventObjects.stream()
-//                .map(this::applyOverallEventDto)
-//                .collect(Collectors.toList());
-//    }
 
 }
