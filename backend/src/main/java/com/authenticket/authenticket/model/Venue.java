@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
 @Table(name = "venue", schema = "dev")
 @EqualsAndHashCode(callSuper = true)
 public class Venue extends BaseEntity {

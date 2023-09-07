@@ -2,10 +2,10 @@ package com.authenticket.authenticket.dto.event;
 
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
-import com.authenticket.authenticket.model.EventOrganiser;
-import com.authenticket.authenticket.model.TicketCategory;
+import com.authenticket.authenticket.model.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,9 +21,9 @@ public record OverallEventDto(
         Integer totalTickets,
         Integer totalTicketsSold,
         LocalDateTime ticketSaleDate,
-        Object ticketCategory,//object
+        Set<EventTicketCategoryDisplayDto> ticketCategory,//object
         EventOrganiserDisplayDto organiser, //object
-        VenueDisplayDto venue, //object
+        Venue venue, //object
         Set<ArtistDisplayDto> artists, //object
         String type //object
 ) {
