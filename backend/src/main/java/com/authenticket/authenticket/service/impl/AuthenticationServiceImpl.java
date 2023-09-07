@@ -233,7 +233,6 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         if(existingAdmin.isPresent()){
             throw new AlreadyExistsException("Admin already exists");
         }
-        request.setEnabled(true);
         adminRepository.save(request);
     }
 

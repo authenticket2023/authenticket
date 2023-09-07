@@ -26,12 +26,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
-//    @Autowired
-//    private UserDetailsService adminDetailsService;
-//
-//    @Autowired
-//    private UserDetailsService eventOrgDetailsService;
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -52,8 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().getAuthentication() == null)
             {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-//                UserDetails adminDetails = this.adminDetailsService.loadUserByUsername(userEmail);
-//                UserDetails eventOrgDetails = this.eventOrgDetailsService.loadUserByUsername(userEmail);
                 if(jwtServiceImpl.isTokenValid(jwt, userDetails)){
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,

@@ -32,8 +32,7 @@ public class Admin extends BaseEntity implements UserDetails {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "enabled")
-    private Boolean enabled = true;
+
     @Getter
     private static String role = "ADMIN";
 //    private static Boolean enabled = true;
@@ -57,22 +56,22 @@ public class Admin extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.enabled;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.enabled;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.enabled;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return true;
     }
 
     @OneToMany(mappedBy = "admin")

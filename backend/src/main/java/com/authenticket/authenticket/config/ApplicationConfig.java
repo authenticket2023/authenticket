@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.config;
 
+import com.authenticket.authenticket.exception.AwaitingVerificationException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.AdminRepository;
@@ -43,10 +44,16 @@ public class ApplicationConfig {
             if (adminOptional.isPresent()) {
                 return new User(adminOptional.get().getEmail(), adminOptional.get().getPassword(), Collections.emptyList());
             } else if (userOptional.isPresent()){
-                return new User(userOptional.get().getEmail(), userOptional.get().getPassword(), Collections.emptyList());
+                if(userOptional.get().getEnabled()) {
+                    return new User(userOptional.get().getEmail(), userOptional.get().getPassword(), Collections.emptyList());
+                }
+                throw new AwaitingVerificationException("Verification required");
             } else if(eventOrganiserOptional.isPresent()){
-                return new User(eventOrganiserOptional.get().getEmail(), eventOrganiserOptional.get().getPassword(), Collections.emptyList());
-            } else {
+                if(eventOrganiserOptional.get().getEnabled()){
+                    return new User(eventOrganiserOptional.get().getEmail(), eventOrganiserOptional.get().getPassword(), Collections.emptyList());
+                }
+                throw new AwaitingVerificationException("Verification required");
+            }else {
                 throw new UsernameNotFoundException("User not found");
             }
         };
