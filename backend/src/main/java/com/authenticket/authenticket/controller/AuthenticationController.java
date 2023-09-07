@@ -58,7 +58,7 @@ public class AuthenticationController extends Utility{
             AuthenticationResponse response = service.authenticate(user);
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome"));
         } catch (UsernameNotFoundException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null,e.getMessage()));
+            return ResponseEntity.status(404).body(generateApiResponse(null,e.getMessage()));
         }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));
