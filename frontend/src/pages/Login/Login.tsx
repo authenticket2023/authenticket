@@ -92,7 +92,7 @@ export function Login() {
 
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them
-          localStorage.setItem('accessToken', loginResponse.token);
+          localStorage.setItem('accessToken', loginResponse.data.token);
           localStorage.setItem('email', loginResponse.data.userDetails.email);
           localStorage.setItem('username', loginResponse.data.userDetails.name);
           localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
