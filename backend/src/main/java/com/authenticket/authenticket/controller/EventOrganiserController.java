@@ -4,11 +4,9 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.repository.ArtistRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.model.EventOrganiser;
-
 import com.authenticket.authenticket.service.impl.EventOrganiserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,12 +31,6 @@ public class EventOrganiserController extends Utility {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-//    @Autowired
-//    private ArtistEventRepository artistEventRepository;
-
-    @Autowired
-    private ArtistRepository artistRepository;
 
     @GetMapping("/test")
     public String test() {
