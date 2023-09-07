@@ -79,8 +79,16 @@ export const EventOrganiser = () => {
     const [saleDate, setSaleDate] = React.useState<Dayjs>(dayjs(currentDateTime));
     const [eventDescription, setEventDescription] = useState('');
     const [otherInfo, setOtherInfo] = useState('');
-    const [ticketNumber, setTicketNumber] = useState(0);
-
+    const [ticketNumberVIP, setTicketNumberVIP] = useState(0);
+    const [ticketNumberCat1, setTicketNumberCat1] = useState(0);
+    const [ticketNumberCat2, setTicketNumberCat2] = useState(0);
+    const [ticketNumberCat3, setTicketNumberCat3] = useState(0);
+    const [ticketNumberCat4, setTicketNumberCat4] = useState(0);
+    const [VIPPrice, setVIPPrice] = useState(0);
+    const [cat1Price, setCat1Price] = useState(0);
+    const [cat2Price, setCat2Price] = useState(0);
+    const [cat3Price, setCat3Price] = useState(0);
+    const [cat4Price, setCat4Price] = useState(0);
     //for venue & artist
     const [venue, setVenue] = useState('');
     const [artistList, setartistList] = useState<string[]>([]);
@@ -105,6 +113,11 @@ export const EventOrganiser = () => {
         //for testing
         console.log('---Step 1-----')
         console.log('Event Name:' + eventName + ' |Event date:' + eventDate + ' |Sale date:' +  saleDate);
+        console.log('VIP:' + ticketNumberVIP + ' |Price:' + VIPPrice );
+        console.log('cat1:' + ticketNumberCat1 + ' |Price:' + cat1Price );
+        console.log('cat2:' + ticketNumberCat2 + ' |Price:' + cat2Price );
+        console.log('cat3:' + ticketNumberCat3 + ' |Price:' + cat3Price );
+        console.log('cat4:' + ticketNumberCat4 + ' |Price:' + cat4Price);
         console.log('---Step 2-----')
         console.log('Venue:' + venue + ' |Artist list:' + artistList + '|other venue:' +otherVenue);
         console.log('---Step 3-----')
@@ -144,13 +157,31 @@ export const EventOrganiser = () => {
                                 eventName={eventName}
                                 eventDate={eventDate}
                                 eventDescription={eventDescription}
-                                ticketNumber={ticketNumber}
+                                ticketNumberVIP={ticketNumberVIP}
+                                ticketNumberCat1={ticketNumberCat1}
+                                ticketNumberCat2={ticketNumberCat2}
+                                ticketNumberCat3={ticketNumberCat3}
+                                ticketNumberCat4={ticketNumberCat4}
+                                VIPPrice={VIPPrice}
+                                cat1Price={cat1Price}
+                                cat2Price={cat2Price}
+                                cat3Price={cat3Price}
+                                cat4Price={cat4Price}
                                 saleDate={saleDate}
                                 otherInfo={otherInfo}
                                 setEventName={setEventName}
                                 setEventDescription={setEventDescription}
                                 setEventDate={setEventDate}
-                                setTicketNumber={setTicketNumber}
+                                setTicketNumberVIP={setTicketNumberVIP}
+                                setTicketNumberCat1={setTicketNumberCat1}
+                                setTicketNumberCat2={setTicketNumberCat2}
+                                setTicketNumberCat3={setTicketNumberCat3}
+                                setTicketNumberCat4={setTicketNumberCat4}
+                                setVIPPrice={setVIPPrice}
+                                setCat1Price={setCat1Price}
+                                setCat2Price={setCat2Price}
+                                setCat3Price={setCat3Price}
+                                setCat4Price={setCat4Price}
                                 setSaleDate={setSaleDate}
                                 setOtherInfo={setOtherInfo}
                                 handleComplete={handleComplete}
