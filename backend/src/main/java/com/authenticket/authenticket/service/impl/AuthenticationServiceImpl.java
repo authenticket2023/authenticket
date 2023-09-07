@@ -81,15 +81,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public AuthenticationResponse authenticate(User request)
             throws  UsernameNotFoundException {
+        var user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("Email: %s has not been registered yet", request.getEmail())));
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
-
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         var jwtToken = jwtServiceImpl.generateToken(user);
 
         return AuthenticationResponse.builder()
