@@ -1,6 +1,8 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
+import com.authenticket.authenticket.dto.event.ArtistEventDto;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
@@ -212,6 +214,21 @@ public class EventController extends Utility {
         try{
             List<Object[]> assignedObjects = eventRepository.getAssignedEvent();
             return ResponseEntity.ok(generateApiResponse(eventDtoMapper.mapAssignedEvent(assignedObjects), "Assigned events returned"));
+        } catch(DataIntegrityViolationException e){
+            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+        }
+    }
+    //getting artist list for one specific event
+    @GetMapping("/getArtistsByEvent")
+    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId){
+        try{
+            List<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
+            if(artistList.isEmpty()){
+                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty",eventId)));
+
+            }
+
+            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned",eventId)));
         } catch(DataIntegrityViolationException e){
             return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
         }

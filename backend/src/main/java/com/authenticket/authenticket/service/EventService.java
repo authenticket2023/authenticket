@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.service;
 
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.model.Event;
@@ -22,4 +23,6 @@ public interface EventService {
     Event approveEvent (Integer eventId, Integer adminId);
 
 //    Event rejectEvent (Integer eventId);
+
+    List<ArtistDisplayDto> findArtistForEvent(Integer eventId);
 }

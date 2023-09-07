@@ -3,6 +3,7 @@ package com.authenticket.authenticket.repository;
 import com.authenticket.authenticket.model.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,4 +34,18 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                     "JOIN " +
                     "dev.Event AS E ON AE.event_id = E.event_id")
     List<Object[]> getAssignedEvent();
+
+    @Query(nativeQuery = true,
+            value = "SELECT " +
+                    "A.artist_id, " +
+                    "A.artist_name, " +
+                    "A.artist_image " +
+                    "FROM " +
+                    "dev.Artist AS A " +
+                    "JOIN " +
+                    "dev.Artist_Event AS AE ON A.artist_id = AE.artist_id " +
+                    "JOIN " +
+                    "dev.Event AS E ON AE.event_id = E.event_id " +
+                    "WHERE E.event_id = :eventId")
+    List<Object[]> getArtistByEventId(@Param("eventId") Integer eventId);
 }

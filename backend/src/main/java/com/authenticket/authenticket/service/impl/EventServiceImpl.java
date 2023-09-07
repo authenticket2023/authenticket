@@ -1,6 +1,8 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
+import com.authenticket.authenticket.dto.event.ArtistEventDto;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDtoMapper;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
@@ -181,5 +183,17 @@ public class EventServiceImpl implements EventService {
             }
         }
     }
+
+    //return artist for a specific event
+    public List<ArtistDisplayDto> findArtistForEvent(Integer eventId) throws NonExistentException{
+
+        if(eventRepository.findById(eventId).isEmpty()){
+            throw new NonExistentException("Event does not exist");
+        }
+        List<Object[]> artistObject= eventRepository.getArtistByEventId(eventId);
+        List<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
+        return artistDisplayDtoList;
+    }
+
 
 }
