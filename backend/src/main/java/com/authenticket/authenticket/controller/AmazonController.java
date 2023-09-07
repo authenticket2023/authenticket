@@ -8,7 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping("/api/aws")
 public class AmazonController {
 

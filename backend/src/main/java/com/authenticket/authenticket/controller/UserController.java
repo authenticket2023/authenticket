@@ -14,7 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.PUT},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping(path = "/api/user")
 public class UserController {
     @Autowired
