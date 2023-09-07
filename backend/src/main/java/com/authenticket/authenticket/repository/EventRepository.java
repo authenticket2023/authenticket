@@ -11,8 +11,10 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query(nativeQuery = true,
             value = "SELECT " +
+                    "A.artist_id," +
                     "A.artist_name, " +
                     "A.artist_image, " +
+                    "E.event_id, " +
                     "E.organiser_id, " +
                     "E.venue_id, " +
                     "E.event_name, " +

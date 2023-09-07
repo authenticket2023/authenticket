@@ -60,7 +60,9 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 assignedEvents[11],
                 assignedEvents[12],
                 assignedEvents[13],
-                assignedEvents[14]
+                assignedEvents[14],
+                assignedEvents[15],
+                assignedEvents[16]
         );
     }
 

@@ -20,30 +20,30 @@ public class AuthenticationController extends Utility{
     @Autowired
     private AuthenticationServiceImpl service;
 
-    @PostMapping("/register")
-    public ResponseEntity<GeneralApiResponse> register(
+    @PostMapping("/userRegister")
+    public ResponseEntity<GeneralApiResponse> userRegister(
             @RequestBody User user
     ){
-        service.register(user);
+        service.userRegister(user);
         return ResponseEntity.status(200).body(generateApiResponse(null, "Verification required"));
     }
 
-    @GetMapping(path = "/register/confirm")
-    public ResponseEntity<GeneralApiResponse> confirm(@RequestParam("token") String token){
+    @GetMapping(path = "/userRegister/userConfirm")
+    public ResponseEntity<GeneralApiResponse> userConfirm(@RequestParam("token") String token){
         try{
-            AuthenticationResponse response = service.confirmToken(token);
+            AuthenticationResponse response = service.confirmUserToken(token);
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome"));
         } catch (AwaitingVerificationException | IllegalStateException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, e.getMessage()));
         }
     }
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<GeneralApiResponse> authenticate(
+    @PostMapping("/userAuthenticate")
+    public ResponseEntity<GeneralApiResponse> userAuthenticate(
             @RequestBody User user
     ){
         try{
-            AuthenticationResponse response = service.authenticate(user);
+            AuthenticationResponse response = service.userAuthenticate(user);
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome"));
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,e.getMessage()));

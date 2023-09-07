@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 @RestController
+@CrossOrigin("*")
 @RequestMapping(path = "/api/artist")
 public class ArtistController extends Utility {
     @Autowired

@@ -1,8 +1,10 @@
 package com.authenticket.authenticket.dto.event;
 
 public record ArtistEventDto(
+        Object artistId,
         Object artistName,
         Object artistImage,
+        Object eventId,
         Object organiserId,
         Object venueId,
         Object eventName,

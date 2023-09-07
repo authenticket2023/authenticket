@@ -4,6 +4,8 @@ import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.AwaitingVerificationException;
+import com.authenticket.authenticket.model.Admin;
+import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
@@ -52,9 +54,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private UserDtoMapper userDTOMapper;
 
-    public void register(User request)
+    //user
+    public void userRegister(User request)
             throws AlreadyExistsException{
-        AuthenticationResponse badReq;
         var user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -80,7 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         emailServiceImpl.send(request.getEmail(), buildEmail(request.getName(), link));
     }
 
-    public AuthenticationResponse authenticate(User request)
+    public AuthenticationResponse userAuthenticate(User request)
             throws  UsernameNotFoundException {
 
             authenticationManager.authenticate(
@@ -102,9 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse confirmToken(String token)
-        throws AwaitingVerificationException, IllegalStateException{
-        AuthenticationResponse badReq;
+    public AuthenticationResponse confirmUserToken(String token) {
         if (jwtServiceImpl.isTokenExpired(token)) {
                 throw new AwaitingVerificationException("Token expired");
         }
@@ -193,5 +193,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 "  </tbody></table><div class=\"yj6qo\"></div><div class=\"adL\">\n" +
                 "\n" +
                 "</div></div>";
+    }
+
+    public void orgRegister (EventOrganiser request){
+
+    }
+
+    public AuthenticationResponse orgAuthenticate(EventOrganiser request){
+
+        return null;
+    }
+
+    public AuthenticationResponse adminAuthenticate(Admin request){
+
+        return null;
     }
 }

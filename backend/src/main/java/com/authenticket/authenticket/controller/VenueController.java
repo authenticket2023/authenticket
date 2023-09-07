@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-//    @CrossOrigin
+@CrossOrigin("*")
 @RequestMapping(path = "/api/venue")
 
 public class VenueController extends Utility {
