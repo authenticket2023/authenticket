@@ -8,7 +8,7 @@ public record EventOrganiserDisplayDto(Integer organiserId,
                                        String description,
                                        Integer verifiedBy,
                                        String logoImage,
-                                       String role,
+                                       String role
 ) {
 }
 
