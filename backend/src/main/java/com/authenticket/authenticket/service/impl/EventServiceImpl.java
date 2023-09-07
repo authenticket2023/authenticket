@@ -1,9 +1,8 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.event.EventDtoMapper;
-import com.authenticket.authenticket.dto.event.EventUpdateDto;
+import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,8 +54,14 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<EventDisplayDto> findEventById(Integer eventId) {
-        return eventRepository.findById(eventId).map(eventDTOMapper);
+    public OverallEventDto findEventById(Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if(eventOptional.isPresent()){
+            Event event = eventOptional.get();
+            OverallEventDto overallEventDto = eventDTOMapper.applyOverallEventDto(event);
+            return overallEventDto;
+        }
+        return null;
     }
 
     public Event saveEvent(Event event) {
@@ -132,6 +138,9 @@ public class EventServiceImpl implements EventService {
             Artist artist = artistOptional.get();
             Event event = eventOptional.get();
             Set<Artist> artistSet= event.getArtists();
+            if(artistSet == null){
+                artistSet = new HashSet<>();
+            }
             if(!artistSet.contains(artist)){
 
                 artistSet.add(artist);
@@ -181,5 +190,17 @@ public class EventServiceImpl implements EventService {
             }
         }
     }
+
+    //return artist for a specific event
+    public Set<ArtistDisplayDto> findArtistForEvent(Integer eventId) throws NonExistentException{
+
+        if(eventRepository.findById(eventId).isEmpty()){
+            throw new NonExistentException("Event does not exist");
+        }
+        List<Object[]> artistObject= eventRepository.getArtistByEventId(eventId);
+        Set<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
+        return artistDisplayDtoList;
+    }
+
 
 }
