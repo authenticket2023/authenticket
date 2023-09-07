@@ -30,7 +30,7 @@ e.printStackTrace();
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ApiException apiException = new ApiException(
-                e.getMessage() + ": " + e.getClass()
+                e.getMessage()
         );
 
         return new ResponseEntity<>(apiException, status);
