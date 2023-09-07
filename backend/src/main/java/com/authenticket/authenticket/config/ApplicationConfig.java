@@ -52,7 +52,7 @@ public class ApplicationConfig {
                 if(eventOrganiserOptional.get().getEnabled()){
                     return new User(eventOrganiserOptional.get().getEmail(), eventOrganiserOptional.get().getPassword(), Collections.emptyList());
                 }
-                throw new AwaitingVerificationException("Verification required");
+                throw new AwaitingVerificationException("Awaiting approval");
             }else {
                 throw new UsernameNotFoundException("User not found");
             }

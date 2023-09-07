@@ -196,7 +196,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         if(existingOrg.isPresent()){
             if(!existingOrg.get().getEnabled()){
-                throw new AlreadyExistsException("Verification needed");
+                throw new AlreadyExistsException("Awaiting approval");
             }
             throw new AlreadyExistsException("User already exists");
         }
