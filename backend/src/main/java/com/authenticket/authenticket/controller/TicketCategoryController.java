@@ -51,10 +51,11 @@ public class TicketCategoryController {
         return ResponseEntity.ok(ticketCategory);
     }
 
-//    @PutMapping("/{ticketId}")
-//    public String deleteTicket(@PathVariable("ticketId") Integer ticketId) {
-//        return ticketService.deleteTicket(ticketId);
-//    }
+    @PutMapping("/{categoryId}")
+    public String deleteTicket(@PathVariable("categoryId") Integer categoryId) {
+        ticketCategoryService.deleteTicket(categoryId);
+        return "Ticket Category deleted successfully.";
+    }
 
     @DeleteMapping("/{categoryId}")
     public String removeTicketCategory(@PathVariable("categoryId") Integer categoryId) {

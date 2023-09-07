@@ -4,6 +4,8 @@ import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDtoMapper;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
@@ -24,6 +26,9 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     @Autowired
     private EventOrganiserDtoMapper eventOrganiserDtoMapper;
+
+    @Autowired
+    private EventTicketCategoryDisplayDtoMapper eventTicketCategoryDisplayDtoMapper;
 
     @Autowired
     private VenueDtoMapper venueDtoMapper;
@@ -121,9 +126,11 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
         Integer eventId = event.getEventId();
         EventOrganiserDisplayDto organiserDisplayDto = eventOrganiserDtoMapper.apply(event.getOrganiser());
-        VenueDisplayDto venueDisplayDto = venueDtoMapper.apply(event.getVenue());
-        String eventTypeName = event.getEventType().getEventTypeName();
+//        VenueDisplayDto venueDisplayDto = venueDtoMapper.apply(event.getVenue());
+//        String eventTypeName = event.getEventType().getEventTypeName();
         Set<ArtistDisplayDto> artistSet = artistDtoMapper.mapArtistDisplayDto(eventRepository.getArtistByEventId(eventId));
+        Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+
         //create and do something similar above for the eventTicketCategory dto
 
         return new OverallEventDto(
@@ -136,11 +143,11 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getTotalTickets(),
                 event.getTotalTicketsSold(),
                 event.getTicketSaleDate(),
-                null,
+                eventTicketCategorySet,
                 organiserDisplayDto,
-                venueDisplayDto,
+                event.getVenue(),
                 artistSet,
-                eventTypeName
+                event.getEventType().getEventTypeName()
         );
     }
 

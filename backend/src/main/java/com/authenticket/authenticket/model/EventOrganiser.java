@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Data
@@ -44,10 +45,16 @@ public class EventOrganiser extends BaseEntity {
     private Boolean enabled = false;
 
     @OneToMany( mappedBy = "organiser")
+    @JsonIgnore
     private List<Event> events = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "approved_by", nullable = true)
     private Admin admin;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 }

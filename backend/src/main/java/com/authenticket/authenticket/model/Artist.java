@@ -18,6 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "artist", schema = "dev")
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
 public class Artist extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

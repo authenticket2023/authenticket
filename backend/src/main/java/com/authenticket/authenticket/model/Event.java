@@ -7,7 +7,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -70,6 +72,7 @@ public class Event extends BaseEntity {
 
 //    @Getter
     @ManyToMany( cascade = CascadeType.ALL)
+    @JsonIgnore
     @JoinTable(
             schema = "dev",
             name = "artist_event",
@@ -85,10 +88,45 @@ public class Event extends BaseEntity {
     @JoinColumn(name="type_id",nullable = false)
     private EventType eventType;
 
-    @OneToMany
-    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
     Set<EventTicketCategory> eventTicketCategorySet = new HashSet<>();
 
+    @JsonIgnore
+    public Set<Artist> getArtists(){
+        return artists;
+    }
+
+    @JsonIgnore
+    public Set<EventTicketCategory> getEventTicketCategorySet(){
+        return eventTicketCategorySet;
+    }
+
+    public void addTicketCategory(TicketCategory ticketCategory, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+        EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, this, price, availableTickets, totalTicketsPerCat);
+        eventTicketCategorySet.add(eventTicketCategory);
+//        ticketCategory.getEventTicketCategorySet().add(eventTicketCategory);
+    }
+
+    public void removeTicketCategory(TicketCategory ticketCategory) {
+        for (Iterator<EventTicketCategory> iterator = eventTicketCategorySet.iterator();
+             iterator.hasNext(); ) {
+            EventTicketCategory eventTicketCategory = iterator.next();
+
+            if (eventTicketCategory.getEvent().equals(this) &&
+                    eventTicketCategory.getCat().equals(ticketCategory)) {
+                iterator.remove();
+//                eventTicketCategory.getCat_id().getEventTicketCategorySet().remove(eventTicketCategory);
+                eventTicketCategory.setEvent(null);
+                eventTicketCategory.setCat(null);
+            }
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eventName);
+    }
 //    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 //    @JoinTable(name = "event_ticket_category", joinColumns = {@JoinColumn(table = "event",
 //            name = "event_id",
