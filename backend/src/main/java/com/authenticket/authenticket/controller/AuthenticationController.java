@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,8 +59,12 @@ public class AuthenticationController extends Utility{
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome"));
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,e.getMessage()));
-        } catch(BadCredentialsException e){
+        }
+        catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));
+        }
+        catch(BadCredentialsException e){
+            return ResponseEntity.status(400).body(generateApiResponse(null, "Incorrect password. Please try again."));
         }
         catch (Exception e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Something went wrong: " + e.getMessage()));
