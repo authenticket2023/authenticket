@@ -55,8 +55,24 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Object[]> getArtistByEventId(@Param("eventId") Integer eventId);
 
     //recently added
-    List<Event> findTop7ByOrderByCreatedAtDesc();
+    List<Event> findTop7ByReviewStatusOrderByCreatedAtDesc(String reviewStatus);
+
+
+
+    //bestseller
+    @Query(nativeQuery = true,
+            value = "SELECT *" +
+                    "FROM " +
+                    "dev.Event AS E " +
+                    "WHERE E.review_status = 'approved' " +
+                    "ORDER BY (CAST(E.total_tickets_sold AS DECIMAL) / E.total_tickets) DESC," +
+                    "E.total_tickets DESC " +
+                    "LIMIT 7")
+    List<Event> findBestSellerEvents();
 
     //upcoming ticket sales
-    List<Event> findTop7ByTicketSaleDateAfterOrderByTicketSaleDateAsc(LocalDateTime currentDate);
+    List<Event> findTop7ByReviewStatusAndTicketSaleDateAfterOrderByTicketSaleDateAsc(String reviewStatus, LocalDateTime currentDate);
+
+    //get all pending approval events
+    List<Event> findAllByReviewStatusOrderByCreatedAtAsc(String reviewStatus);
 }

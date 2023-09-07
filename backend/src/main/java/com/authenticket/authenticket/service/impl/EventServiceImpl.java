@@ -65,18 +65,23 @@ public class EventServiceImpl implements EventService {
     }
 
     public List<EventHomeDto> findRecentlyAddedEvents(){
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByOrderByCreatedAtDesc());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusOrderByCreatedAtDesc("approved"));
 
     };
     public List<EventHomeDto> findFeaturedEvents(){
         return null;
     };
     public List<EventHomeDto> findBestSellerEvents(){
-        return null;
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents());
     };
     public List<EventHomeDto> findUpcomingEvents(){
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByTicketSaleDateAfterOrderByTicketSaleDateAsc(currentDate));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterOrderByTicketSaleDateAsc("approved",currentDate));
+    };
+
+    public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus){
+        LocalDateTime currentDate = LocalDateTime.now();
+        return eventDTOMapper.map(eventRepository.findAllByReviewStatusOrderByCreatedAtAsc(reviewStatus));
     };
 
     public Event saveEvent(Event event) {
@@ -136,7 +141,7 @@ public class EventServiceImpl implements EventService {
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
-            event.setApprovedBy(adminId);
+            event.setReviewedBy(adminId);
             eventRepository.save(event);
             return event;
         }

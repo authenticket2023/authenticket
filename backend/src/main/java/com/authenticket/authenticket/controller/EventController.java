@@ -62,7 +62,6 @@ public class EventController extends Utility {
     private ArtistDtoMapper artistDtoMapper;
 
 
-
     @GetMapping("/test")
     public String test() {
         return "test successful";
@@ -85,7 +84,7 @@ public class EventController extends Utility {
     @GetMapping("/{eventId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventById(@PathVariable("eventId") Integer eventId) {
         OverallEventDto overallEventDto = eventService.findEventById(eventId);
-        if(overallEventDto == null){
+        if (overallEventDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event with id %d not found", eventId)));
         }
         return ResponseEntity.ok(generateApiResponse(overallEventDto, String.format("Event %d successfully returned.", eventId)));
@@ -95,23 +94,43 @@ public class EventController extends Utility {
     @GetMapping("/recently-added")
     public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
         List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
-        if(eventList == null){
+        if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No recently added events found")));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
 
     }
 
+    @GetMapping("/featured")
+    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
+//        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
+//        if(eventList == null || eventList.isEmpty()){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No recently added events found")));
+//        }
+//        return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "featured events not done yet"));
+
+    }
+
+    @GetMapping("/bestseller")
+    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
+        List<EventHomeDto> eventList = eventService.findBestSellerEvents();
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No bestseller events found")));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Bestseller events successfully returned."));
+
+    }
+
     @GetMapping("/upcoming")
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
         List<EventHomeDto> eventList = eventService.findUpcomingEvents();
-        if(eventList == null){
+        if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No upcoming events found")));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
 
     }
-
 
 
     @PostMapping
@@ -147,7 +166,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null,
-                    ticketSaleDate, 0, 0, null, eventOrganiser, venue, null, eventType, null);
+                    ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, null);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -303,6 +322,16 @@ public class EventController extends Utility {
         } else {
             return ResponseEntity.status(401).body(generateApiResponse(null, "Ticket Category failed to be added"));
         }
+    }
+
+    @GetMapping("/review-status/{status}")
+    public ResponseEntity<GeneralApiResponse<Object>> findEventsByReviewStatus(@PathVariable("status") String status) {
+        List<EventDisplayDto> eventList = eventService.findEventsByReviewStatus(status);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No %s events found.", status)));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, String.format("%s events successfully returned.", status)));
+
     }
 
 }

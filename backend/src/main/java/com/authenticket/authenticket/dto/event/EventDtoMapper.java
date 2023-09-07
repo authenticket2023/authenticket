@@ -56,6 +56,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventImage());
     }
 
+    public List<EventDisplayDto> map(List<Event> eventList) {
+        return eventList.stream()
+                .map(this::apply)
+                .collect(Collectors.toList());
+    }
+
     public List<EventHomeDto> mapEventHomeDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyEventHomeDto)
