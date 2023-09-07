@@ -14,9 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
 @RestController
-//    @CrossOrigin
+@CrossOrigin("*")
 @RequestMapping(path = "/api/user")
-
 public class UserController {
     @Autowired
     private UserRepository userRepository;
