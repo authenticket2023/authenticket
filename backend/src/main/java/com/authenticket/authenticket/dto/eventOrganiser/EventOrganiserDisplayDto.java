@@ -7,9 +7,7 @@ public record EventOrganiserDisplayDto(Integer organiserId,
                                        String email,
                                        String description,
                                        Integer verifiedBy,
-                                       String logoImage,
-                                       LocalDateTime createdAt,
-                                       LocalDateTime updatedAt
+                                       String logoImage
 ) {
 }
 

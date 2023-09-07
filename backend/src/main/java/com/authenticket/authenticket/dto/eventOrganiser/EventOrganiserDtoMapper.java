@@ -20,8 +20,7 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
 
         return new EventOrganiserDisplayDto(
                 organiser.getOrganiserId(), organiser.getName(), organiser.getEmail(),
-                organiser.getDescription(), adminId, organiser.getLogoImage(),
-                organiser.getCreatedAt(), organiser.getUpdatedAt());
+                organiser.getDescription(), adminId, organiser.getLogoImage());
     }
 
     public void update(EventOrganiserUpdateDto updateDto, EventOrganiser organiser) {
@@ -31,14 +30,9 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
         if (updateDto.description() != null) {
             organiser.setDescription(updateDto.description());
         }
-
         if (updateDto.password() != null) {
             organiser.setPassword(passwordEncoder.encode((updateDto.password())));
         }
-
-
-
-
 
     }
 }

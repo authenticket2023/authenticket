@@ -4,6 +4,7 @@ import com.authenticket.authenticket.model.Artist;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,9 +32,9 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
         );
     }
 
-    public List<ArtistDisplayDto> mapArtistDisplayDto(List<Object[]> eventObjects) {
+    public Set<ArtistDisplayDto> mapArtistDisplayDto(List<Object[]> eventObjects) {
         return eventObjects.stream()
                 .map(this::applyArtistDisplayDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

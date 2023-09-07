@@ -2,10 +2,12 @@ package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
-import com.authenticket.authenticket.dto.event.ArtistEventDto;
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.event.EventDtoMapper;
-import com.authenticket.authenticket.dto.event.EventUpdateDto;
+import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
+import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
+import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
+import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
@@ -24,8 +26,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -52,6 +56,11 @@ public class EventController extends Utility {
 
     @Autowired
     private EventDtoMapper eventDtoMapper;
+
+    @Autowired
+    private ArtistDtoMapper artistDtoMapper;
+
+
 
     @GetMapping("/test")
     public String test() {
@@ -87,43 +96,49 @@ public class EventController extends Utility {
                                        @RequestParam("eventLocation") String eventLocation,
                                        @RequestParam("otherEventInfo") String otherEventInfo,
                                        @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
-                                       @RequestParam("totalTickets") Integer totalTickets,
                                        @RequestParam("organiserId") Integer organiserId,
                                        @RequestParam("venueId") Integer venueId,
                                        @RequestParam("typeId") Integer typeId,
-                                       @RequestParam("artistId") String[] artistId) {
+                                       //comma separated string
+                                       @RequestParam("artistId") String artistIdString) {
         String imageName;
         Event savedEvent;
+        //Getting the Respective Objects for Organiser, Venue and Type and checking if it exists
         EventOrganiser eventOrganiser = eventOrganiserRepository.findById(organiserId).orElse(null);
         Venue venue = venueRepository.findById(venueId).orElse(null);
         EventType eventType = eventTypeRepository.findById(typeId).orElse(null);
-        if (venue == null) {
+        if (eventOrganiser == null) {
+            throw new NonExistentException("Event Organiser does not exist");
+        } else if (venue == null) {
             throw new NonExistentException("Venue does not exist");
-        } else if (eventType == null){
+        } else if (eventType == null) {
             throw new NonExistentException("Event Type does not exist");
         }
 
+        //totalTickets will be derived from event-ticketCat, set it after adding the ticket categories for event
+
+        //save event first to get the event id
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null,
-                    ticketSaleDate, totalTickets, 0, null, eventOrganiser, venue, null, eventType, null);
+                    ticketSaleDate, 0, 0, null, eventOrganiser, venue, null, eventType, null);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
             String fileExtension = getFileExtension(file.getContentType());
             imageName = savedEvent.getEventId() + fileExtension;
-            //update event with image name and save to db again
+
+            //update event with image name and save to db again, IMAGE HAS NOT BEEN UPLOADED HERE
             savedEvent.setEventImage(imageName);
             eventService.saveEvent(savedEvent);
 
-
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.badRequest().body(generateApiResponse(null, "Organiser does not exist OR ticket sale date is earlier than event created date."));
+            return ResponseEntity.badRequest().body(generateApiResponse(null, "DataIntegrityViolationException: Ticket sale date is earlier than event created date."));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
         }
 
-
+        //uploading event image to s3 server
         try {
             amazonS3Service.uploadFile(file, imageName, "event_images");
             // delete event from db if got error saving image
@@ -143,7 +158,21 @@ public class EventController extends Utility {
             return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
         }
 
-        return ResponseEntity.ok(generateApiResponse(savedEvent, "Event created successfully."));
+        Integer eventId = savedEvent.getEventId();
+        //adding artist to event
+        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        for (Integer artistId : artistIdList) {
+            eventService.addArtistToEvent(artistId, eventId);
+        }
+
+
+        //setting all the fields for event
+        OverallEventDto overallEventDto = eventDtoMapper.applyOverallEventDto(savedEvent);
+
+        return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
     @PutMapping
@@ -197,39 +226,40 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
             @RequestParam("artistId") Integer artistId,
             @RequestParam("eventId") Integer eventId) {
-        try{
+        try {
             EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
             if (artist != null) {
                 return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
             } else {
                 return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
             }
-        } catch (DataIntegrityViolationException | StackOverflowError e){
+        } catch (DataIntegrityViolationException | StackOverflowError e) {
             return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
         }
     }
 
     @GetMapping("/getAssignedEvents")
-    public ResponseEntity<GeneralApiResponse> getAssignEvents(){
-        try{
+    public ResponseEntity<GeneralApiResponse> getAssignEvents() {
+        try {
             List<Object[]> assignedObjects = eventRepository.getAssignedEvent();
             return ResponseEntity.ok(generateApiResponse(eventDtoMapper.mapAssignedEvent(assignedObjects), "Assigned events returned"));
-        } catch(DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
         }
     }
+
     //getting artist list for one specific event
     @GetMapping("/getArtistsByEvent")
-    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId){
-        try{
-            List<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
-            if(artistList.isEmpty()){
-                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty",eventId)));
+    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
+        try {
+            Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
+            if (artistList.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty", eventId)));
 
             }
 
-            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned",eventId)));
-        } catch(DataIntegrityViolationException e){
+            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned", eventId)));
+        } catch (DataIntegrityViolationException e) {
             return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
         }
     }

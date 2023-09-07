@@ -24,5 +24,5 @@ public interface EventService {
 
 //    Event rejectEvent (Integer eventId);
 
-    List<ArtistDisplayDto> findArtistForEvent(Integer eventId);
+    Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
 }
