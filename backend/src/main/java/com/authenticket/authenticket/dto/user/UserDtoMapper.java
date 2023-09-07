@@ -8,12 +8,11 @@ import java.util.function.Function;
 public class UserDtoMapper implements Function<User, UserDisplayDto> {
     public UserDisplayDto apply(User user){
         return new UserDisplayDto(
-                user.getUserId(),
                 user.getName(),
                 user.getEmail(),
                 user.getDateOfBirth(),
                 user.getProfileImage(),
-                User.getRole()
+                user.getRole()
         );
     }
 

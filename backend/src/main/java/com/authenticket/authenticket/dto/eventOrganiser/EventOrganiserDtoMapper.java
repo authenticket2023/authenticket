@@ -20,9 +20,7 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
 
         return new EventOrganiserDisplayDto(
                 organiser.getOrganiserId(), organiser.getName(), organiser.getEmail(),
-                organiser.getDescription(), adminId, organiser.getLogoImage(),
-                EventOrganiser.getRole());
-
+                organiser.getDescription(), adminId, organiser.getLogoImage());
     }
 
     public void update(EventOrganiserUpdateDto updateDto, EventOrganiser organiser) {

@@ -35,47 +35,46 @@ public class User extends BaseEntity implements UserDetails{
     private String profileImage;
     @Column(name = "enabled")
     private Boolean enabled = false;
-    @Getter
-    private static String role = "USER";
+    private String role = "USER";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority(role);
+                new SimpleGrantedAuthority("USER");
         return Collections.singletonList(authority);
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return this.email;
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.enabled;
+        return enabled;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.enabled;
+        return enabled;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return this.enabled;
+        return enabled;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return enabled;
     }
 
-    @OneToMany(mappedBy = "user")
-    private List<Ticket> tickets = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")
+//    private List<Ticket> tickets = new ArrayList<>();
 }
 

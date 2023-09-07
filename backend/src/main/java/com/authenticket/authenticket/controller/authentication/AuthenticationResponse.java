@@ -1,6 +1,5 @@
-package com.authenticket.authenticket.controller.AuthResponse;
+package com.authenticket.authenticket.controller.authentication;
 
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationOrgResponse {
+public class AuthenticationResponse {
     private String token;
-    private EventOrganiserDisplayDto orgDetails;
+    private UserDisplayDto userDetails;
+    private String role;
 }

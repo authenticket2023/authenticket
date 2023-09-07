@@ -16,7 +16,7 @@ public class ApiExceptionHandler extends Utility {
     public ResponseEntity<Object> handleException(Exception e) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-
+e.printStackTrace();
         ApiException apiException = new ApiException(
                 "Something went wrong: " + e.getMessage()
         );
@@ -30,7 +30,7 @@ public class ApiExceptionHandler extends Utility {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ApiException apiException = new ApiException(
-                e.getMessage()
+                e.getMessage() + ": " + e.getClass()
         );
 
         return new ResponseEntity<>(apiException, status);

@@ -11,8 +11,7 @@ public class AdminDtoMapper implements Function<Admin, AdminDisplayDto> {
         return new AdminDisplayDto(
                 admin.getAdminId(),
                 admin.getName(),
-                admin.getEmail(),
-                Admin.getRole()
+                admin.getEmail()
         );
     }
 

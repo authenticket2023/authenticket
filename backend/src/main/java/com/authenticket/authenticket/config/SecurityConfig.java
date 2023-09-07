@@ -25,6 +25,7 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthFilter;
     @Autowired
     private AuthenticationProvider authenticationProvider;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
@@ -42,8 +43,6 @@ public class SecurityConfig {
                         SessionCreationPolicy.STATELESS
                 ))
                 .authenticationProvider(authenticationProvider)
-//                .authenticationProvider(adminAuthenticationProvider)
-//                .authenticationProvider(eventOrgAuthenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 

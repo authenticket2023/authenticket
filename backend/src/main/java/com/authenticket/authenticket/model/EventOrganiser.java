@@ -4,14 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,71 +18,39 @@ import java.util.Objects;
 @Entity
 @Table(name = "event_organiser", schema = "dev")
 @EqualsAndHashCode(callSuper = true)
-public class EventOrganiser extends BaseEntity implements UserDetails {
+public class EventOrganiser extends BaseEntity {
+
+
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
-    @Column(name = "organiser_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "organiser_id")
     private Integer organiserId;
+
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-    @Column(name = "password", nullable = false)
+
+    @Column(name = "password")
     private String password;
-    @Column(name = "description", nullable = false)
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "description")
     private String description;
+
     @Column(name = "logo_image")
     private String logoImage;
+
     @Column(name = "enabled")
     private Boolean enabled = false;
-    @Getter
-    private static String role = "ORGANISER";
 
     @OneToMany( mappedBy = "organiser")
     @JsonIgnore
     private List<Event> events = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority(role);
-        return Collections.singletonList(authority);
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.enabled;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.enabled;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.enabled;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "approved_by")
+    @JsonIgnore
+    @JoinColumn(name = "approved_by", nullable = true)
     private Admin admin;
 
     @Override
