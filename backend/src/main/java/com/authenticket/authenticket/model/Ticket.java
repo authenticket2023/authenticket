@@ -1,7 +1,11 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Builder
@@ -21,10 +25,10 @@ public class Ticket extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", nullable = false)
-    private TicketCategory category;
+    @JsonIgnore
+    @JoinColumns({
+            @JoinColumn(name="event_id", referencedColumnName="event_id", nullable = false),
+            @JoinColumn(name="category_id", referencedColumnName="category_id", nullable = false)
+    })
+    private EventTicketCategory eventTicketCategory;
 }

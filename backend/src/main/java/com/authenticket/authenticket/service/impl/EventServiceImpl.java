@@ -1,9 +1,8 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.event.EventDtoMapper;
-import com.authenticket.authenticket.dto.event.EventUpdateDto;
+import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,8 +54,14 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<EventDisplayDto> findEventById(Integer eventId) {
-        return eventRepository.findById(eventId).map(eventDTOMapper);
+    public OverallEventDto findEventById(Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if(eventOptional.isPresent()){
+            Event event = eventOptional.get();
+            OverallEventDto overallEventDto = eventDTOMapper.applyOverallEventDto(event);
+            return overallEventDto;
+        }
+        return null;
     }
 
     public Event saveEvent(Event event) {
@@ -132,6 +138,9 @@ public class EventServiceImpl implements EventService {
             Artist artist = artistOptional.get();
             Event event = eventOptional.get();
             Set<Artist> artistSet= event.getArtists();
+            if(artistSet == null){
+                artistSet = new HashSet<>();
+            }
             if(!artistSet.contains(artist)){
 
                 artistSet.add(artist);
@@ -159,20 +168,28 @@ public class EventServiceImpl implements EventService {
             Event event = eventOptional.get();
 
             Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
-            Set<EventTicketCategory> eventTicketCategorySet = event.getEventTicketCategorySet();
-
-            if(eventTicketCategoryOptional.isEmpty()){
-                EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat);
-                eventTicketCategoryRepository.save(eventTicketCategory);
-
-                eventTicketCategorySet.add(new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat));
-                event.setEventTicketCategorySet(eventTicketCategorySet);
-
-                eventRepository.save(event);
-                return eventDTOMapper.apply(event);
-            } else {
+            if (eventTicketCategoryOptional.isPresent()) {
                 throw new AlreadyExistsException("Ticket Category already linked to stated event");
             }
+
+            event.addTicketCategory(ticketCategory, price, availableTickets, totalTicketsPerCat);
+            eventRepository.save(event);
+            return eventDTOMapper.apply(event);
+//            Set<EventTicketCategory> eventTicketCategorySet = event.getEventTicketCategorySet();
+
+//            if(eventTicketCategoryOptional.isEmpty()){
+//                EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat);
+//                eventTicketCategoryRepository.save(eventTicketCategory);
+//
+//                eventTicketCategorySet.add(new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat));
+//                System.out.println(eventTicketCategorySet.size());
+//                event.setEventTicketCategorySet(eventTicketCategorySet);
+//
+//                eventRepository.save(event);
+//                return eventDTOMapper.apply(event);
+//            } else {
+//                throw new AlreadyExistsException("Ticket Category already linked to stated event");
+//            }
         } else {
             if (categoryOptional.isEmpty()){
                 throw new NonExistentException("Category does not exist");
@@ -181,5 +198,41 @@ public class EventServiceImpl implements EventService {
             }
         }
     }
+
+    public EventDisplayDto removeTicketCategory(Integer catId, Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
+        if (categoryOptional.isPresent() && eventOptional.isPresent()) {
+            TicketCategory ticketCategory = categoryOptional.get();
+            Event event = eventOptional.get();
+
+            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            if (eventTicketCategoryOptional.isEmpty()) {
+                throw new NonExistentException("Ticket Category not linked to stated event");
+            }
+
+            event.removeTicketCategory(ticketCategory);
+            eventRepository.save(event);
+            return eventDTOMapper.apply(event);
+        } else {
+            if (categoryOptional.isEmpty()){
+                throw new NonExistentException("Category does not exist");
+            } else {
+                throw new NonExistentException("Event does not exist");
+            }
+        }
+    }
+
+    //return artist for a specific event
+    public Set<ArtistDisplayDto> findArtistForEvent(Integer eventId) throws NonExistentException{
+
+        if(eventRepository.findById(eventId).isEmpty()){
+            throw new NonExistentException("Event does not exist");
+        }
+        List<Object[]> artistObject= eventRepository.getArtistByEventId(eventId);
+        Set<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
+        return artistDisplayDtoList;
+    }
+
 
 }

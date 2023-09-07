@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 @Data
@@ -45,6 +46,7 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
     private static String role = "ORGANISER";
 
     @OneToMany( mappedBy = "organiser")
+    @JsonIgnore
     private List<Event> events = new ArrayList<>();
 
     @Override
@@ -87,4 +89,9 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "approved_by")
     private Admin admin;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 }
