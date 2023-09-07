@@ -18,6 +18,7 @@ import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.ArtistServiceImpl;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -83,8 +84,11 @@ public class EventController extends Utility {
 
     @GetMapping("/{eventId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventById(@PathVariable("eventId") Integer eventId) {
-        Optional<EventDisplayDto> eventDisplayDtoOptional = eventService.findEventById(eventId);
-        return eventDisplayDtoOptional.map(eventDisplayDto -> ResponseEntity.ok(generateApiResponse(eventDisplayDto, String.format("Event %d successfully returned.", eventId)))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event with id %d not found", eventId))));
+        OverallEventDto overallEventDto = eventService.findEventById(eventId);
+        if(overallEventDto == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event with id %d not found", eventId)));
+        }
+        return ResponseEntity.ok(generateApiResponse(overallEventDto, String.format("Event %d successfully returned.", eventId)));
 
     }
 

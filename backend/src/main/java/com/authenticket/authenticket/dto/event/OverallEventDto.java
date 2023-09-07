@@ -24,7 +24,7 @@ public record OverallEventDto(
         Object ticketCategory,//object
         EventOrganiserDisplayDto organiser, //object
         VenueDisplayDto venue, //object
-        Set<ArtistDisplayDto> artistSet, //object
+        Set<ArtistDisplayDto> artists, //object
         String type //object
 ) {
 }

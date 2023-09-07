@@ -2,10 +2,7 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
-import com.authenticket.authenticket.dto.event.ArtistEventDto;
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.event.EventDtoMapper;
-import com.authenticket.authenticket.dto.event.EventUpdateDto;
+import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
@@ -57,8 +54,14 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<EventDisplayDto> findEventById(Integer eventId) {
-        return eventRepository.findById(eventId).map(eventDTOMapper);
+    public OverallEventDto findEventById(Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if(eventOptional.isPresent()){
+            Event event = eventOptional.get();
+            OverallEventDto overallEventDto = eventDTOMapper.applyOverallEventDto(event);
+            return overallEventDto;
+        }
+        return null;
     }
 
     public Event saveEvent(Event event) {
