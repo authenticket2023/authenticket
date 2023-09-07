@@ -168,20 +168,52 @@ public class EventServiceImpl implements EventService {
             Event event = eventOptional.get();
 
             Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
-            Set<EventTicketCategory> eventTicketCategorySet = event.getEventTicketCategorySet();
-
-            if(eventTicketCategoryOptional.isEmpty()){
-                EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat);
-                eventTicketCategoryRepository.save(eventTicketCategory);
-
-                eventTicketCategorySet.add(new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat));
-                event.setEventTicketCategorySet(eventTicketCategorySet);
-
-                eventRepository.save(event);
-                return eventDTOMapper.apply(event);
-            } else {
+            if (eventTicketCategoryOptional.isPresent()) {
                 throw new AlreadyExistsException("Ticket Category already linked to stated event");
             }
+
+            event.addTicketCategory(ticketCategory, price, availableTickets, totalTicketsPerCat);
+            eventRepository.save(event);
+            return eventDTOMapper.apply(event);
+//            Set<EventTicketCategory> eventTicketCategorySet = event.getEventTicketCategorySet();
+
+//            if(eventTicketCategoryOptional.isEmpty()){
+//                EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat);
+//                eventTicketCategoryRepository.save(eventTicketCategory);
+//
+//                eventTicketCategorySet.add(new EventTicketCategory(ticketCategory, event, price, availableTickets, totalTicketsPerCat));
+//                System.out.println(eventTicketCategorySet.size());
+//                event.setEventTicketCategorySet(eventTicketCategorySet);
+//
+//                eventRepository.save(event);
+//                return eventDTOMapper.apply(event);
+//            } else {
+//                throw new AlreadyExistsException("Ticket Category already linked to stated event");
+//            }
+        } else {
+            if (categoryOptional.isEmpty()){
+                throw new NonExistentException("Category does not exist");
+            } else {
+                throw new NonExistentException("Event does not exist");
+            }
+        }
+    }
+
+    public EventDisplayDto removeTicketCategory(Integer catId, Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
+        if (categoryOptional.isPresent() && eventOptional.isPresent()) {
+            TicketCategory ticketCategory = categoryOptional.get();
+            Event event = eventOptional.get();
+
+            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            if (eventTicketCategoryOptional.isEmpty()) {
+                throw new NonExistentException("Ticket Category not linked to stated event");
+            }
+
+            event.removeTicketCategory(ticketCategory);
+            eventRepository.save(event);
+            return eventDTOMapper.apply(event);
         } else {
             if (categoryOptional.isEmpty()){
                 throw new NonExistentException("Category does not exist");

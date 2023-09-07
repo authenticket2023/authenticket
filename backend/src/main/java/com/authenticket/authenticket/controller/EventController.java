@@ -1,6 +1,8 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.JSONFormat;
+import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
@@ -269,18 +271,47 @@ public class EventController extends Utility {
     }
 
     @PutMapping("/addTicketCategory")
-    public ResponseEntity<GeneralApiResponse> addTicketCategory(
-            @RequestParam("catId") Integer catId,
-            @RequestParam("eventId") Integer eventId,
-            @RequestParam("price") Double price,
-            @RequestParam("availableTickets") Integer availableTickets,
-            @RequestParam("totalTicketsPerCat") Integer totalTicketsPerCat) {
-        EventDisplayDto eventDisplayDto = eventService.addTicketCategory(catId, eventId, price, availableTickets, totalTicketsPerCat);
-        if (eventDisplayDto != null) {
-            return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully added to event"));
-        } else {
-            return ResponseEntity.status(401).body(generateApiResponse(null, "Ticket Category failed to be added"));
+    public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
+        Integer eventId = jsonFormat.getEventId();
+        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
+        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
+            eventService.addTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice(), ticketCategoryJSON.getAvailableTickets(), ticketCategoryJSON.getTotalTicketsPerCat());
         }
+        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
+    }
+
+//    @PutMapping("/addTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> addTicketCategory(
+//            @RequestParam("catId") Integer catId,
+//            @RequestParam("eventId") Integer eventId,
+//            @RequestParam("price") Double price,
+//            @RequestParam("availableTickets") Integer availableTickets,
+//            @RequestParam("totalTicketsPerCat") Integer totalTicketsPerCat) {
+//        EventDisplayDto eventDisplayDto = eventService.addTicketCategory(catId, eventId, price, availableTickets, totalTicketsPerCat);
+//        if (eventDisplayDto != null) {
+//            return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully added to event"));
+//        } else {
+//            return ResponseEntity.status(401).body(generateApiResponse(null, "Ticket Category failed to be added"));
+//        }
+//    }
+
+    @PutMapping("/removeTicketCategory")
+    public ResponseEntity<GeneralApiResponse> removeTicketCategory(
+            @RequestParam("catId") Integer catId,
+            @RequestParam("eventId") Integer eventId) {
+        EventDisplayDto eventDisplayDto = eventService.removeTicketCategory(catId, eventId);
+        return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully removed from event"));
+    }
+
+    @GetMapping("/{eventId}/getTicketCategory")
+    public ResponseEntity<GeneralApiResponse> getTicketCategory(
+            @RequestParam("eventId") Integer eventId) {
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        if(optionalEvent.isEmpty()) {
+            throw new NonExistentException("Event does not exist");
+        }
+        Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();
+        return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
     }
 
 }
