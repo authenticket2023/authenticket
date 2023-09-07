@@ -12,7 +12,7 @@ public class UserDtoMapper implements Function<User, UserDisplayDto> {
                 user.getEmail(),
                 user.getDateOfBirth(),
                 user.getProfileImage(),
-                user.getRole()
+                User.getRole()
         );
     }
 
