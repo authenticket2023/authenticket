@@ -139,7 +139,7 @@ export function Signup() {
         "name": name,
         "email": email,
         "password": password,
-        "date_of_birth": dob,
+        "dateOfBirth": dob,
       })
     })
       .then(async (response) => {

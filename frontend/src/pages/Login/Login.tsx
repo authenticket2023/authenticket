@@ -104,6 +104,7 @@ export function Login() {
 
         } else {
           const loginResponse = await response.json();
+          setOpenSnackbar(true);
           setAlertType('warning');
           setAlertMsg(loginResponse.message);
         }
