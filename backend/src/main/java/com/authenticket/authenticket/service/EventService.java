@@ -1,7 +1,9 @@
 package com.authenticket.authenticket.service;
 
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
+import com.authenticket.authenticket.dto.event.OverallEventDto;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
 
@@ -10,7 +12,7 @@ import java.util.*;
 public interface EventService {
 
     List<EventDisplayDto> findAllEvent();
-    Optional<EventDisplayDto> findEventById(Integer eventId);
+    OverallEventDto findEventById(Integer eventId);
     Event saveEvent (Event event);
     Event updateEvent (EventUpdateDto eventUpdateDto);
 
@@ -22,4 +24,6 @@ public interface EventService {
     Event approveEvent (Integer eventId, Integer adminId);
 
 //    Event rejectEvent (Integer eventId);
+
+    Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
 }

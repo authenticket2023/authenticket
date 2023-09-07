@@ -52,17 +52,16 @@ public class TicketController {
 
     @PutMapping
     public ResponseEntity<?> updateTicket(@RequestParam(value = "ticketId") Integer ticketId,
-                                          @RequestParam(value = "userId") Integer userId,
-                                          @RequestParam(value = "eventId") Integer eventId,
-                                          @RequestParam(value = "categoryId") Integer categoryId) {
-        Ticket ticket = ticketService.updateTicket(ticketId, userId, eventId, categoryId);
+                                          @RequestParam(value = "userId") Integer userId) {
+        Ticket ticket = ticketService.updateTicket(ticketId, userId);
         return ResponseEntity.ok(ticket);
     }
 
-//    @PutMapping("/{ticketId}")
-//    public String deleteTicket(@PathVariable("ticketId") Integer ticketId) {
-//        return ticketService.deleteTicket(ticketId);
-//    }
+    @PutMapping("/{ticketId}")
+    public String deleteTicket(@PathVariable("ticketId") Integer ticketId) {
+        ticketService.deleteTicket(ticketId);
+        return "Ticket deleted successfully";
+    }
 
     @DeleteMapping("/{ticketId}")
     public String removeTicket(@PathVariable("ticketId") Integer ticketId) {

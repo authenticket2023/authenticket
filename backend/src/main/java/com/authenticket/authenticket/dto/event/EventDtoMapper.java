@@ -1,21 +1,50 @@
 package com.authenticket.authenticket.dto.event;
 
+import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
+import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDtoMapper;
+import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
+import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
+import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.model.TicketCategory;
+import com.authenticket.authenticket.repository.EventRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 public class EventDtoMapper implements Function<Event, EventDisplayDto> {
+
+    @Autowired
+    private EventOrganiserDtoMapper eventOrganiserDtoMapper;
+
+    @Autowired
+    private EventTicketCategoryDisplayDtoMapper eventTicketCategoryDisplayDtoMapper;
+
+    @Autowired
+    private VenueDtoMapper venueDtoMapper;
+
+    @Autowired
+    private ArtistDtoMapper artistDtoMapper;
+
+    @Autowired
+    private EventRepository eventRepository;
+
     public EventDisplayDto apply(Event event) {
         return new EventDisplayDto(
                 event.getEventId(),
                 event.getEventName(),
                 event.getEventDescription(),
                 event.getEventDate(),
-                event.getEventLocation(),
                 event.getOtherEventInfo(),
                 event.getTicketSaleDate(),
                 event.getCreatedAt(),
@@ -44,7 +73,8 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
             event.setTicketSaleDate(dto.ticketSaleDate());
         }
     }
-    public ArtistEventDto applyAssignedEvent(Object[] assignedEvents){
+
+    public ArtistEventDto applyAssignedEvent(Object[] assignedEvents) {
         return new ArtistEventDto(
                 assignedEvents[0],
                 assignedEvents[1],
@@ -71,4 +101,40 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 .map(this::applyAssignedEvent)
                 .collect(Collectors.toList());
     }
+
+    public OverallEventDto applyOverallEventDto(Event event) {
+
+        Integer eventId = event.getEventId();
+        EventOrganiserDisplayDto organiserDisplayDto = eventOrganiserDtoMapper.apply(event.getOrganiser());
+//        VenueDisplayDto venueDisplayDto = venueDtoMapper.apply(event.getVenue());
+//        String eventTypeName = event.getEventType().getEventTypeName();
+        Set<ArtistDisplayDto> artistSet = artistDtoMapper.mapArtistDisplayDto(eventRepository.getArtistByEventId(eventId));
+        Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+
+        //create and do something similar above for the eventTicketCategory dto
+
+        return new OverallEventDto(
+                event.getEventId(),
+                event.getEventName(),
+                event.getEventDescription(),
+                event.getEventDate(),
+                event.getOtherEventInfo(),
+                event.getEventImage(),
+                event.getTotalTickets(),
+                event.getTotalTicketsSold(),
+                event.getTicketSaleDate(),
+                eventTicketCategorySet,
+                organiserDisplayDto,
+                event.getVenue(),
+                artistSet,
+                event.getEventType().getEventTypeName()
+        );
+    }
+
+//    public List<OverallEventDto> mapOverallEventDto(List<Object[]> eventObjects) {
+//        return eventObjects.stream()
+//                .map(this::applyOverallEventDto)
+//                .collect(Collectors.toList());
+//    }
+
 }

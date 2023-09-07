@@ -3,13 +3,16 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDtoMapper;
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDto;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.ApiRequestException;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.TicketCategory;
 import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,14 +39,18 @@ public class TicketCategoryServiceImpl {
     public TicketCategory saveTicketCategory(String name) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findByCategoryName(name);
         if (ticketCategoryOptional.isPresent()) {
-            throw new AlreadyExistsException("Ticket Category with name '" + name + "'already exists");
+            throw new AlreadyExistsException("Ticket Category with name '" + name + "' already exists");
         }
-        TicketCategory ticketCategory = new TicketCategory(null, name, null);
+        TicketCategory ticketCategory = new TicketCategory(null, name);
         return ticketCategoryRepository.save(ticketCategory);
     }
 
     public TicketCategory updateTicketCategory(Integer categoryId, String name) {
         TicketCategoryUpdateDto ticketCategoryUpdateDto = new TicketCategoryUpdateDto(categoryId, name);
+
+        if (ticketCategoryRepository.findByCategoryName(name).isPresent()) {
+            throw new AlreadyExistsException("Ticket Category with name '" + name + "' already exists");
+        }
 
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(ticketCategoryUpdateDto.categoryId());
 
@@ -54,26 +61,25 @@ public class TicketCategoryServiceImpl {
             return existingTicketCategory;
         }
 
-        throw new ApiRequestException("Ticket Category not found");
+        throw new NonExistentException("Ticket Category not found");
     }
 
 
-//    public String deleteTicket(Integer ticketId) {
-//        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
-//
-//        if (ticketOptional.isPresent()) {
-//            Ticket ticket = ticketOptional.get();
-//            if(ticket.getDeletedAt()!=null){
-//                return "event already deleted";
-//            }
-//
-//            ticket.setDeletedAt(LocalDateTime.now());
-//            ticketRepository.save(ticket);
-//            return "event deleted successfully";
-//        }
-//
-//        return "error: event deleted unsuccessfully, event might not exist";
-//    }
+    public void deleteTicket(Integer categoryId) {
+        Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);
+
+        if (ticketCategoryOptional.isPresent()) {
+            TicketCategory ticketCategory = ticketCategoryOptional.get();
+            if(ticketCategory.getDeletedAt()!=null){
+                throw new AlreadyDeletedException("Ticket Category already deleted");
+            }
+
+            ticketCategory.setDeletedAt(LocalDateTime.now());
+            ticketCategoryRepository.save(ticketCategory);
+        } else {
+            throw new NonExistentException("Ticket Category does not exist");
+        }
+    }
 
     public void removeTicketCategory(Integer categoryId) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);
@@ -81,7 +87,7 @@ public class TicketCategoryServiceImpl {
         if (ticketCategoryOptional.isPresent()) {
             ticketCategoryRepository.deleteById(categoryId);
         } else {
-            throw new ApiRequestException("Failed to remove ticket category");
+            throw new NonExistentException("Ticket Category does not exist");
         }
     }
 }
