@@ -50,23 +50,29 @@ public class Event extends BaseEntity {
     private Integer totalTickets;
 
     @Column(name = "total_tickets_sold")
-    private Integer totalTicketsSold = 0;
+    private Integer totalTicketsSold;
 
-    @Column(name = "approved_by")
-    private Integer approvedBy;
+    @Column(name = "reviewed_by")
+    private Integer reviewedBy;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @Column(name = "review_status")
+    private String reviewStatus;
+
+    @Column(name = "review_remarks")
+    private String reviewRemarks;
+
+    @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "organiser_id", nullable = false)
     private EventOrganiser organiser;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
 //    @Getter
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany( cascade = CascadeType.ALL)
     @JsonIgnore
     @JoinTable(
             schema = "dev",
@@ -79,7 +85,7 @@ public class Event extends BaseEntity {
 //        this.artists = artist;
 //    }
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="type_id",nullable = false)
     private EventType eventType;
 

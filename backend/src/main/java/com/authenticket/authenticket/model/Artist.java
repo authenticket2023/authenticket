@@ -31,7 +31,7 @@ public class Artist extends BaseEntity {
     @Column(name = "artist_image", nullable = true)
     private String artistImage;
 
-    @ManyToMany(mappedBy ="artists", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy ="artists", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"artist_id"})
 //    @JoinTable(
 //            name = "artist_event",
