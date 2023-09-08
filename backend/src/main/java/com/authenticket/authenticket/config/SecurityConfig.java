@@ -32,18 +32,16 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())//by default use bean of corsConfigurationSource
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll()
+//                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/user/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyAuthority("ADMIN","USER")
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS
                 ))
                 .authenticationProvider(authenticationProvider)
-//                .authenticationProvider(adminAuthenticationProvider)
-//                .authenticationProvider(eventOrgAuthenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 

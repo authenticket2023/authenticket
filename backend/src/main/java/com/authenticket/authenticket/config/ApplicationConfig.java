@@ -44,15 +44,15 @@ public class ApplicationConfig {
             Optional<com.authenticket.authenticket.model.User> userOptional = userRepository.findByEmail(username);
             Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findByEmail(username);
             if (adminOptional.isPresent()) {
-                return new User(adminOptional.get().getEmail(), adminOptional.get().getPassword(), Collections.emptyList());
+                return new User(adminOptional.get().getEmail(), adminOptional.get().getPassword(), adminOptional.get().getAuthorities());
             } else if (userOptional.isPresent()){
                 if(userOptional.get().getEnabled()) {
-                    return new User(userOptional.get().getEmail(), userOptional.get().getPassword(), Collections.emptyList());
+                    return new User(userOptional.get().getEmail(), userOptional.get().getPassword(), userOptional.get().getAuthorities());
                 }
                 throw new AwaitingVerificationException("Verification required");
             } else if(eventOrganiserOptional.isPresent()){
                 if(eventOrganiserOptional.get().getEnabled()){
-                    return new User(eventOrganiserOptional.get().getEmail(), eventOrganiserOptional.get().getPassword(), Collections.emptyList());
+                    return new User(eventOrganiserOptional.get().getEmail(), eventOrganiserOptional.get().getPassword(), eventOrganiserOptional.get().getAuthorities());
                 }
                 throw new AwaitingVerificationException("Awaiting approval");
             }else {
