@@ -160,6 +160,33 @@ export const EventOrganiser = () => {
         TimestampConverter(Number(eventDate));
         console.log("-----")
         console.log(TimestampConverter(Number(eventDate)));
+
+        //calling create event backend API
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            method: 'POST',
+            body: formData
+        })
+            .then(async (response) => {
+                if (response.status == 200) {
+
+                    const loginResponse = await response.json();
+                    //pass the info to the local storage, so other page can access them
+                    console.log("ok");
+                } else {
+                    const loginResponse = await response.json();
+                    setOpenSnackbar(true);
+                    setAlertType('warning');
+                    setAlertMsg(loginResponse.message);
+                }
+            })
+            .catch((err) => {
+                window.alert(err);
+            });
+
+
     };
 
     return (
