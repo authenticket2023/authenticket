@@ -34,9 +34,6 @@ public class Event extends BaseEntity {
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
-    @Column(name = "event_location")
-    private String eventLocation;
-
     @Column(name = "other_event_info")
     private String otherEventInfo;
 

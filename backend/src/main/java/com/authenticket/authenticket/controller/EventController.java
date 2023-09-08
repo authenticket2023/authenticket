@@ -6,10 +6,6 @@ import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
-import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
-import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
@@ -18,9 +14,7 @@ import com.authenticket.authenticket.repository.EventTypeRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
-import com.authenticket.authenticket.service.impl.ArtistServiceImpl;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
-import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -140,7 +134,6 @@ public class EventController extends Utility {
                                        @RequestParam("eventName") String eventName,
                                        @RequestParam("eventDescription") String eventDescription,
                                        @RequestParam("eventDate") LocalDateTime eventDate,
-                                       @RequestParam("eventLocation") String eventLocation,
                                        @RequestParam("otherEventInfo") String otherEventInfo,
                                        @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
                                        @RequestParam("organiserId") Integer organiserId,
@@ -167,7 +160,7 @@ public class EventController extends Utility {
         //save event first to get the event id
         try {
             //save event first without image name to get the event id
-            Event newEvent = new Event(null, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, null,
+            Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
                     ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, null);
             savedEvent = eventService.saveEvent(newEvent);
 
@@ -325,6 +318,16 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
         Integer eventId = jsonFormat.getEventId();
         TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isPresent()) {
+            Event event = eventOptional.get();
+            //resetting value before update
+            event.setTotalTickets(0);
+            event.setTotalTicketsSold(0);
+            eventRepository.save(event);
+        } else {
+            throw new NonExistentException("Event does not exist");
+        }
         for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
             eventService.updateTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice(), ticketCategoryJSON.getAvailableTickets(), ticketCategoryJSON.getTotalTicketsPerCat());
         }
@@ -346,19 +349,19 @@ public class EventController extends Utility {
 //        }
 //    }
 
-    @PutMapping("/removeTicketCategory")
-    public ResponseEntity<GeneralApiResponse> removeTicketCategory(
-            @RequestParam("catId") Integer catId,
-            @RequestParam("eventId") Integer eventId) {
-        EventDisplayDto eventDisplayDto = eventService.removeTicketCategory(catId, eventId);
-        return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully removed from event"));
-    }
+//    @PutMapping("/removeTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> removeTicketCategory(
+//            @RequestParam("catId") Integer catId,
+//            @RequestParam("eventId") Integer eventId) {
+//        EventDisplayDto eventDisplayDto = eventService.removeTicketCategory(catId, eventId);
+//        return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully removed from event"));
+//    }
 
     @GetMapping("/{eventId}/getTicketCategory")
     public ResponseEntity<GeneralApiResponse> getTicketCategory(
             @RequestParam("eventId") Integer eventId) {
         Optional<Event> optionalEvent = eventRepository.findById(eventId);
-        if(optionalEvent.isEmpty()) {
+        if (optionalEvent.isEmpty()) {
             throw new NonExistentException("Event does not exist");
         }
         Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();

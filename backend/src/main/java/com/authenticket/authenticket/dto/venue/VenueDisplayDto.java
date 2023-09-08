@@ -2,6 +2,8 @@ package com.authenticket.authenticket.dto.venue;
 
 import java.time.LocalDate;
 
-public record VenueDisplayDto(String venue_name,
-                              String venue_location){
+public record VenueDisplayDto(
+        Integer venueId, String venueName,
+                              String venueLocation,
+        String venueImage){
 }

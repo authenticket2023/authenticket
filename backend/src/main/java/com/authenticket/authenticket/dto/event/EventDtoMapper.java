@@ -80,9 +80,6 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         if (dto.eventDate() != null) {
             event.setEventDate(dto.eventDate());
         }
-        if (dto.eventLocation() != null) {
-            event.setEventLocation(dto.eventLocation());
-        }
         if (dto.otherEventInfo() != null) {
             event.setOtherEventInfo(dto.otherEventInfo());
         }

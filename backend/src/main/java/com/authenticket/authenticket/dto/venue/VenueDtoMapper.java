@@ -9,8 +9,10 @@ import java.util.function.Function;
 public class VenueDtoMapper implements Function<Venue, VenueDisplayDto> {
     public VenueDisplayDto apply(Venue venue){
         return new VenueDisplayDto(
+                venue.getVenueId(),
                 venue.getVenueName(),
-                venue.getVenueLocation()
+                venue.getVenueLocation(),
+                venue.getVenueImage()
         );
     }
 

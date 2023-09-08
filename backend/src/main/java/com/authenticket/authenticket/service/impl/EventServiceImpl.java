@@ -5,7 +5,6 @@ import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
-import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.ArtistRepository;
@@ -57,7 +56,7 @@ public class EventServiceImpl implements EventService {
 
     public OverallEventDto findEventById(Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
-        if(eventOptional.isPresent()){
+        if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             OverallEventDto overallEventDto = eventDTOMapper.applyOverallEventDto(event);
             return overallEventDto;
@@ -65,25 +64,38 @@ public class EventServiceImpl implements EventService {
         return null;
     }
 
-    public List<EventHomeDto> findRecentlyAddedEvents(){
+    public List<EventHomeDto> findRecentlyAddedEvents() {
         return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusOrderByCreatedAtDesc("approved"));
 
-    };
-    public List<EventHomeDto> findFeaturedEvents(){
-        return null;
-    };
-    public List<EventHomeDto> findBestSellerEvents(){
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents());
-    };
-    public List<EventHomeDto> findUpcomingEvents(){
-        LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterOrderByTicketSaleDateAsc("approved",currentDate));
-    };
+    }
 
-    public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus){
+    ;
+
+    public List<EventHomeDto> findFeaturedEvents() {
+        return null;
+    }
+
+    ;
+
+    public List<EventHomeDto> findBestSellerEvents() {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents());
+    }
+
+    ;
+
+    public List<EventHomeDto> findUpcomingEvents() {
+        LocalDateTime currentDate = LocalDateTime.now();
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterOrderByTicketSaleDateAsc("approved", currentDate));
+    }
+
+    ;
+
+    public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.map(eventRepository.findAllByReviewStatusOrderByCreatedAtAsc(reviewStatus));
-    };
+    }
+
+    ;
 
     public Event saveEvent(Event event) {
         return eventRepository.save(event);
@@ -153,16 +165,16 @@ public class EventServiceImpl implements EventService {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<Artist> artistOptional = artistRepository.findById(artistId);
         System.out.println("artist: " + artistId);
-        System.out.println("event: " +eventId);
+        System.out.println("event: " + eventId);
         if (artistOptional.isPresent() && eventOptional.isPresent()) {
             System.out.println("hello");
             Artist artist = artistOptional.get();
             Event event = eventOptional.get();
-            Set<Artist> artistSet= event.getArtists();
-            if(artistSet == null){
+            Set<Artist> artistSet = event.getArtists();
+            if (artistSet == null) {
                 artistSet = new HashSet<>();
             }
-            if(!artistSet.contains(artist)){
+            if (!artistSet.contains(artist)) {
 
                 artistSet.add(artist);
                 event.setArtists(artistSet);
@@ -173,7 +185,7 @@ public class EventServiceImpl implements EventService {
                 throw new AlreadyExistsException("Artist already linked to stated event");
             }
         } else {
-            if (artistOptional.isEmpty()){
+            if (artistOptional.isEmpty()) {
                 throw new NonExistentException("Artist does not exists");
             } else {
                 throw new NonExistentException("Event does not exists");
@@ -194,6 +206,16 @@ public class EventServiceImpl implements EventService {
             }
 
             event.addTicketCategory(ticketCategory, price, availableTickets, totalTicketsPerCat);
+            //adding to total tickets
+            Integer currentTotalTickets = event.getTotalTickets();
+            currentTotalTickets += totalTicketsPerCat;
+            event.setTotalTickets(currentTotalTickets);
+
+            //adding to total tickets sold
+            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
+            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
+            event.setTotalTicketsSold(currentTotalTicketsSold);
+
             eventRepository.save(event);
             return eventDTOMapper.apply(event);
 //            Set<EventTicketCategory> eventTicketCategorySet = event.getEventTicketCategorySet();
@@ -212,7 +234,7 @@ public class EventServiceImpl implements EventService {
 //                throw new AlreadyExistsException("Ticket Category already linked to stated event");
 //            }
         } else {
-            if (categoryOptional.isEmpty()){
+            if (categoryOptional.isEmpty()) {
                 throw new NonExistentException("Category does not exist");
             } else {
                 throw new NonExistentException("Event does not exist");
@@ -233,12 +255,22 @@ public class EventServiceImpl implements EventService {
             }
             EventTicketCategory eventTicketCategory = eventTicketCategoryOptional.get();
 
+            //adding to total tickets
+            Integer currentTotalTickets = event.getTotalTickets();
+            currentTotalTickets += totalTicketsPerCat;
+            event.setTotalTickets(currentTotalTickets);
+
+            //adding to total tickets sold
+            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
+            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
+            event.setTotalTicketsSold(currentTotalTicketsSold);
+
             if (!event.updateTicketCategory(eventTicketCategory, price, availableTickets, totalTicketsPerCat)) {
                 throw new NonExistentException("Event " + event.getEventName() + " is not linked to " + ticketCategory.getCategoryName());
             }
             eventRepository.save(event);
         } else {
-            if (categoryOptional.isEmpty()){
+            if (categoryOptional.isEmpty()) {
                 throw new NonExistentException("Category does not exist");
             } else {
                 throw new NonExistentException("Event does not exist");
@@ -262,7 +294,7 @@ public class EventServiceImpl implements EventService {
             eventRepository.save(event);
             return eventDTOMapper.apply(event);
         } else {
-            if (categoryOptional.isEmpty()){
+            if (categoryOptional.isEmpty()) {
                 throw new NonExistentException("Category does not exist");
             } else {
                 throw new NonExistentException("Event does not exist");
@@ -271,12 +303,12 @@ public class EventServiceImpl implements EventService {
     }
 
     //return artist for a specific event
-    public Set<ArtistDisplayDto> findArtistForEvent(Integer eventId) throws NonExistentException{
+    public Set<ArtistDisplayDto> findArtistForEvent(Integer eventId) throws NonExistentException {
 
-        if(eventRepository.findById(eventId).isEmpty()){
+        if (eventRepository.findById(eventId).isEmpty()) {
             throw new NonExistentException("Event does not exist");
         }
-        List<Object[]> artistObject= eventRepository.getArtistByEventId(eventId);
+        List<Object[]> artistObject = eventRepository.getArtistByEventId(eventId);
         Set<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
         return artistDisplayDtoList;
     }
