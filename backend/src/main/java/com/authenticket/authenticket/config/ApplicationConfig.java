@@ -6,6 +6,7 @@ import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.swing.text.html.Option;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @Configuration
 public class ApplicationConfig {
@@ -77,5 +79,10 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Singapore"));
     }
 }
