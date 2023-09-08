@@ -127,19 +127,6 @@ export const EventOrganiser = () => {
     }
 
     const handleCreateEvent = () => {
-        //for testing
-        console.log('---Step 1-----')
-        console.log('Event Name:' + eventName + ' |Event date:' + eventDate + ' |Sale date:' + saleDate);
-        console.log('VIP:' + ticketNumberVIP + ' |Price:' + VIPPrice);
-        console.log('cat1:' + ticketNumberCat1 + ' |Price:' + cat1Price);
-        console.log('cat2:' + ticketNumberCat2 + ' |Price:' + cat2Price);
-        console.log('cat3:' + ticketNumberCat3 + ' |Price:' + cat3Price);
-        console.log('cat4:' + ticketNumberCat4 + ' |Price:' + cat4Price);
-        console.log('---Step 2-----')
-        console.log('Venue:' + venue + ' |Artist list:' + artistList + '|other venue:' + otherVenue);
-        console.log('---Step 3-----')
-        console.log(selectedFiles);
-
         //retrieve venue from DB
         const addTicketCategory = async (eventId: any) => {
             try {
@@ -201,21 +188,24 @@ export const EventOrganiser = () => {
             }
         };
 
-        //TODO: call backend to create events
+        //call backend to create events
         const formData = new FormData();
         formData.append('eventName', eventName);
-        //need format
         formData.append('eventDate', TimestampConverter(Number(eventDate)));
-        formData.append('eventLocation', 'dont need this field');
         formData.append('eventDescription', eventDescription);
-        formData.append('otherEventInfo', otherInfo);
         formData.append('ticketSaleDate', TimestampConverter(Number(saleDate)));
         formData.append('file', selectedFiles[0]);
-        //this get from login?
+        //TODO: this get from login?
         formData.append('organiserId', '1');
-        //get from drop down
-        formData.append('venueId', '1');
+        formData.append('venueId', venue);
+        //if the event venue is not in the list, user will enter the venue, add it to other info
+        if(venue == '999') {
+            formData.append('otherEventInfo', `${otherInfo}; Other venue:${otherVenue}`);
+        }else {
+            formData.append('otherEventInfo', otherInfo);
+        }
         formData.append('artistId', artistList.toString());
+        //TODO: pending
         formData.append('typeId', '3');
 
         //calling create event backend API
@@ -227,13 +217,12 @@ export const EventOrganiser = () => {
                 if (response.status == 200) {
                     const eventResponse = await response.json();
                     //if ok, call addTicketCategory
-                    addTicketCategory('35');
+                    addTicketCategory(eventResponse['data']['eventId']);
                 } else {
                     const eventResponse = await response.json();
                     setOpenSnackbar(true);
                     setAlertType('warning');
                     setAlertMsg(eventResponse.message);
-                    addTicketCategory('38');
                 }
             })
             .catch((err) => {

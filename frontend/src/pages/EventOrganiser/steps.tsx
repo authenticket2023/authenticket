@@ -72,11 +72,17 @@ export function EventDetails(props: any) {
 
     const handleConfirm = (event: any) => {
         event.preventDefault();
+        //input validation
         if (!(dayjs(props.eventDate).isAfter(dayjs(props.currentDateTime)) && dayjs(props.saleDate).isAfter(dayjs(props.currentDateTime)))) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Invlid event/sale date!!!");
+        } else if (dayjs(props.eventDate.is).isBefore(dayjs(props.saleDate))) {
+            //show alert msg
+            props.setOpenSnackbar(true);
+            props.setAlertType('error');
+            props.setAlertMsg("Sale date cannot be after Event date!!!");
         } else if (props.ticketNumber == 0) {
             //show alert msg
             props.setOpenSnackbar(true);
@@ -285,7 +291,7 @@ export function VenueArtist(props: any) {
 
     //to detect change on props.venue
     useEffect(() => {
-        if (props.venue == 'Other') {
+        if (props.venue == '999') {
             setShowOtherVenue(true);
         } else {
             setShowOtherVenue(false);
@@ -375,12 +381,12 @@ export function VenueArtist(props: any) {
     const handleConfirm = (event: any) => {
         event.preventDefault();
         props.handleComplete();
-        console.log(props.artistList)
+        console.log(props.artistList);
+        console.log(props.venue);
     };
 
     return (
         <form onSubmit={handleConfirm}>
-
             <Box sx={{ mt: 2 }}>
                 {/* Venue */}
                 <Sheet sx={{ marginTop: 2 }}>
@@ -398,10 +404,9 @@ export function VenueArtist(props: any) {
                                         onChange={handleVenue}
                                         required
                                     >
-                                        {venueList.map((venue:any) => (
-                                            <MenuItem key={venue.venue_name} value={venue.venue_name}>{venue.venue_name}</MenuItem>
+                                        {venueList.map((venue: any) => (
+                                            <MenuItem key={venue.venueId} value={venue.venueId}>{venue.venueName}</MenuItem>
                                         ))}
-                                        <MenuItem value={"Other"}>Other</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
