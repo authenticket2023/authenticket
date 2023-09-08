@@ -32,7 +32,7 @@ public class Artist extends BaseEntity {
     private String artistImage;
 
     @ManyToMany(mappedBy ="artists", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"artist_id"})
+    @JsonIgnore
 //    @JoinTable(
 //            name = "artist_event",
 //            joinColumns = @JoinColumn(name = "artist_id", referencedColumnName = "artist_id"),
