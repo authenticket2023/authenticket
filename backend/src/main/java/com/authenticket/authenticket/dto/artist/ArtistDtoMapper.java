@@ -32,8 +32,9 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
         );
     }
 
-    public Set<ArtistDisplayDto> mapArtistDisplayDto(List<Object[]> eventObjects) {
-        return eventObjects.stream()
+    public Set<ArtistDisplayDto> mapArtistDisplayDto(List<Object[]> artistObjects) {
+
+        return artistObjects.stream()
                 .map(this::applyArtistDisplayDto)
                 .collect(Collectors.toSet());
     }

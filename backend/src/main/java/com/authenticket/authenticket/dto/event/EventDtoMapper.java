@@ -12,6 +12,7 @@ import com.authenticket.authenticket.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -112,8 +113,8 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         );
     }
 
-    public List<ArtistEventDto> mapAssignedEvent(List<Object[]> eventObjects) {
-        return eventObjects.stream()
+    public List<ArtistEventDto> mapAssignedEvent(List<Object[]> artistEventObjects) {
+        return artistEventObjects.stream()
                 .map(this::applyAssignedEvent)
                 .collect(Collectors.toList());
     }
@@ -124,8 +125,16 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         EventOrganiserDisplayDto organiserDisplayDto = eventOrganiserDtoMapper.apply(event.getOrganiser());
 //        VenueDisplayDto venueDisplayDto = venueDtoMapper.apply(event.getVenue());
 //        String eventTypeName = event.getEventType().getEventTypeName();
-        Set<ArtistDisplayDto> artistSet = artistDtoMapper.mapArtistDisplayDto(eventRepository.getArtistByEventId(eventId));
-        Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+
+        Set<ArtistDisplayDto> artistSet = new HashSet<>();
+        if(eventRepository.getArtistByEventId(eventId)!=null){
+            artistSet = artistDtoMapper.mapArtistDisplayDto(eventRepository.getArtistByEventId(eventId));
+        }
+        Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
+        if(event.getEventTicketCategorySet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+
+        }
 
         //create and do something similar above for the eventTicketCategory dto
 

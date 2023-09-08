@@ -31,8 +31,8 @@ public class EventTicketCategoryDtoMapper implements Function<EventTicketCategor
         }
     }
 
-    public Set<EventTicketCategoryDisplayDto> map(Set<EventTicketCategory> eventObjects) {
-        return eventObjects.stream()
+    public Set<EventTicketCategoryDisplayDto> map(Set<EventTicketCategory> eventTicketObjects) {
+        return eventTicketObjects.stream()
                 .map(this::apply)
                 .collect(Collectors.toSet());
     }
