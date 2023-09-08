@@ -30,7 +30,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping("/api/event")
 public class EventController extends Utility {
     @Autowired

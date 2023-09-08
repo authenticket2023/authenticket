@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import DownloadIcon from '@mui/icons-material/Download';
+import { Alert, Snackbar } from '@mui/material';
 
 //image downloads
 import logo from '../../images/logo(orange).png';
@@ -52,6 +52,13 @@ export function Login() {
   //validation
   const [emailError, setEmailError] = useState(false);
   const [helperText, setHelperText] = useState('');
+  //for pop up message => error , warning , info , success
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertType, setAlertType]: any = useState('info');
+  const [alertMsg, setAlertMsg] = useState('');
+  const handleSnackbarClose = () => {
+      setOpenSnackbar(false);
+  };
 
   const handleEmail = (e: any) => {
     setEmail(e.target.value);
@@ -70,7 +77,7 @@ export function Login() {
       setHelperText('');
     }
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_PRODUCTION_URL}/user/login`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/authenticate`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -81,25 +88,25 @@ export function Login() {
       })
     })
       .then(async (response) => {
-        if (response.status != 200) {
-          window.alert("Email/Password invalid!");
-        } else {
+        if (response.status == 200) {
 
           const loginResponse = await response.json();
-          const data = loginResponse.data;
           //pass the info to the local storage, so other page can access them
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('userName', data.name);
-          localStorage.setItem('accRole', data.accRole);
-          localStorage.setItem('linkedElderly', data.linkedElderly);
-          localStorage.setItem('profileImage', data.profileImage);
-          localStorage.setItem('email', data.email);
+          localStorage.setItem('accessToken', loginResponse.data.token);
+          localStorage.setItem('email', loginResponse.data.userDetails.email);
+          localStorage.setItem('username', loginResponse.data.userDetails.name);
+          localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
+          localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
 
-          if (data.accRole == 'Admin') {
-            navigate('/home-admin');
-          } else {
-            navigate('/home');
-          }
+          
+
+          navigate('/Home');
+
+        } else {
+          const loginResponse = await response.json();
+          setOpenSnackbar(true);
+          setAlertType('warning');
+          setAlertMsg(loginResponse.message);
         }
 
       })
@@ -210,6 +217,14 @@ export function Login() {
             </form>
           </Box>
         </Grid>
+
+        {/* error feedback */}
+        <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+            {alertMsg}
+          </Alert>
+        </Snackbar>
+
       </Grid>
     </ThemeProvider>
   );

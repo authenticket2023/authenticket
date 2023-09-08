@@ -20,7 +20,12 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping("/api/event-organiser")
 public class EventOrganiserController extends Utility {
     @Autowired

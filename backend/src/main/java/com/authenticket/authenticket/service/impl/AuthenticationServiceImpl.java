@@ -202,10 +202,6 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         }
 
         organiserRepository.save(request);
-//        var jwtToken = jwtServiceImpl.generateToken(eventOrg);
-//
-//        String link = "http://localhost:" + apiPort + "/api/auth/register/confirm?token=" + jwtToken;
-//        emailServiceImpl.send(request.getEmail(), buildEmail(request.getName(), link));
     }
 
     public AuthenticationOrgResponse orgAuthenticate(String email, String password){

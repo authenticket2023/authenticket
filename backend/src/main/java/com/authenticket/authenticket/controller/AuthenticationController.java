@@ -24,7 +24,12 @@ import io.jsonwebtoken.security.SignatureException;
 import java.time.LocalDate;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.POST},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping("/api/auth")
 public class AuthenticationController extends Utility{
 
