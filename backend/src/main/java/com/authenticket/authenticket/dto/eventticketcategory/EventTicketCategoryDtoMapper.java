@@ -1,8 +1,8 @@
 package com.authenticket.authenticket.dto.eventticketcategory;
 
-import com.authenticket.authenticket.dto.event.ArtistEventDto;
+import com.authenticket.authenticket.dto.venue.VenueUpdateDto;
 import com.authenticket.authenticket.model.EventTicketCategory;
-import com.authenticket.authenticket.model.TicketCategory;
+import com.authenticket.authenticket.model.Venue;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class EventTicketCategoryDisplayDtoMapper implements Function<EventTicketCategory, EventTicketCategoryDisplayDto> {
+public class EventTicketCategoryDtoMapper implements Function<EventTicketCategory, EventTicketCategoryDisplayDto> {
     public EventTicketCategoryDisplayDto apply(EventTicketCategory eventTicketCategory) {
 
         return new EventTicketCategoryDisplayDto(
@@ -19,6 +19,17 @@ public class EventTicketCategoryDisplayDtoMapper implements Function<EventTicket
                 eventTicketCategory.getTotalTicketsPerCat());
     }
 
+    public void update(EventTicketCategoryUpdateDto newEventTicketCategoryDto, EventTicketCategory oldEventTicketCategory){
+        if(newEventTicketCategoryDto.availableTickets() != null){
+            oldEventTicketCategory.setAvailableTickets(newEventTicketCategoryDto.availableTickets());
+        }
+        if(newEventTicketCategoryDto.totalTicketsPerCat() != null){
+            oldEventTicketCategory.setTotalTicketsPerCat(newEventTicketCategoryDto.totalTicketsPerCat());
+        }
+        if(newEventTicketCategoryDto.price() != null){
+            oldEventTicketCategory.setPrice(newEventTicketCategoryDto.price());
+        }
+    }
 
     public Set<EventTicketCategoryDisplayDto> map(Set<EventTicketCategory> eventObjects) {
         return eventObjects.stream()

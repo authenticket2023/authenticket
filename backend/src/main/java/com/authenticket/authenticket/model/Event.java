@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryUpdateDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -100,6 +101,19 @@ public class Event extends BaseEntity {
         EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, this, price, availableTickets, totalTicketsPerCat);
         eventTicketCategorySet.add(eventTicketCategory);
 //        ticketCategory.getEventTicketCategorySet().add(eventTicketCategory);
+    }
+
+    public boolean updateTicketCategory(EventTicketCategory eventTicketCategory, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+//        EventTicketCategoryUpdateDto eventTicketCategoryUpdateDto = new EventTicketCategoryUpdateDto(eventTicketCategory.getCat().getCategoryId(), eventId, price, availableTickets, totalTicketsPerCat);
+        for (EventTicketCategory eventTicketCategoryIter : eventTicketCategorySet) {
+            if (eventTicketCategoryIter.equals(eventTicketCategory)) {
+                eventTicketCategoryIter.setPrice(price);
+                eventTicketCategoryIter.setAvailableTickets(availableTickets);
+                eventTicketCategoryIter.setTotalTicketsPerCat(totalTicketsPerCat);
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeTicketCategory(TicketCategory ticketCategory) {

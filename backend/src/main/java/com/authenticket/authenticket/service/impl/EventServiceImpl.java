@@ -5,6 +5,7 @@ import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.ArtistRepository;
@@ -190,6 +191,32 @@ public class EventServiceImpl implements EventService {
 //            } else {
 //                throw new AlreadyExistsException("Ticket Category already linked to stated event");
 //            }
+        } else {
+            if (categoryOptional.isEmpty()){
+                throw new NonExistentException("Category does not exist");
+            } else {
+                throw new NonExistentException("Event does not exist");
+            }
+        }
+    }
+
+    public void updateTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
+        if (categoryOptional.isPresent() && eventOptional.isPresent()) {
+            TicketCategory ticketCategory = categoryOptional.get();
+            Event event = eventOptional.get();
+
+            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            if (eventTicketCategoryOptional.isEmpty()) {
+                throw new NonExistentException("Ticket Category " + ticketCategory.getCategoryName() + " is not linked to Event '" + event.getEventName() + "'");
+            }
+            EventTicketCategory eventTicketCategory = eventTicketCategoryOptional.get();
+
+            if (!event.updateTicketCategory(eventTicketCategory, price, availableTickets, totalTicketsPerCat)) {
+                throw new NonExistentException("Event " + event.getEventName() + " is not linked to " + ticketCategory.getCategoryName());
+            }
+            eventRepository.save(event);
         } else {
             if (categoryOptional.isEmpty()){
                 throw new NonExistentException("Category does not exist");

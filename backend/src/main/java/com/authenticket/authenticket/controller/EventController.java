@@ -280,6 +280,16 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
     }
 
+    @PutMapping("/updateTicketCategory")
+    public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
+        Integer eventId = jsonFormat.getEventId();
+        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
+        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
+            eventService.updateTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice(), ticketCategoryJSON.getAvailableTickets(), ticketCategoryJSON.getTotalTicketsPerCat());
+        }
+        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
+    }
+
 //    @PutMapping("/addTicketCategory")
 //    public ResponseEntity<GeneralApiResponse> addTicketCategory(
 //            @RequestParam("catId") Integer catId,

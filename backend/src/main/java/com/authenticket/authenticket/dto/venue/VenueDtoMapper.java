@@ -14,15 +14,12 @@ public class VenueDtoMapper implements Function<Venue, VenueDisplayDto> {
         );
     }
 
-    public void update (Venue newVenue, Venue oldVenue){
-        if(newVenue.getVenueName() != null){
-            oldVenue.setVenueName(newVenue.getVenueName());
+    public void update (VenueUpdateDto newVenueDto, Venue oldVenue){
+        if(newVenueDto.venue_name() != null){
+            oldVenue.setVenueName(newVenueDto.venue_name());
         }
-        if(newVenue.getVenueLocation() != null){
-            oldVenue.setVenueLocation(newVenue.getVenueLocation());
-        }
-        if(newVenue.getVenueImage() != null){
-            oldVenue.setVenueImage(newVenue.getVenueImage());
+        if(newVenueDto.venue_location() != null){
+            oldVenue.setVenueLocation(newVenueDto.venue_location());
         }
     }
 }

@@ -77,7 +77,7 @@ public class TicketServiceImpl {
             return existingTicket;
         }
 
-        throw new ApiRequestException("Error Updating Ticket: Ticket not found");
+        throw new NonExistentException("Error Updating Ticket: Ticket not found");
     }
 
 

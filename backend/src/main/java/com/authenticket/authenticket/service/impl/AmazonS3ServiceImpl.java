@@ -3,6 +3,7 @@ package com.authenticket.authenticket.service.impl;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,14 +71,14 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
             fileName = "artist_image/" + imageName ;
         } else {
             //exception handling
-            return null;
+            throw new NonExistentException("File type input does not exist");
         }
 
         File fileObj = convertMultiPartFileToFile(file);
 
         amazonS3.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
         fileObj.delete();
-        return "File upload: " +fileName;
+        return "File upload: " + fileName;
     }
 
     public String deleteFile(String imageName, String fileType) {

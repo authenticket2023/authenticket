@@ -5,17 +5,13 @@ import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
-import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDtoMapper;
-import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
-import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.TicketCategory;
 import com.authenticket.authenticket.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -28,7 +24,7 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     private EventOrganiserDtoMapper eventOrganiserDtoMapper;
 
     @Autowired
-    private EventTicketCategoryDisplayDtoMapper eventTicketCategoryDisplayDtoMapper;
+    private EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper;
 
     @Autowired
     private VenueDtoMapper venueDtoMapper;
