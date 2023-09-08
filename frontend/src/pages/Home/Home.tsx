@@ -277,6 +277,7 @@ export const Home = () => {
                   variant="h3"
                   color="inherit"
                   align="center"
+                  sx={{fontWeight:600, whiteSpace:"nowrap"}}
                 >
                   Unlock Unforgettable Experiences
                 </Typography>
@@ -286,15 +287,14 @@ export const Home = () => {
                   color="inherit"
                   gutterBottom
                   align="center"
+                  sx={{fontWeight:400}}
                 >
                   your gateway to premier event adventures
                 </Typography>
                 <br />
-                <br />
-                <br />
-                <Search>
+                <Search sx={{backgroundColor:"white", borderRadius:"10px"}}>
                   <SearchIconWrapper>
-                    <SearchIcon sx={{ color: "#3b3b3b" }} />
+                    <SearchIcon sx={{ color: "#9C9C9C" }} />
                   </SearchIconWrapper>
                   <StyledInputBase
                     placeholder="Search…"
@@ -310,16 +310,16 @@ export const Home = () => {
           </Grid>
         </Paper>
       </div>
-      <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
-        Featured Events
+      <Typography marginLeft={15} marginTop={8} marginBottom={1} sx={{ fontWeight: "bold" , fontSize:16}}>
+        Best Sellers
       </Typography>
       <Grid container>
         <Grid item xs={12}>
           <TicketCarousel></TicketCarousel>
         </Grid>
       </Grid>
-      <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
-        New on AuthenTicket
+      <Typography marginLeft={15} marginTop={8} marginBottom={1} sx={{ fontWeight: "bold", fontSize:16 }}>
+        Recently Added
       </Typography>
       <Grid container>
         <Grid item xs={12}>
@@ -336,8 +336,8 @@ export const Home = () => {
           </Grid>
         </Grid>
       </Box>
-      <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
-        Recently Added
+      <Typography marginLeft={15} marginTop={8} marginBottom={1} sx={{ fontWeight: "bold", fontSize:16 }}>
+        Upcoming Sales
       </Typography>
       <Grid container>
         <Grid item xs={12} marginBottom={8}>
