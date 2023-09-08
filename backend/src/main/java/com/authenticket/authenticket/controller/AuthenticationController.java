@@ -9,13 +9,17 @@ import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AuthenticationServiceImpl;
+import com.authenticket.authenticket.service.impl.JwtServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import io.jsonwebtoken.security.SignatureException;
 
 import java.time.LocalDate;
 
@@ -29,6 +33,31 @@ public class AuthenticationController extends Utility{
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtServiceImpl jwtService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @PostMapping("token-check")
+    public ResponseEntity<GeneralApiResponse> tokenCheck(
+            @RequestParam("jwtToken") String token,
+            @RequestParam("userEmail") String userEmail){
+        try {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            boolean jwtValidity = jwtService.isTokenValid(token, userDetails);
+            if (jwtValidity) {
+                return ResponseEntity.status(200).body(generateApiResponse(true, "valid token"));
+            }
+            return ResponseEntity.status(200).body(generateApiResponse(false, "invalid token"));
+        }
+        catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(400).body(generateApiResponse(null, "user not found"));
+        } catch (SignatureException e) {
+            return ResponseEntity.status(400).body(generateApiResponse(false, "invalid token, token should not be trusted"));
+        }
+    }
 
     @PostMapping("/userRegister")
     public ResponseEntity<GeneralApiResponse> userRegister(
