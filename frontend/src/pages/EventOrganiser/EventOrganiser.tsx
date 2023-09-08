@@ -95,7 +95,7 @@ export const EventOrganiser = () => {
     const [otherVenue, setOtherVenue] = useState('');
 
     //for EventPoster
-    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles]: any = useState(null);
 
     //for testing
     useEffect(() => {
@@ -109,21 +109,57 @@ export const EventOrganiser = () => {
         setOpenSnackbar(false);
     };
 
+    const TimestampConverter = (timestamp: number) => {
+        // Create a Date object from the timestamp
+        const date = new Date(timestamp);
+
+        // Extract components
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        const formattedTimestamp = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+
+        return formattedTimestamp;
+    }
+
     const handleCreateEvent = () => {
         //for testing
         console.log('---Step 1-----')
-        console.log('Event Name:' + eventName + ' |Event date:' + eventDate + ' |Sale date:' +  saleDate);
-        console.log('VIP:' + ticketNumberVIP + ' |Price:' + VIPPrice );
-        console.log('cat1:' + ticketNumberCat1 + ' |Price:' + cat1Price );
-        console.log('cat2:' + ticketNumberCat2 + ' |Price:' + cat2Price );
-        console.log('cat3:' + ticketNumberCat3 + ' |Price:' + cat3Price );
+        console.log('Event Name:' + eventName + ' |Event date:' + eventDate + ' |Sale date:' + saleDate);
+        console.log('VIP:' + ticketNumberVIP + ' |Price:' + VIPPrice);
+        console.log('cat1:' + ticketNumberCat1 + ' |Price:' + cat1Price);
+        console.log('cat2:' + ticketNumberCat2 + ' |Price:' + cat2Price);
+        console.log('cat3:' + ticketNumberCat3 + ' |Price:' + cat3Price);
         console.log('cat4:' + ticketNumberCat4 + ' |Price:' + cat4Price);
         console.log('---Step 2-----')
-        console.log('Venue:' + venue + ' |Artist list:' + artistList + '|other venue:' +otherVenue);
+        console.log('Venue:' + venue + ' |Artist list:' + artistList + '|other venue:' + otherVenue);
         console.log('---Step 3-----')
         console.log(selectedFiles);
-        
+
         //TODO: call backend to create events
+        const formData = new FormData();
+        formData.append('eventName', eventName);
+        //need format
+        formData.append('eventDate', TimestampConverter(Number(eventDate)));
+        formData.append('eventLocation', 'dont need this field');
+        formData.append('eventDescription', eventDescription);
+        formData.append('otherEventInfo', otherInfo);
+        formData.append('ticketSaleDate', TimestampConverter(Number(saleDate)));
+        formData.append('file', selectedFiles);
+        //this get from login?
+        formData.append('organiserId', '1');
+        //get from drop down
+        formData.append('venueId', '1');
+        //get fromd drop down
+        formData.append('artistId', '1,2,3');
+        formData.append('typeId', '3');
+        TimestampConverter(Number(eventDate));
+        console.log("-----")
+        console.log(TimestampConverter(Number(eventDate)));
     };
 
     return (

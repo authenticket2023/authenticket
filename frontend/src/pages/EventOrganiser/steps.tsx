@@ -459,7 +459,6 @@ export function EventPoster(props: any) {
                                         hidden
                                         onChange={handleFileChange}
                                         accept="image/*"
-                                        multiple
                                     />
                                 </Button>
                             </Grid>
@@ -468,7 +467,7 @@ export function EventPoster(props: any) {
                     <Grid item xs={6}>
                         <Grid container spacing={2} sx={{ marginLeft: 2 }}>
                             <Grid item xs={12}></Grid>
-                            {props.selectedFiles.length > 0 && (
+                            {props.selectedFiles != null && (
                                 <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
                                     {props.selectedFiles.map((file: any, index: any) => (
                                         <ImageListItem key={index}>
