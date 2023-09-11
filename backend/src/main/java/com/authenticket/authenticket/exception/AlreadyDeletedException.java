@@ -1,7 +1,6 @@
 package com.authenticket.authenticket.exception;
 
-public class AlreadyDeletedException extends RuntimeException{
-    private String userLabel;
+public class AlreadyDeletedException extends ApiRequestException{
     public AlreadyDeletedException(String message) {
         super(message);
     }

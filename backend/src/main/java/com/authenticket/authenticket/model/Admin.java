@@ -32,7 +32,10 @@ public class Admin extends BaseEntity implements UserDetails {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
-    private String role = "ADMIN";
+
+    @Getter
+    private static String role = "ADMIN";
+//    private static Boolean enabled = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -43,27 +46,27 @@ public class Admin extends BaseEntity implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override

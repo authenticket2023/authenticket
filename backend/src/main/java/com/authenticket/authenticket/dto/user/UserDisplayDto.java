@@ -2,9 +2,10 @@ package com.authenticket.authenticket.dto.user;
 
 import java.time.LocalDate;
 
-public record UserDisplayDto(String name,
+public record UserDisplayDto(Integer userId,
+                             String name,
                              String email,
-                             LocalDate date_of_birth,
-                             String profile_image,
+                             LocalDate dateOfBirth,
+                             String profileImage,
                              String role){
 }

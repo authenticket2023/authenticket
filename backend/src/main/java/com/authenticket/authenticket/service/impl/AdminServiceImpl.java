@@ -37,7 +37,7 @@ public class AdminServiceImpl implements AdminService, UserDetailsService {
                 .map(adminDtoMapper)
                 .collect(Collectors.toList());
     }
-    public Optional<AdminDisplayDto> findById(Integer adminId) {
+    public Optional<AdminDisplayDto> findAdminById(Integer adminId) {
         return adminRepository.findById(adminId).map(adminDtoMapper);
     }
     public Admin saveAdmin(Admin admin){

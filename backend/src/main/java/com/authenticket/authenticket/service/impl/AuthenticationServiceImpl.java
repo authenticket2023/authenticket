@@ -1,25 +1,30 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.controller.AuthResponse.AuthenticationAdminResponse;
+import com.authenticket.authenticket.controller.AuthResponse.AuthenticationOrgResponse;
+import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
-import com.authenticket.authenticket.controller.authentication.AuthenticationResponse;
+import com.authenticket.authenticket.controller.AuthResponse.AuthenticationUserResponse;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.AwaitingVerificationException;
+import com.authenticket.authenticket.model.Admin;
+import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.AuthenticationService;
+import com.authenticket.authenticket.service.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationServiceImpl extends Utility implements AuthenticationService {
 
     @Value("${authenticket.api-port}")
     private String apiPort;
@@ -32,10 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private EventOrganiserRepository organiserRepository;
 
-    //Registration
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    //JwtService
     @Autowired
     private JwtServiceImpl jwtServiceImpl;
 
@@ -51,55 +53,53 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private UserDtoMapper userDTOMapper;
 
-    public void register(User request)
-            throws AlreadyExistsException{
-        AuthenticationResponse badReq;
-        var user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .dateOfBirth(request.getDateOfBirth())
-                .enabled(false)
-                //role of user to take note of
-                .build();
+    //EventOrgDTO
+    @Autowired
+    private EventOrganiserDtoMapper eventOrgDtoMapper;
+
+    //AdminDTO
+    @Autowired
+    private AdminDtoMapper adminDtoMapper;
+
+    //user
+    public void userRegister(User request) {
+
 
         var existingUser = userRepository.findByEmail(request.getEmail());
 
         if(existingUser.isPresent()){
-            if(existingUser.get().getEnabled() == false){
+            if(!existingUser.get().getEnabled()){
                 throw new AlreadyExistsException("Verification needed");
             }
             throw new AlreadyExistsException("User already exists");
         }
 
-        userRepository.save(user);
-        var jwtToken = jwtServiceImpl.generateToken(user);
+        userRepository.save(request);
+        var jwtToken = jwtServiceImpl.generateToken(request);
 
         String link = "http://localhost:" + apiPort + "/api/auth/register/confirm?token=" + jwtToken;
         emailServiceImpl.send(request.getEmail(), buildEmail(request.getName(), link));
     }
 
-    public AuthenticationResponse authenticate(User request)
-            throws  UsernameNotFoundException {
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("Email: %s has not been registered yet", request.getEmail())));
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+    public AuthenticationUserResponse userAuthenticate(String email, String password){
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            email,
+                            password
+                    )
+            );
+
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
         var jwtToken = jwtServiceImpl.generateToken(user);
 
-        return AuthenticationResponse.builder()
+        return AuthenticationUserResponse.builder()
                 .token(jwtToken)
                 .userDetails(userDTOMapper.apply(user))
                 .build();
     }
 
-    public AuthenticationResponse confirmToken(String token)
-        throws AwaitingVerificationException, IllegalStateException{
-        AuthenticationResponse badReq;
+    public AuthenticationUserResponse confirmUserToken(String token) {
         if (jwtServiceImpl.isTokenExpired(token)) {
                 throw new AwaitingVerificationException("Token expired");
         }
@@ -115,11 +115,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.enableAppUser(email);
 
         var jwtToken = jwtServiceImpl.generateToken(user);
-        AuthenticationResponse goodReq = AuthenticationResponse.builder()
+        return AuthenticationUserResponse.builder()
                 .token(jwtToken)
                 .userDetails(userDTOMapper.apply(user))
                 .build();
-        return goodReq;
     }
 
     private String buildEmail(String name, String link) {
@@ -189,5 +188,65 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 "  </tbody></table><div class=\"yj6qo\"></div><div class=\"adL\">\n" +
                 "\n" +
                 "</div></div>";
+    }
+
+    public void orgRegister (EventOrganiser request){
+
+        var existingOrg = organiserRepository.findByEmail(request.getEmail());
+
+        if(existingOrg.isPresent()){
+            if(!existingOrg.get().getEnabled()){
+                throw new AlreadyExistsException("Awaiting approval");
+            }
+            throw new AlreadyExistsException("User already exists");
+        }
+
+        organiserRepository.save(request);
+    }
+
+    public AuthenticationOrgResponse orgAuthenticate(String email, String password){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        email,
+                        password
+                )
+        );
+
+        var eventOrg = organiserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Event Organiser does not exist"));
+        var jwtToken = jwtServiceImpl.generateToken(eventOrg);
+        System.out.println(jwtToken);
+        return AuthenticationOrgResponse.builder()
+                .token(jwtToken)
+                .orgDetails(eventOrgDtoMapper.apply(eventOrg))
+                .build();
+    }
+
+    public void adminRegister (Admin request){
+
+        var existingAdmin = adminRepository.findByEmail(request.getEmail());
+
+        if(existingAdmin.isPresent()){
+            throw new AlreadyExistsException("Admin already exists");
+        }
+        adminRepository.save(request);
+    }
+
+    public AuthenticationAdminResponse adminAuthenticate(String email, String password){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        email,
+                        password
+                )
+        );
+
+        var admin = adminRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin does not exist"));
+        var jwtToken = jwtServiceImpl.generateToken(admin);
+        System.out.println(jwtToken);
+        return AuthenticationAdminResponse.builder()
+                .token(jwtToken)
+                .adminDetails(adminDtoMapper.apply(admin))
+                .build();
     }
 }

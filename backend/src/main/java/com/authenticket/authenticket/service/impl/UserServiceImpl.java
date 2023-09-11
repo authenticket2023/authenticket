@@ -2,6 +2,8 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
@@ -27,9 +29,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Autowired
     private UserDtoMapper userDtoMapper;
 
-    @Autowired
-    private AmazonS3ServiceImpl amazonS3Service;
-
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException{
         return userRepository.findByEmail(email)
@@ -38,13 +37,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public Optional<UserDisplayDto> findById(Integer userId) {
-        return Optional.empty();
+        return userRepository.findById(userId).map(userDtoMapper);
     }
 
     public UserDisplayDto updateUser(User newUser){
         Optional<User> userOptional = userRepository.findByEmail(newUser.getEmail());
 
         if(userOptional.isPresent()){
+            System.out.println("hello");
             User existingUser = userOptional.get();
             userDtoMapper.update(newUser, existingUser);
             userRepository.save(existingUser);
@@ -54,21 +54,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return null;
     }
 
-    public String removeUser(Integer userId){
+    public void deleteUser(Integer userId){
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if(user.getDeletedAt()!=null){
-                return "user already deleted";
+                throw new AlreadyDeletedException("User already deleted");
             }
 
             user.setDeletedAt(LocalDateTime.now());
             userRepository.save(user);
-            return "user deleted successfully";
+        } else {
+            throw new NonExistentException("User does not exists");
         }
-
-        return "error: user deleted unsuccessfully, user might not exist";
     }
 
     public UserDisplayDto updateProfileImage(String filename, Integer userId){

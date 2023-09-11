@@ -12,7 +12,7 @@ public interface UserService {
     Optional<UserDisplayDto> findById(Integer userId);
     UserDisplayDto updateUser(User newUser);
     //    Admin updateAdmin (AdminDto adminDto);
-    String removeUser(Integer userId);
+    void deleteUser(Integer userId);
     UserDisplayDto updateProfileImage(String filename, Integer userId);
     // buy tickets
 }

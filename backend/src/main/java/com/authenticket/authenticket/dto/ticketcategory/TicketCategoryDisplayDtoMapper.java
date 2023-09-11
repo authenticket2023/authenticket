@@ -11,19 +11,12 @@ import java.util.function.Function;
 public class TicketCategoryDisplayDtoMapper implements Function<TicketCategory, TicketCategoryDisplayDto> {
     public TicketCategoryDisplayDto apply(TicketCategory ticketCategory) {
         return new TicketCategoryDisplayDto(
-                ticketCategory.getCategoryId(), ticketCategory.getEvent().getEventId(), ticketCategory.getCategoryName(),
-                ticketCategory.getPrice(), ticketCategory.getAvailableTickets());
+                ticketCategory.getCategoryId(), ticketCategory.getCategoryName());
     }
 
     public void update(TicketCategoryUpdateDto dto, TicketCategory ticketCategory) {
-        if (dto.availableTickets() != null) {
-            ticketCategory.setAvailableTickets(dto.availableTickets());
-        }
         if (dto.categoryName() != null) {
             ticketCategory.setCategoryName(dto.categoryName());
-        }
-        if (dto.price() != null) {
-            ticketCategory.setPrice(dto.price());
         }
     }
 }

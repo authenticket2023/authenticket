@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS dev.Event_Category;
 DROP TABLE IF EXISTS dev.Ticket;
 DROP TABLE IF EXISTS dev.Ticket_Categories;
 DROP TABLE IF EXISTS dev.Notification;
@@ -72,6 +73,7 @@ CREATE TABLE dev.Event (
     venue_id INTEGER REFERENCES dev.Venue(venue_id),
     event_name VARCHAR(255) NOT NULL,
     event_description VARCHAR(255),
+    category_id INTEGER REFERENCES dev.Event_Category(category_id),
     event_date TIMESTAMP NOT NULL,
     event_location VARCHAR(255),
     other_event_info VARCHAR(255),
@@ -114,8 +116,13 @@ CREATE TABLE dev.Ticket_Categories (
 );
 
 CREATE TABLE dev.Ticket (
-    ticket_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES dev.App_User(user_id),
-    event_id INTEGER REFERENCES dev.Event(event_id),
-    category_id INTEGER REFERENCES dev.Ticket_Categories(category_id)
+                            ticket_id SERIAL PRIMARY KEY,
+                            user_id INTEGER REFERENCES dev.App_User(user_id),
+                            event_id INTEGER REFERENCES dev.Event(event_id),
+                            category_id INTEGER REFERENCES dev.Ticket_Categories(category_id)
+);
+
+CREATE TABLE dev.Event_Category (
+                            category_id SERIAL PRIMARY KEY,
+                            category_name VARCHAR(255) NOT NULL
 );
