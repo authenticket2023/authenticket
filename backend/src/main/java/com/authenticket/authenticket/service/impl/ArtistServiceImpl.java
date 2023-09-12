@@ -7,6 +7,7 @@ import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Artist;
 import com.authenticket.authenticket.repository.ArtistRepository;
+import com.authenticket.authenticket.service.ArtistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class ArtistServiceImpl {
+public class ArtistServiceImpl implements ArtistService {
     @Autowired
     private ArtistRepository artistRepository;
 
