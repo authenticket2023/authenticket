@@ -78,7 +78,7 @@ export function EventDetails(props: any) {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Invlid event/sale date!!!");
-        } else if (dayjs(props.eventDate).isBefore(dayjs(props.saleDate))) {
+        } else if (dayjs(props.eventDate.is).isBefore(dayjs(props.saleDate))) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
@@ -310,11 +310,10 @@ export function VenueArtist(props: any) {
     //retrieve artists from DB
     const artistFetcher = async () => {
         try {
-            // const token = window.localStorage.getItem('accessToken');
-            const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
+            const token = window.localStorage.getItem('accessToken');
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/artist`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    // 'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 method: 'GET'
@@ -337,12 +336,10 @@ export function VenueArtist(props: any) {
     //retrieve venue from DB
     const venueFetcher = async () => {
         try {
-            // const token = window.localStorage.getItem('accessToken');
-            const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
-                
+            const token = window.localStorage.getItem('accessToken');
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/venue`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    // 'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 method: 'GET'

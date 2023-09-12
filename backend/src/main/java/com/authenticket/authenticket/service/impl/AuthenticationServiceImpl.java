@@ -215,7 +215,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         var eventOrg = organiserRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Event Organiser does not exist"));
         var jwtToken = jwtServiceImpl.generateToken(eventOrg);
-
+        System.out.println(jwtToken);
         return AuthenticationOrgResponse.builder()
                 .token(jwtToken)
                 .orgDetails(eventOrgDtoMapper.apply(eventOrg))

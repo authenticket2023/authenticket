@@ -62,9 +62,9 @@ public class VenueController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveVenue(@RequestParam("venueName") String venueName,
-                                        @RequestParam("venueLocation") String venueLocation,
-                                        @RequestParam("venueImage") MultipartFile venueImageFile) {
+    public ResponseEntity<?> saveVenue(@RequestParam(value = "venueName") String venueName,
+                                        @RequestParam(value = "venueLocation") String venueLocation,
+                                        @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
         Optional<Venue> venueOptional = venueRepository.findByVenueName(venueName);
         if (venueOptional.isPresent()) {
             throw new AlreadyExistsException("Venue already exists");
@@ -105,10 +105,10 @@ public class VenueController extends Utility {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateVenue(@RequestParam("venueId") Integer venueId,
-                                       @RequestParam("venueName") String venueName,
-                                       @RequestParam("venueLocation") String venueLocation,
-                                       @RequestParam("venueImage") MultipartFile venueImageFile) {
+    public ResponseEntity<?> updateVenue(@RequestParam(value = "venueId") Integer venueId,
+                                       @RequestParam(value = "venueName") String venueName,
+                                       @RequestParam(value = "venueLocation") String venueLocation,
+                                       @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
         Venue updatedVenue = venueService.updateVenue(venueId, venueName, venueLocation);
 
         //update file image if not null
