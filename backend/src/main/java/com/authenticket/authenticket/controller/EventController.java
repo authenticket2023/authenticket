@@ -8,10 +8,7 @@ import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
-import com.authenticket.authenticket.repository.EventOrganiserRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
-import com.authenticket.authenticket.repository.VenueRepository;
+import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
@@ -49,6 +46,9 @@ public class EventController extends Utility {
 
     @Autowired
     private EventOrganiserRepository eventOrganiserRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @Autowired
     private VenueRepository venueRepository;
@@ -221,22 +221,63 @@ public class EventController extends Utility {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateEvent(@RequestParam("eventId") Integer eventId,
+    public ResponseEntity<?> updateEvent(@RequestParam("file") MultipartFile eventImageFile,
+                                         @RequestParam("eventId") Integer eventId,
                                          @RequestParam("eventName") String eventName,
-                                         @RequestParam(value = "eventDescription") String eventDescription,
-                                         @RequestParam(value = "eventDate") LocalDateTime eventDate,
-                                         @RequestParam(value = "eventLocation") String eventLocation,
-                                         @RequestParam(value = "otherEventInfo") String otherEventInfo,
-                                         @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate) {
-
-        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate);
-        Event event = eventService.updateEvent(eventUpdateDto);
-
-        if (event != null) {
-            return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
-        } else {
-            return ResponseEntity.status(404).body(generateApiResponse(null, "Event not found, update not successful."));
+                                         @RequestParam("eventDescription") String eventDescription,
+                                         @RequestParam("eventDate") LocalDateTime eventDate,
+                                         @RequestParam("eventLocation") String eventLocation,
+                                         @RequestParam("otherEventInfo") String otherEventInfo,
+                                         @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
+                                         @RequestParam("venueId") Integer venueId,
+                                         @RequestParam("typeId") Integer typeId,
+                                         @RequestParam("reviewRemarks") String reviewRemarks,
+                                         @RequestParam("reviewStatus") String reviewStatus,
+                                         @RequestParam("reviewedBy") Integer reviewedBy) {
+        Optional<Venue> venueOptional = venueRepository.findById(venueId);
+        Venue venue = null;
+        if(venueOptional.isPresent()){
+            venue = venueOptional.get();
         }
+
+        Optional<EventType> eventTypeOptional = eventTypeRepository.findById(typeId);
+        EventType eventType = null;
+        if(eventTypeOptional.isPresent()){
+            eventType = eventTypeOptional.get();
+        }
+
+        Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
+        Admin admin = null;
+        if (adminOptional.isPresent()) {
+            admin = adminOptional.get();
+        }
+
+        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
+        Event event = eventService.updateEvent(eventUpdateDto);
+        //update event image if not null
+        if (!eventImageFile.isEmpty()){
+            try {
+                System.out.println(eventImageFile.getName());
+                amazonS3Service.uploadFile(eventImageFile, event.getEventImage(), "event_images");
+//                amazonS3Service.deleteFile()
+                // delete event from db if got error saving image
+            } catch (AmazonS3Exception e) {
+                String errorCode = e.getErrorCode();
+                if ("AccessDenied".equals(errorCode)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
+                } else if ("NoSuchBucket".equals(errorCode)) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction: " + e.getMessage()));
+                }
+            }
+        }
+        return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
+//        if (event != null) {
+//            return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
+//        } else {
+//            return ResponseEntity.status(404).body(generateApiResponse(null, "Event not found, update not successful."));
+//        }
     }
 
     @PutMapping("/{eventId}")

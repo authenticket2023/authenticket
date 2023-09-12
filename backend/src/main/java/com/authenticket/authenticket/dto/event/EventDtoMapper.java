@@ -9,6 +9,7 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.EventRepository;
+import com.authenticket.authenticket.repository.EventTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,9 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private EventTypeRepository eventTypeRepository;
 
     public EventDisplayDto apply(Event event) {
         return new EventDisplayDto(
@@ -85,6 +89,21 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         }
         if (dto.ticketSaleDate() != null) {
             event.setTicketSaleDate(dto.ticketSaleDate());
+        }
+        if (dto.eventType() != null) {
+            event.setEventType(dto.eventType());
+        }
+        if (dto.venue() != null) {
+            event.setVenue(dto.venue());
+        }
+        if (dto.reviewStatus() != null) {
+            event.setReviewStatus(dto.reviewStatus());
+        }
+        if (dto.reviewRemarks() != null) {
+            event.setReviewRemarks(dto.reviewRemarks());
+        }
+        if (dto.reviewStatus() != null) {
+            event.setReviewedBy(dto.reviewedBy());
         }
     }
 

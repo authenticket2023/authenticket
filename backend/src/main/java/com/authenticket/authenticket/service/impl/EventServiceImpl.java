@@ -111,7 +111,7 @@ public class EventServiceImpl implements EventService {
             return existingEvent;
         }
 
-        return null;
+        throw new NonExistentException("Event does not exist");
     }
 
 
@@ -154,7 +154,7 @@ public class EventServiceImpl implements EventService {
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
-            event.setReviewedBy(adminId);
+//            event.setReviewedBy(adminId);
             eventRepository.save(event);
             return event;
         }

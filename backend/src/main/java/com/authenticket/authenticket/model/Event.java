@@ -49,8 +49,10 @@ public class Event extends BaseEntity {
     @Column(name = "total_tickets_sold")
     private Integer totalTicketsSold;
 
-    @Column(name = "reviewed_by")
-    private Integer reviewedBy;
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name="reviewed_by", referencedColumnName="admin_id")
+    private Admin reviewedBy;
 
     @Column(name = "review_status")
     private String reviewStatus;
