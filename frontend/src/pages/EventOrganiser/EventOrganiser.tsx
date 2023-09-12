@@ -95,7 +95,7 @@ export const EventOrganiser = () => {
     const [otherVenue, setOtherVenue] = useState('');
 
     //for EventPoster
-    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles]: any = useState(null);
 
     //for testing
     useEffect(() => {
@@ -109,21 +109,127 @@ export const EventOrganiser = () => {
         setOpenSnackbar(false);
     };
 
+    const TimestampConverter = (timestamp: number) => {
+        // Create a Date object from the timestamp
+        const date = new Date(timestamp);
+
+        // Extract components
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        const formattedTimestamp = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+
+        return formattedTimestamp;
+    }
+
     const handleCreateEvent = () => {
-        //for testing
-        console.log('---Step 1-----')
-        console.log('Event Name:' + eventName + ' |Event date:' + eventDate + ' |Sale date:' +  saleDate);
-        console.log('VIP:' + ticketNumberVIP + ' |Price:' + VIPPrice );
-        console.log('cat1:' + ticketNumberCat1 + ' |Price:' + cat1Price );
-        console.log('cat2:' + ticketNumberCat2 + ' |Price:' + cat2Price );
-        console.log('cat3:' + ticketNumberCat3 + ' |Price:' + cat3Price );
-        console.log('cat4:' + ticketNumberCat4 + ' |Price:' + cat4Price);
-        console.log('---Step 2-----')
-        console.log('Venue:' + venue + ' |Artist list:' + artistList + '|other venue:' +otherVenue);
-        console.log('---Step 3-----')
-        console.log(selectedFiles);
-        
-        //TODO: call backend to create events
+        //retrieve venue from DB
+        const addTicketCategory = async (eventId: any) => {
+            try {
+                const token = window.localStorage.getItem('accessToken');
+                const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/addTicketCategory`, {
+                    headers: {
+                        // 'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        "eventId": eventId,
+                        "data": [
+                            {
+                                "catId": "1",
+                                "price": VIPPrice,
+                                "availableTickets": ticketNumberVIP,
+                                "totalTicketsPerCat": ticketNumberVIP
+                            },
+                            {
+                                "catId": "2",
+                                "price": cat1Price,
+                                "availableTickets": ticketNumberCat1,
+                                "totalTicketsPerCat": ticketNumberCat1
+                            },
+                            {
+                                "catId": "3",
+                                "price": cat2Price,
+                                "availableTickets": ticketNumberCat2,
+                                "totalTicketsPerCat": ticketNumberCat2
+                            },
+                            {
+                                "catId": "4",
+                                "price": cat3Price,
+                                "availableTickets": ticketNumberCat3,
+                                "totalTicketsPerCat": ticketNumberCat3
+                            },
+                            {
+                                "catId": "5",
+                                "price": cat4Price,
+                                "availableTickets": ticketNumberCat4,
+                                "totalTicketsPerCat": ticketNumberCat4
+                            },
+                        ]
+                    })
+                });
+                if (response.status !== 200) {
+                    //show alert msg
+                    setOpenSnackbar(true);
+                    setAlertType('error');
+                    setAlertMsg("error on adding ticket category data!!!");
+                } else {
+                    setOpenSnackbar(true);
+                    setAlertType('success');
+                    setAlertMsg('Event created successfully!!!');
+                }
+            } catch (err) {
+                window.alert(err);
+            }
+        };
+
+        //call backend to create events
+        const formData = new FormData();
+        formData.append('eventName', eventName);
+        formData.append('eventDate', TimestampConverter(Number(eventDate)));
+        formData.append('eventDescription', eventDescription);
+        formData.append('ticketSaleDate', TimestampConverter(Number(saleDate)));
+        formData.append('file', selectedFiles[0]);
+        //TODO: this get from login?
+        formData.append('organiserId', '1');
+        formData.append('venueId', venue);
+        //if the event venue is not in the list, user will enter the venue, add it to other info
+        if(venue == '999') {
+            formData.append('otherEventInfo', `${otherInfo}; Other venue:${otherVenue}`);
+        }else {
+            formData.append('otherEventInfo', otherInfo);
+        }
+        formData.append('artistId', artistList.toString());
+        //TODO: pending
+        formData.append('typeId', '3');
+
+        //calling create event backend API
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(async (response) => {
+                if (response.status == 200) {
+                    const eventResponse = await response.json();
+                    //if ok, call addTicketCategory
+                    addTicketCategory(eventResponse['data']['eventId']);
+                } else {
+                    const eventResponse = await response.json();
+                    setOpenSnackbar(true);
+                    setAlertType('warning');
+                    setAlertMsg(eventResponse.message);
+                }
+            })
+            .catch((err) => {
+                window.alert(err);
+            });
+
+
     };
 
     return (
@@ -196,6 +302,7 @@ export const EventOrganiser = () => {
                                 setartistList={setartistList}
                                 setOtherVenue={setOtherVenue}
                                 handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
                             /> : null}
 
                             {activeStep == 2 ? <EventPoster

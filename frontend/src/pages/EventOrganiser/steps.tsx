@@ -72,11 +72,17 @@ export function EventDetails(props: any) {
 
     const handleConfirm = (event: any) => {
         event.preventDefault();
+        //input validation
         if (!(dayjs(props.eventDate).isAfter(dayjs(props.currentDateTime)) && dayjs(props.saleDate).isAfter(dayjs(props.currentDateTime)))) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Invlid event/sale date!!!");
+        } else if (dayjs(props.eventDate.is).isBefore(dayjs(props.saleDate))) {
+            //show alert msg
+            props.setOpenSnackbar(true);
+            props.setAlertType('error');
+            props.setAlertMsg("Sale date cannot be after Event date!!!");
         } else if (props.ticketNumber == 0) {
             //show alert msg
             props.setOpenSnackbar(true);
@@ -281,30 +287,77 @@ const MenuProps = {
     },
 };
 
-//options for venue
-const artist = [
-    'Ludwig van Beethoven',
-    'The Beatles',
-    'Wolfgang Amadeus Mozart',
-    'Bob Dylan',
-    'Beyoncé',
-    'Johann Sebastian Bach',
-    'Elvis Presley',
-    'Michael Jackson',
-    'Miles Davis',
-    'Prince',
-];
-
 export function VenueArtist(props: any) {
 
     //to detect change on props.venue
     useEffect(() => {
-        if (props.venue == 'Other') {
+        if (props.venue == '999') {
             setShowOtherVenue(true);
         } else {
             setShowOtherVenue(false);
         }
+        if (artistList.length == 0) {
+            artistFetcher();
+        }
+        if (venueList.length == 0) {
+            venueFetcher();
+        }
     }, [props.venue]);
+
+    const [artistList, setArtistList]: any = React.useState([]);
+    const [venueList, setVenueList]: any = React.useState([]);
+
+    //retrieve artists from DB
+    const artistFetcher = async () => {
+        try {
+            const token = window.localStorage.getItem('accessToken');
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/artist`, {
+                headers: {
+                    // 'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                method: 'GET'
+            });
+
+            if (response.status !== 200) {
+                //show alert msg
+                props.setOpenSnackbar(true);
+                props.setAlertType('error');
+                props.setAlertMsg("error fetching data!!!");
+            } else {
+                const data = await response.json();
+                setArtistList(data['data']);
+            }
+        } catch (err) {
+            window.alert(err);
+        }
+    };
+
+    //retrieve venue from DB
+    const venueFetcher = async () => {
+        try {
+            const token = window.localStorage.getItem('accessToken');
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/venue`, {
+                headers: {
+                    // 'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                method: 'GET'
+            });
+            if (response.status !== 200) {
+                //show alert msg
+                props.setOpenSnackbar(true);
+                props.setAlertType('error');
+                props.setAlertMsg("error fetching data!!!");
+            } else {
+                const data = await response.json();
+                setVenueList(data['data']);
+            }
+        } catch (err) {
+            window.alert(err);
+        }
+    };
+
 
     const [showOtherVenue, setShowOtherVenue] = useState(false);
     const handleVenue = (event: any) => {
@@ -328,11 +381,12 @@ export function VenueArtist(props: any) {
     const handleConfirm = (event: any) => {
         event.preventDefault();
         props.handleComplete();
+        console.log(props.artistList);
+        console.log(props.venue);
     };
 
     return (
         <form onSubmit={handleConfirm}>
-
             <Box sx={{ mt: 2 }}>
                 {/* Venue */}
                 <Sheet sx={{ marginTop: 2 }}>
@@ -350,11 +404,9 @@ export function VenueArtist(props: any) {
                                         onChange={handleVenue}
                                         required
                                     >
-                                        <MenuItem value={"Venue 1"}>Venue 1</MenuItem>
-                                        <MenuItem value={"Venue 2"}>Venue 2</MenuItem>
-                                        <MenuItem value={"Venue 3"}>Venue 3</MenuItem>
-                                        <MenuItem value={"Venue 4"}>Venue 4</MenuItem>
-                                        <MenuItem value={"Other"}>Other</MenuItem>
+                                        {venueList.map((venue: any) => (
+                                            <MenuItem key={venue.venueId} value={venue.venueId}>{venue.venueName}</MenuItem>
+                                        ))}
                                     </Select>
                                 </FormControl>
                             </Box>
@@ -391,18 +443,26 @@ export function VenueArtist(props: any) {
                                     value={props.artistList}
                                     onChange={handleArtist}
                                     input={<OutlinedInput label="Artist" />}
-                                    renderValue={(selected) => selected.join(', ')}
+                                    renderValue={(selected) =>
+                                        selected
+                                            .map((selectedId: any) => {
+                                                const selectedArtist = artistList.find((artist: any) => artist.artistId === selectedId);
+                                                return selectedArtist ? selectedArtist.artistName : '';
+                                            })
+                                            .join(', ')
+                                    }
                                     MenuProps={MenuProps}
                                 >
-                                    {artist.map((artist) => (
-                                        <MenuItem key={artist} value={artist}>
-                                            <Checkbox checked={props.artistList.indexOf(artist) > -1} />
-                                            <ListItemText primary={artist} />
+                                    {artistList.map((data: any) => (
+                                        <MenuItem key={data?.artistId} value={data?.artistId}>
+                                            <Checkbox checked={props.artistList.indexOf(data.artistId) > -1} />
+                                            <ListItemText primary={data?.artistName} />
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
                         </Grid>
+
                     </Grid>
 
                 </Sheet>
@@ -459,7 +519,6 @@ export function EventPoster(props: any) {
                                         hidden
                                         onChange={handleFileChange}
                                         accept="image/*"
-                                        multiple
                                     />
                                 </Button>
                             </Grid>
@@ -468,7 +527,7 @@ export function EventPoster(props: any) {
                     <Grid item xs={6}>
                         <Grid container spacing={2} sx={{ marginLeft: 2 }}>
                             <Grid item xs={12}></Grid>
-                            {props.selectedFiles.length > 0 && (
+                            {props.selectedFiles != null && (
                                 <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
                                     {props.selectedFiles.map((file: any, index: any) => (
                                         <ImageListItem key={index}>
