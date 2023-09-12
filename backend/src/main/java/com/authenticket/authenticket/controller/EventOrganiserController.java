@@ -102,8 +102,8 @@ public class EventOrganiserController extends Utility {
     @PutMapping
     public ResponseEntity<?> updateEventOrganiser(@RequestParam("organiserId") Integer organiserId,
                                                   @RequestParam("name") String name,
-                                                  @RequestParam(value = "description") String description,
-                                                  @RequestParam(value = "password") String password) {
+                                                  @RequestParam("description") String description,
+                                                  @RequestParam("password") String password) {
             EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password);
             EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
             if (eventOrganiser != null) {
