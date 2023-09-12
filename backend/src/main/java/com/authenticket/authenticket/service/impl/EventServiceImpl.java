@@ -7,10 +7,7 @@ import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
-import com.authenticket.authenticket.repository.ArtistRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTicketCategoryRepository;
-import com.authenticket.authenticket.repository.TicketCategoryRepository;
+import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +28,9 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private ArtistRepository artistRepository;
+
+    @Autowired
+    private FeaturedEventRepository featuredEventRepository;
 
     @Autowired
     private TicketCategoryRepository ticketCategoryRepository;
@@ -69,26 +69,20 @@ public class EventServiceImpl implements EventService {
 
     }
 
-    ;
-
-    public List<EventHomeDto> findFeaturedEvents() {
-        return null;
+    public List<FeaturedEventDto> findFeaturedEvents() {
+        List<FeaturedEvent> featuredEvents = featuredEventRepository.findTop5FeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now());
+        return eventDTOMapper.mapFeaturedEventDto(featuredEvents);
     }
-
-    ;
 
     public List<EventHomeDto> findBestSellerEvents() {
         return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents());
     }
 
-    ;
 
     public List<EventHomeDto> findUpcomingEvents() {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterOrderByTicketSaleDateAsc("approved", currentDate));
     }
-
-    ;
 
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
         LocalDateTime currentDate = LocalDateTime.now();
@@ -99,6 +93,11 @@ public class EventServiceImpl implements EventService {
 
     public Event saveEvent(Event event) {
         return eventRepository.save(event);
+    }
+
+    public FeaturedEventDto saveFeaturedEvent(FeaturedEvent featuredEvent) {
+
+        return eventDTOMapper.applyFeaturedEventDto(featuredEventRepository.save(featuredEvent));
     }
 
     public Event updateEvent(EventUpdateDto eventUpdateDto) {

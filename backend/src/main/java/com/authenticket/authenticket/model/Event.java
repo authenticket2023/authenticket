@@ -80,10 +80,6 @@ public class Event extends BaseEntity {
             inverseJoinColumns = {@JoinColumn(name = "artist_id")})
     private Set<Artist> artists;
 
-//    public void setArtists(Set<Artist> artist){
-//        this.artists = artist;
-//    }
-
     @ManyToOne
     @JoinColumn(name="type_id",nullable = false)
     private EventType eventType;
@@ -135,6 +131,7 @@ public class Event extends BaseEntity {
             }
         }
     }
+
 
     @Override
     public int hashCode() {
