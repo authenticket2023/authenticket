@@ -18,17 +18,64 @@ import BearCarousel, {
 } from "bear-react-carousel";
 
 export const Home = () => {
-  useEffect(() => { }, []);
+  useEffect(() => {}, []);
 
   const images = [
-    { id: 1, color: "green" },
-    { id: 2, color: "blue" },
-    { id: 3, color: "gray" },
-    { id: 4, color: "white" },
-    { id: 5, color: "black" },
-    { id: 6, color: "yellow" },
-    { id: 7, color: "purple" },
-    { id: 8, color: "red" },
+    { id: 1, bg: "https://picsum.photos/400/250", 
+    subheader: "Featured", 
+    header: "Lauv: the between albums tour", 
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+    earum ullam repellat minus, cumque, tempore fugit officia delectus\
+    omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
+    Lorem ipsum dolor sit amet consectetur adipisicing elit.\
+    Architecto maiores reprehenderit veritatis eveniet possimus ex\
+    odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
+    quod libero sint? Laborum, at maiores.",
+    link: "#" },
+    {id: 2, bg: "https://picsum.photos/400/250", 
+    subheader: "Featured", 
+    header: "Lauv: the between albums tour", 
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+    earum ullam repellat minus, cumque, tempore fugit officia delectus\
+    omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
+    Lorem ipsum dolor sit amet consectetur adipisicing elit.\
+    Architecto maiores reprehenderit veritatis eveniet possimus ex\
+    odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
+    quod libero sint? Laborum, at maiores.",
+    link: "#" },
+    {id: 3, bg: "https://picsum.photos/400/250", 
+    subheader: "Featured", 
+    header: "Lauv: the between albums tour", 
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+    earum ullam repellat minus, cumque, tempore fugit officia delectus\
+    omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
+    Lorem ipsum dolor sit amet consectetur adipisicing elit.\
+    Architecto maiores reprehenderit veritatis eveniet possimus ex\
+    odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
+    quod libero sint? Laborum, at maiores.",
+    link: "#" },
+    {id: 4, bg: "https://picsum.photos/400/250", 
+    subheader: "Featured", 
+    header: "Lauv: the between albums tour", 
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+    earum ullam repellat minus, cumque, tempore fugit officia delectus\
+    omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
+    Lorem ipsum dolor sit amet consectetur adipisicing elit.\
+    Architecto maiores reprehenderit veritatis eveniet possimus ex\
+    odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
+    quod libero sint? Laborum, at maiores.",
+    link: "#" },
+    { id: 5, bg: "https://picsum.photos/400/250", 
+    subheader: "Featured", 
+    header: "Lauv: the between albums tour", 
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+    earum ullam repellat minus, cumque, tempore fugit officia delectus\
+    omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
+    Lorem ipsum dolor sit amet consectetur adipisicing elit.\
+    Architecto maiores reprehenderit veritatis eveniet possimus ex\
+    odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
+    quod libero sint? Laborum, at maiores.",
+    link: "#" },
   ];
 
   const CustomBanner = () => {
@@ -36,8 +83,8 @@ export const Home = () => {
       return {
         key: row.id,
         children: (
-          <BearSlideCard>
-            <div style={{ height: "100%", backgroundColor: row.color }} />
+          <BearSlideCard bgUrl={row.bg}>
+            <div style={{ height: "100%", backgroundImage: row.bg }} />
           </BearSlideCard>
         ),
       };
@@ -47,51 +94,37 @@ export const Home = () => {
         data={bearSlideItemData}
         height="400px"
         isEnableLoop
-        isDebug
         isEnableAutoPlay
       />
     );
   };
 
-  const featureText = [
-    { id: 1, text: "green" },
-    { id: 2, text: "blue" },
-    { id: 3, text: "gray" },
-    { id: 4, text: "white" },
-    { id: 5, text: "black" },
-    { id: 6, text: "yellow" },
-    { id: 7, text: "purple" },
-    { id: 8, text: "red" },
-  ]
-
   const TextAnimationsCarousel = () => {
-    const slideItemData: TBearSlideItemDataList = featureText.map(row => {
+    const slideItemData: TBearSlideItemDataList = images.map((row) => {
       return {
         key: row.id,
-        children: <Box bgcolor="#FF5C35" marginTop={8}>
-          <Typography variant="h6" color="white" marginLeft={2}>
-            Featured
-          </Typography>
-          <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-            Lauv: the between albums tour
-          </Typography>
-          <Typography variant="subtitle2" justifyItems="center" color="white">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta
-            earum ullam repellat minus, cumque, tempore fugit officia delectus
-            omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto
-            maiores reprehenderit veritatis eveniet possimus ex odio? Reiciendis, ducimus.
-            Placeat recusandae nulla nisi vitae est quod libero sint? Laborum, at maiores.
-          </Typography>
-          <Box marginTop={2} marginLeft={2}>
-            <Button
-              variant="outlined"
-              sx={{ color: "white", borderColor: "white" }}
-            >
-              Get tickets
-            </Button>
+        children: (
+          <Box bgcolor="#FF5C35" marginTop={8}>
+            <Typography variant="h6" color="white" marginLeft={2}>
+              {row.subheader}
+            </Typography>
+            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
+              {row.header}
+            </Typography>
+            <Typography variant="subtitle2" justifyItems="center" color="white">
+              {row.description}
+            </Typography>
+            <Box marginTop={2} marginLeft={2}>
+              <Button
+                variant="outlined"
+                href={row.link}
+                sx={{ color: "white", borderColor: "white"}}
+              >
+                Get tickets
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        ),
       };
     });
     return (
@@ -104,8 +137,6 @@ export const Home = () => {
       />
     );
   };
-
-
 
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -327,7 +358,7 @@ export const Home = () => {
         </Grid>
       </Grid>
       <Box bgcolor="#FF5C35" marginTop={12}>
-        <Grid container alignItems='center' justifyContent='center'>
+        <Grid container alignItems="center" justifyContent="center">
           <Grid item xs={5} marginTop={4} marginBottom={4}>
             <CustomBanner></CustomBanner>
           </Grid>
