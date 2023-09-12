@@ -58,12 +58,12 @@ public class EventController extends Utility {
     @Autowired
     private EventDtoMapper eventDtoMapper;
 
-    @GetMapping("/test")
+    @GetMapping("/homepage/test")
     public String test() {
         return "test successful";
     }
 
-    @GetMapping
+    @GetMapping("/homepage")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
         try {
             List<EventDisplayDto> eventList = eventService.findAllEvent();
@@ -77,7 +77,7 @@ public class EventController extends Utility {
         }
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping("/homepage/{eventId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventById(@PathVariable("eventId") Integer eventId) {
         OverallEventDto overallEventDto = eventService.findEventById(eventId);
         if (overallEventDto == null) {
@@ -87,7 +87,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/recently-added")
+    @GetMapping("/homepage/recently-added")
     public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
         List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -97,7 +97,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/featured")
+    @GetMapping("/homepage/featured")
     public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
         List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -107,7 +107,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/bestseller")
+    @GetMapping("/homepage/bestseller")
     public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
         List<EventHomeDto> eventList = eventService.findBestSellerEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -117,7 +117,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/upcoming")
+    @GetMapping("/homepage/upcoming")
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
         List<EventHomeDto> eventList = eventService.findUpcomingEvents();
         if (eventList == null || eventList.isEmpty()) {

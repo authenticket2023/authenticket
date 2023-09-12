@@ -44,13 +44,13 @@ public class TicketCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveTicketCategory(@RequestParam(value = "name") String name) {
+    public ResponseEntity<?> saveTicketCategory(@RequestParam("name") String name) {
         return ResponseEntity.ok(ticketCategoryService.saveTicketCategory(name));
     }
 
     @PutMapping
-    public ResponseEntity<?> updateTicketCategory(@RequestParam(value = "categoryId") Integer categoryId,
-                                                  @RequestParam(value = "name") String name) {
+    public ResponseEntity<?> updateTicketCategory(@RequestParam("categoryId") Integer categoryId,
+                                                  @RequestParam("name") String name) {
         TicketCategory ticketCategory = ticketCategoryService.updateTicketCategory(categoryId, name);
 
         return ResponseEntity.ok(ticketCategory);

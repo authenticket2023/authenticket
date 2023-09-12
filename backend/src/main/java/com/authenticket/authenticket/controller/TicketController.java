@@ -48,16 +48,16 @@ public class TicketController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Integer userId,
-                                       @RequestParam(value = "eventId") Integer eventId,
-                                       @RequestParam(value = "categoryId") Integer categoryId) {
+    public ResponseEntity<?> saveTicket(@RequestParam("userId") Integer userId,
+                                       @RequestParam("eventId") Integer eventId,
+                                       @RequestParam("categoryId") Integer categoryId) {
         Ticket savedTicket = ticketService.saveTicket(userId, eventId, categoryId);
         return ResponseEntity.ok(savedTicket);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateTicket(@RequestParam(value = "ticketId") Integer ticketId,
-                                          @RequestParam(value = "userId") Integer userId) {
+    public ResponseEntity<?> updateTicket(@RequestParam("ticketId") Integer ticketId,
+                                          @RequestParam("userId") Integer userId) {
         Ticket ticket = ticketService.updateTicket(ticketId, userId);
         return ResponseEntity.ok(ticket);
     }

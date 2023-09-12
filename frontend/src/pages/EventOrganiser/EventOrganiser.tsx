@@ -130,10 +130,11 @@ export const EventOrganiser = () => {
         //retrieve venue from DB
         const addTicketCategory = async (eventId: any) => {
             try {
-                const token = window.localStorage.getItem('accessToken');
+                // const token = window.localStorage.getItem('accessToken');
+                const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
                 const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/addTicketCategory`, {
                     headers: {
-                        // 'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     method: 'PUT',
@@ -207,9 +208,38 @@ export const EventOrganiser = () => {
         formData.append('artistId', artistList.toString());
         //TODO: pending
         formData.append('typeId', '3');
+        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
+        
+        //test 
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/bestseller`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            method: 'GET',
+          
+        })
+            .then(async (response) => {
+                if (response.status == 200) {
+                    const eventResponse = await response.json();
+                    console.log(eventResponse);
+                } else {
+                    const eventResponse = await response.json();
+                    setOpenSnackbar(true);
+                    setAlertType('warning');
+                    setAlertMsg(eventResponse.message);
+                }
+            })
+            .catch((err) => {
+                window.alert(err);
+            });
+
 
         //calling create event backend API
         fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
             method: 'POST',
             body: formData
         })
