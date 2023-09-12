@@ -8,6 +8,7 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,17 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventImage());
     }
 
+    public FeaturedEventDto applyFeaturedEventDto(FeaturedEvent featuredEvent) {
+        return new FeaturedEventDto(
+                featuredEvent.getFeaturedId(),
+                this.applyEventHomeDto(featuredEvent.getEvent()),
+                featuredEvent.getStartDate(),
+                featuredEvent.getEndDate()
+        );
+
+    }
+
+
     public List<EventDisplayDto> map(List<Event> eventList) {
         return eventList.stream()
                 .map(this::apply)
@@ -67,6 +79,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     public List<EventHomeDto> mapEventHomeDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyEventHomeDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FeaturedEventDto> mapFeaturedEventDto(List<FeaturedEvent> featuredEventList) {
+        return featuredEventList.stream()
+                .map(this::applyFeaturedEventDto)
                 .collect(Collectors.toList());
     }
 

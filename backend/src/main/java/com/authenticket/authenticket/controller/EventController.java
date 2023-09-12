@@ -4,14 +4,10 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
-import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
-import com.authenticket.authenticket.repository.EventOrganiserRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
-import com.authenticket.authenticket.repository.VenueRepository;
+import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
@@ -54,14 +50,13 @@ public class EventController extends Utility {
     private VenueRepository venueRepository;
 
     @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
     private EventTypeRepository eventTypeRepository;
 
     @Autowired
     private EventDtoMapper eventDtoMapper;
-
-    @Autowired
-    private ArtistDtoMapper artistDtoMapper;
-
 
     @GetMapping("/test")
     public String test() {
@@ -104,12 +99,11 @@ public class EventController extends Utility {
 
     @GetMapping("/featured")
     public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
-//        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
-//        if(eventList == null || eventList.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No recently added events found")));
-//        }
-//        return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "featured events not done yet"));
+        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No featured events found")));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Featured events successfully returned."));
 
     }
 
@@ -132,7 +126,6 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
 
     }
-
 
     @PostMapping
     public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
@@ -283,14 +276,31 @@ public class EventController extends Utility {
         }
     }
 
-    @GetMapping("/getAssignedEvents")
-    public ResponseEntity<GeneralApiResponse> getAssignEvents() {
-        try {
-            List<Object[]> assignedObjects = eventRepository.getAssignedEvent();
-            return ResponseEntity.ok(generateApiResponse(eventDtoMapper.mapAssignedEvent(assignedObjects), "Assigned events returned"));
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+
+    @PostMapping("/featured")
+    public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
+                                                                         @RequestParam("startDate") LocalDateTime startDate,
+                                                                         @RequestParam("endDate") LocalDateTime endDate,
+                                                                         @RequestParam("addedBy") Integer adminId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        Admin admin = adminRepository.findById(adminId).orElse(null);
+
+        if (event == null) {
+            throw new NonExistentException(String.format("No event of id %d found", eventId));
+        } else if (admin == null) {
+            throw new NonExistentException("Admin not found");
+        } else if (endDate.isBefore(startDate)){
+            throw new IllegalArgumentException("end date is earlier than start date");
         }
+        try {
+            FeaturedEvent featuredEvent = new FeaturedEvent(null, event, startDate, endDate, admin);
+            return ResponseEntity.ok(generateApiResponse(eventService.saveFeaturedEvent(featuredEvent), "Featured Event Successfully Saved"));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, "Featured event with event id could already exists"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+
     }
 
     //getting artist list for one specific event
