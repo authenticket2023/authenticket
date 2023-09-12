@@ -37,7 +37,7 @@ public class JwtServiceImpl implements JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ){
-        System.out.println(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()));
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
