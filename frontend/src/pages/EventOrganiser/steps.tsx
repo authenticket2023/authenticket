@@ -307,11 +307,10 @@ export function VenueArtist(props: any) {
     const [artistList, setArtistList]: any = React.useState([]);
     const [venueList, setVenueList]: any = React.useState([]);
 
+    const token = window.localStorage.getItem('accessToken');
     //retrieve artists from DB
     const artistFetcher = async () => {
         try {
-            // const token = window.localStorage.getItem('accessToken');
-            const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/artist`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -337,9 +336,6 @@ export function VenueArtist(props: any) {
     //retrieve venue from DB
     const venueFetcher = async () => {
         try {
-            // const token = window.localStorage.getItem('accessToken');
-            const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
-                
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/venue`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,

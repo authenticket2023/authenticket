@@ -18,7 +18,9 @@ import BearCarousel, {
 } from "bear-react-carousel";
 
 export const Home = () => {
-  useEffect(() => { }, []);
+  useEffect(() => { 
+    localStorage.setItem('accessToken', `${process.env.REACT_APP_TOKEN}`);
+  }, []);
 
   const images = [
     { id: 1, color: "green" },
