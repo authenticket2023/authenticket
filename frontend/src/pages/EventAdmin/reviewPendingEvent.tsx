@@ -2,7 +2,7 @@ import {
     Box, Typography, Modal,
     Grid, Button, TextField, Avatar, FormControl,
     InputLabel, Select, MenuItem, InputAdornment, FormGroup, FormControlLabel,
-    Switch, OutlinedInput, Checkbox, ListItemText, List, ListItem, styled, CardMedia
+    Switch, OutlinedInput, Checkbox, ListItemText, List, ListItem, styled, CardMedia, TextareaAutosize
 } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Sheet } from '@mui/joy';
@@ -22,10 +22,12 @@ const style = {
 };
 
 export default function ReviewEvent(props: any) {
+    const token = window.localStorage.getItem('accessToken');
     const [eventID, setEventID] = React.useState(props.eventID);
     const [eventDetail, setEventDetail]: any = React.useState();
     const [loaded, setLoaded]: any = React.useState(false);
     const [reviewOpen, setReviewOpen] = React.useState(true);
+    const [remarks, setRemarks]: any = React.useState(null);
     const handleReviewEventModalClose = () => {
         setReviewOpen(false);
         //to update parent element
@@ -45,7 +47,6 @@ export default function ReviewEvent(props: any) {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     setEventDetail(data);
-                    console.log(data);
                     setLoaded(true);
                 } else {
                     //passing to parent component
@@ -58,6 +59,64 @@ export default function ReviewEvent(props: any) {
             .catch((err) => {
                 window.alert(err);
             });
+    }
+
+    const updateEventStatus = async (status: string) => {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/review-status`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'PUT',
+            body: JSON.stringify({
+                "eventId": eventID,
+                "status": status,
+                "remarks": remarks
+              })
+        })
+            .then(async (response) => {
+                const apiResponse = await response.json();
+                if (response.status == 200) {
+                    props.setOpenSnackbar(true);
+                    props.setAlertType('success');
+                    props.setAlertMsg(`${apiResponse['message']}`);
+                    setReviewOpen(false);
+                    //to update parent element
+                    props.open(false);
+                } else {
+                    props.setOpenSnackbar(true);
+                    props.setAlertType('error');
+                    props.setAlertMsg(`${apiResponse['message']}`);
+                }
+            })
+            .catch((err) => {
+                //close the modal
+                window.alert(err);
+            });
+    }
+
+    const handleRemarks = (event: any) => {
+        setRemarks(event.target.value);
+    };
+    
+    const handleAccept = (event: any) => {
+        event.preventDefault();
+        // call backend
+        console.log("accept")
+        updateEventStatus('accept');
+        props.setReload(true);
+    }
+
+    const handleReject = (event: any) => {
+        event.preventDefault();
+        // call backend
+        console.log("reject")
+        if (remarks == null || remarks == '') {
+            props.setOpenSnackbar(true);
+            props.setAlertType('error');
+            props.setAlertMsg(`Please enter the reason for rejection!`);
+        }
+        updateEventStatus('reject');
     }
 
     useEffect(() => {
@@ -82,7 +141,7 @@ export default function ReviewEvent(props: any) {
                         display: 'box',
                     }}
                 >
-                    <Box sx={{ ...style, width: 800, mt:'15%', mb:'15%',height: 800 }} textAlign='center'>
+                    <Box sx={{ ...style, width: 800, mt: '15%', mb: '15%', height: 800 }} textAlign='center'>
                         <Sheet>
                             <Typography variant="h2" >{eventDetail.eventName}</Typography>
                             <Grid container spacing={3} sx={{ textAlign: "left" }}>
@@ -144,12 +203,16 @@ export default function ReviewEvent(props: any) {
                                         sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
                                     />
                                 </Grid>
-
+                                <Grid item xs={12} sm={12}>
+                                    <TextareaAutosize minRows="7" onChange={handleRemarks}
+                                        style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
+                                        id='remarks' className='StyledTextarea' value={remarks} placeholder="Remarks" />
+                                </Grid>
 
                             </Grid>
                             <Sheet sx={{ alignItems: "center", mb: 5, mt: 5 }}>
-                                <Button color="error" variant="contained" >Reject</Button>
-                                <Button color="success" variant="contained" sx={{ ml: 10 }} >Accpet</Button>
+                                <Button color="error" variant="contained" onClick={handleReject} >Reject</Button>
+                                <Button color="success" variant="contained" sx={{ ml: 10 }} onClick={handleAccept}>Accpet</Button>
                             </Sheet>
                         </Sheet>
                     </Box>
