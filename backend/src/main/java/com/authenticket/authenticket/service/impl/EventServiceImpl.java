@@ -114,19 +114,20 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    public void deleteEvent(Integer eventId) {
+    public String deleteEvent(Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
 
         if (eventOptional.isPresent()) {
             Event event = eventOptional.get();
             if (event.getDeletedAt() != null) {
-                throw new AlreadyDeletedException("Event already deleted");
+                return String.format("Event %d is already deleted.", eventId);
+            } else{
+                event.setDeletedAt(LocalDateTime.now());
+                eventRepository.save(event);
+                return String.format("Event %d is successfully deleted.", eventId);
             }
-
-            event.setDeletedAt(LocalDateTime.now());
-            eventRepository.save(event);
         } else {
-            throw new NonExistentException("Event does not exists");
+            return String.format("Event %d does not exist, deletion unsuccessful.", eventId);
         }
 
     }

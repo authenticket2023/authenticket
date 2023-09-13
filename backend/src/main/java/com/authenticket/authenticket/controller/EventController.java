@@ -215,46 +215,47 @@ public class EventController extends Utility {
 
     @PutMapping
     public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
-                                         @RequestParam("eventId") Integer eventId,
-                                         @RequestParam(value = "eventName",required = false) String eventName,
-                                         @RequestParam(value = "eventDescription",required = false) String eventDescription,
-                                         @RequestParam(value = "eventDate" ,required = false) LocalDateTime eventDate,
-                                         @RequestParam(value = "eventLocation",required = false) String eventLocation,
-                                         @RequestParam(value = "otherEventInfo",required = false) String otherEventInfo,
-                                         @RequestParam(value = "ticketSaleDate",required = false) LocalDateTime ticketSaleDate,
-                                         @RequestParam(value = "venueId",required = false) Integer venueId,
-                                         @RequestParam(value = "typeId",required = false) Integer typeId,
-                                         @RequestParam(value = "reviewRemarks",required = false) String reviewRemarks,
-                                         @RequestParam(value = "reviewStatus",required = false) String reviewStatus,
-                                         @RequestParam(value = "reviewedBy",required = false) Integer reviewedBy) {
+                                         @RequestParam(value = "eventId") Integer eventId,
+                                         @RequestParam(value = "eventName", required = false) String eventName,
+                                         @RequestParam(value = "eventDescription", required = false) String eventDescription,
+                                         @RequestParam(value = "eventDate", required = false) LocalDateTime eventDate,
+                                         @RequestParam(value = "eventLocation", required = false) String eventLocation,
+                                         @RequestParam(value = "otherEventInfo", required = false) String otherEventInfo,
+                                         @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
+                                         @RequestParam(value = "venueId", required = false) Integer venueId,
+                                         @RequestParam(value = "typeId", required = false) Integer typeId,
+                                         @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
+                                         @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
+                                         @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy) {
+
         Venue venue = null;
-        if(venueId !=null){
+        if (venueId != null) {
             Optional<Venue> venueOptional = venueRepository.findById(venueId);
-            if(venueOptional.isPresent()){
+            if (venueOptional.isPresent()) {
                 venue = venueOptional.get();
-            } else{
+            } else {
                 throw new NonExistentException("Venue does not exist");
             }
         }
 
 
         EventType eventType = null;
-        if(typeId!=null){
+        if (typeId != null) {
             Optional<EventType> eventTypeOptional = eventTypeRepository.findById(typeId);
-            if(eventTypeOptional.isPresent()){
+            if (eventTypeOptional.isPresent()) {
                 eventType = eventTypeOptional.get();
-            } else{
+            } else {
                 throw new NonExistentException("Event type does not exist");
             }
         }
 
         Admin admin = null;
-        if(reviewedBy !=null){
+        if (reviewedBy != null) {
             Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
 
             if (adminOptional.isPresent()) {
                 admin = adminOptional.get();
-            } else{
+            } else {
                 throw new NonExistentException("Admin does not exist");
             }
         }
@@ -263,7 +264,7 @@ public class EventController extends Utility {
         EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
         Event event = eventService.updateEvent(eventUpdateDto);
         //update event image if not null
-        if (eventImageFile !=null){
+        if (eventImageFile != null) {
             try {
                 System.out.println(eventImageFile.getName());
                 amazonS3Service.uploadFile(eventImageFile, event.getEventImage(), "event_images");
@@ -281,21 +282,31 @@ public class EventController extends Utility {
             }
         }
         return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
-//        if (event != null) {
-//            return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
-//        } else {
-//            return ResponseEntity.status(404).body(generateApiResponse(null, "Event not found, update not successful."));
-//        }
     }
 
-    @PutMapping("/{eventId}")
-    public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@PathVariable("eventId") Integer eventId) {
+    @PutMapping("/delete")
+    public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@RequestParam("eventId") String eventIdString) {
         try {
-            //if delete is successful
-            eventService.deleteEvent(eventId);
-            return ResponseEntity.ok(generateApiResponse(null, String.format("Event %d Deleted Successfully", eventId)));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, e.getMessage()));
+            List<Integer> eventIdList = Arrays.stream(eventIdString.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+
+            //check if all events exist first
+            for(Integer eventId: eventIdList){
+                if(eventRepository.findById(eventId).isEmpty()){
+                    throw new NonExistentException(String.format("Event %d does not exist, deletion halted", eventId));
+                }
+            }
+
+            StringBuilder results = new StringBuilder();
+
+            for(Integer eventId: eventIdList){
+                results.append(eventService.deleteEvent(eventId)).append(" ");
+            }
+
+            return ResponseEntity.ok(generateApiResponse(null, results.toString()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(generateApiResponse(null, e.getMessage()));
         }
     }
 
@@ -305,16 +316,6 @@ public class EventController extends Utility {
         return eventService.removeEvent(eventId);
     }
 
-    @PutMapping("/approve")
-    public ResponseEntity<?> approveEvent(@RequestParam(value = "eventId") Integer eventId, @RequestParam(value = "approvedBy") Integer approvedBy) {
-        Event event = eventService.approveEvent(eventId, approvedBy);
-        if (event == null) {
-            return ResponseEntity.status(404).body(generateApiResponse(null, "Approve not successful, event does not exist"));
-        } else {
-            return ResponseEntity.ok(generateApiResponse(event, "Event approved successfully"));
-
-        }
-    }
 
     @PutMapping("/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
@@ -345,7 +346,7 @@ public class EventController extends Utility {
             throw new NonExistentException(String.format("No event of id %d found", eventId));
         } else if (admin == null) {
             throw new NonExistentException("Admin not found");
-        } else if (endDate.isBefore(startDate)){
+        } else if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("end date is earlier than start date");
         }
         try {
