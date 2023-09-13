@@ -1,8 +1,6 @@
 import {
     Box, Typography, Modal,
-    Grid, Button, TextField, Avatar, FormControl,
-    InputLabel, Select, MenuItem, InputAdornment, FormGroup, FormControlLabel,
-    Switch, OutlinedInput, Checkbox, ListItemText, List, ListItem, styled, CardMedia, TextareaAutosize
+    Grid, Button, Avatar, ListItemText, ListItem, CardMedia, TextareaAutosize
 } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Sheet } from '@mui/joy';
