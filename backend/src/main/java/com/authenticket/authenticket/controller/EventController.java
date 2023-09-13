@@ -214,41 +214,56 @@ public class EventController extends Utility {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateEvent(@RequestParam("file") MultipartFile eventImageFile,
+    public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam("eventId") Integer eventId,
-                                         @RequestParam("eventName") String eventName,
-                                         @RequestParam("eventDescription") String eventDescription,
-                                         @RequestParam("eventDate") LocalDateTime eventDate,
-                                         @RequestParam("eventLocation") String eventLocation,
-                                         @RequestParam("otherEventInfo") String otherEventInfo,
-                                         @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
-                                         @RequestParam("venueId") Integer venueId,
-                                         @RequestParam("typeId") Integer typeId,
-                                         @RequestParam("reviewRemarks") String reviewRemarks,
-                                         @RequestParam("reviewStatus") String reviewStatus,
-                                         @RequestParam("reviewedBy") Integer reviewedBy) {
-        Optional<Venue> venueOptional = venueRepository.findById(venueId);
+                                         @RequestParam(value = "eventName",required = false) String eventName,
+                                         @RequestParam(value = "eventDescription",required = false) String eventDescription,
+                                         @RequestParam(value = "eventDate" ,required = false) LocalDateTime eventDate,
+                                         @RequestParam(value = "eventLocation",required = false) String eventLocation,
+                                         @RequestParam(value = "otherEventInfo",required = false) String otherEventInfo,
+                                         @RequestParam(value = "ticketSaleDate",required = false) LocalDateTime ticketSaleDate,
+                                         @RequestParam(value = "venueId",required = false) Integer venueId,
+                                         @RequestParam(value = "typeId",required = false) Integer typeId,
+                                         @RequestParam(value = "reviewRemarks",required = false) String reviewRemarks,
+                                         @RequestParam(value = "reviewStatus",required = false) String reviewStatus,
+                                         @RequestParam(value = "reviewedBy",required = false) Integer reviewedBy) {
         Venue venue = null;
-        if(venueOptional.isPresent()){
-            venue = venueOptional.get();
+        if(venueId !=null){
+            Optional<Venue> venueOptional = venueRepository.findById(venueId);
+            if(venueOptional.isPresent()){
+                venue = venueOptional.get();
+            } else{
+                throw new NonExistentException("Venue does not exist");
+            }
         }
 
-        Optional<EventType> eventTypeOptional = eventTypeRepository.findById(typeId);
+
         EventType eventType = null;
-        if(eventTypeOptional.isPresent()){
-            eventType = eventTypeOptional.get();
+        if(typeId!=null){
+            Optional<EventType> eventTypeOptional = eventTypeRepository.findById(typeId);
+            if(eventTypeOptional.isPresent()){
+                eventType = eventTypeOptional.get();
+            } else{
+                throw new NonExistentException("Event type does not exist");
+            }
         }
 
-        Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
         Admin admin = null;
-        if (adminOptional.isPresent()) {
-            admin = adminOptional.get();
+        if(reviewedBy !=null){
+            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
+
+            if (adminOptional.isPresent()) {
+                admin = adminOptional.get();
+            } else{
+                throw new NonExistentException("Admin does not exist");
+            }
         }
+
 
         EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
         Event event = eventService.updateEvent(eventUpdateDto);
         //update event image if not null
-        if (!eventImageFile.isEmpty()){
+        if (eventImageFile !=null){
             try {
                 System.out.println(eventImageFile.getName());
                 amazonS3Service.uploadFile(eventImageFile, event.getEventImage(), "event_images");
