@@ -11,12 +11,16 @@ import { useNavigate } from 'react-router-dom';
 import MUIDataTable from "mui-datatables";
 import { Sheet } from '@mui/joy';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ReviewEvent from './reviewPendingEvent';
 
 const delay = (ms: number) => new Promise(
     resolve => setTimeout(resolve, ms)
 );
 
 export function PendingEventTab() {
+    const token = window.localStorage.getItem('accessToken');
+    //for reload
+    const [reload, setReload] = useState(false);
     useEffect(() => {
         async function loadData() {
             setLoadingModal(true);
@@ -26,10 +30,15 @@ export function PendingEventTab() {
         if (!dataLoaded) {
             loadData();
         }
-    }, []);
-    const token = window.localStorage.getItem('accessToken');
-    //for reload
-    const [reload, setReload] = useState(false);
+         //trigger whenever reload value changed
+         if (reload) {
+            //reload whenever openSnackbar was changed
+            loadData();
+            //need set this, if not cannot click open again
+            setReviewOpen(false);
+            setReload(false);
+        }
+    }, [reload]);
     //for alert
     //error , warning , info , success
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -103,7 +112,7 @@ export function PendingEventTab() {
                     const data = apiResponse.data;
                     const fetchData: any = [];
                     data.forEach((event: any) => {
-                        const row = [event.eventId, event.eventName,event.eventDescription,
+                        const row = [event.eventId, event.eventName, event.eventDescription,
                         event.eventDate, event.ticketSaleDate, event.createdAt]
                         fetchData.push(row)
                     });
@@ -120,6 +129,14 @@ export function PendingEventTab() {
             });
     }
 
+       //For review pending event page
+       const [reviewOpen, setReviewOpen] = React.useState(false);
+       const [reviewEventID, setReviewEventID] = React.useState('');
+       const handleRowClick = (rowData: any, rowMeta: any) => {
+           setReviewEventID(rowData[0]);
+           setReviewOpen(true);
+       };
+
 
     //for deletion
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -129,7 +146,7 @@ export function PendingEventTab() {
         try {
             setSelectedRows(allRowsSelected);
         } catch (error) {
-            window.alert(`Error during selecting post:${error}`);
+            window.alert(`Error during selecting:${error}`);
         }
     }
 
@@ -153,6 +170,7 @@ export function PendingEventTab() {
         download: true,
         rowHover: true,
         onRowsSelect: onRowsSelect,
+        onRowClick: handleRowClick,
         onRowsDelete: handleClickDeleteIcon,
         downloadOptions: { filename: `AuthenTicket Pending Event Data(${new Date().toDateString()}).csv` },
         sortOrder: {
@@ -192,6 +210,10 @@ export function PendingEventTab() {
                     </Box>
                 </Modal>
             }
+
+            {reviewOpen ?
+                <ReviewEvent open={setReviewOpen} setReload={setReload} setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} eventID={reviewEventID} />
+                : null}
             <Dialog open={openConfirmDialog} onClose={handleCloseConfirmDialog}>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
@@ -206,7 +228,7 @@ export function PendingEventTab() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
+            <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
                     {alertMsg}
                 </Alert>
