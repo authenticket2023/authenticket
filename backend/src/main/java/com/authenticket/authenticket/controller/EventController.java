@@ -53,9 +53,6 @@ public class EventController extends Utility {
     private VenueRepository venueRepository;
 
     @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
     private EventTypeRepository eventTypeRepository;
 
     @Autowired
