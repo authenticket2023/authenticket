@@ -19,7 +19,7 @@ const delay = (ms: number) => new Promise(
 export function PendingEventTab() {
     useEffect(() => {
         async function loadData() {
-            setOpen(true);
+            setLoadingModal(true);
             await delay(250);
             loadPendingEventData();
         }
@@ -50,10 +50,35 @@ export function PendingEventTab() {
         boxShadow: 24,
         p: 4,
     };
-    const [open, setOpen] = React.useState(false);
+    const [openLoadingModal, setLoadingModal] = React.useState(false);
 
     //for datatable
-    const columns = ["Name", "Email", "Account Role",];
+    const columns = ["Event ID", "Name",
+        {
+            name: "Description",
+            options: {
+                customBodyRender: (value: string) => <span>{value.length < 15 ? value : value.slice(0, 15) + '....'}</span>
+            }
+        },
+        {
+            name: "Event Date",
+            options: {
+                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+            }
+        },
+        {
+            name: "Ticket Sale Date",
+            options: {
+                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+            }
+        },
+        {
+            name: "Submitted At",
+            options: {
+                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+            }
+        },
+    ];
     const [pendingEventData, setPendingEventData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
     const loadPendingEventData = async () => {
@@ -67,26 +92,30 @@ export function PendingEventTab() {
         })
             .then(async (response) => {
                 if (response.status != 200) {
-                    console.log(response);
-                    console.log(token);
-               
-                } else {
-                    const data = await response.json();
-                    console.log(data);
-                    // const fetchData: any = [];
-                    // data.forEach((user: any) => {
-                    //     const row = [user.name, user.email, user.accRole, user.linkedElderly.toString(),
-                    //     user.dateCreated, user.profileImage]
-                    //     fetchData.push(row)
-                    // });
-                    // setPendingEventData(fetchData);
-                    // setDataLoaded(true);
                     //close the modal
-                    setOpen(false);
+                    setLoadingModal(false);
+                    //show alert msg
+                    setOpenSnackbar(true);
+                    setAlertType('error');
+                    setAlertMsg(`Fetch data faile, code: ${response.status}`);
+                } else {
+                    const apiResponse = await response.json();
+                    const data = apiResponse.data;
+                    const fetchData: any = [];
+                    data.forEach((event: any) => {
+                        const row = [event.eventId, event.eventName,event.eventDescription,
+                        event.eventDate, event.ticketSaleDate, event.createdAt]
+                        fetchData.push(row)
+                    });
+                    setPendingEventData(fetchData);
+                    setDataLoaded(true);
+                    //close the modal
+                    setLoadingModal(false);
                 }
             })
             .catch((err) => {
-                console.log("------");
+                //close the modal
+                setLoadingModal(false);
                 window.alert(err);
             });
     }
@@ -119,13 +148,17 @@ export function PendingEventTab() {
     };
 
     //to customise mui datatable
-    const options = {
+    const options: any = {
         print: true,
         download: true,
         rowHover: true,
         onRowsSelect: onRowsSelect,
         onRowsDelete: handleClickDeleteIcon,
         downloadOptions: { filename: `AuthenTicket Pending Event Data(${new Date().toDateString()}).csv` },
+        sortOrder: {
+            name: 'Submitted At',
+            direction: 'desc'
+        }
     };
 
     return (
@@ -149,13 +182,11 @@ export function PendingEventTab() {
 
                 <Modal
                     keepMounted
-                    open={open}
-                    aria-labelledby="loading"
-                    aria-describedby="loading elderly data"
+                    open={openLoadingModal}
                 >
                     <Box sx={style}>
                         <Typography id="loading" variant="h6" component="h2">
-                            Loading elderly data, please wait.
+                            Loading data, please wait.
                         </Typography>
                         <LinearProgress />
                     </Box>
@@ -186,7 +217,7 @@ export function PendingEventTab() {
 
 export function AllEventTab() {
 
-    return(
+    return (
         <Box
             sx={{
                 justifyContent: 'center',
@@ -196,7 +227,7 @@ export function AllEventTab() {
                 boxShadow: "5",
                 marginBottom: 5
             }}>
-                <Typography>Pending</Typography>
+            <Typography>Pending</Typography>
         </Box>
     )
 }
