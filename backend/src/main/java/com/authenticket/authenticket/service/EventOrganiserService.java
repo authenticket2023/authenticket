@@ -22,7 +22,7 @@ public interface EventOrganiserService {
     //actually removes the event
     String removeEventOrganiser (Integer organiserId);
 
-    EventOrganiser approveOrganiser(Integer organiserId, Integer adminId, String status, String remarks);
+//    EventOrganiser approveOrganiser(Integer organiserId, Integer adminId, String status, String remarks);
 
 //    EventOrganiser rejectOrganiser (Integer organiserId);
 }

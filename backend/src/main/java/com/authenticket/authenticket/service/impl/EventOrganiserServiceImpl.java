@@ -17,6 +17,7 @@ import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventOrganiserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,10 +42,12 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
     private EmailServiceImpl emailService;
     @Autowired
     private AmazonS3Service amazonS3Service;
-    
+
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     public List<EventOrganiserDisplayDto> findAllEventOrganisers() {
         return eventOrganiserRepository.findAll()
                 .stream()
@@ -52,7 +55,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
                 .collect(Collectors.toList());
     }
 
-    public List<Event> findAllEventsByOrganiser(Integer organiserId){
+    public List<Event> findAllEventsByOrganiser(Integer organiserId) {
         EventOrganiser organiser = eventOrganiserRepository.findById(organiserId).orElse(null);
 
         if (organiser != null) {
@@ -75,18 +78,39 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
     public EventOrganiser updateEventOrganiser(EventOrganiserUpdateDto eventOrganiserUpdateDto) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(eventOrganiserUpdateDto.organiserId());
 
-        if (eventOrganiserOptional.isPresent()) {
-            EventOrganiser existingEventOrganiser = eventOrganiserOptional.get();
-            eventOrganiserDtoMapper.update(eventOrganiserUpdateDto, existingEventOrganiser);
-            eventOrganiserRepository.save(existingEventOrganiser);
-            return existingEventOrganiser;
+        if (eventOrganiserOptional.isEmpty()) {
+            throw new NonExistentException("Event Organiser with ID " + eventOrganiserUpdateDto.organiserId() + " does not exist");
         }
 
-        throw new NonExistentException("Event Organiser does not exist");
+        EventOrganiser eventOrganiser = eventOrganiserOptional.get();
+        eventOrganiserDtoMapper.update(eventOrganiserUpdateDto, eventOrganiser);
+
+        String reviewStatus = eventOrganiserUpdateDto.reviewStatus();
+        if (reviewStatus != null) {
+            if(reviewStatus.equals("approved")) {
+                //Generate password and update db
+                String password = generateRandomPassword();
+                eventOrganiser.setPassword(passwordEncoder.encode(password));
+
+                //change link to log in page
+                String link = "http://localhost:" + apiPort + "/api/auth/register/";
+
+                // Send email to organiser
+                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, "good"), "Your account has been approved");
+            } else if (reviewStatus.equals("rejected")){
+                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(eventOrganiser.getName(),"bad one bro"), "Your account has been rejected");
+            }
+            else {
+                throw new IllegalStateException("Review status in unknown state '" + reviewStatus + "'");
+            }
+        }
+
+        eventOrganiserRepository.save(eventOrganiser);
+        return eventOrganiser;
     }
 
     @Override
-    public EventOrganiser updateEventOrganiserImage(Integer organiserId,String filename) {
+    public EventOrganiser updateEventOrganiserImage(Integer organiserId, String filename) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
 
         if (eventOrganiserOptional.isPresent()) {
@@ -94,7 +118,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
             eventOrganiser.setLogoImage(filename);
             eventOrganiserRepository.save(eventOrganiser);
             return eventOrganiser;
-        } else{
+        } else {
             return null;
         }
 
@@ -125,39 +149,15 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
             String logoImage = eventOrganiser.getLogoImage();
 
-                eventOrganiserRepository.deleteById(organiserId);
-                if (logoImage != null) {
-                    amazonS3Service.deleteFile(logoImage, "event_organiser_profile");
-                }
+            eventOrganiserRepository.deleteById(organiserId);
+            if (logoImage != null) {
+                amazonS3Service.deleteFile(logoImage, "event_organiser_profile");
+            }
 
 
             return "event organiser removed successfully";
         }
         return "error: event organiser does not exist";
 
-    }
-
-    public EventOrganiser approveOrganiser(Integer organiserId, Integer adminId, String status, String remarks) {
-        Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
-        Optional<Admin> adminOptional = adminRepository.findById(adminId);
-
-        if (eventOrganiserOptional.isPresent() && adminOptional.isPresent()) {
-            EventOrganiser eventOrganiser = eventOrganiserOptional.get();
-            eventOrganiser.setAdmin(adminOptional.get());
-            eventOrganiserRepository.save(eventOrganiser);
-
-            //Generate password and update db
-            String password = generateRandomPassword();
-            updateEventOrganiser(new EventOrganiserUpdateDto(eventOrganiser.getOrganiserId(), null, null, password, true));
-
-            // Send email to organiser
-            String link = "http://localhost:" + apiPort + "/api/auth/register/";
-
-             //replace with organiser.review and remarks
-            emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, "approved", "good"), "Your account has been approved");
-
-            return eventOrganiser;
-        }
-        throw new ApiRequestException("Failed to approve");
     }
 }

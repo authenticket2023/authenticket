@@ -3,7 +3,10 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
+import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -36,6 +39,9 @@ public class EventOrganiserController extends Utility {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @GetMapping("/test")
     public String test() {
@@ -92,7 +98,7 @@ public class EventOrganiserController extends Utility {
                                        @RequestParam("description") String description) {
 
             //save eventOrganiser first without image name to get the eventOrganiser id
-            EventOrganiser newEventOrganiser = new EventOrganiser(null, name, email, passwordEncoder.encode(generateRandomPassword()), description,null,false,null,null);
+            EventOrganiser newEventOrganiser = new EventOrganiser(null, name, email, passwordEncoder.encode(generateRandomPassword()), description,null,false,null,"pending",null,null);
             EventOrganiser savedEventOrganiser = eventOrganiserService.saveEventOrganiser(newEventOrganiser);
 
             return ResponseEntity.ok(generateApiResponse(savedEventOrganiser,"Event organiser created successfully"));
@@ -103,19 +109,26 @@ public class EventOrganiserController extends Utility {
                                                   @RequestParam(value = "name", required = false) String name,
                                                   @RequestParam(value = "description", required = false) String description,
                                                   @RequestParam(value = "password", required = false) String password,
-                                                  @RequestParam(value = "status", required = false) String status,
-                                                  @RequestParam(value = "remarks", required = false) String remarks,
+                                                  @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
+                                                  @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
+                                                  @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy,
                                                   @RequestParam(value = "enabled", required = false) Boolean enabled) {
-            EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, enabled);
-            EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
-            if (eventOrganiser != null) {
-                return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
-            } else {
-                return ResponseEntity.badRequest().body(generateApiResponse(null, "Event organiser update unsuccessful"));
+        Admin admin = null;
+        if (reviewedBy != null) {
+            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
+            if(adminOptional.isEmpty()) {
+                throw new NonExistentException("Admin with ID " + reviewedBy + " does not exist");
             }
+            admin = adminOptional.get();
+        }
 
-
-
+        EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, enabled, reviewStatus, reviewRemarks, admin);
+        EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
+        if (eventOrganiser != null) {
+            return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
+        } else {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, "Event organiser update unsuccessful"));
+        }
     }
 
     @PutMapping("/image")
@@ -172,10 +185,5 @@ public class EventOrganiserController extends Utility {
         catch(DataIntegrityViolationException e){
             return ResponseEntity.status(409).body(String.format("The organiser with ID %d cannot be deleted because it has associated events.", organiserId));
         }
-    }
-
-    @PutMapping("/approve")
-    public ResponseEntity<?> approveEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId, @RequestParam(value = "approvedBy") Integer approvedBy, @RequestParam(value = "status") String status, @RequestParam(value = "remarks") String remarks) {
-        return ResponseEntity.ok(eventOrganiserService.approveOrganiser(organiserId, approvedBy, status, remarks));
     }
 }
