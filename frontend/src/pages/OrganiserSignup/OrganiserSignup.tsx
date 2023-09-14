@@ -166,7 +166,7 @@ export function OrganiserSignup() {
                 required
                 fullWidth
                 id="CompanyName"
-                label="CompanyName"
+                label="Company Name"
                 name="companyName"
                 autoComplete="companyName"
                 autoFocus
@@ -178,7 +178,7 @@ export function OrganiserSignup() {
                 required
                 fullWidth
                 id="CompanyEmail"
-                label="CompanyEmail"
+                label="Company Email"
                 name="companyEmail"
                 autoComplete="companyEmail"
                 autoFocus
