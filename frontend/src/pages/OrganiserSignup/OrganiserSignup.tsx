@@ -9,7 +9,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
-import moment from 'moment';
 
 //image download
 import backgroundImage from '../../images/background.png';
@@ -84,17 +83,18 @@ export function OrganiserSignup() {
       setEmailHelperText('');
     }
 
+    const formData = new FormData();
+    formData.append('name', companyName);
+    formData.append('email', companyEmail);
+    formData.append('description', companyDescription);
+
     // //calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/orgRegister`, {
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
-      body: JSON.stringify({
-        "name": companyName,
-        "email": companyEmail,
-        "description": companyDescription,
-      })
+      body: formData
     })
       .then(async (response) => {
         if (response.status !== 200) {
