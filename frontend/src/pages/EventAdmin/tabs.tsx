@@ -269,7 +269,7 @@ export function AllEventTab() {
     useEffect(() => {
         function loadData() {
             setLoadingModal(true);
-            loadPendingEventData();
+            loadAllEventData();
         }
         if (!dataLoaded) {
             loadData();
@@ -325,18 +325,21 @@ export function AllEventTab() {
                 customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
             }
         },
+        "Organiser Email",
         {
-            name: "Submitted At",
+            name: "Review Remarks",
             options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+                customBodyRender: (value: string) => <span>{value.length < 15 ? value : value.slice(0, 15) + '....'}</span>
             }
         },
+        "Review Status",
+        "Reviewd By",
     ];
-    const [pendingEventData, setPendingEventData]: any[] = useState([]);
+    const [allEventData, setAllEventData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const loadPendingEventData = async () => {
+    const loadAllEventData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event`, {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -353,14 +356,20 @@ export function AllEventTab() {
                     setAlertMsg(`Fetch data faile, code: ${response.status}`);
                 } else {
                     const apiResponse = await response.json();
+                    console.log(apiResponse)
                     const data = apiResponse.data;
                     const fetchData: any = [];
                     data.forEach((event: any) => {
+                        let reviewedByEmail = event.reviewedBy !== null ? event.reviewedBy.email : "NULL";
+                        let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "NULL";
                         const row = [event.eventId, event.eventName, event.eventDescription,
-                        event.eventDate, event.ticketSaleDate, event.createdAt]
+                        event.eventDate, event.ticketSaleDate, 
+                        event.organiser.email,
+                        reviewRemarks,event.reviewStatus,
+                        reviewedByEmail]
                         fetchData.push(row)
                     });
-                    setPendingEventData(fetchData);
+                    setAllEventData(fetchData);
                     setDataLoaded(true);
                     //close the modal
                     setLoadingModal(false);
@@ -392,7 +401,7 @@ export function AllEventTab() {
             let selectedEventID = "";
             allRowsSelected.forEach((element: any) => {
                 const dataIndex = element.dataIndex;
-                const eventID = pendingEventData[dataIndex][0];
+                const eventID = allEventData[dataIndex][0];
                 selectedEventID += eventID + ',';
             });
             setSelectedRows(selectedEventID);
@@ -453,7 +462,7 @@ export function AllEventTab() {
         onRowsDelete: handleClickDeleteIcon,
         downloadOptions: { filename: `AuthenTicket Pending Event Data(${new Date().toDateString()}).csv` },
         sortOrder: {
-            name: 'Submitted At',
+            name: 'Event Date',
             direction: 'desc'
         }
     };
@@ -472,7 +481,7 @@ export function AllEventTab() {
 
                 <MUIDataTable
                     title={"Pening Event Lists"}
-                    data={pendingEventData}
+                    data={allEventData}
                     columns={columns}
                     options={options}
                 /> :
