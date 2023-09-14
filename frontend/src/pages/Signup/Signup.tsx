@@ -46,6 +46,21 @@ export function Signup() {
 
   let navigate = useNavigate();
 
+  //convert timestamp to date
+  const TimestampConverter = (timestamp: number) => {
+    // Create a Date object from the timestamp
+    const date = new Date(timestamp);
+
+    // Extract components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+
+    const formattedTimestamp = `${year}-${month}-${day}`;
+
+    return formattedTimestamp;
+}
+
   //validation methods
   const validateEmail = (email : any) => {
     // Regular expression to validate email format
@@ -129,18 +144,16 @@ export function Signup() {
       setPasswordHelperText('');
     }
 
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('dateOfBirth', TimestampConverter(Number(dob)));
+
     // //calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userRegister`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
       method: 'POST',
-      body: JSON.stringify({
-        "name": name,
-        "email": email,
-        "password": password,
-        "dateOfBirth": dob,
-      })
+      body: formData
     })
       .then(async (response) => {
         if (response.status !== 200) {

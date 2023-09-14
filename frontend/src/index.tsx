@@ -12,7 +12,7 @@ import { Forbidden } from './pages/Forbidden';
 import { Event } from './pages/Event';
 import { FAQ } from './pages/FAQ';
 import { Home } from './pages/Home';
-import { Login } from './pages/Login';
+import { Login } from './pages/Login/Login';
 import { Page404 } from './pages/Page404';
 import { Profile } from './pages/Profile';
 import { Signup } from './pages/Signup';

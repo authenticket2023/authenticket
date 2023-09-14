@@ -36,7 +36,7 @@ const myTheme = createTheme({
   }
 });
 
-export function Login() {
+export const Login = () => {
 
   let navigate = useNavigate();
   //validation method
@@ -76,19 +76,17 @@ export function Login() {
       setEmailError(false);
       setHelperText('');
     }
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    fetch(`http://localhost:8080/api/auth/userAuthenticate`, {
       method: 'POST',
-      body: JSON.stringify({
-        "email": email,
-        "password": password,
-      })
+      body: formData
     })
       .then(async (response) => {
-        if (response.status == 200) {
+        if (response.status === 200) {
 
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them

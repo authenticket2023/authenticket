@@ -46,7 +46,7 @@ export const NavbarNotLoggedIn = () => {
     }
 
     const handleLogin = () => {
-        navigate('/login');
+        navigate('/Login');
     }
 
     const handleSupport = () => {
@@ -181,7 +181,7 @@ export const NavbarOrganiser = () => {
         localStorage.removeItem('userName');
         localStorage.removeItem('accRole');
         localStorage.removeItem('profileImage');
-        navigate('/login');
+        navigate('/Login');
     };
 
     const handleHomeOrganiser = () => {
