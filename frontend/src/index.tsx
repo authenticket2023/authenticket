@@ -21,6 +21,7 @@ import { Venue } from './pages/Venue';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
+import { OrganiserSignup } from './pages/OrganiserSignup';
 //for admin user
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
@@ -51,6 +52,7 @@ root.render(
 			<Route path="/EventAdmin" element={<EventAdmin />} />
 			<Route path="/VenueAdmin" element={<VenueAdmin />} />
 			<Route path="/ArtistAdmin" element={<ArtistAdmin />} />
+			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
 		</Routes>
 	</BrowserRouter>);
 

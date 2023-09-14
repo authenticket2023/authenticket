@@ -205,7 +205,7 @@ export function Login() {
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
                     Are you an organiser?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
+                    <Link href="/organiserSignup" variant="body2" style={{color:'#2E475D'}}>
                       {"Register here"}
                     </Link>
                   </Typography>

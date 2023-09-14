@@ -52,21 +52,6 @@ export function OrganiserSignup() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  
-  const validateDob = (dob : any) => {
-    //get today's date with format YYYY-MM-DD
-    const today = new Date(),
-        currentDateTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-
-      return dayjs(dob).isBefore(dayjs(currentDateTime));
-      
-  }
-
-  const validatePassword = (password : any) => {
-    // Regular expression to validate password
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    return passwordRegex.test(password);
-  }
 
   //variables
   const [email, setEmail] = useState('');
@@ -76,10 +61,6 @@ export function OrganiserSignup() {
   //validation
   const [emailError, setEmailError] = useState(false);
   const [emailHelperText, setEmailHelperText] = useState('');
-  const [dobError, setDobError] = useState(false);
-  const [dobHelperText, setDobHelperText] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordHelperText, setPasswordHelperText] = useState('');
   //error , warning , info , success
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType] : any= useState('info');
@@ -111,22 +92,6 @@ export function OrganiserSignup() {
     } else {
       setEmailError(false);
       setEmailHelperText('');
-    }
-    if(!validateDob(dob)) {
-      setDobError(true);
-      setDobHelperText('Please enter a valid date of birth');
-      return;
-    } else {
-      setDobError(false);
-      setDobHelperText('');
-    }
-    if(!validatePassword(password)){
-      setPasswordError(true);
-      setPasswordHelperText('Please enter a valid password. Password Requirements:\n1.At least one alphabetic character (uppercase or lowercase)\n2.At least one digit\n3.Minimum length of 8 characters');
-      return;
-    } else {
-      setPasswordError(false);
-      setPasswordHelperText('');
     }
 
     // //calling backend API
@@ -204,47 +169,29 @@ export function OrganiserSignup() {
               </a>
             </div>
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 11, marginBottom: 1 }}>
-              Create your account
+              Register your Company
             </Typography>
             <form onSubmit={signupHandler}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="Name"
-                label="Name"
-                name="name"
-                autoComplete="name"
+                id="Company Name"
+                label="Company Name"
+                name="companyName"
+                autoComplete="companyName"
                 autoFocus
                 size="medium"
                 onChange={handleName}
               />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker']}>
-                  <DatePicker 
-                  label="Date of Birth"
-                  onChange={handleDob}
-                  disableFuture
-                  format="YYYY-MM-DD"
-                  slotProps={{
-                    textField: {
-                    required: true,
-                    fullWidth: true,
-                    error: dobError,
-                    helperText: dobHelperText,
-                    },
-                  }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="Email"
-                label="Email"
-                name="Email"
-                autoComplete="email"
+                id="Company Email"
+                label="Company Email"
+                name="companyEmail"
+                autoComplete="companyEmail"
                 autoFocus
                 size="medium"
                 error={emailError}
@@ -255,13 +202,14 @@ export function OrganiserSignup() {
                 margin="normal"
                 required
                 fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                error={passwordError}
-                helperText={passwordHelperText}
+                name="Company Description"
+                label="Description of Company"
+                type="companyDescription"
+                id="companyDescription"
+                autoComplete="companyDescription"
+                rows={4}
+                multiline
+                // helperText={passwordHelperText}
                 onChange={handlePassword}
               />
               <Button
@@ -270,12 +218,12 @@ export function OrganiserSignup() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
               >
-                Create Account
+                Register Company
               </Button>
               <Grid container>
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
-                    Already have an account?{" "}
+                    Are you a user?{" "}
                     <Link href="/logIn" variant="body2" style={{color:'#2E475D'}}>
                       {"Log In"}
                     </Link>
@@ -283,14 +231,6 @@ export function OrganiserSignup() {
                 </Grid>
               </Grid>
 
-              <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you an organiser?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
-                      {"Register here"}
-                    </Link>
-                  </Typography>
-                </Grid>
 
               <Copyright sx={{ mt: 5 }} />
 
