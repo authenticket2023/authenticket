@@ -6,7 +6,7 @@ import {
     Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
-import ReviewEvent from './reviewPendingEvent';
+import ReviewEvent from './reviewAccount';
 
 export function PendingEventTab() {
     const token = window.localStorage.getItem('accessToken');
@@ -217,7 +217,7 @@ export function PendingEventTab() {
             {dataLoaded ?
 
                 <MUIDataTable
-                    title={"Pending Event Lists"}
+                    title={"Pending Organiser Account Lists"}
                     data={pendingEventData}
                     columns={columns}
                     options={options}
@@ -506,7 +506,7 @@ export function AllEventTab() {
             {dataLoaded ?
 
                 <MUIDataTable
-                    title={"Event Lists"}
+                    title={"Account Lists"}
                     data={allEventData}
                     columns={columns}
                     options={options}
