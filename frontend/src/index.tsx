@@ -12,7 +12,7 @@ import { Forbidden } from './pages/Forbidden';
 import { Event } from './pages/Event';
 import { FAQ } from './pages/FAQ';
 import { Home } from './pages/Home';
-import { Login } from './pages/Login/Login';
+import { Login } from './pages/Login';
 import { Page404 } from './pages/Page404';
 import { Profile } from './pages/Profile';
 import { Signup } from './pages/Signup';
@@ -22,6 +22,7 @@ import { Venue } from './pages/Venue';
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
 import { OrganiserSignup } from './pages/OrganiserSignup';
+import { OrganiserLogin } from './pages/OrganiserLogin';
 //for admin user
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
@@ -53,6 +54,7 @@ root.render(
 			<Route path="/VenueAdmin" element={<VenueAdmin />} />
 			<Route path="/ArtistAdmin" element={<ArtistAdmin />} />
 			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
+			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
 		</Routes>
 	</BrowserRouter>);
 

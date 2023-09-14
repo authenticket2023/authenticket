@@ -36,7 +36,7 @@ const myTheme = createTheme({
   }
 });
 
-export const Login = () => {
+export const OrganiserLogin = () => {
 
   let navigate = useNavigate();
   //validation method
@@ -81,7 +81,7 @@ export const Login = () => {
     formData.append('email', email);
     formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/eventOrgAuthenticate`, {
       method: 'POST',
       body: formData
     })
@@ -91,12 +91,10 @@ export const Login = () => {
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them
           localStorage.setItem('accessToken', loginResponse.data.token);
-          localStorage.setItem('email', loginResponse.data.userDetails.email);
-          localStorage.setItem('username', loginResponse.data.userDetails.name);
-          localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
-          localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
-
-
+          localStorage.setItem('email', loginResponse.data.orgDetails.email);
+          localStorage.setItem('username', loginResponse.data.orgDetails.name);
+          localStorage.setItem('description', loginResponse.data.orgDetails.description);
+          localStorage.setItem('role', loginResponse.data.orgDetails.role)
           navigate('/Home');
 
         } else {
@@ -146,17 +144,11 @@ export const Login = () => {
               <a href='/Login'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
               </a>
-              <Button>
-                Admin
-              </Button>
-              <Button>
-                Organiser
-              </Button>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'#2E475D' }}>
               Hi there!
             </Typography>
-            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
+            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'#2E475D' }}>
               Welcome to AuthenTicket
             </Typography>
             <form onSubmit={loginHandler}>
@@ -194,23 +186,13 @@ export const Login = () => {
               >
                 Log In
               </Button>
-              <Grid container alignItems="center" justifyContent="center">
-                <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Don't have an account?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
-                      {"Sign Up"}
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
 
               <Grid container alignItems="center" justifyContent="center" style={{marginTop:8}}>
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
                     Are you an organiser?{" "}
-                    <Link href="/organiserLogin" variant="body2" style={{color:'#2E475D'}}>
-                      {"Login here"}
+                    <Link href="/organiserSignup" variant="body2" style={{color:'#2E475D'}}>
+                      {"Register here"}
                     </Link>
                   </Typography>
                 </Grid>
