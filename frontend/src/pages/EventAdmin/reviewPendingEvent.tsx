@@ -44,6 +44,7 @@ export default function ReviewEvent(props: any) {
                 if (response.status == 200) {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
+                    setRemarks(data.reviewRemarks);
                     setEventDetail(data);
                     setLoaded(true);
                 } else {

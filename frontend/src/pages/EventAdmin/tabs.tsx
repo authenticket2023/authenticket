@@ -329,10 +329,36 @@ export function AllEventTab() {
         {
             name: "Review Remarks",
             options: {
-                customBodyRender: (value: string) => <span>{value.length < 15 ? value : value.slice(0, 15) + '....'}</span>
+                customBodyRender: (value: string) => {
+                    return (
+                        <span>
+                            {value === "" ? "NO REMARKS YET" : value.length < 15 ? value : value.slice(0, 15) + '....'}
+                        </span>
+                    )
+                }
             }
         },
-        "Review Status",
+        {
+            name: "Review Status",
+            options: {
+                customBodyRender: (value: string) => {
+                    const getColor = (value: string) => {
+                        if (value === "rejected") {
+                            return 'red';
+                        } else if (value === "pending") {
+                            return 'orange';
+                        } else {
+                            return 'green';
+                        }
+                    };
+                    return (
+                        <Typography style={{ color: getColor(value) }}>
+                            {value.toUpperCase()}
+                        </Typography>
+                    )
+                }
+            }
+        },
         "Reviewd By",
     ];
     const [allEventData, setAllEventData]: any[] = useState([]);
@@ -360,13 +386,13 @@ export function AllEventTab() {
                     const data = apiResponse.data;
                     const fetchData: any = [];
                     data.forEach((event: any) => {
-                        let reviewedByEmail = event.reviewedBy !== null ? event.reviewedBy.email : "NULL";
-                        let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "NULL";
+                        let reviewedByEmail = event.reviewedBy !== null ? event.reviewedBy.email : "";
+                        let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
                         const row = [event.eventId, event.eventName, event.eventDescription,
-                        event.eventDate, event.ticketSaleDate, 
+                        event.eventDate, event.ticketSaleDate,
                         event.organiser.email,
-                        reviewRemarks,event.reviewStatus,
-                        reviewedByEmail]
+                            reviewRemarks, event.reviewStatus,
+                            reviewedByEmail]
                         fetchData.push(row)
                     });
                     setAllEventData(fetchData);
@@ -460,15 +486,15 @@ export function AllEventTab() {
         onRowsSelect: onRowsSelect,
         onRowClick: handleRowClick,
         onRowsDelete: handleClickDeleteIcon,
-        downloadOptions: { filename: `AuthenTicket Pending Event Data(${new Date().toDateString()}).csv` },
+        downloadOptions: { filename: `AuthenTicket All Event Data(${new Date().toDateString()}).csv` },
         sortOrder: {
-            name: 'Event Date',
+            name: 'Event ID',
             direction: 'desc'
         }
     };
 
     return (
-            <Box
+        <Box
             sx={{
                 justifyContent: 'center',
                 alignItems: 'center',
