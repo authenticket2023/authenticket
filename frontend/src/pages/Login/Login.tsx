@@ -77,7 +77,7 @@ export function Login() {
       setHelperText('');
     }
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/authenticate`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
       headers: {
         'Content-Type': 'application/json',
       },
