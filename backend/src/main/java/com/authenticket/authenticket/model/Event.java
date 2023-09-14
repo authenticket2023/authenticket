@@ -49,8 +49,10 @@ public class Event extends BaseEntity {
     @Column(name = "total_tickets_sold")
     private Integer totalTicketsSold;
 
-    @Column(name = "reviewed_by")
-    private Integer reviewedBy;
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name="reviewed_by", referencedColumnName="admin_id")
+    private Admin reviewedBy;
 
     @Column(name = "review_status")
     private String reviewStatus;
@@ -77,10 +79,6 @@ public class Event extends BaseEntity {
             joinColumns = {@JoinColumn(name = "event_id")},
             inverseJoinColumns = {@JoinColumn(name = "artist_id")})
     private Set<Artist> artists;
-
-//    public void setArtists(Set<Artist> artist){
-//        this.artists = artist;
-//    }
 
     @ManyToOne
     @JoinColumn(name="type_id",nullable = false)
@@ -133,6 +131,7 @@ public class Event extends BaseEntity {
             }
         }
     }
+
 
     @Override
     public int hashCode() {

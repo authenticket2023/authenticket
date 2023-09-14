@@ -22,20 +22,20 @@ public class AmazonController {
 
 
     @PostMapping("/uploadFile")
-    public ResponseEntity<String>  fileUpload(@RequestParam("file") MultipartFile file,
-                                              @RequestParam("imageName") String imageName,
-                                              @RequestParam("file-type") String fileType){
+    public ResponseEntity<String>  fileUpload(@RequestParam(value = "file") MultipartFile file,
+                                              @RequestParam(value = "imageName") String imageName,
+                                              @RequestParam(value = "file-type") String fileType){
         return new ResponseEntity<> (service.uploadFile(file, imageName, fileType), HttpStatus.OK);
     }
     @DeleteMapping("/deleteFile")
-    public ResponseEntity<String> fileDelete(@RequestParam("imageName") String imageName,
-                                             @RequestParam("file-type") String fileType) {
+    public ResponseEntity<String> fileDelete(@RequestParam(value = "imageName") String imageName,
+                                             @RequestParam(value = "file-type") String fileType) {
         return new ResponseEntity<> (service.deleteFile(imageName, fileType), HttpStatus.OK);
     }
 
     @GetMapping("/displayFile")
-    public ResponseEntity<String>  fileDisplay(@RequestParam("imageName") String imageName,
-                                              @RequestParam("file-type") String fileType){
+    public ResponseEntity<String>  fileDisplay(@RequestParam(value = "imageName") String imageName,
+                                              @RequestParam(value = "file-type") String fileType){
         return new ResponseEntity<> (service.displayFile(imageName, fileType), HttpStatus.OK);
     }
 
