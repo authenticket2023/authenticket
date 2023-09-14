@@ -240,7 +240,6 @@ public class EventController extends Utility {
             }
         }
 
-
         EventType eventType = null;
         if (typeId != null) {
             Optional<EventType> eventTypeOptional = eventTypeRepository.findById(typeId);
@@ -261,7 +260,6 @@ public class EventController extends Utility {
                 throw new NonExistentException("Admin does not exist");
             }
         }
-
 
         EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
         Event event = eventService.updateEvent(eventUpdateDto);

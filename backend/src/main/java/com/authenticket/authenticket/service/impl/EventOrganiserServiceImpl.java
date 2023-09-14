@@ -1,10 +1,12 @@
 package com.authenticket.authenticket.service.impl;
 
 
+import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
@@ -14,6 +16,7 @@ import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventOrganiserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,16 +25,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.authenticket.authenticket.service.Utility;
 @Service
-public class EventOrganiserServiceImpl implements EventOrganiserService {
+public class EventOrganiserServiceImpl extends Utility implements EventOrganiserService {
+    @Value("${authenticket.api-port}")
+    private String apiPort;
 
     @Autowired
     private EventOrganiserRepository eventOrganiserRepository;
 
     @Autowired
     private EventOrganiserDtoMapper eventOrganiserDtoMapper;
-    
 
+    @Autowired
+    private EmailServiceImpl emailService;
     @Autowired
     private AmazonS3Service amazonS3Service;
     
@@ -60,6 +67,8 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
     }
 
     public EventOrganiser saveEventOrganiser(EventOrganiser eventOrganiser) {
+        emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserPendingEmail(eventOrganiser.getName()), "Your account is under review");
+
         return eventOrganiserRepository.save(eventOrganiser);
     }
 
@@ -73,7 +82,7 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
             return existingEventOrganiser;
         }
 
-        return null;
+        throw new NonExistentException("Event Organiser does not exist");
     }
 
     @Override
@@ -128,7 +137,7 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
 
     }
 
-    public EventOrganiser approveOrganiser(Integer organiserId, Integer adminId) {
+    public EventOrganiser approveOrganiser(Integer organiserId, Integer adminId, String status, String remarks) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
         Optional<Admin> adminOptional = adminRepository.findById(adminId);
 
@@ -136,8 +145,19 @@ public class EventOrganiserServiceImpl implements EventOrganiserService {
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
             eventOrganiser.setAdmin(adminOptional.get());
             eventOrganiserRepository.save(eventOrganiser);
+
+            //Generate password and update db
+            String password = generateRandomPassword();
+            updateEventOrganiser(new EventOrganiserUpdateDto(eventOrganiser.getOrganiserId(), null, null, password, true));
+
+            // Send email to organiser
+            String link = "http://localhost:" + apiPort + "/api/auth/register/";
+
+             //replace with organiser.review and remarks
+            emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, "approved", "good"), "Your account has been approved");
+
             return eventOrganiser;
         }
-        return null;
+        throw new ApiRequestException("Failed to approve");
     }
 }

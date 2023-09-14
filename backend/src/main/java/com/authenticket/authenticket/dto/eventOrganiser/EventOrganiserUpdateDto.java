@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record EventOrganiserUpdateDto(Integer organiserId,
                                        String name,
                                        String description,
-                                      String password
+                                       String password,
+                                       Boolean enabled
 ) {
 }

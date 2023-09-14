@@ -35,7 +35,10 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
         if (updateDto.password() != null) {
             organiser.setPassword(passwordEncoder.encode((updateDto.password())));
         }
-
+        if (updateDto.enabled() != null) {
+            organiser.setEnabled(updateDto.enabled());
+        }
+        //add status remarks
     }
 }
 

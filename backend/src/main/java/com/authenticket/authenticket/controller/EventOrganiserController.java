@@ -92,19 +92,21 @@ public class EventOrganiserController extends Utility {
                                        @RequestParam("description") String description) {
 
             //save eventOrganiser first without image name to get the eventOrganiser id
-            EventOrganiser newEventOrganiser = new EventOrganiser(null, name,  passwordEncoder.encode(generateRandomPassword()), email, description,null,null,null,null);
+            EventOrganiser newEventOrganiser = new EventOrganiser(null, name, email, passwordEncoder.encode(generateRandomPassword()), description,null,false,null,null);
             EventOrganiser savedEventOrganiser = eventOrganiserService.saveEventOrganiser(newEventOrganiser);
+
             return ResponseEntity.ok(generateApiResponse(savedEventOrganiser,"Event organiser created successfully"));
-
-
     }
 
     @PutMapping
     public ResponseEntity<?> updateEventOrganiser(@RequestParam("organiserId") Integer organiserId,
-                                                  @RequestParam("name") String name,
-                                                  @RequestParam(value = "description") String description,
-                                                  @RequestParam(value = "password") String password) {
-            EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password);
+                                                  @RequestParam(value = "name", required = false) String name,
+                                                  @RequestParam(value = "description", required = false) String description,
+                                                  @RequestParam(value = "password", required = false) String password,
+                                                  @RequestParam(value = "status", required = false) String status,
+                                                  @RequestParam(value = "remarks", required = false) String remarks,
+                                                  @RequestParam(value = "enabled", required = false) Boolean enabled) {
+            EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, enabled);
             EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
             if (eventOrganiser != null) {
                 return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
@@ -173,9 +175,7 @@ public class EventOrganiserController extends Utility {
     }
 
     @PutMapping("/approve")
-    public ResponseEntity<?> approveEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId, @RequestParam(value = "approvedBy") Integer approvedBy) {
-        return ResponseEntity.ok(eventOrganiserService.approveOrganiser(organiserId, approvedBy));
+    public ResponseEntity<?> approveEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId, @RequestParam(value = "approvedBy") Integer approvedBy, @RequestParam(value = "status") String status, @RequestParam(value = "remarks") String remarks) {
+        return ResponseEntity.ok(eventOrganiserService.approveOrganiser(organiserId, approvedBy, status, remarks));
     }
-
-
 }
