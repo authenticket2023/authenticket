@@ -146,11 +146,17 @@ export const Login = () => {
               <a href='/Login'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
               </a>
+              <Button>
+                Admin
+              </Button>
+              <Button>
+                Organiser
+              </Button>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'#2E475D' }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
               Hi there!
             </Typography>
-            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'#2E475D' }}>
+            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
               Welcome to AuthenTicket
             </Typography>
             <form onSubmit={loginHandler}>
