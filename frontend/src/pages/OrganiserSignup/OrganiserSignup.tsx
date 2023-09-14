@@ -91,7 +91,6 @@ export function OrganiserSignup() {
     // //calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/orgRegister`, {
       headers: {
-        'Content-Type': 'application/json',
       },
       method: 'POST',
       body: formData
