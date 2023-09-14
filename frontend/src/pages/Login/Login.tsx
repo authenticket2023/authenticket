@@ -145,13 +145,13 @@ export const Login = () => {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/Login'>
-                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
+                <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button>
-                Admin
-              </Button>
-              <Button>
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}}>
                 Organiser
+              </Button>
+              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}}>
+                Admin
               </Button>
             </div>
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
