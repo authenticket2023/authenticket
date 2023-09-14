@@ -9,15 +9,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import moment from 'moment';
 
 //image download
 import backgroundImage from '../../images/background.png';
-import dayjs from 'dayjs';
 
 function Copyright(props: any) {
   return (
@@ -54,10 +49,9 @@ export function OrganiserSignup() {
   };
 
   //variables
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [dob, setDob] = useState('');
+  const [companyEmail, setCompanyEmail] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companyDescription, setCompanyDescription] = useState('');
   //validation
   const [emailError, setEmailError] = useState(false);
   const [emailHelperText, setEmailHelperText] = useState('');
@@ -67,25 +61,22 @@ export function OrganiserSignup() {
   const [alertMsg, setAlertMsg] = useState('');
 
   //handler method section
-  const handleEmail = (e: any) => {
-    setEmail(e.target.value);
+  const handleCompanyEmail = (e: any) => {
+    setCompanyEmail(e.target.value);
   }
-  const handlePassword = (e: any) => {
-    setPassword(e.target.value);
+  const handleCompanyName = (e: any) => {
+    setCompanyName(e.target.value);
   }
-  const handleName = (e: any) => {
-    setName(e.target.value);
-  }
-  const handleDob = (e: any) => {
+  const handleCompanyDescription = (e: any) => {
     moment(e, 'YYYY-MM-DD');
-    setDob(e);
+    setCompanyDescription(e.target.value);
   }
 
   const signupHandler = async (event: any) => {
     event.preventDefault();
 
     //checking validations, returning error message if conditions not met
-    if (!validateEmail(email)) {
+    if (!validateEmail(companyEmail)) {
       setEmailError(true);
       setEmailHelperText('Please enter a valid email address');
       return;
@@ -95,16 +86,15 @@ export function OrganiserSignup() {
     }
 
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/register`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/orgRegister`, {
       headers: {
         'Content-Type': 'application/json',
       },
       method: 'POST',
       body: JSON.stringify({
-        "name": name,
-        "email": email,
-        "password": password,
-        "dateOfBirth": dob,
+        "name": companyName,
+        "email": companyEmail,
+        "description": companyDescription,
       })
     })
       .then(async (response) => {
@@ -117,7 +107,7 @@ export function OrganiserSignup() {
         } else {
           setOpenSnackbar(true);
           setAlertType('success');
-          setAlertMsg(`Email ${email} sign up successful! An email will be sent shortly, please verify your account`);
+          setAlertMsg(`Email ${companyEmail} sign up successful! An email will be sent shortly, please verify your account`);
           setTimeout(() => {
             navigate('/login');
           }, 4000);
@@ -182,7 +172,7 @@ export function OrganiserSignup() {
                 autoComplete="companyName"
                 autoFocus
                 size="medium"
-                onChange={handleName}
+                onChange={handleCompanyName}
               />
               <TextField
                 margin="normal"
@@ -196,7 +186,7 @@ export function OrganiserSignup() {
                 size="medium"
                 error={emailError}
                 helperText={emailHelperText}
-                onChange={handleEmail}
+                onChange={handleCompanyEmail}
               />
               <TextField
                 margin="normal"
@@ -210,7 +200,7 @@ export function OrganiserSignup() {
                 rows={4}
                 multiline
                 // helperText={passwordHelperText}
-                onChange={handlePassword}
+                onChange={handleCompanyDescription}
               />
               <Button
                 type="submit"
