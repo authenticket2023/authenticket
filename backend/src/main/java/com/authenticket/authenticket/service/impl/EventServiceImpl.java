@@ -65,7 +65,7 @@ public class EventServiceImpl implements EventService {
     }
 
     public List<EventHomeDto> findRecentlyAddedEvents() {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusOrderByCreatedAtDesc("approved"));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved"));
 
     }
 
@@ -81,12 +81,12 @@ public class EventServiceImpl implements EventService {
 
     public List<EventHomeDto> findUpcomingEvents() {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterOrderByTicketSaleDateAsc("approved", currentDate));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate));
     }
 
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.map(eventRepository.findAllByReviewStatusOrderByCreatedAtAsc(reviewStatus));
+        return eventDTOMapper.map(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(reviewStatus));
     }
 
     ;
