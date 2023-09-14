@@ -132,7 +132,7 @@ public class EventController extends Utility {
 
     //get method for admin
     @GetMapping("/event")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent(Pageable pageable) {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
         try {
             List<OverallEventDto> eventList = eventService.findAllEvent();
             if (eventList.isEmpty()) {
