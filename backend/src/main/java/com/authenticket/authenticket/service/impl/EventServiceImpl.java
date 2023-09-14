@@ -10,6 +10,7 @@ import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
+import org.hibernate.sql.ast.tree.expression.Over;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,11 +48,15 @@ public class EventServiceImpl implements EventService {
     @Autowired
     private AmazonS3Service amazonS3Service;
 
-    public List<EventDisplayDto> findAllEvent() {
-        return eventRepository.findAll()
-                .stream()
-                .map(eventDTOMapper)
-                .collect(Collectors.toList());
+    //get all events for home page
+    public List<EventHomeDto> findAllApprovedEvent() {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved"));
+    }
+
+
+    //find all events for admin
+    public List<OverallEventDto> findAllEvent() {
+        return eventDTOMapper.mapOverallEventDto(eventRepository.findAll());
     }
 
     public OverallEventDto findEventById(Integer eventId) {

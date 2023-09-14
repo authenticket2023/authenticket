@@ -66,9 +66,9 @@ public class EventController extends Utility {
 
 
     @GetMapping("/public/event")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllPublicEvent() {
         try {
-            List<EventDisplayDto> eventList = eventService.findAllEvent();
+            List<EventHomeDto> eventList = eventService.findAllApprovedEvent();
             if (eventList.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
             } else {
@@ -128,6 +128,22 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
 
     }
+
+    //get method for admin
+    @GetMapping("/event")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
+        try {
+            List<OverallEventDto> eventList = eventService.findAllEvent();
+            if (eventList.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
+            } else {
+                return ResponseEntity.ok(generateApiResponse(eventList, "Events successfully returned."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+    }
+
 
     @PostMapping("/event")
     public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,

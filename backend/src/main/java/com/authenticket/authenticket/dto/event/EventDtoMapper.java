@@ -1,5 +1,7 @@
 package com.authenticket.authenticket.dto.event;
 
+import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
+import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
@@ -7,8 +9,10 @@ import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
+import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
+import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.EventTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +40,24 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     private ArtistDtoMapper artistDtoMapper;
 
     @Autowired
+    private AdminDtoMapper adminDtoMapper;
+
+    @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @Autowired
     private EventTypeRepository eventTypeRepository;
 
     public EventDisplayDto apply(Event event) {
+
+        Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
+        if(event.getEventTicketCategorySet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+
+        }
         return new EventDisplayDto(
                 event.getEventId(),
                 event.getEventName(),
@@ -52,7 +68,7 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getCreatedAt(),
                 event.getUpdatedAt(),
                 event.getArtists(),
-                event.getEventTicketCategorySet());
+                eventTicketCategorySet);
     }
 
     public EventHomeDto applyEventHomeDto(Event event) {
@@ -157,21 +173,23 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
         Integer eventId = event.getEventId();
         EventOrganiserDisplayDto organiserDisplayDto = eventOrganiserDtoMapper.apply(event.getOrganiser());
-//        VenueDisplayDto venueDisplayDto = venueDtoMapper.apply(event.getVenue());
-//        String eventTypeName = event.getEventType().getEventTypeName();
 
         Set<ArtistDisplayDto> artistSet = new HashSet<>();
         if(eventRepository.getArtistByEventId(eventId)!=null){
             artistSet = artistDtoMapper.mapArtistDisplayDto(eventRepository.getArtistByEventId(eventId));
         }
+        //map event ticket cat to dto
         Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
         if(event.getEventTicketCategorySet() != null){
             eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
-
         }
+        //convert admin to dto
 
+        AdminDisplayDto adminDisplayDto = null;
+        if(event.getReviewedBy() != null) {
+            adminDisplayDto = adminDtoMapper.apply(event.getReviewedBy());
+        }
         //create and do something similar above for the eventTicketCategory dto
-
         return new OverallEventDto(
                 event.getEventId(),
                 event.getEventName(),
@@ -182,12 +200,21 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getTotalTickets(),
                 event.getTotalTicketsSold(),
                 event.getTicketSaleDate(),
-                eventTicketCategorySet,
-                organiserDisplayDto,
-                event.getVenue(),
-                artistSet,
-                event.getEventType().getEventTypeName()
+                event.getReviewStatus(),
+                event.getReviewRemarks(),
+                adminDisplayDto, //reviewBy
+                eventTicketCategorySet, //ticket category set
+                organiserDisplayDto, //organiser
+                event.getVenue(), //venue
+                artistSet, //artist set
+                event.getEventType().getEventTypeName() //event type
         );
+    }
+
+    public List<OverallEventDto> mapOverallEventDto(List<Event> eventList) {
+        return eventList.stream()
+                .map(this::applyOverallEventDto)
+                .collect(Collectors.toList());
     }
 
 }

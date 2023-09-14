@@ -27,6 +27,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                     "WHERE E.event_id = :eventId")
     List<Object[]> getArtistByEventId(@Param("eventId") Integer eventId);
 
+    //for get all for homepage
+    List<Event> findAllByReviewStatusAndDeletedAtIsNull(String reviewStatus);
+
     //recently added (order by created at)
     List<Event> findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(String reviewStatus);
 

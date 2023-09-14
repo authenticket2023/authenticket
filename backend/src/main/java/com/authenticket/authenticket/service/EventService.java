@@ -10,7 +10,11 @@ import java.util.*;
 
 public interface EventService {
 
-    List<EventDisplayDto> findAllEvent();
+
+    List<EventHomeDto> findAllApprovedEvent();
+
+    //get all for event
+    List<OverallEventDto> findAllEvent();
     OverallEventDto findEventById(Integer eventId);
 
     //get methods
