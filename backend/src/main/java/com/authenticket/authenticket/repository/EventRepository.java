@@ -32,7 +32,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     Page<Event> findAllByReviewStatusAndDeletedAtIsNull(String reviewStatus, Pageable pageable);
 
     //for get all for admin
-    Page<Event> findAllByOrderByEventIdAsc(Pageable pageable);
+    List<Event> findAllByOrderByEventIdAsc();
 
     //recently added (order by created at)
     List<Event> findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(String reviewStatus);

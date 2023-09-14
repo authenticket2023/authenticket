@@ -56,8 +56,8 @@ public class EventServiceImpl implements EventService {
 
 
     //find all events for admin
-    public List<OverallEventDto> findAllEvent(Pageable pageable) {
-        return eventDTOMapper.mapPageOverallEventDto(eventRepository.findAllByOrderByEventIdAsc(pageable));
+    public List<OverallEventDto> findAllEvent() {
+        return eventDTOMapper.mapOverallEventDto(eventRepository.findAllByOrderByEventIdAsc());
     }
 
     public OverallEventDto findEventById(Integer eventId) {

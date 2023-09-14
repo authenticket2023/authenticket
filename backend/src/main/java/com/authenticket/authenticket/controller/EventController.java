@@ -134,7 +134,7 @@ public class EventController extends Utility {
     @GetMapping("/event")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEvent(Pageable pageable) {
         try {
-            List<OverallEventDto> eventList = eventService.findAllEvent(pageable);
+            List<OverallEventDto> eventList = eventService.findAllEvent();
             if (eventList.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
             } else {
