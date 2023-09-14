@@ -78,7 +78,7 @@ export function EventDetails(props: any) {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Invlid event/sale date!!!");
-        } else if (dayjs(props.eventDate.is).isBefore(dayjs(props.saleDate))) {
+        } else if (dayjs(props.eventDate).isBefore(dayjs(props.saleDate))) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
@@ -311,10 +311,9 @@ export function VenueArtist(props: any) {
     //retrieve artists from DB
     const artistFetcher = async () => {
         try {
-            const token = window.localStorage.getItem('accessToken');
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/artist`, {
                 headers: {
-                    // 'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 method: 'GET'
@@ -340,7 +339,7 @@ export function VenueArtist(props: any) {
             const token = window.localStorage.getItem('accessToken');
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/venue`, {
                 headers: {
-                    // 'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 method: 'GET'
@@ -479,16 +478,18 @@ export function EventPoster(props: any) {
 
     useEffect(() => {
     }, []);
-
+    const [fileUploaded, setFileUploaded] = useState(false);
     const handleFileChange = (event: any) => {
         // Get the selected files from the input
+        setFileUploaded(true);
         const files = event.target.files;
         props.setSelectedFiles(Array.from(files));
     };
 
     const handleConfirm = (event: any) => {
         event.preventDefault();
-        if (props.selectedFiles.length == 0) {
+
+        if (!fileUploaded) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
