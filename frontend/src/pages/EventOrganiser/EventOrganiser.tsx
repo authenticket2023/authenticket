@@ -131,9 +131,10 @@ export const EventOrganiser = () => {
         //retrieve venue from DB
         const addTicketCategory = async (eventId: any) => {
             try {
+                const token = window.localStorage.getItem('accessToken');
                 const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/addTicketCategory`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        // 'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                     method: 'PUT',
@@ -210,9 +211,6 @@ export const EventOrganiser = () => {
 
         //calling create event backend API
         fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
             method: 'POST',
             body: formData
         })

@@ -57,8 +57,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     //recently added
     List<Event> findTop7ByReviewStatusOrderByCreatedAtDesc(String reviewStatus);
 
-
-
     //bestseller
     @Query(nativeQuery = true,
             value = "SELECT *" +

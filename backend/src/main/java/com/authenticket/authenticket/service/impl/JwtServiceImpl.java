@@ -5,14 +5,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.IOException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -37,7 +35,6 @@ public class JwtServiceImpl implements JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ){
-
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
@@ -60,7 +57,7 @@ public class JwtServiceImpl implements JwtService {
     private Date extractExpiration(String token){
         return extractClaim(token, Claims::getExpiration);
     }
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token){
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey())

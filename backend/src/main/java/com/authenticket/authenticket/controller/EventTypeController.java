@@ -24,7 +24,7 @@ public class EventTypeController extends Utility {
     @PostMapping
     public ResponseEntity<?> saveEventType(@RequestParam("typeName") String typeName) {
 
-            EventType eventType = new EventType(null, typeName);
+        EventType eventType = new EventType(null, typeName);
 
         return ResponseEntity.ok( generateApiResponse(eventTypeService.saveEventType(eventType), "Event Type Created Successfully"));
     }

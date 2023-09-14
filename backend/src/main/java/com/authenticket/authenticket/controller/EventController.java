@@ -4,14 +4,10 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
-import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
-import com.authenticket.authenticket.repository.EventOrganiserRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
-import com.authenticket.authenticket.repository.VenueRepository;
+import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
@@ -36,7 +32,7 @@ import java.util.stream.Collectors;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/event")
+@RequestMapping("/api")
 public class EventController extends Utility {
     @Autowired
     private EventServiceImpl eventService;
@@ -51,6 +47,9 @@ public class EventController extends Utility {
     private EventOrganiserRepository eventOrganiserRepository;
 
     @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
     private VenueRepository venueRepository;
 
     @Autowired
@@ -59,16 +58,14 @@ public class EventController extends Utility {
     @Autowired
     private EventDtoMapper eventDtoMapper;
 
-    @Autowired
-    private ArtistDtoMapper artistDtoMapper;
 
-
-    @GetMapping("/homepage/test")
+    @GetMapping("/public/event/test")
     public String test() {
         return "test successful";
     }
 
-    @GetMapping("/homepage")
+
+    @GetMapping("/public/event")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
         try {
             List<EventDisplayDto> eventList = eventService.findAllEvent();
@@ -82,7 +79,7 @@ public class EventController extends Utility {
         }
     }
 
-    @GetMapping("/homepage/{eventId}")
+    @GetMapping("/public/event/{eventId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventById(@PathVariable("eventId") Integer eventId) {
         OverallEventDto overallEventDto = eventService.findEventById(eventId);
         if (overallEventDto == null) {
@@ -92,7 +89,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/homepage/recently-added")
+    @GetMapping("/public/event/recently-added")
     public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
         List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -102,18 +99,17 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/homepage/featured")
+    @GetMapping("/public/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
-//        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
-//        if(eventList == null || eventList.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No recently added events found")));
-//        }
-//        return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "featured events not done yet"));
+        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No featured events found")));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Featured events successfully returned."));
 
     }
 
-    @GetMapping("/homepage/bestseller")
+    @GetMapping("/public/event/bestseller")
     public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
         List<EventHomeDto> eventList = eventService.findBestSellerEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -123,7 +119,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/homepage/upcoming")
+    @GetMapping("/public/event/upcoming")
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
         List<EventHomeDto> eventList = eventService.findUpcomingEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -133,8 +129,7 @@ public class EventController extends Utility {
 
     }
 
-
-    @PostMapping
+    @PostMapping("/event")
     public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
                                        @RequestParam("eventName") String eventName,
                                        @RequestParam("eventDescription") String eventDescription,
@@ -220,43 +215,110 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateEvent(@RequestParam("eventId") Integer eventId,
-                                         @RequestParam("eventName") String eventName,
-                                         @RequestParam(value = "eventDescription") String eventDescription,
-                                         @RequestParam(value = "eventDate") LocalDateTime eventDate,
-                                         @RequestParam(value = "eventLocation") String eventLocation,
-                                         @RequestParam(value = "otherEventInfo") String otherEventInfo,
-                                         @RequestParam(value = "ticketSaleDate") LocalDateTime ticketSaleDate) {
 
-        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate);
-        Event event = eventService.updateEvent(eventUpdateDto);
-
-        if (event != null) {
-            return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
-        } else {
-            return ResponseEntity.status(404).body(generateApiResponse(null, "Event not found, update not successful."));
+    @PutMapping("/event")
+    public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
+                                         @RequestParam(value = "eventId") Integer eventId,
+                                         @RequestParam(value = "eventName", required = false) String eventName,
+                                         @RequestParam(value = "eventDescription", required = false) String eventDescription,
+                                         @RequestParam(value = "eventDate", required = false) LocalDateTime eventDate,
+                                         @RequestParam(value = "eventLocation", required = false) String eventLocation,
+                                         @RequestParam(value = "otherEventInfo", required = false) String otherEventInfo,
+                                         @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
+                                         @RequestParam(value = "venueId", required = false) Integer venueId,
+                                         @RequestParam(value = "typeId", required = false) Integer typeId,
+                                         @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
+                                         @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
+                                         @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy) {
+        Venue venue = null;
+        if (venueId != null) {
+            Optional<Venue> venueOptional = venueRepository.findById(venueId);
+            if (venueOptional.isPresent()) {
+                venue = venueOptional.get();
+            } else {
+                throw new NonExistentException("Venue does not exist");
+            }
         }
+
+
+        EventType eventType = null;
+        if (typeId != null) {
+            Optional<EventType> eventTypeOptional = eventTypeRepository.findById(typeId);
+            if (eventTypeOptional.isPresent()) {
+                eventType = eventTypeOptional.get();
+            } else {
+                throw new NonExistentException("Event type does not exist");
+            }
+        }
+
+        Admin admin = null;
+        if (reviewedBy != null) {
+            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
+
+            if (adminOptional.isPresent()) {
+                admin = adminOptional.get();
+            } else {
+                throw new NonExistentException("Admin does not exist");
+            }
+        }
+
+
+        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
+        Event event = eventService.updateEvent(eventUpdateDto);
+        //update event image if not null
+        if (eventImageFile != null) {
+            try {
+                System.out.println(eventImageFile.getName());
+                amazonS3Service.uploadFile(eventImageFile, event.getEventImage(), "event_images");
+//                amazonS3Service.deleteFile()
+                // delete event from db if got error saving image
+            } catch (AmazonS3Exception e) {
+                String errorCode = e.getErrorCode();
+                if ("AccessDenied".equals(errorCode)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(generateApiResponse(null, "Access Denied to Amazon."));
+                } else if ("NoSuchBucket".equals(errorCode)) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "S3 bucket not found."));
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction: " + e.getMessage()));
+                }
+            }
+        }
+        return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
     }
 
-    @PutMapping("/{eventId}")
-    public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@PathVariable("eventId") Integer eventId) {
+    @PutMapping("/event/{eventId}")
+    public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@RequestParam("eventId") String eventIdString) {
         try {
-            //if delete is successful
-            eventService.deleteEvent(eventId);
-            return ResponseEntity.ok(generateApiResponse(null, String.format("Event %d Deleted Successfully", eventId)));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, e.getMessage()));
+            List<Integer> eventIdList = Arrays.stream(eventIdString.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+
+            //check if all events exist first
+            for(Integer eventId: eventIdList){
+                if(eventRepository.findById(eventId).isEmpty()){
+                    throw new NonExistentException(String.format("Event %d does not exist, deletion halted", eventId));
+                }
+            }
+
+            StringBuilder results = new StringBuilder();
+
+            for(Integer eventId: eventIdList){
+                results.append(eventService.deleteEvent(eventId)).append(" ");
+            }
+
+            return ResponseEntity.ok(generateApiResponse(null, results.toString()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(generateApiResponse(null, e.getMessage()));
         }
     }
 
     //response not handled yet
-    @DeleteMapping("/{eventId}")
+    @DeleteMapping("/event/{eventId}")
     public String removeEvent(@PathVariable("eventId") Integer eventId) {
         return eventService.removeEvent(eventId);
     }
 
-    @PutMapping("/approve")
+    @PutMapping("/event/approve")
     public ResponseEntity<?> approveEvent(@RequestParam(value = "eventId") Integer eventId, @RequestParam(value = "approvedBy") Integer approvedBy) {
         Event event = eventService.approveEvent(eventId, approvedBy);
         if (event == null) {
@@ -267,7 +329,7 @@ public class EventController extends Utility {
         }
     }
 
-    @PutMapping("/addArtistToEvent")
+    @PutMapping("/event/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
             @RequestParam("artistId") Integer artistId,
             @RequestParam("eventId") Integer eventId) {
@@ -283,18 +345,35 @@ public class EventController extends Utility {
         }
     }
 
-    @GetMapping("/getAssignedEvents")
-    public ResponseEntity<GeneralApiResponse> getAssignEvents() {
-        try {
-            List<Object[]> assignedObjects = eventRepository.getAssignedEvent();
-            return ResponseEntity.ok(generateApiResponse(eventDtoMapper.mapAssignedEvent(assignedObjects), "Assigned events returned"));
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+
+    @PostMapping("/public/event/featured")
+    public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
+                                                                         @RequestParam("startDate") LocalDateTime startDate,
+                                                                         @RequestParam("endDate") LocalDateTime endDate,
+                                                                         @RequestParam("addedBy") Integer adminId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        Admin admin = adminRepository.findById(adminId).orElse(null);
+
+        if (event == null) {
+            throw new NonExistentException(String.format("No event of id %d found", eventId));
+        } else if (admin == null) {
+            throw new NonExistentException("Admin not found");
+        } else if (endDate.isBefore(startDate)) {
+            throw new IllegalArgumentException("end date is earlier than start date");
         }
+        try {
+            FeaturedEvent featuredEvent = new FeaturedEvent(null, event, startDate, endDate, admin);
+            return ResponseEntity.ok(generateApiResponse(eventService.saveFeaturedEvent(featuredEvent), "Featured Event Successfully Saved"));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, "Featured event with event id could already exists"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+
     }
 
     //getting artist list for one specific event
-    @GetMapping("/getArtistsByEvent")
+    @GetMapping("/event/getArtistsByEvent")
     public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
         try {
             Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
@@ -309,7 +388,7 @@ public class EventController extends Utility {
         }
     }
 
-    @PutMapping("/addTicketCategory")
+    @PutMapping("/event/addTicketCategory")
     public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
         Integer eventId = jsonFormat.getEventId();
         TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
@@ -319,7 +398,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
     }
 
-    @PutMapping("/updateTicketCategory")
+    @PutMapping("/event/updateTicketCategory")
     public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
         Integer eventId = jsonFormat.getEventId();
         TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
@@ -362,7 +441,7 @@ public class EventController extends Utility {
 //        return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully removed from event"));
 //    }
 
-    @GetMapping("/{eventId}/getTicketCategory")
+    @GetMapping("/event/{eventId}/getTicketCategory")
     public ResponseEntity<GeneralApiResponse> getTicketCategory(
             @RequestParam("eventId") Integer eventId) {
         Optional<Event> optionalEvent = eventRepository.findById(eventId);
@@ -373,7 +452,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
     }
 
-    @GetMapping("/review-status/{status}")
+    @GetMapping("/event/review-status/{status}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsByReviewStatus(@PathVariable("status") String status) {
         List<EventDisplayDto> eventList = eventService.findEventsByReviewStatus(status);
         if (eventList == null || eventList.isEmpty()) {
@@ -382,5 +461,4 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, String.format("%s events successfully returned.", status)));
 
     }
-
 }
