@@ -211,12 +211,17 @@ export function Signup() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-              <a href='/logIn'>
-                <img src={logo} alt="Logo" width={28} height={28} style={{ marginLeft: -230, marginTop: -5, position: 'absolute' }} />
-                <span style={{ color: 'black', fontSize: 15, textAlign: 'left', marginTop: -1.5, marginLeft: -195, fontWeight: 500, position: 'absolute' }}>AuthenTicket</span>
+              <a href='/Login'>
+                <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
+                Organiser
+              </Button>
+              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
+                Admin
+              </Button>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 11, marginBottom: 1 }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 8, marginBottom: 1 }}>
               Create your account
             </Typography>
             <form onSubmit={signupHandler}>
@@ -281,7 +286,7 @@ export function Signup() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
               >
                 Create Account
               </Button>
@@ -295,15 +300,6 @@ export function Signup() {
                   </Typography>
                 </Grid>
               </Grid>
-
-              <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you an organiser?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
-                      {"Register here"}
-                    </Link>
-                  </Typography>
-                </Grid>
 
               <Copyright sx={{ mt: 5 }} />
 

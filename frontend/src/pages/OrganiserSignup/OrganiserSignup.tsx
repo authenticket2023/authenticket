@@ -151,12 +151,18 @@ export function OrganiserSignup() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-              <a href='/logIn'>
-                <img src={logo} alt="Logo" width={28} height={28} style={{ marginLeft: -230, marginTop: -5, position: 'absolute' }} />
-                <span style={{ color: 'black', fontSize: 15, textAlign: 'left', marginTop: -1.5, marginLeft: -195, fontWeight: 500, position: 'absolute' }}>AuthenTicket</span>
+              <a href='/Login'>
+                <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>
+                User
+              </Button>
+              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
+                Admin
+              </Button>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 11, marginBottom: 1 }}>
+
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 8, marginBottom: 1 }}>
               Register your Company
             </Typography>
             <form onSubmit={signupHandler}>
@@ -204,15 +210,15 @@ export function OrganiserSignup() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
               >
                 Register Company
               </Button>
               <Grid container>
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you a user?{" "}
-                    <Link href="/logIn" variant="body2" style={{color:'#2E475D'}}>
+                    Already have a organiser account?{" "}
+                    <Link href="/OrganiserLogin" variant="body2" style={{color:'#2E475D'}}>
                       {"Log In"}
                     </Link>
                   </Typography>

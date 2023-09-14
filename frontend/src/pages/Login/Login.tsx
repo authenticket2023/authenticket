@@ -147,10 +147,10 @@ export const Login = () => {
               <a href='/Login'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}}>
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
                 Organiser
               </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}}>
+              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
                 Admin
               </Button>
             </div>
@@ -191,11 +191,11 @@ export const Login = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
               >
                 Log In
               </Button>
-              <Grid container alignItems="center" justifyContent="center">
+              <Grid container>
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
                     Don't have an account?{" "}
@@ -206,16 +206,6 @@ export const Login = () => {
                 </Grid>
               </Grid>
 
-              <Grid container alignItems="center" justifyContent="center" style={{marginTop:8}}>
-                <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you an organiser?{" "}
-                    <Link href="/organiserLogin" variant="body2" style={{color:'#2E475D'}}>
-                      {"Login here"}
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
               
               <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
             </form>

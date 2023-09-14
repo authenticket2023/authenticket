@@ -142,17 +142,18 @@ export const AdminLogin = () => {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/Login'>
-                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
+                <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button>
-                Admin
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/Login'>
+                User
               </Button>
-              <Button>
+              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/OrganiserLogin'>
                 Organiser
               </Button>
             </div>
+
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
-              Hi there!
+              Admin Log In
             </Typography>
             <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
               Welcome to AuthenTicket
@@ -188,31 +189,10 @@ export const AdminLogin = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
               >
                 Log In
               </Button>
-              <Grid container alignItems="center" justifyContent="center">
-                <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you a user?{" "}
-                    <Link href="/login" variant="body2" style={{color:'#2E475D'}}>
-                      {"Login here"}
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
-
-              <Grid container alignItems="center" justifyContent="center" style={{marginTop:8}}>
-                <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you an organiser?{" "}
-                    <Link href="/organiserLogin" variant="body2" style={{color:'#2E475D'}}>
-                      {"Login here"}
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
               
               <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
             </form>

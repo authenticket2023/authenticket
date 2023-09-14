@@ -143,13 +143,20 @@ export const OrganiserLogin = () => {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/Login'>
-                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
+                <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>
+                User
+              </Button>
+              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
+                Admin
+              </Button>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'#2E475D' }}>
-              Hi there!
+
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
+              Company Log In
             </Typography>
-            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'#2E475D' }}>
+            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
               Welcome to AuthenTicket
             </Typography>
             <form onSubmit={loginHandler}>
@@ -158,7 +165,7 @@ export const OrganiserLogin = () => {
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label="Company Email Address"
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -183,15 +190,15 @@ export const OrganiserLogin = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
               >
                 Log In
               </Button>
 
-              <Grid container alignItems="center" justifyContent="center" style={{marginTop:8}}>
+              <Grid container style={{marginTop:8}}>
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you an organiser?{" "}
+                    Don't have an organiser account?{" "}
                     <Link href="/organiserSignup" variant="body2" style={{color:'#2E475D'}}>
                       {"Register here"}
                     </Link>
