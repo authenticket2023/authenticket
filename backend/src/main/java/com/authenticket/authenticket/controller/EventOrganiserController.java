@@ -79,6 +79,12 @@ public class EventOrganiserController extends Utility {
 
     }
 
+    @GetMapping("/pending")
+    public ResponseEntity<?> findAllPendingOrganisers() {
+        List<EventOrganiser> organisers = eventOrganiserService.findAllPendingOrganisers();
+        return ResponseEntity.ok(generateApiResponse(organisers, "All organisers awaiting review retrieved successfully"));
+    }
+
 //    @GetMapping("/events/findMappedOrganisers")
 //    public ResponseEntity<GeneralApiResponse> findMappedOrganisers() {
 //        List<ArtistEvent> artistEventList = artistEventRepository.findAll();

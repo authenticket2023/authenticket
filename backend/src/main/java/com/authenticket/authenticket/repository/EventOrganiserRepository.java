@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface EventOrganiserRepository extends JpaRepository<EventOrganiser, Integer> {
     Optional<EventOrganiser> findByEmail(String email);
+    List<EventOrganiser> findByReviewStatusContains(String pending);
 }
 

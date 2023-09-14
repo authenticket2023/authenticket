@@ -65,6 +65,10 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         return new ArrayList<>();
     }
 
+    public List<EventOrganiser> findAllPendingOrganisers() {
+        return eventOrganiserRepository.findByReviewStatusContains("pending");
+    }
+
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {
         return eventOrganiserRepository.findById(organiserId).map(eventOrganiserDtoMapper);
     }
