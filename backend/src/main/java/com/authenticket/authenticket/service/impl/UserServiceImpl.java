@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -28,6 +30,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private UserDtoMapper userDtoMapper;
+
+    public List<UserDisplayDto> findAllUser(){
+        return userRepository.findAll()
+                .stream()
+                .map(userDtoMapper)
+                .collect(Collectors.toList());
+    }
 
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException{

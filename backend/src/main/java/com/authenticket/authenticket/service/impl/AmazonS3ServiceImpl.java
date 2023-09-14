@@ -23,11 +23,10 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class AmazonS3ServiceImpl implements AmazonS3Service {
 
     @Autowired
-    private final AmazonS3 amazonS3;
+    private AmazonS3 amazonS3;
 
     @Value("${authenticket.S3-bucket-name}")
     private String bucketName;
