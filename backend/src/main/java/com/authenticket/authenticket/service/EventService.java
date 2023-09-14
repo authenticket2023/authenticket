@@ -15,7 +15,7 @@ public interface EventService {
     List<EventHomeDto> findAllPublicEvent(Pageable pageable);
 
     //get all events for admin
-    List<OverallEventDto> findAllEvent(Pageable pageable);
+    List<OverallEventDto> findAllEvent();
     OverallEventDto findEventById(Integer eventId);
 
     //get methods
