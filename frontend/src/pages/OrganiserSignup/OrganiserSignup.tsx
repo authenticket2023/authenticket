@@ -107,7 +107,7 @@ export function OrganiserSignup() {
         } else {
           setOpenSnackbar(true);
           setAlertType('success');
-          setAlertMsg(`Email ${companyEmail} sign up successful! An email will be sent shortly, please verify your account`);
+          setAlertMsg(`Email ${companyEmail} sign up successful! An email will be sent shortly`);
           setTimeout(() => {
             navigate('/login');
           }, 4000);
