@@ -126,6 +126,7 @@ export const EventOrganiser = () => {
         return formattedTimestamp;
     }
 
+    const token = window.localStorage.getItem('accessToken');
     const handleCreateEvent = () => {
         //retrieve venue from DB
         const addTicketCategory = async (eventId: any) => {

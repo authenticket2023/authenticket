@@ -307,6 +307,7 @@ export function VenueArtist(props: any) {
     const [artistList, setArtistList]: any = React.useState([]);
     const [venueList, setVenueList]: any = React.useState([]);
 
+    const token = window.localStorage.getItem('accessToken');
     //retrieve artists from DB
     const artistFetcher = async () => {
         try {
