@@ -68,7 +68,6 @@ export function OrganiserSignup() {
     setCompanyName(e.target.value);
   }
   const handleCompanyDescription = (e: any) => {
-    moment(e, 'YYYY-MM-DD');
     setCompanyDescription(e.target.value);
   }
 
@@ -166,8 +165,8 @@ export function OrganiserSignup() {
                 margin="normal"
                 required
                 fullWidth
-                id="Company Name"
-                label="Company Name"
+                id="CompanyName"
+                label="CompanyName"
                 name="companyName"
                 autoComplete="companyName"
                 autoFocus
@@ -178,8 +177,8 @@ export function OrganiserSignup() {
                 margin="normal"
                 required
                 fullWidth
-                id="Company Email"
-                label="Company Email"
+                id="CompanyEmail"
+                label="CompanyEmail"
                 name="companyEmail"
                 autoComplete="companyEmail"
                 autoFocus
@@ -192,8 +191,8 @@ export function OrganiserSignup() {
                 margin="normal"
                 required
                 fullWidth
-                name="Company Description"
-                label="Description of Company"
+                name="CompanyDescription"
+                label="Company Description"
                 type="companyDescription"
                 id="companyDescription"
                 autoComplete="companyDescription"
