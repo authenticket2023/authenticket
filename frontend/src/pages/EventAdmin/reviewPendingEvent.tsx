@@ -34,7 +34,7 @@ export default function ReviewEvent(props: any) {
 
     const loadEventDetailByID = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/homepage/${eventID}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/${eventID}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -60,17 +60,17 @@ export default function ReviewEvent(props: any) {
     }
 
     const updateEventStatus = async (status: string) => {
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/review-status`, {
+        const formData = new FormData();
+        formData.append('eventId', eventID);
+        formData.append('reviewRemarks', remarks);
+        formData.append('reviewStatus', status);
+        formData.append('reviewedBy', "8");
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
             method: 'PUT',
-            body: JSON.stringify({
-                "eventId": eventID,
-                "status": status,
-                "remarks": remarks
-              })
+            body: formData
         })
             .then(async (response) => {
                 const apiResponse = await response.json();
@@ -81,6 +81,7 @@ export default function ReviewEvent(props: any) {
                     setReviewOpen(false);
                     //to update parent element
                     props.open(false);
+                    props.setReload(true);
                 } else {
                     props.setOpenSnackbar(true);
                     props.setAlertType('error');
@@ -99,22 +100,18 @@ export default function ReviewEvent(props: any) {
     
     const handleAccept = (event: any) => {
         event.preventDefault();
-        // call backend
-        console.log("accept")
-        updateEventStatus('accept');
-        props.setReload(true);
+        updateEventStatus('approved');
     }
 
     const handleReject = (event: any) => {
         event.preventDefault();
-        // call backend
-        console.log("reject")
         if (remarks == null || remarks == '') {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg(`Please enter the reason for rejection!`);
+        }else {
+            updateEventStatus('rejected');
         }
-        updateEventStatus('reject');
     }
 
     useEffect(() => {

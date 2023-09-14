@@ -5,12 +5,7 @@ import {
     Switch, FormGroup, Button, ListItemText, OutlinedInput, Snackbar, Alert, IconButton, InputAdornment,
     Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent,
 } from '@mui/material';
-import dayjs, { Dayjs } from 'dayjs';
-import { TextareaAutosize } from '@mui/base/TextareaAutosize';
-import { useNavigate } from 'react-router-dom';
 import MUIDataTable from "mui-datatables";
-import { Sheet } from '@mui/joy';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ReviewEvent from './reviewPendingEvent';
 
 const delay = (ms: number) => new Promise(
@@ -22,9 +17,8 @@ export function PendingEventTab() {
     //for reload
     const [reload, setReload] = useState(false);
     useEffect(() => {
-        async function loadData() {
+        function loadData() {
             setLoadingModal(true);
-            await delay(250);
             loadPendingEventData();
         }
         if (!dataLoaded) {
@@ -33,7 +27,7 @@ export function PendingEventTab() {
          //trigger whenever reload value changed
          if (reload) {
             //reload whenever openSnackbar was changed
-            loadData();
+            loadData()
             //need set this, if not cannot click open again
             setReviewOpen(false);
             setReload(false);
