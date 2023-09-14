@@ -1,14 +1,11 @@
 package com.authenticket.authenticket.service.impl;
 
 
-import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
-import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.AdminRepository;
@@ -66,7 +63,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
     }
 
     public List<EventOrganiser> findAllPendingOrganisers() {
-        return eventOrganiserRepository.findByReviewStatusContains("pending");
+        return eventOrganiserRepository.findByReviewStatusContainsAndDeletedAtIsNull("pending");
     }
 
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {
