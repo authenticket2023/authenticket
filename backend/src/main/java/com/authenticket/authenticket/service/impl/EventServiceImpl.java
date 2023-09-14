@@ -12,6 +12,7 @@ import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
 import org.hibernate.sql.ast.tree.expression.Over;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -49,14 +50,14 @@ public class EventServiceImpl implements EventService {
     private AmazonS3Service amazonS3Service;
 
     //get all events for home page
-    public List<EventHomeDto> findAllApprovedEvent() {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved"));
+    public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
+        return eventDTOMapper.mapPageEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable));
     }
 
 
     //find all events for admin
-    public List<OverallEventDto> findAllEvent() {
-        return eventDTOMapper.mapOverallEventDto(eventRepository.findAll());
+    public List<OverallEventDto> findAllEvent(Pageable pageable) {
+        return eventDTOMapper.mapPageOverallEventDto(eventRepository.findAllByOrderByEventIdAsc(pageable));
     }
 
     public OverallEventDto findEventById(Integer eventId) {

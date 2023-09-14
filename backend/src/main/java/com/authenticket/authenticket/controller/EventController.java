@@ -13,6 +13,7 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,9 +67,9 @@ public class EventController extends Utility {
 
 
     @GetMapping("/public/event")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllPublicEvent() {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllPublicEvent(Pageable pageable) {
         try {
-            List<EventHomeDto> eventList = eventService.findAllApprovedEvent();
+            List<EventHomeDto> eventList = eventService.findAllPublicEvent(pageable);
             if (eventList.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
             } else {
@@ -131,9 +132,9 @@ public class EventController extends Utility {
 
     //get method for admin
     @GetMapping("/event")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent(Pageable pageable) {
         try {
-            List<OverallEventDto> eventList = eventService.findAllEvent();
+            List<OverallEventDto> eventList = eventService.findAllEvent(pageable);
             if (eventList.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
             } else {

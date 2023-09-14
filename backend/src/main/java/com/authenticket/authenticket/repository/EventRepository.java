@@ -2,6 +2,7 @@ package com.authenticket.authenticket.repository;
 
 import com.authenticket.authenticket.dto.event.EventHomeDto;
 import com.authenticket.authenticket.model.Event;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,7 +29,10 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Object[]> getArtistByEventId(@Param("eventId") Integer eventId);
 
     //for get all for homepage
-    List<Event> findAllByReviewStatusAndDeletedAtIsNull(String reviewStatus);
+    Page<Event> findAllByReviewStatusAndDeletedAtIsNull(String reviewStatus, Pageable pageable);
+
+    //for get all for admin
+    Page<Event> findAllByOrderByEventIdAsc(Pageable pageable);
 
     //recently added (order by created at)
     List<Event> findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(String reviewStatus);

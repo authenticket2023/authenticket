@@ -16,6 +16,7 @@ import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.EventTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -98,6 +99,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     public List<EventHomeDto> mapEventHomeDto(List<Event> eventList) {
         return eventList.stream()
+                .map(this::applyEventHomeDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventHomeDto> mapPageEventHomeDto(Page<Event> eventPage) {
+        return eventPage.getContent().stream()
                 .map(this::applyEventHomeDto)
                 .collect(Collectors.toList());
     }
@@ -213,6 +220,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     public List<OverallEventDto> mapOverallEventDto(List<Event> eventList) {
         return eventList.stream()
+                .map(this::applyOverallEventDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<OverallEventDto> mapPageOverallEventDto(Page<Event> eventPage) {
+        return eventPage.getContent().stream()
                 .map(this::applyOverallEventDto)
                 .collect(Collectors.toList());
     }
