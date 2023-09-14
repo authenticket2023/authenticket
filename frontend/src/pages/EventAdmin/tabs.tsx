@@ -134,11 +134,18 @@ export function PendingEventTab() {
 
     //for deletion
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [selectedRows, setSelectedRows] = useState([]);
+    const [selectedRows, setSelectedRows] = useState('');
 
     const onRowsSelect = (curRowSelected: any, allRowsSelected: any) => {
         try {
-            setSelectedRows(allRowsSelected);
+            console.log(allRowsSelected);
+            let selectedEventID = "";
+            allRowsSelected.forEach((element: any) => {
+                const dataIndex = element.dataIndex;
+                const eventID = pendingEventData[dataIndex][0];
+                selectedEventID += eventID + ',';
+            });
+            setSelectedRows(selectedEventID);
         } catch (error) {
             window.alert(`Error during selecting:${error}`);
         }
@@ -152,8 +159,36 @@ export function PendingEventTab() {
         setOpenConfirmDialog(false);
     };
     const handleDelete = () => {
+        const formData = new FormData;
+        formData.append('eventId',selectedRows);
         // Implement  delete logic
-
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/delete`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'PUT',
+            body:formData,
+        })
+            .then(async (response) => {
+                if (response.status != 200) {
+                    const apiResponse = await response.json();
+                    //show alert msg
+                    setOpenSnackbar(true);
+                    setAlertType('error');
+                    setAlertMsg(apiResponse['message']);
+                } else {
+                    const apiResponse = await response.json();
+                    //show alert msg
+                    setOpenSnackbar(true);
+                    setAlertType('success');
+                    setAlertMsg(apiResponse['message']);
+                    setReload(true);
+                }
+            })
+            .catch((error) => {
+                // Handle any error that occurred during the update process
+                window.alert(`Error during deleting pending event:${error}`);
+            });
         // After the deletion is successful, close the dialog
         handleCloseConfirmDialog();
     };
