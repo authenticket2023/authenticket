@@ -112,7 +112,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/orgRegister")
+    @PostMapping("/eventOrgRegister")
     public ResponseEntity<GeneralApiResponse> orgRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
@@ -124,6 +124,7 @@ public class AuthenticationController extends Utility{
                 .password(passwordEncoder.encode(generateRandomPassword()))
                 .description(description)
                 .enabled(false)
+                .reviewStatus("pending")
                 .build();
 
         service.orgRegister(eventOrg);
