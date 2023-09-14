@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailServiceImpl {
+public class EmailServiceImpl implements EmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Autowired

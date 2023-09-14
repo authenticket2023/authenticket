@@ -243,7 +243,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         var admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Admin does not exist"));
         var jwtToken = jwtServiceImpl.generateToken(admin);
-        System.out.println(jwtToken);
+
         return AuthenticationAdminResponse.builder()
                 .token(jwtToken)
                 .adminDetails(adminDtoMapper.apply(admin))

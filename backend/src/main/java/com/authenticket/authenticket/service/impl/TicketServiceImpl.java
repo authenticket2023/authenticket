@@ -8,6 +8,7 @@ import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
+import com.authenticket.authenticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class TicketServiceImpl {
+public class TicketServiceImpl implements TicketService {
     @Autowired
     private TicketCategoryRepository ticketCategoryRepository;
 
