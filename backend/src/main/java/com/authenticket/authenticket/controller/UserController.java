@@ -3,6 +3,7 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
+import com.authenticket.authenticket.dto.user.UserFullDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.User;
@@ -44,7 +45,7 @@ public class UserController extends Utility {
 
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllUser() {
-        List<UserDisplayDto> userList = userService.findAllUser();
+        List<UserFullDisplayDto> userList = userService.findAllUser();
         if(userList.isEmpty()){
             return ResponseEntity.ok(generateApiResponse(userList, "No event user found."));
 
@@ -56,8 +57,12 @@ public class UserController extends Utility {
 
     @GetMapping("/{userId}")
     public ResponseEntity<GeneralApiResponse<Object>> findUserById(@PathVariable("userId") Integer userId) {
-        Optional<UserDisplayDto> userDisplayDto = userService.findById(userId);
-        return userDisplayDto.map(displayDto -> ResponseEntity.status(200).body(generateApiResponse(displayDto, "User found"))).orElseGet(() -> ResponseEntity.status(400).body(generateApiResponse(null, "User does not exist")));
+        Optional<UserFullDisplayDto> userDisplayDto = userService.findById(userId);
+        return userDisplayDto.map(
+                displayDto -> ResponseEntity.status(200).body(
+                        generateApiResponse(displayDto, "User found")
+                ))
+                .orElseGet(() -> ResponseEntity.status(400).body(generateApiResponse(null, "User does not exist")));
     }
 
     @PutMapping("/updateUserProfile")
