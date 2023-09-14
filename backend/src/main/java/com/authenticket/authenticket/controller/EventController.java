@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/event")
+@RequestMapping("/api")
 public class EventController extends Utility {
     @Autowired
     private EventServiceImpl eventService;
@@ -58,12 +58,14 @@ public class EventController extends Utility {
     @Autowired
     private EventDtoMapper eventDtoMapper;
 
-    @GetMapping("/test")
+
+    @GetMapping("/public/event/test")
     public String test() {
         return "test successful";
     }
 
-    @GetMapping
+
+    @GetMapping("/public/event")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
         try {
             List<EventDisplayDto> eventList = eventService.findAllEvent();
@@ -77,7 +79,7 @@ public class EventController extends Utility {
         }
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping("/public/event/{eventId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventById(@PathVariable("eventId") Integer eventId) {
         OverallEventDto overallEventDto = eventService.findEventById(eventId);
         if (overallEventDto == null) {
@@ -87,7 +89,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/recently-added")
+    @GetMapping("/public/event/recently-added")
     public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
         List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -97,7 +99,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/featured")
+    @GetMapping("/public/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
         List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -107,7 +109,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/bestseller")
+    @GetMapping("/public/event/bestseller")
     public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
         List<EventHomeDto> eventList = eventService.findBestSellerEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -117,7 +119,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/upcoming")
+    @GetMapping("/public/event/upcoming")
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
         List<EventHomeDto> eventList = eventService.findUpcomingEvents();
         if (eventList == null || eventList.isEmpty()) {
@@ -127,7 +129,7 @@ public class EventController extends Utility {
 
     }
 
-    @PostMapping
+    @PostMapping("/event")
     public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
                                        @RequestParam("eventName") String eventName,
                                        @RequestParam("eventDescription") String eventDescription,
@@ -213,7 +215,8 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
-    @PutMapping
+
+    @PutMapping("/event")
     public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam(value = "eventId") Integer eventId,
                                          @RequestParam(value = "eventName", required = false) String eventName,
@@ -227,7 +230,6 @@ public class EventController extends Utility {
                                          @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
                                          @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
                                          @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy) {
-
         Venue venue = null;
         if (venueId != null) {
             Optional<Venue> venueOptional = venueRepository.findById(venueId);
@@ -284,7 +286,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
     }
 
-    @PutMapping("/delete")
+    @PutMapping("/event/{eventId}")
     public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@RequestParam("eventId") String eventIdString) {
         try {
             List<Integer> eventIdList = Arrays.stream(eventIdString.split(","))
@@ -311,13 +313,23 @@ public class EventController extends Utility {
     }
 
     //response not handled yet
-    @DeleteMapping("/{eventId}")
+    @DeleteMapping("/event/{eventId}")
     public String removeEvent(@PathVariable("eventId") Integer eventId) {
         return eventService.removeEvent(eventId);
     }
 
+    @PutMapping("/event/approve")
+    public ResponseEntity<?> approveEvent(@RequestParam(value = "eventId") Integer eventId, @RequestParam(value = "approvedBy") Integer approvedBy) {
+        Event event = eventService.approveEvent(eventId, approvedBy);
+        if (event == null) {
+            return ResponseEntity.status(404).body(generateApiResponse(null, "Approve not successful, event does not exist"));
+        } else {
+            return ResponseEntity.ok(generateApiResponse(event, "Event approved successfully"));
 
-    @PutMapping("/addArtistToEvent")
+        }
+    }
+
+    @PutMapping("/event/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
             @RequestParam("artistId") Integer artistId,
             @RequestParam("eventId") Integer eventId) {
@@ -334,7 +346,7 @@ public class EventController extends Utility {
     }
 
 
-    @PostMapping("/featured")
+    @PostMapping("/public/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
                                                                          @RequestParam("startDate") LocalDateTime startDate,
                                                                          @RequestParam("endDate") LocalDateTime endDate,
@@ -361,7 +373,7 @@ public class EventController extends Utility {
     }
 
     //getting artist list for one specific event
-    @GetMapping("/getArtistsByEvent")
+    @GetMapping("/event/getArtistsByEvent")
     public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
         try {
             Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
@@ -376,7 +388,7 @@ public class EventController extends Utility {
         }
     }
 
-    @PutMapping("/addTicketCategory")
+    @PutMapping("/event/addTicketCategory")
     public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
         Integer eventId = jsonFormat.getEventId();
         TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
@@ -386,7 +398,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
     }
 
-    @PutMapping("/updateTicketCategory")
+    @PutMapping("/event/updateTicketCategory")
     public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
         Integer eventId = jsonFormat.getEventId();
         TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
@@ -429,7 +441,7 @@ public class EventController extends Utility {
 //        return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully removed from event"));
 //    }
 
-    @GetMapping("/{eventId}/getTicketCategory")
+    @GetMapping("/event/{eventId}/getTicketCategory")
     public ResponseEntity<GeneralApiResponse> getTicketCategory(
             @RequestParam("eventId") Integer eventId) {
         Optional<Event> optionalEvent = eventRepository.findById(eventId);
@@ -440,7 +452,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
     }
 
-    @GetMapping("/review-status/{status}")
+    @GetMapping("/event/review-status/{status}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsByReviewStatus(@PathVariable("status") String status) {
         List<EventDisplayDto> eventList = eventService.findEventsByReviewStatus(status);
         if (eventList == null || eventList.isEmpty()) {
@@ -449,5 +461,4 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, String.format("%s events successfully returned.", status)));
 
     }
-
 }

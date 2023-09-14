@@ -37,6 +37,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers("api/public/**").permitAll()
+                        .requestMatchers("api/event/**").hasAnyAuthority( "ADMIN", "ORGANISER")
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(

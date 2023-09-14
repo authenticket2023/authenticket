@@ -50,7 +50,7 @@ public class AdminController extends Utility {
     }
 
     @GetMapping("/{admin_id}")
-    public ResponseEntity<GeneralApiResponse> findAdminById(@PathVariable("admin_id") Integer admin_id){
+    public ResponseEntity<GeneralApiResponse> findAdminById(@PathVariable(value = "admin_id") Integer admin_id){
         Optional<AdminDisplayDto> adminDisplayDto = adminService.findAdminById(admin_id);
         if(adminDisplayDto.isPresent()){
             return ResponseEntity.status(200).body(generateApiResponse(adminDisplayDto.get(), "Admin found"));
@@ -59,7 +59,7 @@ public class AdminController extends Utility {
     }
 
     @PostMapping("/saveAdmin")
-    public ResponseEntity<GeneralApiResponse> saveAdmin(@RequestParam("name") String name,
+    public ResponseEntity<GeneralApiResponse> saveAdmin(@RequestParam(value = "name") String name,
                                                         @RequestParam("email") String email,
                                                         @RequestParam("password") String password) {
         if(adminRepository.findByEmail(email).isEmpty()){
