@@ -8,14 +8,14 @@ import {
 import MUIDataTable from "mui-datatables";
 import ReviewEvent from './reviewAccount';
 
-export function PendingEventTab() {
+export function PendingTab() {
     const token = window.localStorage.getItem('accessToken');
     //for reload
     const [reload, setReload] = useState(false);
     useEffect(() => {
         function loadData() {
             setLoadingModal(true);
-            loadPendingEventData();
+            loadPendingData();
         }
         if (!dataLoaded) {
             loadData();
@@ -52,7 +52,7 @@ export function PendingEventTab() {
     const [openLoadingModal, setLoadingModal] = React.useState(false);
 
     //for datatable
-    const columns = ["Event ID", "Name",
+    const columns = ["Organiser ID", "Name", "Email",
         {
             name: "Description",
             options: {
@@ -60,28 +60,16 @@ export function PendingEventTab() {
             }
         },
         {
-            name: "Event Date",
-            options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
-            }
-        },
-        {
-            name: "Ticket Sale Date",
-            options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
-            }
-        },
-        {
-            name: "Submitted At",
+            name: "Create At",
             options: {
                 customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
             }
         },
     ];
-    const [pendingEventData, setPendingEventData]: any[] = useState([]);
+    const [pendingData, setPendingData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const loadPendingEventData = async () => {
-        // //calling backend API
+    const loadPendingData = async () => {
+        //calling backend API
         fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/review-status/pending`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -101,12 +89,12 @@ export function PendingEventTab() {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    data.forEach((event: any) => {
-                        const row = [event.eventId, event.eventName, event.eventDescription,
-                        event.eventDate, event.ticketSaleDate, event.createdAt]
-                        fetchData.push(row)
-                    });
-                    setPendingEventData(fetchData);
+                    // data.forEach((event: any) => {
+                    //     const row = [event.eventId, event.eventName, event.eventDescription,
+                    //     event.eventDate, event.ticketSaleDate, event.createdAt]
+                    //     fetchData.push(row)
+                    // });
+                    setPendingData(fetchData);
                     setDataLoaded(true);
                     //close the modal
                     setLoadingModal(false);
@@ -138,7 +126,7 @@ export function PendingEventTab() {
             let selectedEventID = "";
             allRowsSelected.forEach((element: any) => {
                 const dataIndex = element.dataIndex;
-                const eventID = pendingEventData[dataIndex][0];
+                const eventID = pendingData[dataIndex][0];
                 selectedEventID += eventID + ',';
             });
             setSelectedRows(selectedEventID);
@@ -154,6 +142,7 @@ export function PendingEventTab() {
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
     };
+    //TODO: change to organiser account deletion
     const handleDelete = () => {
         const formData = new FormData;
         formData.append('eventId', selectedRows);
@@ -199,7 +188,7 @@ export function PendingEventTab() {
         onRowsDelete: handleClickDeleteIcon,
         downloadOptions: { filename: `AuthenTicket Pending Event Data(${new Date().toDateString()}).csv` },
         sortOrder: {
-            name: 'Submitted At',
+            name: 'Created At',
             direction: 'desc'
         }
     };
@@ -218,7 +207,7 @@ export function PendingEventTab() {
 
                 <MUIDataTable
                     title={"Pending Organiser Account Lists"}
-                    data={pendingEventData}
+                    data={pendingData}
                     columns={columns}
                     options={options}
                 /> :
@@ -262,14 +251,14 @@ export function PendingEventTab() {
     )
 }
 
-export function AllEventTab() {
+export function AllTab() {
     const token = window.localStorage.getItem('accessToken');
     //for reload
     const [reload, setReload] = useState(false);
     useEffect(() => {
         function loadData() {
             setLoadingModal(true);
-            loadAllEventData();
+            loadAllData();
         }
         if (!dataLoaded) {
             loadData();
@@ -306,7 +295,13 @@ export function AllEventTab() {
     const [openLoadingModal, setLoadingModal] = React.useState(false);
 
     //for datatable
-    const columns = ["Event ID", "Name",
+    const columns = ["Account ID", "Role", "Name", "Email",
+        {
+            name: "Date of Birth",
+            options: {
+                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+            }
+        },
         {
             name: "Description",
             options: {
@@ -314,18 +309,11 @@ export function AllEventTab() {
             }
         },
         {
-            name: "Event Date",
+            name: "Create At",
             options: {
                 customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
             }
         },
-        {
-            name: "Ticket Sale Date",
-            options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
-            }
-        },
-        "Organiser Email",
         {
             name: "Review Remarks",
             options: {
@@ -361,9 +349,10 @@ export function AllEventTab() {
         },
         "Reviewd By",
     ];
-    const [allEventData, setAllEventData]: any[] = useState([]);
+    const [allData, setAllData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const loadAllEventData = async () => {
+
+    const loadAllData = async () => {
         // //calling backend API
         fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
             headers: {
@@ -385,17 +374,17 @@ export function AllEventTab() {
                     console.log(apiResponse)
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    data.forEach((event: any) => {
-                        let reviewedByEmail = event.reviewedBy !== null ? event.reviewedBy.email : "";
-                        let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
-                        const row = [event.eventId, event.eventName, event.eventDescription,
-                        event.eventDate, event.ticketSaleDate,
-                        event.organiser.email,
-                            reviewRemarks, event.reviewStatus,
-                            reviewedByEmail]
-                        fetchData.push(row)
-                    });
-                    setAllEventData(fetchData);
+                    // data.forEach((event: any) => {
+                    //     let reviewedByEmail = event.reviewedBy !== null ? event.reviewedBy.email : "";
+                    //     let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
+                    //     const row = [event.eventId, event.eventName, event.eventDescription,
+                    //     event.eventDate, event.ticketSaleDate,
+                    //     event.organiser.email,
+                    //         reviewRemarks, event.reviewStatus,
+                    //         reviewedByEmail]
+                    //     fetchData.push(row)
+                    // });
+                    setAllData(fetchData);
                     setDataLoaded(true);
                     //close the modal
                     setLoadingModal(false);
@@ -427,7 +416,7 @@ export function AllEventTab() {
             let selectedEventID = "";
             allRowsSelected.forEach((element: any) => {
                 const dataIndex = element.dataIndex;
-                const eventID = allEventData[dataIndex][0];
+                const eventID = allData[dataIndex][0];
                 selectedEventID += eventID + ',';
             });
             setSelectedRows(selectedEventID);
@@ -443,6 +432,7 @@ export function AllEventTab() {
     const handleCloseConfirmDialog = () => {
         setOpenConfirmDialog(false);
     };
+    //TODO: change to account deletion
     const handleDelete = () => {
         const formData = new FormData;
         formData.append('eventId', selectedRows);
@@ -507,7 +497,7 @@ export function AllEventTab() {
 
                 <MUIDataTable
                     title={"Account Lists"}
-                    data={allEventData}
+                    data={allData}
                     columns={columns}
                     options={options}
                 /> :

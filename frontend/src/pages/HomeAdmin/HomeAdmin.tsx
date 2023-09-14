@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { NavbarAdmin } from '../../Navbar';
 import { Box, Tab, Tabs} from '@mui/material';
 import { TabContext, TabPanel } from '@mui/lab';
-import {PendingEventTab, AllEventTab} from './tabs';
+import {PendingTab, AllTab} from './tabs';
 
 export const HomeAdmin = () => {
     const token = window.localStorage.getItem('accessToken');
@@ -31,11 +31,11 @@ export const HomeAdmin = () => {
                     <TabPanel value="Pending Organiser Account For Review">
                         <br />
                         <br />
-                        <PendingEventTab />
+                        <PendingTab />
                     </TabPanel>
 
                     <TabPanel value="All Account">
-                        <AllEventTab />
+                        <AllTab />
                     </TabPanel>
                 </TabContext>
             </Box>
