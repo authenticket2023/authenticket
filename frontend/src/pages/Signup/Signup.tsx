@@ -130,7 +130,7 @@ export function Signup() {
     }
 
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/register`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userRegister`, {
       headers: {
         'Content-Type': 'application/json',
       },
