@@ -65,7 +65,7 @@ public class EventOrganiserController extends Utility {
     @GetMapping("/{organiserId}")
     public ResponseEntity<?> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
         Optional<EventOrganiserDisplayDto> organiserDisplayDtoOptional = eventOrganiserService.findOrganiserById(organiserId);
-        return organiserDisplayDtoOptional.map(eventDisplayDto -> ResponseEntity.ok(generateApiResponse(eventDisplayDto, String.format("Event organiser %d successfully returned.", organiserId)))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event organiser with id %d not found", organiserId))));
+        return organiserDisplayDtoOptional.map(eventOrganiserDisplayDto -> ResponseEntity.ok(generateApiResponse(eventOrganiserDisplayDto, String.format("Event organiser %d successfully returned.", organiserId)))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event organiser with id %d not found", organiserId))));
 
     }
 
@@ -81,7 +81,7 @@ public class EventOrganiserController extends Utility {
 
     @GetMapping("/pending")
     public ResponseEntity<?> findAllPendingOrganisers() {
-        List<EventOrganiser> organisers = eventOrganiserService.findAllPendingOrganisers();
+        List<EventOrganiserDisplayDto> organisers = eventOrganiserService.findAllPendingOrganisers();
         return ResponseEntity.ok(generateApiResponse(organisers, "All organisers awaiting review retrieved successfully"));
     }
 

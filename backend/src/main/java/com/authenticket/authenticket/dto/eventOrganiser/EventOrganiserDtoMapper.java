@@ -1,31 +1,36 @@
 package com.authenticket.authenticket.dto.eventOrganiser;
 
-import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Admin;
+import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
+import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
 import com.authenticket.authenticket.model.EventOrganiser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOrganiserDisplayDto> {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public EventOrganiserDisplayDto apply(EventOrganiser organiser) {
-        Integer adminId = null;
+    @Autowired
+    private AdminDtoMapper adminDtoMapper;
 
-        if(organiser.getAdmin()!=null){
-            adminId = organiser.getAdmin().getAdminId();
+    public EventOrganiserDisplayDto apply(EventOrganiser organiser) {
+        AdminDisplayDto adminDisplayDto = null;
+
+        if (organiser.getAdmin() != null) {
+            adminDisplayDto = adminDtoMapper.apply(organiser.getAdmin());
         }
 
         return new EventOrganiserDisplayDto(
                 organiser.getOrganiserId(), organiser.getName(), organiser.getEmail(),
-                organiser.getDescription(), adminId, organiser.getLogoImage(),
-                EventOrganiser.getRole());
+                organiser.getDescription(), organiser.getLogoImage(),
+                EventOrganiser.getRole(), organiser.getReviewStatus(), organiser.getReviewRemarks(),
+                adminDisplayDto, organiser.getEnabled(), organiser.getCreatedAt(), organiser.getUpdatedAt(), organiser.getDeletedAt());
 
     }
 
@@ -51,6 +56,12 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
         if (updateDto.reviewedBy() != null) {
             organiser.setAdmin(updateDto.reviewedBy());
         }
+    }
+
+    public List<EventOrganiserDisplayDto> map (List<EventOrganiser> organiserList){
+        return organiserList.stream()
+                .map(this::apply)
+                .collect(Collectors.toList());
     }
 }
 
