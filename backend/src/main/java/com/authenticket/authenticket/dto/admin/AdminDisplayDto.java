@@ -1,10 +1,13 @@
 package com.authenticket.authenticket.dto.admin;
 
-//currently only hides the deleted at field
+import java.time.LocalDateTime;
+
 public record AdminDisplayDto(Integer adminId,
                               String name,
                               String email,
-                              String role
-//                       LocalDateTime deletedAt
+                              String role,
+                              LocalDateTime createdAt,
+                              LocalDateTime updatedAt,
+                              LocalDateTime deletedAt
 ) {
 }
