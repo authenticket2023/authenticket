@@ -97,6 +97,7 @@ export const Login = () => {
           localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
           localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
 
+          
 
           navigate('/Home');
 

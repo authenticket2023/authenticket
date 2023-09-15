@@ -307,11 +307,10 @@ export function VenueArtist(props: any) {
     const [artistList, setArtistList]: any = React.useState([]);
     const [venueList, setVenueList]: any = React.useState([]);
 
+    const token = window.localStorage.getItem('accessToken');
     //retrieve artists from DB
     const artistFetcher = async () => {
         try {
-            // const token = window.localStorage.getItem('accessToken');
-            const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/artist`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -337,9 +336,7 @@ export function VenueArtist(props: any) {
     //retrieve venue from DB
     const venueFetcher = async () => {
         try {
-            // const token = window.localStorage.getItem('accessToken');
-            const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwYW5taW5nd2VpMTIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NDUyNTY5MCwiZXhwIjoxNjk0NTI3MTMwfQ.GDZmKqHD0ZI0IvwvNtMuQkmHc7-oQpQ-cAd0EFMlxrs'
-                
+            const token = window.localStorage.getItem('accessToken');
             const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/venue`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -481,16 +478,18 @@ export function EventPoster(props: any) {
 
     useEffect(() => {
     }, []);
-
+    const [fileUploaded, setFileUploaded] = useState(false);
     const handleFileChange = (event: any) => {
         // Get the selected files from the input
+        setFileUploaded(true);
         const files = event.target.files;
         props.setSelectedFiles(Array.from(files));
     };
 
     const handleConfirm = (event: any) => {
         event.preventDefault();
-        if (props.selectedFiles.length == 0) {
+
+        if (!fileUploaded) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
