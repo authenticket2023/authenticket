@@ -71,8 +71,6 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
     }
 
     public EventOrganiser saveEventOrganiser(EventOrganiser eventOrganiser) {
-        emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserPendingEmail(eventOrganiser.getName()), "Your account is under review");
-
         return eventOrganiserRepository.save(eventOrganiser);
     }
 
