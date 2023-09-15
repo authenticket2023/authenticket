@@ -24,11 +24,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class VenueServiceImpl implements VenueService {
-    @Autowired
-    private VenueRepository venueRepository;
+
+    private final VenueRepository venueRepository;
+
+    private final VenueDtoMapper venueDtoMapper;
 
     @Autowired
-    private VenueDtoMapper venueDtoMapper;
+    public VenueServiceImpl(VenueRepository venueRepository, VenueDtoMapper venueDtoMapper) {
+        this.venueRepository = venueRepository;
+        this.venueDtoMapper = venueDtoMapper;
+    }
 
     public Optional<VenueDisplayDto> findById(Integer venueId) {
         return venueRepository.findById(venueId).map(venueDtoMapper);

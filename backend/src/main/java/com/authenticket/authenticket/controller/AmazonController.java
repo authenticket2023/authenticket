@@ -1,5 +1,7 @@
 package com.authenticket.authenticket.controller;
 
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
+import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,28 +17,32 @@ import org.springframework.web.multipart.MultipartFile;
         allowCredentials = "true"
 )
 @RequestMapping("/api/aws")
-public class AmazonController {
+public class AmazonController extends Utility {
+
+    private final AmazonS3ServiceImpl service;
 
     @Autowired
-    private AmazonS3ServiceImpl service;
+    public AmazonController(AmazonS3ServiceImpl service) {
+        this.service = service;
+    }
 
 
     @PostMapping("/uploadFile")
-    public ResponseEntity<String>  fileUpload(@RequestParam(value = "file") MultipartFile file,
-                                              @RequestParam(value = "imageName") String imageName,
-                                              @RequestParam(value = "file-type") String fileType){
-        return new ResponseEntity<> (service.uploadFile(file, imageName, fileType), HttpStatus.OK);
+    public ResponseEntity<GeneralApiResponse>  fileUpload(@RequestParam(value = "file") MultipartFile file,
+                                                          @RequestParam(value = "imageName") String imageName,
+                                                          @RequestParam(value = "file-type") String fileType){
+        return ResponseEntity.status(200).body(generateApiResponse(null, service.uploadFile(file, imageName, fileType)));
     }
     @DeleteMapping("/deleteFile")
-    public ResponseEntity<String> fileDelete(@RequestParam(value = "imageName") String imageName,
+    public ResponseEntity<GeneralApiResponse> fileDelete(@RequestParam(value = "imageName") String imageName,
                                              @RequestParam(value = "file-type") String fileType) {
-        return new ResponseEntity<> (service.deleteFile(imageName, fileType), HttpStatus.OK);
+        return ResponseEntity.status(200).body(generateApiResponse( null, service.deleteFile(imageName, fileType)));
     }
 
     @GetMapping("/displayFile")
-    public ResponseEntity<String>  fileDisplay(@RequestParam(value = "imageName") String imageName,
+    public ResponseEntity<GeneralApiResponse>  fileDisplay(@RequestParam(value = "imageName") String imageName,
                                               @RequestParam(value = "file-type") String fileType){
-        return new ResponseEntity<> (service.displayFile(imageName, fileType), HttpStatus.OK);
+        return ResponseEntity.status(200).body(generateApiResponse( service.displayFile(imageName, fileType), "url generated"));
     }
 
 }

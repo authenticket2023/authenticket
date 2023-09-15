@@ -29,8 +29,11 @@ import java.util.Optional;
 )
 @RequestMapping("/api/ticket")
 public class TicketController {
+    private final TicketServiceImpl ticketService;
     @Autowired
-    private TicketServiceImpl ticketService;
+    public TicketController(TicketServiceImpl ticketService) {
+        this.ticketService = ticketService;
+    }
 
     @GetMapping("/test")
     public String test() {

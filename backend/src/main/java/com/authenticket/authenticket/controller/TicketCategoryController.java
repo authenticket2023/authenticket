@@ -21,8 +21,12 @@ import java.util.Optional;
 )
 @RequestMapping("/api/ticket-category")
 public class TicketCategoryController {
+    private final TicketCategoryServiceImpl ticketCategoryService;
+
     @Autowired
-    private TicketCategoryServiceImpl ticketCategoryService;
+    public TicketCategoryController(TicketCategoryServiceImpl ticketCategoryService) {
+        this.ticketCategoryService = ticketCategoryService;
+    }
 
     @GetMapping("/test")
     public String test() {

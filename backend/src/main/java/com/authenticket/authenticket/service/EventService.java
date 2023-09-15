@@ -2,6 +2,7 @@ package com.authenticket.authenticket.service;
 
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.repository.EventRepository;
@@ -38,4 +39,10 @@ public interface EventService {
 //    Event rejectEvent (Integer eventId);
 
     Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
+    EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId);
+    EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat);
+
+    void updateTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat);
+
+    EventDisplayDto removeTicketCategory(Integer catId, Integer eventId);
 }

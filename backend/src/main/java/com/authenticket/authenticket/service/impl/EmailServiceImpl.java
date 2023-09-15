@@ -16,8 +16,13 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
+    private final JavaMailSenderImpl mailSender;
+
     @Autowired
-    private JavaMailSenderImpl mailSender;
+    public EmailServiceImpl(JavaMailSenderImpl mailSender) {
+        this.mailSender = mailSender;
+    }
+
 
     @Value("${authenticket.smtp-username}")
     private String smtpUsername;

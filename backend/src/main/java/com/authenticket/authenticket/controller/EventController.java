@@ -36,29 +36,40 @@ import java.util.stream.Collectors;
 )
 @RequestMapping("/api")
 public class EventController extends Utility {
-    @Autowired
-    private EventServiceImpl eventService;
+    private final EventServiceImpl eventService;
+
+    private final AmazonS3Service amazonS3Service;
+
+    private final EventRepository eventRepository;
+
+    private final EventOrganiserRepository eventOrganiserRepository;
+
+    private final AdminRepository adminRepository;
+
+    private final VenueRepository venueRepository;
+
+    private final EventTypeRepository eventTypeRepository;
+
+    private final EventDtoMapper eventDtoMapper;
 
     @Autowired
-    private AmazonS3Service amazonS3Service;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private EventOrganiserRepository eventOrganiserRepository;
-
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private VenueRepository venueRepository;
-
-    @Autowired
-    private EventTypeRepository eventTypeRepository;
-
-    @Autowired
-    private EventDtoMapper eventDtoMapper;
+    public EventController(EventServiceImpl eventService,
+                           AmazonS3Service amazonS3Service,
+                           EventRepository eventRepository,
+                           EventOrganiserRepository eventOrganiserRepository,
+                           AdminRepository adminRepository,
+                           VenueRepository venueRepository,
+                           EventTypeRepository eventTypeRepository,
+                           EventDtoMapper eventDtoMapper) {
+        this.eventService = eventService;
+        this.amazonS3Service = amazonS3Service;
+        this.eventRepository = eventRepository;
+        this.eventOrganiserRepository = eventOrganiserRepository;
+        this.adminRepository = adminRepository;
+        this.venueRepository = venueRepository;
+        this.eventTypeRepository = eventTypeRepository;
+        this.eventDtoMapper = eventDtoMapper;
+    }
 
 
     @GetMapping("/public/event/test")

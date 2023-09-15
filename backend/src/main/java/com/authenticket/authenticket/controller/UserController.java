@@ -27,14 +27,19 @@ import java.util.Optional;
 )
 @RequestMapping(path = "/api/user")
 public class UserController extends Utility {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final UserServiceImpl userService;
+
+    private final AmazonS3ServiceImpl amazonS3Service;
 
     @Autowired
-    private UserServiceImpl userService;
+    public UserController(UserRepository userRepository, UserServiceImpl userService, AmazonS3ServiceImpl amazonS3Service) {
+        this.userRepository = userRepository;
+        this.userService = userService;
+        this.amazonS3Service = amazonS3Service;
+    }
 
-    @Autowired
-    private AmazonS3ServiceImpl amazonS3Service;
     @GetMapping("/test")
     public String test() {
         return "test successful";

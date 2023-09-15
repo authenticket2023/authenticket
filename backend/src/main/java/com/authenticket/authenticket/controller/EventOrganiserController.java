@@ -32,17 +32,21 @@ import java.util.Optional;
 )
 @RequestMapping("/api/event-organiser")
 public class EventOrganiserController extends Utility {
-    @Autowired
-    private EventOrganiserServiceImpl eventOrganiserService;
+    private final EventOrganiserServiceImpl eventOrganiserService;
+
+    private final AmazonS3Service amazonS3Service;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final AdminRepository adminRepository;
 
     @Autowired
-    private AmazonS3Service amazonS3Service;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AdminRepository adminRepository;
+    public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService, AmazonS3Service amazonS3Service, PasswordEncoder passwordEncoder, AdminRepository adminRepository) {
+        this.eventOrganiserService = eventOrganiserService;
+        this.amazonS3Service = amazonS3Service;
+        this.passwordEncoder = passwordEncoder;
+        this.adminRepository = adminRepository;
+    }
 
     @GetMapping("/test")
     public String test() {

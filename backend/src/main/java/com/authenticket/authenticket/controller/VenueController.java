@@ -25,14 +25,18 @@ import java.util.Optional;
 @RequestMapping(path = "/api/venue")
 
 public class VenueController extends Utility {
-    @Autowired
-    private VenueServiceImpl venueService;
+    private final VenueServiceImpl venueService;
+
+    private final VenueRepository venueRepository;
+
+    private final AmazonS3ServiceImpl amazonS3Service;
 
     @Autowired
-    private VenueRepository venueRepository;
-
-    @Autowired
-    private AmazonS3ServiceImpl amazonS3Service;
+    public VenueController(VenueServiceImpl venueService, VenueRepository venueRepository, AmazonS3ServiceImpl amazonS3Service) {
+        this.venueService = venueService;
+        this.venueRepository = venueRepository;
+        this.amazonS3Service = amazonS3Service;
+    }
 
     @GetMapping("/test")
     public String test() {

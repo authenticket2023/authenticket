@@ -3,7 +3,10 @@ package com.authenticket.authenticket.service.impl;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,19 +28,23 @@ import java.util.Objects;
 @Slf4j
 public class AmazonS3ServiceImpl implements AmazonS3Service {
 
+    private final AmazonS3 amazonS3;
+
     @Autowired
-    private AmazonS3 amazonS3;
+    public AmazonS3ServiceImpl(AmazonS3 amazonS3){
+        this.amazonS3 = amazonS3;
+    }
 
     @Value("${authenticket.S3-bucket-name}")
     private String bucketName;
 
-    public String generateUrl(String fileName, HttpMethod http){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.MINUTE, 1);
-        URL url = amazonS3.generatePresignedUrl(bucketName, fileName, cal.getTime(), http);
-        return url.toString();
-    }
+//    public String generateUrl(String fileName, HttpMethod http){
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(new Date());
+//        cal.add(Calendar.MINUTE, 1);
+//        URL url = amazonS3.generatePresignedUrl(bucketName, fileName, cal.getTime(), http);
+//        return url.toString();
+//    }
 
     private File convertMultiPartFileToFile (MultipartFile file){
         File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
@@ -53,7 +60,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 
     public String uploadFile(MultipartFile file, String imageName, String fileType){
         if(!amazonS3.doesBucketExistV2(bucketName)){
-            return "Bucket does not exist";
+            throw new NonExistentException("Bucket does not exist");
         }
 
 
@@ -82,7 +89,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 
     public String deleteFile(String imageName, String fileType) {
         if(!amazonS3.doesBucketExistV2(bucketName)){
-            return "Bucket does not exist";
+            throw new NonExistentException("Bucket does not exist");
         }
         String fileName;
         if(fileType.equals("event_images")){
@@ -93,7 +100,10 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
             fileName = "event_organiser_profile/" + imageName ;
         } else {
             //exception handling
-            return null;
+            throw new NonExistentException("File type input does not exist");
+        }
+        if(!amazonS3.doesObjectExist(bucketName, fileName)){
+            throw new NonExistentException("File type input does not exist");
         }
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
         return "File deleted: " +fileName;
@@ -101,7 +111,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 
     public String displayFile(String imageName, String fileType) {
         if(!amazonS3.doesBucketExistV2(bucketName)){
-            return "Bucket does not exist";
+            throw new NonExistentException("Bucket does not exist");
         }
         String fileName;
         if(fileType.equals("event_images")){
@@ -110,7 +120,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
             fileName = "user_profile/" + imageName;
         } else {
             //exception handling
-            return "No Image Found";
+            throw new NonExistentException("File type input does not exist");
         }
         return "https://authenticket.s3.ap-southeast-1.amazonaws.com/" +fileName;
     }

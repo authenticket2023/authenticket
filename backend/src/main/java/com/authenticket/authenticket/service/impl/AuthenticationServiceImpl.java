@@ -29,37 +29,49 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
     @Value("${authenticket.api-port}")
     private String apiPort;
 
-    // User repos
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AdminRepository adminRepository;
-    @Autowired
-    private EventOrganiserRepository organiserRepository;
+    // All repos
+    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final EventOrganiserRepository organiserRepository;
 
     //JwtService
-    @Autowired
-    private JwtServiceImpl jwtServiceImpl;
+    private final JwtServiceImpl jwtServiceImpl;
 
     //Authentication
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     //Email Sender
-    @Autowired
-    private EmailServiceImpl emailServiceImpl;
+    private final EmailServiceImpl emailServiceImpl;
 
     //UserDTO
-    @Autowired
-    private UserDtoMapper userDTOMapper;
+    private final UserDtoMapper userDTOMapper;
 
     //EventOrgDTO
-    @Autowired
-    private EventOrganiserDtoMapper eventOrgDtoMapper;
+    private final EventOrganiserDtoMapper eventOrgDtoMapper;
 
     //AdminDTO
+    private final AdminDtoMapper adminDtoMapper;
+
     @Autowired
-    private AdminDtoMapper adminDtoMapper;
+    public AuthenticationServiceImpl(UserRepository userRepository,
+                                     AdminRepository adminRepository,
+                                     EventOrganiserRepository organiserRepository,
+                                     JwtServiceImpl jwtServiceImpl,
+                                     AuthenticationManager authenticationManager,
+                                     EmailServiceImpl emailServiceImpl,
+                                     UserDtoMapper userDTOMapper,
+                                     EventOrganiserDtoMapper eventOrgDtoMapper,
+                                     AdminDtoMapper adminDtoMapper) {
+        this.userRepository = userRepository;
+        this.adminRepository = adminRepository;
+        this.organiserRepository = organiserRepository;
+        this.jwtServiceImpl = jwtServiceImpl;
+        this.authenticationManager = authenticationManager;
+        this.emailServiceImpl = emailServiceImpl;
+        this.userDTOMapper = userDTOMapper;
+        this.eventOrgDtoMapper = eventOrgDtoMapper;
+        this.adminDtoMapper = adminDtoMapper;
+    }
 
     //user
     public void userRegister(User request) {

@@ -34,17 +34,24 @@ import java.time.LocalDate;
 @RequestMapping("/api/auth")
 public class AuthenticationController extends Utility{
 
-    @Autowired
-    private AuthenticationServiceImpl service;
+    private final AuthenticationServiceImpl service;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final JwtServiceImpl jwtService;
+
+    private final UserDetailsService userDetailsService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtServiceImpl jwtService;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public AuthenticationController(AuthenticationServiceImpl service,
+                                    PasswordEncoder passwordEncoder,
+                                    JwtServiceImpl jwtService,
+                                    UserDetailsService userDetailsService) {
+        this.service = service;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @PostMapping("token-check")
     public ResponseEntity<GeneralApiResponse> tokenCheck(

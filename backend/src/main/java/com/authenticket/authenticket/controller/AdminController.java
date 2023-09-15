@@ -25,17 +25,24 @@ import java.util.Optional;
 @RequestMapping("/api/admin")
 public class AdminController extends Utility {
 
-    @Autowired
-    private AdminServiceImpl adminService;
+    private final AdminServiceImpl adminService;
+
+    private final AdminDtoMapper adminDtoMapper;
+
+    private final AdminRepository adminRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private AdminDtoMapper adminDtoMapper;
-
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AdminController(AdminServiceImpl adminService,
+                           AdminDtoMapper adminDtoMapper,
+                           AdminRepository adminRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.adminService = adminService;
+        this.adminDtoMapper = adminDtoMapper;
+        this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     //have to implement response entity
     @GetMapping("/test")

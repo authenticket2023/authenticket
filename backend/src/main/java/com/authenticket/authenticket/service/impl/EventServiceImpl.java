@@ -25,29 +25,40 @@ import java.util.stream.Collectors;
 @Service
 public class EventServiceImpl implements EventService {
 
-    @Autowired
-    private EventRepository eventRepository;
+    private final EventRepository eventRepository;
+
+    private final ArtistRepository artistRepository;
+
+    private final FeaturedEventRepository featuredEventRepository;
+
+    private final TicketCategoryRepository ticketCategoryRepository;
+
+    private final EventTicketCategoryRepository eventTicketCategoryRepository;
+
+    private final EventDtoMapper eventDTOMapper;
+
+    private final ArtistDtoMapper artistDtoMapper;
+
+    private final AmazonS3Service amazonS3Service;
 
     @Autowired
-    private ArtistRepository artistRepository;
-
-    @Autowired
-    private FeaturedEventRepository featuredEventRepository;
-
-    @Autowired
-    private TicketCategoryRepository ticketCategoryRepository;
-
-    @Autowired
-    private EventTicketCategoryRepository eventTicketCategoryRepository;
-
-    @Autowired
-    private EventDtoMapper eventDTOMapper;
-
-    @Autowired
-    private ArtistDtoMapper artistDtoMapper;
-
-    @Autowired
-    private AmazonS3Service amazonS3Service;
+    public EventServiceImpl(EventRepository eventRepository,
+                            ArtistRepository artistRepository,
+                            FeaturedEventRepository featuredEventRepository,
+                            TicketCategoryRepository ticketCategoryRepository,
+                            EventTicketCategoryRepository eventTicketCategoryRepository,
+                            EventDtoMapper eventDTOMapper,
+                            ArtistDtoMapper artistDtoMapper,
+                            AmazonS3Service amazonS3Service) {
+        this.eventRepository = eventRepository;
+        this.artistRepository = artistRepository;
+        this.featuredEventRepository = featuredEventRepository;
+        this.ticketCategoryRepository = ticketCategoryRepository;
+        this.eventTicketCategoryRepository = eventTicketCategoryRepository;
+        this.eventDTOMapper = eventDTOMapper;
+        this.artistDtoMapper = artistDtoMapper;
+        this.amazonS3Service = amazonS3Service;
+    }
 
     //get all events for home page
     public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {

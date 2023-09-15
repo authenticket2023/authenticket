@@ -29,22 +29,25 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
     @Value("${authenticket.api-port}")
     private String apiPort;
 
-    @Autowired
-    private EventOrganiserRepository eventOrganiserRepository;
+    private final EventOrganiserRepository eventOrganiserRepository;
+    private final EventOrganiserDtoMapper eventOrganiserDtoMapper;
+    private final EmailServiceImpl emailService;
+    private final AmazonS3Service amazonS3Service;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private EventOrganiserDtoMapper eventOrganiserDtoMapper;
+    public EventOrganiserServiceImpl(EventOrganiserRepository eventOrganiserRepository,
+                                     EventOrganiserDtoMapper eventOrganiserDtoMapper,
+                                     EmailServiceImpl emailService,
+                                     AmazonS3Service amazonS3Service,
+                                     PasswordEncoder passwordEncoder) {
+        this.eventOrganiserRepository = eventOrganiserRepository;
+        this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
+        this.emailService = emailService;
+        this.amazonS3Service = amazonS3Service;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    @Autowired
-    private EmailServiceImpl emailService;
-    @Autowired
-    private AmazonS3Service amazonS3Service;
-
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     public List<EventOrganiserDisplayDto> findAllEventOrganisers() {
         return eventOrganiserRepository.findAll()
                 .stream()

@@ -22,14 +22,19 @@ public class AdminServiceImpl implements AdminService, UserDetailsService {
 
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
 
-    @Autowired
-    private EventOrganiserRepository eventOrganiserRepository;
+    private final AdminRepository adminRepository;
+
+    private final AdminDtoMapper adminDtoMapper;
+
 
     @Autowired
-    private AdminRepository adminRepository;
+    public AdminServiceImpl(AdminRepository adminRepository,
+                             AdminDtoMapper adminDtoMapper){
+        this.adminRepository = adminRepository;
+        this.adminDtoMapper = adminDtoMapper;
+    }
 
-    @Autowired
-    private AdminDtoMapper adminDtoMapper;
+
 
     public List<AdminDisplayDto> findAllAdmin(){
         return adminRepository.findAll()

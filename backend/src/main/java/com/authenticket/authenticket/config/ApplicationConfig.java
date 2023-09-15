@@ -28,34 +28,40 @@ import java.util.TimeZone;
 @Configuration
 public class ApplicationConfig {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final AdminRepository adminRepository;
+
+    private final EventOrganiserRepository eventOrganiserRepository;
 
     @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private EventOrganiserRepository eventOrganiserRepository;
+    public ApplicationConfig(UserRepository userRepository,
+                             AdminRepository adminRepository,
+                             EventOrganiserRepository eventOrganiserRepository) {
+        this.userRepository = userRepository;
+        this.adminRepository = adminRepository;
+        this.eventOrganiserRepository = eventOrganiserRepository;
+    }
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return username -> {
             Optional<Admin> adminOptional = adminRepository.findByEmail(username);
             Optional<com.authenticket.authenticket.model.User> userOptional = userRepository.findByEmail(username);
             Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findByEmail(username);
             if (adminOptional.isPresent()) {
                 return new User(adminOptional.get().getEmail(), adminOptional.get().getPassword(), adminOptional.get().getAuthorities());
-            } else if (userOptional.isPresent()){
-                if(userOptional.get().getEnabled()) {
+            } else if (userOptional.isPresent()) {
+                if (userOptional.get().getEnabled()) {
                     return new User(userOptional.get().getEmail(), userOptional.get().getPassword(), userOptional.get().getAuthorities());
                 }
                 throw new AwaitingVerificationException("Verification required");
-            } else if(eventOrganiserOptional.isPresent()){
-                if(eventOrganiserOptional.get().getEnabled()){
+            } else if (eventOrganiserOptional.isPresent()) {
+                if (eventOrganiserOptional.get().getEnabled()) {
                     return new User(eventOrganiserOptional.get().getEmail(), eventOrganiserOptional.get().getPassword(), eventOrganiserOptional.get().getAuthorities());
                 }
                 throw new AwaitingVerificationException("Awaiting approval");
-            }else {
+            } else {
                 throw new UsernameNotFoundException("User not found");
             }
         };
@@ -63,7 +69,7 @@ public class ApplicationConfig {
 
 
     @Bean
-    public AuthenticationProvider userAuthenticationProvider(){
+    public AuthenticationProvider userAuthenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -72,12 +78,12 @@ public class ApplicationConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception{
+            throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

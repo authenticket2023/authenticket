@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
@@ -19,11 +20,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
-    @Autowired
-    private ArtistRepository artistRepository;
+
+    private final ArtistRepository artistRepository;
+
+    private final ArtistDtoMapper artistDtoMapper;
 
     @Autowired
-    private ArtistDtoMapper artistDtoMapper;
+    public ArtistServiceImpl(ArtistRepository artistRepository,
+                             ArtistDtoMapper artistDtoMapper){
+        this.artistRepository = artistRepository;
+        this.artistDtoMapper = artistDtoMapper;
+    }
 
     public List<ArtistDisplayDto> findAllArtists() {
         return artistRepository.findAll()

@@ -26,11 +26,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+
+    private final UserDtoMapper userDtoMapper;
 
     @Autowired
-    private UserDtoMapper userDtoMapper;
+    public UserServiceImpl(UserRepository userRepository, UserDtoMapper userDtoMapper) {
+        this.userRepository = userRepository;
+        this.userDtoMapper = userDtoMapper;
+    }
 
     public List<UserFullDisplayDto> findAllUser(){
         return userRepository.findAll()

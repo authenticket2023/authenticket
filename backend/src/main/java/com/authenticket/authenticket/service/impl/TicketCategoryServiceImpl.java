@@ -20,11 +20,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class TicketCategoryServiceImpl implements TicketCategoryService {
-    @Autowired
-    private TicketCategoryRepository ticketCategoryRepository;
+
+    private final TicketCategoryRepository ticketCategoryRepository;
+
+    private final TicketCategoryDisplayDtoMapper ticketCategoryDisplayDtoMapper;
 
     @Autowired
-    private TicketCategoryDisplayDtoMapper ticketCategoryDisplayDtoMapper;
+    public TicketCategoryServiceImpl(TicketCategoryRepository ticketCategoryRepository,
+                                     TicketCategoryDisplayDtoMapper ticketCategoryDisplayDtoMapper) {
+        this.ticketCategoryRepository = ticketCategoryRepository;
+        this.ticketCategoryDisplayDtoMapper = ticketCategoryDisplayDtoMapper;
+    }
 
     public List<TicketCategoryDisplayDto> findAllTicketCategory() {
         return ticketCategoryRepository.findAll()

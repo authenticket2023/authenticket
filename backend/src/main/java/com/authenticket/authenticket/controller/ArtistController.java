@@ -20,14 +20,21 @@ import java.util.Optional;
 @CrossOrigin("*")
 @RequestMapping(path = "/api/artist")
 public class ArtistController extends Utility {
-    @Autowired
-    private ArtistRepository artistRepository;
+    private final ArtistRepository artistRepository;
+
+    private final ArtistServiceImpl artistService;
+
+    private final AmazonS3ServiceImpl amazonS3Service;
 
     @Autowired
-    private ArtistServiceImpl artistService;
+    public ArtistController(ArtistRepository artistRepository,
+                            ArtistServiceImpl artistService,
+                            AmazonS3ServiceImpl amazonS3Service) {
+        this.artistRepository = artistRepository;
+        this.artistService = artistService;
+        this.amazonS3Service = amazonS3Service;
+    }
 
-    @Autowired
-    private AmazonS3ServiceImpl amazonS3Service;
     @GetMapping("/test")
     public String test() {
         return "test successful";

@@ -16,8 +16,12 @@ import java.util.List;
 
 @Service
 public class EventTypeServiceImpl implements EventTypeService {
+
+    private final EventTypeRepository eventTypeRepository;
     @Autowired
-    private EventTypeRepository eventTypeRepository;
+    public EventTypeServiceImpl(EventTypeRepository eventTypeRepository) {
+        this.eventTypeRepository = eventTypeRepository;
+    }
 
     public EventType saveEventType(EventType eventType){
        return eventTypeRepository.save(eventType);

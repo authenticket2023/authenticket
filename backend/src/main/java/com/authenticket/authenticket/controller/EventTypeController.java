@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/event-type")
 public class EventTypeController extends Utility {
 
+    private final EventTypeServiceImpl eventTypeService;
+
     @Autowired
-    private EventTypeServiceImpl eventTypeService;
+    public EventTypeController(EventTypeServiceImpl eventTypeService) {
+        this.eventTypeService = eventTypeService;
+    }
 
     @GetMapping("/test")
     public String test() {
