@@ -36,7 +36,7 @@ const myTheme = createTheme({
   }
 });
 
-export const Login = () => {
+export const OrganiserLogin = () => {
 
   let navigate = useNavigate();
   //validation method
@@ -81,7 +81,7 @@ export const Login = () => {
     formData.append('email', email);
     formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/eventOrgAuthenticate`, {
       method: 'POST',
       body: formData
     })
@@ -91,15 +91,12 @@ export const Login = () => {
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them
           localStorage.setItem('accessToken', loginResponse.data.token);
-          localStorage.setItem('id', loginResponse.data.userDetails.userId);
-          localStorage.setItem('email', loginResponse.data.userDetails.email);
-          localStorage.setItem('username', loginResponse.data.userDetails.name);
-          localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
-          localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
-
-          
-
-          navigate('/Home');
+          localStorage.setItem('id', loginResponse.data.orgDetails.organiserId)
+          localStorage.setItem('email', loginResponse.data.orgDetails.email);
+          localStorage.setItem('username', loginResponse.data.orgDetails.name);
+          localStorage.setItem('description', loginResponse.data.orgDetails.description);
+          localStorage.setItem('role', loginResponse.data.orgDetails.role)
+          navigate('/HomeOrganiser');
 
         } else {
           const loginResponse = await response.json();
@@ -148,15 +145,16 @@ export const Login = () => {
               <a href='/Login'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
-                Organiser
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>
+                User
               </Button>
               <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
                 Admin
               </Button>
             </div>
+
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
-              Hi there!
+              Company Log In
             </Typography>
             <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
               Welcome to AuthenTicket
@@ -167,7 +165,7 @@ export const Login = () => {
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label="Company Email Address"
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -196,17 +194,17 @@ export const Login = () => {
               >
                 Log In
               </Button>
-              <Grid container>
+
+              <Grid container style={{marginTop:8}}>
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
-                    Don't have an account?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
-                      {"Sign Up"}
+                    Don't have an organiser account?{" "}
+                    <Link href="/organiserSignup" variant="body2" style={{color:'#2E475D'}}>
+                      {"Register here"}
                     </Link>
                   </Typography>
                 </Grid>
               </Grid>
-
               
               <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
             </form>
