@@ -1,9 +1,7 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Artist;

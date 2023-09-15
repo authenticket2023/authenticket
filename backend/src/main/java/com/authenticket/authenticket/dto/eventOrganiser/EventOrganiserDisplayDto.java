@@ -1,7 +1,6 @@
 package com.authenticket.authenticket.dto.eventOrganiser;
 
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 

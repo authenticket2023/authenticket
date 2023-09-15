@@ -1,8 +1,6 @@
 package com.authenticket.authenticket.dto.eventticketcategory;
 
-import com.authenticket.authenticket.dto.venue.VenueUpdateDto;
 import com.authenticket.authenticket.model.EventTicketCategory;
-import com.authenticket.authenticket.model.Venue;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

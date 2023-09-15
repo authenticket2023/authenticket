@@ -61,7 +61,6 @@ public class TicketServiceImpl implements TicketService {
 
     public TicketDisplayDto findTicketById(Integer ticketId) {
         Optional<TicketDisplayDto> ticketDisplayDtoOptional = ticketRepository.findById(ticketId).map(ticketDisplayDtoMapper);
-        ;
         if (ticketDisplayDtoOptional.isPresent()) {
             return ticketDisplayDtoOptional.get();
         }

@@ -20,8 +20,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.swing.text.html.Option;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.TimeZone;
 

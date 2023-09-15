@@ -106,7 +106,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
         List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No recently added events found")));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No recently added events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
 
@@ -116,7 +116,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
         List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No featured events found")));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No featured events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Featured events successfully returned."));
 
@@ -126,7 +126,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
         List<EventHomeDto> eventList = eventService.findBestSellerEvents();
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No bestseller events found")));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No bestseller events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Bestseller events successfully returned."));
 
@@ -136,7 +136,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
         List<EventHomeDto> eventList = eventService.findUpcomingEvents();
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No upcoming events found")));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No upcoming events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
 

@@ -2,13 +2,11 @@ package com.authenticket.authenticket.controller;
 
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.model.TicketCategory;
-import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.impl.TicketCategoryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 

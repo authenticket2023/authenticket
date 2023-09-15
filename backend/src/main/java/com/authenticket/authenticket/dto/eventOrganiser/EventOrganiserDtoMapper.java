@@ -13,11 +13,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOrganiserDisplayDto> {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    private final AdminDtoMapper adminDtoMapper;
 
     @Autowired
-    private AdminDtoMapper adminDtoMapper;
+    public EventOrganiserDtoMapper(PasswordEncoder passwordEncoder, AdminDtoMapper adminDtoMapper) {
+        this.passwordEncoder = passwordEncoder;
+        this.adminDtoMapper = adminDtoMapper;
+    }
 
     public EventOrganiserDisplayDto apply(EventOrganiser organiser) {
         AdminDisplayDto adminDisplayDto = null;

@@ -5,16 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EqualsAndHashCode(callSuper = true)
 @Table(name = "ticket_categories", schema = "dev")
 @JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
 public class TicketCategory extends BaseEntity {

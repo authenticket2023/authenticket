@@ -9,7 +9,6 @@ import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
-import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.repository.AdminRepository;
@@ -28,29 +27,33 @@ import java.util.stream.Collectors;
 @Service
 public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
-    @Autowired
-    private EventOrganiserDtoMapper eventOrganiserDtoMapper;
+    private final EventOrganiserDtoMapper eventOrganiserDtoMapper;
+
+    private final EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper;
+
+    private final VenueDtoMapper venueDtoMapper;
+
+    private final ArtistDtoMapper artistDtoMapper;
+
+    private final AdminDtoMapper adminDtoMapper;
+
+    private final EventRepository eventRepository;
+
+    private final AdminRepository adminRepository;
+
+    private final EventTypeRepository eventTypeRepository;
 
     @Autowired
-    private EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper;
-
-    @Autowired
-    private VenueDtoMapper venueDtoMapper;
-
-    @Autowired
-    private ArtistDtoMapper artistDtoMapper;
-
-    @Autowired
-    private AdminDtoMapper adminDtoMapper;
-
-    @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private EventTypeRepository eventTypeRepository;
+    public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper, EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper, VenueDtoMapper venueDtoMapper, ArtistDtoMapper artistDtoMapper, AdminDtoMapper adminDtoMapper, EventRepository eventRepository, AdminRepository adminRepository, EventTypeRepository eventTypeRepository) {
+        this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
+        this.eventTicketCategoryDisplayDtoMapper = eventTicketCategoryDisplayDtoMapper;
+        this.venueDtoMapper = venueDtoMapper;
+        this.artistDtoMapper = artistDtoMapper;
+        this.adminDtoMapper = adminDtoMapper;
+        this.eventRepository = eventRepository;
+        this.adminRepository = adminRepository;
+        this.eventTypeRepository = eventTypeRepository;
+    }
 
     public EventDisplayDto apply(Event event) {
 

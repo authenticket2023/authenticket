@@ -1,24 +1,14 @@
 package com.authenticket.authenticket.controller;
 
-import com.amazonaws.Response;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
-import com.authenticket.authenticket.dto.ticket.TicketUpdateDto;
-import com.authenticket.authenticket.exception.ApiRequestException;
-import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Ticket;
-import com.authenticket.authenticket.model.TicketCategory;
-import com.authenticket.authenticket.model.User;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.TicketCategoryRepository;
-import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @CrossOrigin(

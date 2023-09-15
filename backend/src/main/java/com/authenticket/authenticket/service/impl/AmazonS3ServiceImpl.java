@@ -1,14 +1,9 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
-import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,9 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
 
 

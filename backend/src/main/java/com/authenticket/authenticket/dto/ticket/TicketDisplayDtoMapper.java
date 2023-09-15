@@ -11,11 +11,15 @@ import java.util.function.Function;
 
 @Service
 public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto> {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final TicketCategoryRepository categoryRepository;
 
     @Autowired
-    private TicketCategoryRepository categoryRepository;
+    public TicketDisplayDtoMapper(UserRepository userRepository, TicketCategoryRepository categoryRepository) {
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
     public TicketDisplayDto apply(Ticket ticket) {
         return new TicketDisplayDto(

@@ -5,7 +5,6 @@ import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto
 import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryUpdateDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
-import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.TicketCategory;
 import com.authenticket.authenticket.repository.TicketCategoryRepository;

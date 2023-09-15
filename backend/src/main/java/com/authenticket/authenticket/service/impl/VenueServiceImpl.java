@@ -1,23 +1,16 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueUpdateDto;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
-import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.VenueRepository;
-import com.authenticket.authenticket.service.UserService;
 import com.authenticket.authenticket.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

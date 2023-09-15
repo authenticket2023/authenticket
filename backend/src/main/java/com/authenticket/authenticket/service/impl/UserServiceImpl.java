@@ -5,7 +5,6 @@ import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.dto.user.UserFullDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.UserService;
@@ -14,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;

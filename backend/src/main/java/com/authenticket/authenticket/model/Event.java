@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.model;
 
-import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryUpdateDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;

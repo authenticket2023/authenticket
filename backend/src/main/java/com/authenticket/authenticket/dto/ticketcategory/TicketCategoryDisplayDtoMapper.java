@@ -1,7 +1,5 @@
 package com.authenticket.authenticket.dto.ticketcategory;
 
-import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
-import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.model.TicketCategory;
 import org.springframework.stereotype.Service;
 
