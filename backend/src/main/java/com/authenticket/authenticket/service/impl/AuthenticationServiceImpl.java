@@ -64,6 +64,9 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
     //user
     public void userRegister(User request) {
         var existingUser = userRepository.findByEmail(request.getEmail());
+        var jwtToken = jwtServiceImpl.generateToken(request);
+
+        String link = "http://localhost:" + apiPort + "/api/auth/userRegister/userConfirm?token=" + jwtToken;
 
         if(existingUser.isPresent()){
             if(!existingUser.get().getEnabled()){
@@ -73,9 +76,6 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         }
 
         userRepository.save(request);
-        var jwtToken = jwtServiceImpl.generateToken(request);
-
-        String link = "http://localhost:" + apiPort + "/api/auth/register/confirm?token=" + jwtToken;
         emailServiceImpl.send(request.getEmail(), EmailServiceImpl.buildActivationEmail(request.getName(), link), "Confirm your email");
     }
 
