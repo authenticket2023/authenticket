@@ -92,8 +92,8 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
                 eventOrganiser.setPassword(passwordEncoder.encode(password));
 
                 //change link to log in page
-                String link = "http://localhost:" + apiPort + "/api/auth/register/";
-
+//                String link = "http://localhost:" + apiPort + "/api/auth/register/";
+                String link ="http://localhost:3000/login";
                 // Send email to organiser
                 emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, "good"), "Your account has been approved");
             } else if (reviewStatus.equals("rejected")){
