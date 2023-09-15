@@ -9,15 +9,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import moment from 'moment';
 
 //image download
 import backgroundImage from '../../images/background.png';
-import dayjs from 'dayjs';
 
 function Copyright(props: any) {
   return (
@@ -42,24 +36,9 @@ const myTheme = createTheme({
   }
 });
 
-export function Signup() {
+export function OrganiserSignup() {
 
   let navigate = useNavigate();
-
-  //convert timestamp to date
-  const TimestampConverter = (timestamp: number) => {
-    // Create a Date object from the timestamp
-    const date = new Date(timestamp);
-
-    // Extract components
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-based
-    const day = String(date.getDate()).padStart(2, '0');
-
-    const formattedTimestamp = `${year}-${month}-${day}`;
-
-    return formattedTimestamp;
-}
 
   //validation methods
   const validateEmail = (email : any) => {
@@ -67,59 +46,35 @@ export function Signup() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  
-  const validateDob = (dob : any) => {
-    //get today's date with format YYYY-MM-DD
-    const today = new Date(),
-        currentDateTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-
-      return dayjs(dob).isBefore(dayjs(currentDateTime));
-      
-  }
-
-  const validatePassword = (password : any) => {
-    // Regular expression to validate password
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    return passwordRegex.test(password);
-  }
 
   //variables
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [dob, setDob] = useState('');
+  const [companyEmail, setCompanyEmail] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companyDescription, setCompanyDescription] = useState('');
   //validation
   const [emailError, setEmailError] = useState(false);
   const [emailHelperText, setEmailHelperText] = useState('');
-  const [dobError, setDobError] = useState(false);
-  const [dobHelperText, setDobHelperText] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordHelperText, setPasswordHelperText] = useState('');
   //error , warning , info , success
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType] : any= useState('info');
   const [alertMsg, setAlertMsg] = useState('');
 
   //handler method section
-  const handleEmail = (e: any) => {
-    setEmail(e.target.value);
+  const handleCompanyEmail = (e: any) => {
+    setCompanyEmail(e.target.value);
   }
-  const handlePassword = (e: any) => {
-    setPassword(e.target.value);
+  const handleCompanyName = (e: any) => {
+    setCompanyName(e.target.value);
   }
-  const handleName = (e: any) => {
-    setName(e.target.value);
-  }
-  const handleDob = (e: any) => {
-    moment(e, 'YYYY-MM-DD');
-    setDob(e);
+  const handleCompanyDescription = (e: any) => {
+    setCompanyDescription(e.target.value);
   }
 
   const signupHandler = async (event: any) => {
     event.preventDefault();
 
     //checking validations, returning error message if conditions not met
-    if (!validateEmail(email)) {
+    if (!validateEmail(companyEmail)) {
       setEmailError(true);
       setEmailHelperText('Please enter a valid email address');
       return;
@@ -127,31 +82,16 @@ export function Signup() {
       setEmailError(false);
       setEmailHelperText('');
     }
-    if(!validateDob(dob)) {
-      setDobError(true);
-      setDobHelperText('Please enter a valid date of birth');
-      return;
-    } else {
-      setDobError(false);
-      setDobHelperText('');
-    }
-    if(!validatePassword(password)){
-      setPasswordError(true);
-      setPasswordHelperText('Please enter a valid password. Password Requirements:\n1.At least one alphabetic character (uppercase or lowercase)\n2.At least one digit\n3.Minimum length of 8 characters');
-      return;
-    } else {
-      setPasswordError(false);
-      setPasswordHelperText('');
-    }
 
     const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-    formData.append('dateOfBirth', TimestampConverter(Number(dob)));
+    formData.append('name', companyName);
+    formData.append('email', companyEmail);
+    formData.append('description', companyDescription);
 
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userRegister`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/eventOrgRegister`, {
+      headers: {
+      },
       method: 'POST',
       body: formData
     })
@@ -165,7 +105,7 @@ export function Signup() {
         } else {
           setOpenSnackbar(true);
           setAlertType('success');
-          setAlertMsg(`Email ${email} sign up successful! An email will be sent shortly, please verify your account`);
+          setAlertMsg(`Email ${companyEmail} sign up successful! An email will be sent shortly`);
           setTimeout(() => {
             navigate('/login');
           }, 4000);
@@ -214,73 +154,57 @@ export function Signup() {
               <a href='/Login'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
-                Organiser
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>
+                User
               </Button>
               <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
                 Admin
               </Button>
             </div>
+
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 8, marginBottom: 1 }}>
-              Create your account
+              Register your Company
             </Typography>
             <form onSubmit={signupHandler}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="Name"
-                label="Name"
-                name="name"
-                autoComplete="name"
+                id="CompanyName"
+                label="Company Name"
+                name="companyName"
+                autoComplete="companyName"
                 autoFocus
                 size="medium"
-                onChange={handleName}
+                onChange={handleCompanyName}
               />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker']}>
-                  <DatePicker 
-                  label="Date of Birth"
-                  onChange={handleDob}
-                  disableFuture
-                  format="YYYY-MM-DD"
-                  slotProps={{
-                    textField: {
-                    required: true,
-                    fullWidth: true,
-                    error: dobError,
-                    helperText: dobHelperText,
-                    },
-                  }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                id="Email"
-                label="Email"
-                name="Email"
-                autoComplete="email"
+                id="CompanyEmail"
+                label="Company Email"
+                name="companyEmail"
+                autoComplete="companyEmail"
                 autoFocus
                 size="medium"
                 error={emailError}
                 helperText={emailHelperText}
-                onChange={handleEmail}
+                onChange={handleCompanyEmail}
               />
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                error={passwordError}
-                helperText={passwordHelperText}
-                onChange={handlePassword}
+                name="CompanyDescription"
+                label="Company Description"
+                type="companyDescription"
+                id="companyDescription"
+                autoComplete="companyDescription"
+                rows={4}
+                multiline
+                // helperText={passwordHelperText}
+                onChange={handleCompanyDescription}
               />
               <Button
                 type="submit"
@@ -288,18 +212,19 @@ export function Signup() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
               >
-                Create Account
+                Register Company
               </Button>
               <Grid container>
                 <Grid item>
                   <Typography variant="body2" style={{color:'#858585'}}>
-                    Already have an account?{" "}
-                    <Link href="/logIn" variant="body2" style={{color:'#2E475D'}}>
+                    Already have a organiser account?{" "}
+                    <Link href="/OrganiserLogin" variant="body2" style={{color:'#2E475D'}}>
                       {"Log In"}
                     </Link>
                   </Typography>
                 </Grid>
               </Grid>
+
 
               <Copyright sx={{ mt: 5 }} />
 

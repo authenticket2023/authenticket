@@ -112,7 +112,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/orgRegister")
+    @PostMapping("/eventOrgRegister")
     public ResponseEntity<GeneralApiResponse> orgRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
@@ -121,9 +121,9 @@ public class AuthenticationController extends Utility{
         var eventOrg = EventOrganiser.builder()
                 .name(name)
                 .email(email)
-                .password(passwordEncoder.encode(generateRandomPassword()))
+                .password(/*passwordEncoder.encode(generateRandomPassword())*/passwordEncoder.encode("password"))
                 .description(description)
-                .enabled(false)
+                .enabled(true)
                 .build();
 
         service.orgRegister(eventOrg);

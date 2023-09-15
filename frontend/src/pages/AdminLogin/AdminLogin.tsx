@@ -36,7 +36,7 @@ const myTheme = createTheme({
   }
 });
 
-export const Login = () => {
+export const AdminLogin = () => {
 
   let navigate = useNavigate();
   //validation method
@@ -81,7 +81,7 @@ export const Login = () => {
     formData.append('email', email);
     formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/adminAuthenticate`, {
       method: 'POST',
       body: formData
     })
@@ -91,16 +91,12 @@ export const Login = () => {
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them
           localStorage.setItem('accessToken', loginResponse.data.token);
-          localStorage.setItem('id', loginResponse.data.userDetails.userId);
-          localStorage.setItem('email', loginResponse.data.userDetails.email);
-          localStorage.setItem('username', loginResponse.data.userDetails.name);
-          localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
-          localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
+          localStorage.setItem('id', loginResponse.data.adminDetails.adminId);
+          localStorage.setItem('email', loginResponse.data.adminDetails.email);
+          localStorage.setItem('username', loginResponse.data.adminDetails.name);
+          localStorage.setItem('role', loginResponse.data.adminDetails.role);
 
-          
-
-          navigate('/Home');
-
+          navigate('/HomeAdmin');
         } else {
           const loginResponse = await response.json();
           setOpenSnackbar(true);
@@ -148,15 +144,16 @@ export const Login = () => {
               <a href='/Login'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
+              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/Login'>
+                User
+              </Button>
+              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/OrganiserLogin'>
                 Organiser
               </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
-                Admin
-              </Button>
             </div>
+
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
-              Hi there!
+              Admin Log In
             </Typography>
             <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
               Welcome to AuthenTicket
@@ -196,17 +193,6 @@ export const Login = () => {
               >
                 Log In
               </Button>
-              <Grid container>
-                <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Don't have an account?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
-                      {"Sign Up"}
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
-
               
               <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
             </form>
