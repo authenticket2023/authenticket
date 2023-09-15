@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.event;
 
+import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
@@ -21,6 +22,9 @@ public record OverallEventDto(
         Integer totalTickets,
         Integer totalTicketsSold,
         LocalDateTime ticketSaleDate,
+        String reviewStatus,
+        String reviewRemarks,
+        AdminDisplayDto reviewedBy,
         Set<EventTicketCategoryDisplayDto> ticketCategory,//object
         EventOrganiserDisplayDto organiser, //object
         Venue venue, //object

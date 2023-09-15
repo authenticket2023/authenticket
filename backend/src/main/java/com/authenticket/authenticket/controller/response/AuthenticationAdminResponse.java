@@ -1,8 +1,6 @@
-package com.authenticket.authenticket.controller.AuthResponse;
+package com.authenticket.authenticket.controller.response;
 
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
-import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

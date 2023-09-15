@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.event;
 
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
 import com.authenticket.authenticket.model.Artist;
 import com.authenticket.authenticket.model.EventTicketCategory;
 
@@ -15,7 +16,7 @@ public record EventDisplayDto(Integer eventId,
                               LocalDateTime createdAt,
                               LocalDateTime updatedAt,
                               Set<Artist> artistSet,
-                              Set<EventTicketCategory> ticketCategorySet
+                              Set<EventTicketCategoryDisplayDto> ticketCategorySet
 //                       LocalDateTime deletedAt
 ) {
 }

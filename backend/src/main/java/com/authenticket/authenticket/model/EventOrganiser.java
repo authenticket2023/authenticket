@@ -42,6 +42,14 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
     private String logoImage;
     @Column(name = "enabled")
     private Boolean enabled = false;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "reviewed_by")
+    private Admin admin;
+    @Column(name = "review_status")
+    private String reviewStatus;
+    @Column(name = "review_remarks")
+    private String reviewRemarks;
     @Getter
     private static String role = "ORGANISER";
 
@@ -85,10 +93,6 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
     public boolean isEnabled() {
         return this.enabled;
     }
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "approved_by")
-    private Admin admin;
 
     @Override
     public int hashCode() {

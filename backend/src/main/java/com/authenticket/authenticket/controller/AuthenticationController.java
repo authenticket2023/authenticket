@@ -1,8 +1,9 @@
 package com.authenticket.authenticket.controller;
 
-import com.authenticket.authenticket.controller.AuthResponse.AuthenticationAdminResponse;
-import com.authenticket.authenticket.controller.AuthResponse.AuthenticationOrgResponse;
-import com.authenticket.authenticket.controller.AuthResponse.AuthenticationUserResponse;
+import com.authenticket.authenticket.controller.response.AuthenticationAdminResponse;
+import com.authenticket.authenticket.controller.response.AuthenticationOrgResponse;
+import com.authenticket.authenticket.controller.response.AuthenticationUserResponse;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.exception.AwaitingVerificationException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -121,9 +122,10 @@ public class AuthenticationController extends Utility{
         var eventOrg = EventOrganiser.builder()
                 .name(name)
                 .email(email)
-                .password(/*passwordEncoder.encode(generateRandomPassword())*/passwordEncoder.encode("password"))
+                .password(passwordEncoder.encode(generateRandomPassword()))
                 .description(description)
-                .enabled(true)
+                .enabled(false)
+                .reviewStatus("pending")
                 .build();
 
         service.orgRegister(eventOrg);

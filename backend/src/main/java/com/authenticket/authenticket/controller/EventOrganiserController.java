@@ -1,9 +1,13 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
+import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -37,6 +41,9 @@ public class EventOrganiserController extends Utility {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AdminRepository adminRepository;
+
     @GetMapping("/test")
     public String test() {
         return "test successful";
@@ -59,7 +66,7 @@ public class EventOrganiserController extends Utility {
     @GetMapping("/{organiserId}")
     public ResponseEntity<?> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
         Optional<EventOrganiserDisplayDto> organiserDisplayDtoOptional = eventOrganiserService.findOrganiserById(organiserId);
-        return organiserDisplayDtoOptional.map(eventDisplayDto -> ResponseEntity.ok(generateApiResponse(eventDisplayDto, String.format("Event organiser %d successfully returned.", organiserId)))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event organiser with id %d not found", organiserId))));
+        return organiserDisplayDtoOptional.map(eventOrganiserDisplayDto -> ResponseEntity.ok(generateApiResponse(eventOrganiserDisplayDto, String.format("Event organiser %d successfully returned.", organiserId)))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event organiser with id %d not found", organiserId))));
 
     }
 
@@ -71,6 +78,12 @@ public class EventOrganiserController extends Utility {
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
 
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> findAllPendingOrganisers() {
+        List<EventOrganiserDisplayDto> organisers = eventOrganiserService.findAllPendingOrganisers();
+        return ResponseEntity.ok(generateApiResponse(organisers, "All organisers awaiting review retrieved successfully"));
     }
 
 //    @GetMapping("/events/findMappedOrganisers")
@@ -92,28 +105,37 @@ public class EventOrganiserController extends Utility {
                                        @RequestParam("description") String description) {
 
             //save eventOrganiser first without image name to get the eventOrganiser id
-            EventOrganiser newEventOrganiser = new EventOrganiser(null, name,  passwordEncoder.encode(generateRandomPassword()), email, description,null,null,null,null);
+            EventOrganiser newEventOrganiser = new EventOrganiser(null, name, email, passwordEncoder.encode(generateRandomPassword()), description,null,false,null,"pending",null,null);
             EventOrganiser savedEventOrganiser = eventOrganiserService.saveEventOrganiser(newEventOrganiser);
+
             return ResponseEntity.ok(generateApiResponse(savedEventOrganiser,"Event organiser created successfully"));
-
-
     }
 
     @PutMapping
     public ResponseEntity<?> updateEventOrganiser(@RequestParam("organiserId") Integer organiserId,
-                                                  @RequestParam("name") String name,
-                                                  @RequestParam(value = "description") String description,
-                                                  @RequestParam(value = "password") String password) {
-            EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password);
-            EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
-            if (eventOrganiser != null) {
-                return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
-            } else {
-                return ResponseEntity.badRequest().body(generateApiResponse(null, "Event organiser update unsuccessful"));
+                                                  @RequestParam(value = "name", required = false) String name,
+                                                  @RequestParam(value = "description", required = false) String description,
+                                                  @RequestParam(value = "password", required = false) String password,
+                                                  @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
+                                                  @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
+                                                  @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy,
+                                                  @RequestParam(value = "enabled", required = false) Boolean enabled) {
+        Admin admin = null;
+        if (reviewedBy != null) {
+            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
+            if(adminOptional.isEmpty()) {
+                throw new NonExistentException("Admin with ID " + reviewedBy + " does not exist");
             }
+            admin = adminOptional.get();
+        }
 
-
-
+        EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, enabled, reviewStatus, reviewRemarks, admin);
+        EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
+        if (eventOrganiser != null) {
+            return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
+        } else {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, "Event organiser update unsuccessful"));
+        }
     }
 
     @PutMapping("/image")
@@ -171,11 +193,4 @@ public class EventOrganiserController extends Utility {
             return ResponseEntity.status(409).body(String.format("The organiser with ID %d cannot be deleted because it has associated events.", organiserId));
         }
     }
-
-    @PutMapping("/approve")
-    public ResponseEntity<?> approveEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId, @RequestParam(value = "approvedBy") Integer approvedBy) {
-        return ResponseEntity.ok(eventOrganiserService.approveOrganiser(organiserId, approvedBy));
-    }
-
-
 }

@@ -10,7 +10,9 @@ import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
+import org.hibernate.sql.ast.tree.expression.Over;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,11 +49,15 @@ public class EventServiceImpl implements EventService {
     @Autowired
     private AmazonS3Service amazonS3Service;
 
-    public List<EventDisplayDto> findAllEvent() {
-        return eventRepository.findAll()
-                .stream()
-                .map(eventDTOMapper)
-                .collect(Collectors.toList());
+    //get all events for home page
+    public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
+        return eventDTOMapper.mapPageEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable));
+    }
+
+
+    //find all events for admin
+    public List<OverallEventDto> findAllEvent() {
+        return eventDTOMapper.mapOverallEventDto(eventRepository.findAllByOrderByEventIdAsc());
     }
 
     public OverallEventDto findEventById(Integer eventId) {
@@ -65,7 +71,7 @@ public class EventServiceImpl implements EventService {
     }
 
     public List<EventHomeDto> findRecentlyAddedEvents() {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusOrderByCreatedAtDesc("approved"));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved"));
 
     }
 
@@ -81,12 +87,12 @@ public class EventServiceImpl implements EventService {
 
     public List<EventHomeDto> findUpcomingEvents() {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterOrderByTicketSaleDateAsc("approved", currentDate));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate));
     }
 
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.map(eventRepository.findAllByReviewStatusOrderByCreatedAtAsc(reviewStatus));
+        return eventDTOMapper.map(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(reviewStatus));
     }
 
     ;

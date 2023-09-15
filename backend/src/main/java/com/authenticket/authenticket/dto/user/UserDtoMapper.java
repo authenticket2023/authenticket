@@ -17,6 +17,21 @@ public class UserDtoMapper implements Function<User, UserDisplayDto> {
         );
     }
 
+    public UserFullDisplayDto fullApply(User user){
+        return new UserFullDisplayDto(
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getDateOfBirth(),
+                user.getProfileImage(),
+                User.getRole(),
+                user.getEnabled(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.getDeletedAt()
+        );
+    }
+
     public void update (User newUser, User oldUser){
         if(newUser.getName() != null){
             oldUser.setName(newUser.getName());

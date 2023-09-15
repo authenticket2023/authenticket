@@ -2,17 +2,10 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.event.EventUpdateDto;
-import com.authenticket.authenticket.dto.ticket.TicketUpdateDto;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
-import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
-import com.authenticket.authenticket.dto.venue.VenueUpdateDto;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.Ticket;
-import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.model.Venue;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.Utility;

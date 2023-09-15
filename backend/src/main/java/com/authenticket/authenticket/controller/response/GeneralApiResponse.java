@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.controller;
+package com.authenticket.authenticket.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

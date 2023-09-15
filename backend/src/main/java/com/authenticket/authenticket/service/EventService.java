@@ -5,12 +5,17 @@ import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.repository.EventRepository;
+import org.springframework.data.domain.Pageable;
 
 import java.util.*;
 
 public interface EventService {
 
-    List<EventDisplayDto> findAllEvent();
+    //get all events for homepage
+    List<EventHomeDto> findAllPublicEvent(Pageable pageable);
+
+    //get all events for admin
+    List<OverallEventDto> findAllEvent();
     OverallEventDto findEventById(Integer eventId);
 
     //get methods

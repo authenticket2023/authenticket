@@ -3,6 +3,7 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.NonExistentException;
@@ -13,6 +14,7 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,9 +68,9 @@ public class EventController extends Utility {
 
 
     @GetMapping("/public/event")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllPublicEvent(Pageable pageable) {
         try {
-            List<EventDisplayDto> eventList = eventService.findAllEvent();
+            List<EventHomeDto> eventList = eventService.findAllPublicEvent(pageable);
             if (eventList.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
             } else {
@@ -128,6 +130,22 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
 
     }
+
+    //get method for admin
+    @GetMapping("/event")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
+        try {
+            List<OverallEventDto> eventList = eventService.findAllEvent();
+            if (eventList.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
+            } else {
+                return ResponseEntity.ok(generateApiResponse(eventList, "Events successfully returned."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+    }
+
 
     @PostMapping("/event")
     public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
@@ -240,7 +258,6 @@ public class EventController extends Utility {
             }
         }
 
-
         EventType eventType = null;
         if (typeId != null) {
             Optional<EventType> eventTypeOptional = eventTypeRepository.findById(typeId);
@@ -261,7 +278,6 @@ public class EventController extends Utility {
                 throw new NonExistentException("Admin does not exist");
             }
         }
-
 
         EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
         Event event = eventService.updateEvent(eventUpdateDto);

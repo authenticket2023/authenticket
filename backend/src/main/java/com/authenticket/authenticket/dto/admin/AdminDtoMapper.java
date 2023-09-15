@@ -12,7 +12,10 @@ public class AdminDtoMapper implements Function<Admin, AdminDisplayDto> {
                 admin.getAdminId(),
                 admin.getName(),
                 admin.getEmail(),
-                Admin.getRole()
+                Admin.getRole(),
+                admin.getCreatedAt(),
+                admin.getUpdatedAt(),
+                admin.getDeletedAt()
         );
     }
 
