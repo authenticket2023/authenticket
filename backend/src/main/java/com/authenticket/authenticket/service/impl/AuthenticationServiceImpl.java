@@ -64,12 +64,14 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
     //user
     public void userRegister(User request) {
         var existingUser = userRepository.findByEmail(request.getEmail());
+        var existingAdmin = adminRepository.findByEmail(request.getEmail());
+        var existingOrg = organiserRepository.findByEmail(request.getEmail());
         var jwtToken = jwtServiceImpl.generateToken(request);
 
         String link = "http://localhost:" + apiPort + "/api/auth/userRegister/userConfirm?token=" + jwtToken;
 
-        if(existingUser.isPresent()){
-            if(!existingUser.get().getEnabled()){
+        if(existingUser.isPresent() || existingAdmin.isPresent() || existingOrg.isPresent()){
+            if(existingUser.isPresent() && !existingUser.get().getEnabled()){
                 throw new AlreadyExistsException("Verification needed");
             }
             throw new AlreadyExistsException("User already exists");
@@ -122,12 +124,14 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
     public void orgRegister (EventOrganiser request){
 
         var existingOrg = organiserRepository.findByEmail(request.getEmail());
+        var existingUser = userRepository.findByEmail(request.getEmail());
+        var existingAdmin = adminRepository.findByEmail(request.getEmail());
 
-        if(existingOrg.isPresent()){
-            if(!existingOrg.get().getEnabled()){
+        if(existingUser.isPresent() || existingAdmin.isPresent() || existingOrg.isPresent()){
+            if(existingOrg.isPresent() && !existingOrg.get().getEnabled()){
                 throw new AlreadyExistsException("Awaiting approval");
             }
-            throw new AlreadyExistsException("User already exists");
+            throw new AlreadyExistsException("Organiser already exists");
         }
         emailServiceImpl.send(request.getEmail(), EmailServiceImpl.buildOrganiserPendingEmail(request.getName()), "Your account is under review");
         organiserRepository.save(request);
@@ -154,8 +158,10 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
     public void adminRegister (Admin request){
 
         var existingAdmin = adminRepository.findByEmail(request.getEmail());
+        var existingUser = userRepository.findByEmail(request.getEmail());
+        var existingOrg = organiserRepository.findByEmail(request.getEmail());
 
-        if(existingAdmin.isPresent()){
+        if(existingUser.isPresent() || existingAdmin.isPresent() || existingOrg.isPresent()){
             throw new AlreadyExistsException("Admin already exists");
         }
         adminRepository.save(request);
