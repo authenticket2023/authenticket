@@ -1,11 +1,11 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.authenticket.authenticket.controller.AuthResponse.AuthenticationAdminResponse;
-import com.authenticket.authenticket.controller.AuthResponse.AuthenticationOrgResponse;
+import com.authenticket.authenticket.controller.response.AuthenticationAdminResponse;
+import com.authenticket.authenticket.controller.response.AuthenticationOrgResponse;
 import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
-import com.authenticket.authenticket.controller.AuthResponse.AuthenticationUserResponse;
+import com.authenticket.authenticket.controller.response.AuthenticationUserResponse;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.AwaitingVerificationException;
 import com.authenticket.authenticket.model.Admin;
@@ -129,7 +129,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
             }
             throw new AlreadyExistsException("User already exists");
         }
-
+        emailServiceImpl.send(request.getEmail(), EmailServiceImpl.buildOrganiserPendingEmail(request.getName()), "Your account is under review");
         organiserRepository.save(request);
     }
 

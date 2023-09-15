@@ -1,9 +1,9 @@
 package com.authenticket.authenticket.controller;
 
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
 import com.authenticket.authenticket.model.Admin;
-import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AdminServiceImpl;

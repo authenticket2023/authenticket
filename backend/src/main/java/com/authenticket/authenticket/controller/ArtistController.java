@@ -1,12 +1,9 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
-import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.model.Artist;
-import com.authenticket.authenticket.model.EventOrganiser;
-import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.ArtistRepository;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;

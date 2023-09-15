@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.exception.NonExistentException;

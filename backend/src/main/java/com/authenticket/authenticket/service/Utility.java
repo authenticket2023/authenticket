@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.service;
 
-import com.authenticket.authenticket.controller.GeneralApiResponse;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class Utility {

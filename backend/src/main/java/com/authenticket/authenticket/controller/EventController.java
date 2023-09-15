@@ -3,6 +3,7 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.NonExistentException;

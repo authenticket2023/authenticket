@@ -1,11 +1,9 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserFullDisplayDto;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
-import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.Utility;
@@ -14,7 +12,6 @@ import com.authenticket.authenticket.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
