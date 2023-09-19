@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.service.impl;
 
 
+import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
@@ -64,8 +65,8 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         return new ArrayList<>();
     }
 
-    public List<EventOrganiserDisplayDto> findAllPendingOrganisers() {
-        return eventOrganiserDtoMapper.map(eventOrganiserRepository.findByReviewStatusContainsAndDeletedAtIsNull("pending"));
+    public List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status) {
+        return eventOrganiserDtoMapper.map(eventOrganiserRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(status));
     }
 
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {

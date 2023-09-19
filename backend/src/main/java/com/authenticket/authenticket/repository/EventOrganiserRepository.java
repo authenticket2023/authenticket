@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface EventOrganiserRepository extends JpaRepository<EventOrganiser, Integer> {
     Optional<EventOrganiser> findByEmail(String email);
-    List<EventOrganiser> findByReviewStatusContainsAndDeletedAtIsNull(String pending);
+    List<EventOrganiser> findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(String pending);
 }
 

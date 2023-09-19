@@ -84,12 +84,6 @@ public class EventOrganiserController extends Utility {
 
     }
 
-    @GetMapping("/pending")
-    public ResponseEntity<?> findAllPendingOrganisers() {
-        List<EventOrganiserDisplayDto> organisers = eventOrganiserService.findAllPendingOrganisers();
-        return ResponseEntity.ok(generateApiResponse(organisers, "All organisers awaiting review retrieved successfully"));
-    }
-
 //    @GetMapping("/events/findMappedOrganisers")
 //    public ResponseEntity<GeneralApiResponse> findMappedOrganisers() {
 //        List<ArtistEvent> artistEventList = artistEventRepository.findAll();
@@ -116,24 +110,11 @@ public class EventOrganiserController extends Utility {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateEventOrganiser(@RequestParam("organiserId") Integer organiserId,
+    public ResponseEntity<?> updateEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId,
                                                   @RequestParam(value = "name", required = false) String name,
                                                   @RequestParam(value = "description", required = false) String description,
-                                                  @RequestParam(value = "password", required = false) String password,
-                                                  @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
-                                                  @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
-                                                  @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy,
-                                                  @RequestParam(value = "enabled", required = false) Boolean enabled) {
-        Admin admin = null;
-        if (reviewedBy != null) {
-            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
-            if(adminOptional.isEmpty()) {
-                throw new NonExistentException("Admin with ID " + reviewedBy + " does not exist");
-            }
-            admin = adminOptional.get();
-        }
-
-        EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, enabled, reviewStatus, reviewRemarks, admin);
+                                                  @RequestParam(value = "password", required = false) String password) {
+        EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, null, null, null, null);
         EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
         if (eventOrganiser != null) {
             return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));

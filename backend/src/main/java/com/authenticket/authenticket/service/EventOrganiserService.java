@@ -12,7 +12,7 @@ public interface EventOrganiserService {
     List<EventOrganiserDisplayDto> findAllEventOrganisers();
 
     List<Event> findAllEventsByOrganiser(Integer organiserId);
-    List<EventOrganiserDisplayDto> findAllPendingOrganisers();
+    List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status);
     Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId);
     EventOrganiser saveEventOrganiser (EventOrganiser eventOrganiser);
     EventOrganiser updateEventOrganiser (EventOrganiserUpdateDto eventOrganiserUpdateDto);
