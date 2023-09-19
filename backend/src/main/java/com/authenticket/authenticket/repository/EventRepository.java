@@ -61,5 +61,10 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     //upcoming ticket sales
     Page<Event> findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(String reviewStatus, LocalDateTime currentDate, Pageable pageable);
 
+    //current event (ongoing events that are NOT past)
+    Page<Event> findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc(String reviewStatus, LocalDateTime currentDate, Pageable pageable);
+
+    //past event (event date past current date)
+    Page<Event> findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc(String reviewStatus, LocalDateTime currentDate, Pageable pageable);
 
 }

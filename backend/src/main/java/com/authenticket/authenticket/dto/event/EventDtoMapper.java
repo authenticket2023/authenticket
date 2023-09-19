@@ -80,7 +80,11 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventId(),
                 event.getEventName(),
                 event.getEventDescription(),
-                event.getEventImage());
+                event.getEventImage(),
+                event.getEventType().getEventTypeName(),
+                event.getEventDate(),
+                event.getTotalTickets(),
+                event.getVenue().getVenueLocation());
     }
 
     public FeaturedEventDto applyFeaturedEventDto(FeaturedEvent featuredEvent) {
@@ -106,24 +110,11 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 .collect(Collectors.toList());
     }
 
-    public List<EventHomeDto> mapEventHomeDto(Page<Event> eventPage) {
-        return eventPage.getContent().stream()
-                .map(this::applyEventHomeDto)
-                .collect(Collectors.toList());
-    }
-
     public List<FeaturedEventDto> mapFeaturedEventDto(List<FeaturedEvent> featuredEventList) {
         return featuredEventList.stream()
                 .map(this::applyFeaturedEventDto)
                 .collect(Collectors.toList());
     }
-
-    public List<FeaturedEventDto> mapFeaturedEventDto(Page<FeaturedEvent> featuredEventPage) {
-        return featuredEventPage.getContent().stream()
-                .map(this::applyFeaturedEventDto)
-                .collect(Collectors.toList());
-    }
-
 
     public void update(EventUpdateDto dto, Event event) {
         if (dto.eventName() != null) {
@@ -158,33 +149,6 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         }
     }
 
-    public ArtistEventDto applyAssignedEvent(Object[] assignedEvents) {
-        return new ArtistEventDto(
-                assignedEvents[0],
-                assignedEvents[1],
-                assignedEvents[2],
-                assignedEvents[3],
-                assignedEvents[4],
-                assignedEvents[5],
-                assignedEvents[6],
-                assignedEvents[7],
-                assignedEvents[8],
-                assignedEvents[9],
-                assignedEvents[10],
-                assignedEvents[11],
-                assignedEvents[12],
-                assignedEvents[13],
-                assignedEvents[14],
-                assignedEvents[15],
-                assignedEvents[16]
-        );
-    }
-
-    public List<ArtistEventDto> mapAssignedEvent(List<Object[]> artistEventObjects) {
-        return artistEventObjects.stream()
-                .map(this::applyAssignedEvent)
-                .collect(Collectors.toList());
-    }
 
     public OverallEventDto applyOverallEventDto(Event event) {
 
@@ -234,10 +198,5 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 .collect(Collectors.toList());
     }
 
-    public List<OverallEventDto> mapPageOverallEventDto(Page<Event> eventPage) {
-        return eventPage.getContent().stream()
-                .map(this::applyOverallEventDto)
-                .collect(Collectors.toList());
-    }
 
 }

@@ -134,11 +134,31 @@ public class EventController extends Utility {
 
     @GetMapping("/public/event/upcoming")
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents(Pageable pageable) {
-        List<EventHomeDto> eventList = eventService.findUpcomingEvents(pageable);
+        List<EventHomeDto> eventList = eventService.findUpcomingEventsByTicketSalesDate(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No upcoming events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
+
+    }
+
+    @GetMapping("/public/event/current")
+    public ResponseEntity<GeneralApiResponse<Object>> findCurrentEventsByEventDate(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findCurrentEventsByEventDate(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No current events found"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Current events successfully returned."));
+
+    }
+
+    @GetMapping("/public/event/past")
+    public ResponseEntity<GeneralApiResponse<Object>> findPastEventsByEventDate(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findPastEventsByEventDate(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No past events found"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Past events successfully returned."));
 
     }
 
