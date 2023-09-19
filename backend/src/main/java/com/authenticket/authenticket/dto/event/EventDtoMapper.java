@@ -106,7 +106,7 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 .collect(Collectors.toList());
     }
 
-    public List<EventHomeDto> mapPageEventHomeDto(Page<Event> eventPage) {
+    public List<EventHomeDto> mapEventHomeDto(Page<Event> eventPage) {
         return eventPage.getContent().stream()
                 .map(this::applyEventHomeDto)
                 .collect(Collectors.toList());
@@ -117,6 +117,13 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 .map(this::applyFeaturedEventDto)
                 .collect(Collectors.toList());
     }
+
+    public List<FeaturedEventDto> mapFeaturedEventDto(Page<FeaturedEvent> featuredEventPage) {
+        return featuredEventPage.getContent().stream()
+                .map(this::applyFeaturedEventDto)
+                .collect(Collectors.toList());
+    }
+
 
     public void update(EventUpdateDto dto, Event event) {
         if (dto.eventName() != null) {

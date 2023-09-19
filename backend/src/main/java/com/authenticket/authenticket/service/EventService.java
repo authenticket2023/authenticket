@@ -20,10 +20,10 @@ public interface EventService {
     OverallEventDto findEventById(Integer eventId);
 
     //get methods
-    List<EventHomeDto> findRecentlyAddedEvents();
-    List<FeaturedEventDto> findFeaturedEvents();
-    List<EventHomeDto> findBestSellerEvents();
-    List<EventHomeDto> findUpcomingEvents();
+    List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable);
+    List<FeaturedEventDto> findFeaturedEvents(Pageable pageable);
+    List<EventHomeDto> findBestSellerEvents(Pageable pageable);
+    List<EventHomeDto> findUpcomingEvents(Pageable pageable);
 
     Event saveEvent (Event event);
     FeaturedEventDto saveFeaturedEvent (FeaturedEvent featuredEvent);

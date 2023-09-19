@@ -103,8 +103,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/recently-added")
-    public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
-        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No recently added events found"));
         }
@@ -113,8 +113,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/featured")
-    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
-        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents(Pageable pageable) {
+        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No featured events found"));
         }
@@ -123,8 +123,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/bestseller")
-    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
-        List<EventHomeDto> eventList = eventService.findBestSellerEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findBestSellerEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No bestseller events found"));
         }
@@ -133,8 +133,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/upcoming")
-    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
-        List<EventHomeDto> eventList = eventService.findUpcomingEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findUpcomingEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No upcoming events found"));
         }

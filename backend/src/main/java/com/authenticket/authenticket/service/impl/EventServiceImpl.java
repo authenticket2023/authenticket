@@ -10,6 +10,7 @@ import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,7 @@ public class EventServiceImpl implements EventService {
 
     //get all events for home page
     public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
-        return eventDTOMapper.mapPageEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable));
     }
 
 
@@ -77,25 +78,25 @@ public class EventServiceImpl implements EventService {
         }
         return null;
     }
-
-    public List<EventHomeDto> findRecentlyAddedEvents() {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved"));
+    //find recently added events by created at date for home
+    public List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved", pageable));
 
     }
 
-    public List<FeaturedEventDto> findFeaturedEvents() {
-        List<FeaturedEvent> featuredEvents = featuredEventRepository.findTop5FeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now());
+    public List<FeaturedEventDto> findFeaturedEvents(Pageable pageable) {
+        Page<FeaturedEvent> featuredEvents = featuredEventRepository.findAllFeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now(),pageable);
         return eventDTOMapper.mapFeaturedEventDto(featuredEvents);
     }
 
-    public List<EventHomeDto> findBestSellerEvents() {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents());
+    public List<EventHomeDto> findBestSellerEvents(Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents(pageable));
     }
 
 
-    public List<EventHomeDto> findUpcomingEvents() {
+    public List<EventHomeDto> findUpcomingEvents(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate,pageable));
     }
 
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
