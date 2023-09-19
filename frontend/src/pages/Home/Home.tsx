@@ -16,74 +16,114 @@ import BearCarousel, {
   TBearSlideItemDataList,
   BearSlideCard,
 } from "bear-react-carousel";
+import { async } from "q";
 
 export const Home = () => {
-  useEffect(() => {}, []);
+  
+  const [featured, setFeatured]: any = React.useState();
+  const [loaded, setLoaded]: any = React.useState(false);
+  
+  const loadFeatured = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/featured`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          setFeatured(data);
+          setLoaded(true);
+        } else {
+          //passing to parent component
+          //show alert msg
+          // props.setOpenSnackbar(true);
+          // props.setAlertType('error');
+          // props.setAlertMsg(`Fetch data failed, code: ${response.status}`);
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+    }
 
   const images = [
-    { id: 1, bg: "https://picsum.photos/400/250", 
-    subheader: "Featured", 
-    header: "Lauv: the between albums tour", 
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+    {
+      id: 1, bg: "https://picsum.photos/400/250",
+      subheader: "Featured",
+      header: "Lauv: the between albums tour",
+      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
     earum ullam repellat minus, cumque, tempore fugit officia delectus\
     omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
     Lorem ipsum dolor sit amet consectetur adipisicing elit.\
     Architecto maiores reprehenderit veritatis eveniet possimus ex\
     odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
     quod libero sint? Laborum, at maiores.",
-    link: "#" },
-    {id: 2, bg: "https://picsum.photos/400/250", 
-    subheader: "Featured", 
-    header: "Lauv: the between albums tour", 
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+      link: "#"
+    },
+    {
+      id: 2, bg: "https://picsum.photos/400/250",
+      subheader: "Featured",
+      header: "Lauv: the between albums tour",
+      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
     earum ullam repellat minus, cumque, tempore fugit officia delectus\
     omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
     Lorem ipsum dolor sit amet consectetur adipisicing elit.\
     Architecto maiores reprehenderit veritatis eveniet possimus ex\
     odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
     quod libero sint? Laborum, at maiores.",
-    link: "#" },
-    {id: 3, bg: "https://picsum.photos/400/250", 
-    subheader: "Featured", 
-    header: "Lauv: the between albums tour", 
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+      link: "#"
+    },
+    {
+      id: 3, bg: "https://picsum.photos/400/250",
+      subheader: "Featured",
+      header: "Lauv: the between albums tour",
+      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
     earum ullam repellat minus, cumque, tempore fugit officia delectus\
     omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
     Lorem ipsum dolor sit amet consectetur adipisicing elit.\
     Architecto maiores reprehenderit veritatis eveniet possimus ex\
     odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
     quod libero sint? Laborum, at maiores.",
-    link: "#" },
-    {id: 4, bg: "https://picsum.photos/400/250", 
-    subheader: "Featured", 
-    header: "Lauv: the between albums tour", 
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+      link: "#"
+    },
+    {
+      id: 4, bg: "https://picsum.photos/400/250",
+      subheader: "Featured",
+      header: "Lauv: the between albums tour",
+      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
     earum ullam repellat minus, cumque, tempore fugit officia delectus\
     omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
     Lorem ipsum dolor sit amet consectetur adipisicing elit.\
     Architecto maiores reprehenderit veritatis eveniet possimus ex\
     odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
     quod libero sint? Laborum, at maiores.",
-    link: "#" },
-    { id: 5, bg: "https://picsum.photos/400/250", 
-    subheader: "Featured", 
-    header: "Lauv: the between albums tour", 
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
+    link: "#"
+    },
+    {
+      id: 5, bg: "https://picsum.photos/400/250",
+      subheader: "Featured",
+      header: "Lauv: the between albums tour",
+      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta\
     earum ullam repellat minus, cumque, tempore fugit officia delectus\
     omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?\
     Lorem ipsum dolor sit amet consectetur adipisicing elit.\
     Architecto maiores reprehenderit veritatis eveniet possimus ex\
     odio? Reiciendis, ducimus. Placeat recusandae nulla nisi vitae est\
     quod libero sint? Laborum, at maiores.",
-    link: "#" },
+      link: "#"
+    },
   ];
 
   const CustomBanner = () => {
-    const bearSlideItemData: TBearSlideItemDataList = images.map((row) => {
+    const bearSlideItemData: TBearSlideItemDataList = featured.map((row: any) => {
       return {
         key: row.id,
         children: (
-          <BearSlideCard bgUrl={row.bg}>
+          <BearSlideCard bgUrl={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.event.eventImage}`}>
             <div style={{ height: "100%", backgroundImage: row.bg }} />
           </BearSlideCard>
         ),
@@ -98,28 +138,28 @@ export const Home = () => {
       />
     );
   };
-
+  
   const TextAnimationsCarousel = () => {
-    const slideItemData: TBearSlideItemDataList = images.map((row) => {
+    const slideItemData: TBearSlideItemDataList = featured.map((row: any) => {
       return {
-        key: row.id,
+        key: row.featuredId,
         children: (
           <Box bgcolor="#FF5C35" marginTop={8}>
             <Typography variant="h6" color="white" marginLeft={2}>
-              {row.subheader}
+              Featured
             </Typography>
             <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-              {row.header}
+              {row.event.eventName}
             </Typography>
             <Typography variant="subtitle2" justifyItems="center" color="white">
-              {row.description}
+              {row.event.eventDescription}
             </Typography>
             <Box marginTop={2} marginLeft={2}>
               <Button
                 variant="outlined"
-                href={row.link}
-                sx={{ color: "white", borderColor: "white"}}
-              >
+                href='#'
+                sx={{ color: "white", borderColor: "white" }}
+                >
                 Get tickets
               </Button>
             </Box>
@@ -133,7 +173,7 @@ export const Home = () => {
         height="400px"
         isEnableAutoPlay
         isEnableLoop
-        isDebug
+
       />
     );
   };
@@ -260,121 +300,131 @@ export const Home = () => {
     );
   }
 
+  useEffect(() => {
+    if (!loaded) {
+        loadFeatured();
+    }
+}, []);
+
   return (
     <>
-      <div>
-        <NavbarNotLoggedIn />
-        <Paper
-          elevation={5}
-          sx={{
-            position: "relative",
-            backgroundColor: "grey.800",
-            color: "#fff",
-            mb: 4,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            backgroundImage: `url(https://i.imgur.com/UKi8jbp.png)`,
-          }}
-        >
-          <Box
+      {loaded ? 
+      <Box>
+        <div>
+          <NavbarNotLoggedIn />
+          <Paper
+            elevation={5}
             sx={{
               position: "relative",
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              backgroundColor: "rgba(0,0,0,.3)",
+              backgroundColor: "grey.800",
+              color: "#fff",
+              mb: 4,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              backgroundImage: `url(https://i.imgur.com/UKi8jbp.png)`,
             }}
-          />
-          <Grid
-            container
-            spacing={4}
-            alignItems="center"
-            justifyContent="center"
           >
-            <Grid item md={6}>
-              <Box
-                sx={{
-                  position: "relative",
-                  p: { xs: 3, md: 6 },
-                  pr: { md: 0 },
-                }}
-              >
-                <br />
-                <br />
-                <Typography
-                  component="h1"
-                  variant="h3"
-                  color="inherit"
-                  align="center"
+            <Box
+              sx={{
+                position: "relative",
+                top: 0,
+                bottom: 0,
+                right: 0,
+                left: 0,
+                backgroundColor: "rgba(0,0,0,.3)",
+              }}
+            />
+            <Grid
+              container
+              spacing={4}
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Grid item md={6}>
+                <Box
+                  sx={{
+                    position: "relative",
+                    p: { xs: 3, md: 6 },
+                    pr: { md: 0 },
+                  }}
                 >
-                  Unlock Unforgettable Experiences
-                </Typography>
-                <Typography
-                  component="h1"
-                  variant="h6"
-                  color="inherit"
-                  gutterBottom
-                  align="center"
-                >
-                  your gateway to premier event adventures
-                </Typography>
-                <br />
-                <br />
-                <br />
-                <Search>
-                  <SearchIconWrapper>
-                    <SearchIcon sx={{ color: "#3b3b3b" }} />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder="Search…"
-                    inputProps={{ "aria-label": "search" }}
-                    fullWidth
-                  />
-                </Search>
-                <br />
-                <br />
-                <br />
-              </Box>
+                  <br />
+                  <br />
+                  <Typography
+                    component="h1"
+                    variant="h3"
+                    color="inherit"
+                    align="center"
+                  >
+                    Unlock Unforgettable Experiences
+                  </Typography>
+                  <Typography
+                    component="h1"
+                    variant="h6"
+                    color="inherit"
+                    gutterBottom
+                    align="center"
+                  >
+                    your gateway to premier event adventures
+                  </Typography>
+                  <br />
+                  <br />
+                  <br />
+                  <Search>
+                    <SearchIconWrapper>
+                      <SearchIcon sx={{ color: "#3b3b3b" }} />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                      placeholder="Search…"
+                      inputProps={{ "aria-label": "search" }}
+                      fullWidth
+                    />
+                  </Search>
+                  <br />
+                  <br />
+                  <br />
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
+        </div>
+        <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          Featured Events
+        </Typography>
+        <Grid container>
+          <Grid item xs={12}>
+            <TicketCarousel></TicketCarousel>
+          </Grid>
+        </Grid>
+        <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          New on AuthenTicket
+        </Typography>
+        <Grid container>
+          <Grid item xs={12}>
+            <TicketCarousel></TicketCarousel>
+          </Grid>
+        </Grid>
+        <Box bgcolor="#FF5C35" marginTop={12}>
+          <Grid container alignItems="center" justifyContent="center">
+            <Grid item xs={5} marginTop={4} marginBottom={4}>
+              <CustomBanner></CustomBanner>
+            </Grid>
+            <Grid item xs={5} marginLeft={4}>
+              <TextAnimationsCarousel></TextAnimationsCarousel>
             </Grid>
           </Grid>
-        </Paper>
-      </div>
-      <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
-        Featured Events
-      </Typography>
-      <Grid container>
-        <Grid item xs={12}>
-          <TicketCarousel></TicketCarousel>
-        </Grid>
-      </Grid>
-      <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
-        New on AuthenTicket
-      </Typography>
-      <Grid container>
-        <Grid item xs={12}>
-          <TicketCarousel></TicketCarousel>
-        </Grid>
-      </Grid>
-      <Box bgcolor="#FF5C35" marginTop={12}>
-        <Grid container alignItems="center" justifyContent="center">
-          <Grid item xs={5} marginTop={4} marginBottom={4}>
-            <CustomBanner></CustomBanner>
-          </Grid>
-          <Grid item xs={5} marginLeft={4}>
-            <TextAnimationsCarousel></TextAnimationsCarousel>
+        </Box>
+        <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          Recently Added
+        </Typography>
+        <Grid container>
+          <Grid item xs={12} marginBottom={8}>
+            <TicketCarousel></TicketCarousel>
           </Grid>
         </Grid>
       </Box>
-      <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
-        Recently Added
-      </Typography>
-      <Grid container>
-        <Grid item xs={12} marginBottom={8}>
-          <TicketCarousel></TicketCarousel>
-        </Grid>
-      </Grid>
+        :null}
     </>
   );
 };
