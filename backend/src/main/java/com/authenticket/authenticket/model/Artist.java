@@ -26,10 +26,10 @@ public class Artist extends BaseEntity {
     @Column(name = "artist_name", nullable = false)
     private String artistName;
 
-    @Column(name = "artist_image", nullable = true)
+    @Column(name = "artist_image")
     private String artistImage;
 
-    @ManyToMany(mappedBy ="artists", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy ="artists")
     @JsonIgnore
 //    @JoinTable(
 //            name = "artist_event",

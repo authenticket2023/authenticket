@@ -176,10 +176,9 @@ public class EventServiceImpl implements EventService {
     public EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<Artist> artistOptional = artistRepository.findById(artistId);
-        System.out.println("artist: " + artistId);
-        System.out.println("event: " + eventId);
+
         if (artistOptional.isPresent() && eventOptional.isPresent()) {
-            System.out.println("hello");
+
             Artist artist = artistOptional.get();
             Event event = eventOptional.get();
             Set<Artist> artistSet = event.getArtists();

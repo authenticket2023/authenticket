@@ -27,10 +27,10 @@ public class Event extends BaseEntity {
     @Column(name = "event_name", nullable = false)
     private String eventName;
 
-    @Column(name = "event_description")
+    @Column(name = "event_description", nullable = false)
     private String eventDescription;
 
-    @Column(name = "event_date")
+    @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
     @Column(name = "other_event_info")
@@ -70,7 +70,7 @@ public class Event extends BaseEntity {
     private Venue venue;
 
 //    @Getter
-    @ManyToMany( cascade = CascadeType.ALL)
+    @ManyToMany
     @JsonIgnore
     @JoinTable(
             schema = "dev",

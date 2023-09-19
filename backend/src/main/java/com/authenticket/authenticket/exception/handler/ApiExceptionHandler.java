@@ -1,6 +1,8 @@
-package com.authenticket.authenticket.exception;
+package com.authenticket.authenticket.exception.handler;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.exception.ApiException;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.service.Utility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +27,7 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "email", nullable = false, unique = true)
+    @Email
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
