@@ -9,7 +9,7 @@ export const EventAdmin = () => {
     const token = window.localStorage.getItem('accessToken');
     const accRole = window.localStorage.getItem('accRole');
 
-    const [value, setValue] = React.useState('Pending Event');
+    const [value, setValue] = React.useState('Pending Event For Review');
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
@@ -23,12 +23,12 @@ export const EventAdmin = () => {
                 <TabContext value={value}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <Tabs value={value} onChange={handleChange} textColor="inherit" indicatorColor="primary" centered>
-                            <Tab label="Pending Event" value="Pending Event" />
+                            <Tab label="Pending Event For Review" value="Pending Event For Review" />
                             <Tab label="All Event" value="All Event" />
                         </Tabs>
                     </Box>
 
-                    <TabPanel value="Pending Event">
+                    <TabPanel value="Pending Event For Review">
                         <br />
                         <br />
                         <PendingEventTab />
