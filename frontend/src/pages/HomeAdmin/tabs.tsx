@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Typography, LinearProgress, Modal, Avatar, Grid, TextField, FormControlLabel,
-    Checkbox, FormControl, InputLabel, MenuItem, Select,
-    Switch, FormGroup, Button, ListItemText, OutlinedInput, Snackbar, Alert, IconButton, InputAdornment,
+    Box, Typography, LinearProgress, Modal, Button, Snackbar, Alert, 
     Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
@@ -115,7 +113,6 @@ export function PendingTab() {
         setReviewOpen(true);
     };
 
-
     //for deletion
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [selectedRows, setSelectedRows] = useState('');
@@ -144,7 +141,7 @@ export function PendingTab() {
     //TODO: change to organiser account deletion
     const handleDelete = (id: any) => {
         const formData = new FormData;
-        formData.append('organiserID', selectedRows);
+        formData.append('organiserId', selectedRows);
         fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser/delete`, {
             headers: {
                 'Authorization': `Bearer ${token}`,

@@ -1,10 +1,9 @@
 import {
     Box, Typography, Modal,
-    Grid, Button, Avatar, ListItemText, ListItem, CardMedia, TextareaAutosize
+    Grid, Button, Avatar, TextareaAutosize
 } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Sheet } from '@mui/joy';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 
 const style = {
     position: 'absolute' as 'absolute',
