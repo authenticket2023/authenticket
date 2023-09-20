@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { NavbarAdmin } from '../../Navbar';
-import { Box, Tab, Tabs} from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import { TabContext, TabPanel } from '@mui/lab';
-import {PendingEventTab, AllEventTab} from './tabs';
+import { PendingEventTab, AllEventTab } from './tabs';
 
 export const EventAdmin = () => {
     const token = window.localStorage.getItem('accessToken');
-    const accRole = window.localStorage.getItem('accRole');
+    const role = window.localStorage.getItem('role');
 
     const [value, setValue] = React.useState('Pending Event For Review');
 
@@ -17,6 +17,10 @@ export const EventAdmin = () => {
 
     return (
         <div>
+            {
+                token != null && role == 'ADMIN' ?
+                    <Navigate to="/EventAdmin" /> : <Navigate to="/Forbidden" />
+            }
             < NavbarAdmin />
 
             <Box sx={{ width: '100%', typography: 'body1' }}>

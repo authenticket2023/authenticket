@@ -19,7 +19,6 @@ import BearCarousel, {
 
 export const Home = () => {
   useEffect(() => { 
-    localStorage.setItem('accessToken', `${process.env.REACT_APP_TOKEN}`);
   }, []);
 
   const images = [

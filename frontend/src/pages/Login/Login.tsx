@@ -87,20 +87,17 @@ export const Login = () => {
     })
       .then(async (response) => {
         if (response.status === 200) {
-
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them
           localStorage.setItem('accessToken', loginResponse.data.token);
           localStorage.setItem('id', loginResponse.data.userDetails.userId);
+          localStorage.setItem('role', "USER");
           localStorage.setItem('email', loginResponse.data.userDetails.email);
           localStorage.setItem('username', loginResponse.data.userDetails.name);
           localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
           localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
 
-          
-
           navigate('/Home');
-
         } else {
           const loginResponse = await response.json();
           setOpenSnackbar(true);

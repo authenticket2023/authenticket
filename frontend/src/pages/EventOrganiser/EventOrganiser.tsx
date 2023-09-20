@@ -127,6 +127,7 @@ export const EventOrganiser = () => {
     }
 
     const token = window.localStorage.getItem('accessToken');
+    const role = window.localStorage.getItem('role');
     const handleCreateEvent = () => {
         //retrieve venue from DB
         const addTicketCategory = async (eventId: any) => {
@@ -238,6 +239,10 @@ export const EventOrganiser = () => {
 
     return (
         <div>
+            {
+                token != null && role == 'ORGANISER' ?
+                 <Navigate to="/EventOrganiser" /> :  <Navigate to="/Forbidden" />
+            }
             < NavbarOrganiser />
             <Box sx={{ mt: '5%', ml: '15%', mr: '15%', mb: '5%', width: '70%' }}>
                 <Stepper nonLinear activeStep={activeStep} alternativeLabel>

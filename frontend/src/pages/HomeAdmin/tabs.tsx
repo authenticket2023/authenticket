@@ -184,7 +184,7 @@ export function PendingTab() {
         downloadOptions: { filename: `AuthenTicket Pending Organiser Account Data(${new Date().toDateString()}).csv` },
         sortOrder: {
             name: 'Created At',
-            direction: 'asc'
+            direction: 'desc'
         }
     };
 

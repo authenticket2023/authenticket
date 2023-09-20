@@ -20,6 +20,7 @@ const style = {
 
 export default function ReviewAccount(props: any) {
     const token = window.localStorage.getItem('accessToken');
+    const adminID : any = window.localStorage.getItem('id');
     const [accountID, setAccountID] = React.useState(props.accountID);
     const [organiserDetail, setOrganiserDetail]: any = React.useState();
     const [loaded, setLoaded]: any = React.useState(false);
@@ -64,18 +65,15 @@ export default function ReviewAccount(props: any) {
     const updateOrganiserStatus = async (status: string) => {
         const formData = new FormData();
         formData.append('organiserId', accountID);
-        if (remarks == '') {
-            setRemarks(null);
-        }
         formData.append('reviewRemarks', remarks);
-        formData.append('reviewStatus', status);
-        formData.append('reviewedBy', "1");
+        formData.append('reviewStatus', 'approved');
+        formData.append('reviewedBy', adminID);
         if (status == 'approved') {
             formData.append('enabled', 'true');
         } else {
             formData.append('enabled', 'false');
         }
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -87,7 +85,7 @@ export default function ReviewAccount(props: any) {
                 if (response.status == 200) {
                     props.setOpenSnackbar(true);
                     props.setAlertType('success');
-                    props.setAlertMsg(`${apiResponse['message']}`);
+                    props.setAlertMsg(`Approved Organiser Account ID :${accountID} successfully!`);
                     setReviewOpen(false);
                     //to update parent element
                     props.open(false);
@@ -95,7 +93,7 @@ export default function ReviewAccount(props: any) {
                 } else {
                     props.setOpenSnackbar(true);
                     props.setAlertType('error');
-                    props.setAlertMsg(`${apiResponse['message']}`);
+                    props.setAlertMsg(`Something wrong`);
                 }
             })
             .catch((err) => {
