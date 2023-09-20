@@ -56,13 +56,13 @@ export function PendingTab() {
         {
             name: "Description",
             options: {
-                customBodyRender: (value: string) => <span>{value.length < 15 ? value : value.slice(0, 15) + '....'}</span>
+                customBodyRender: (value: string) => <Typography>{value.length < 15 ? value : value.slice(0, 15) + '....'}</Typography>
             }
         },
         {
-            name: "Create At",
+            name: "Created At",
             options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+                customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
             }
         },
     ];
@@ -70,7 +70,7 @@ export function PendingTab() {
     const [dataLoaded, setDataLoaded] = useState(false);
     const loadPendingData = async () => {
         //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/review-status/pending`, {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser/pending`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -89,11 +89,11 @@ export function PendingTab() {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    // data.forEach((event: any) => {
-                    //     const row = [event.eventId, event.eventName, event.eventDescription,
-                    //     event.eventDate, event.ticketSaleDate, event.createdAt]
-                    //     fetchData.push(row)
-                    // });
+                    data.forEach((organiser: any) => {
+                        const row = [organiser.organiserId, organiser.name, organiser.email,
+                        organiser.description, organiser.createdAt];
+                        fetchData.push(row);
+                    });
                     setPendingData(fetchData);
                     setDataLoaded(true);
                     //close the modal
@@ -107,11 +107,11 @@ export function PendingTab() {
             });
     }
 
-    //For review pending event page
+    //For review pending organiser page
     const [reviewOpen, setReviewOpen] = React.useState(false);
-    const [reviewEventID, setReviewEventID] = React.useState('');
+    const [reviewAccountID, setReviewAccountID] = React.useState('');
     const handleRowClick = (rowData: any, rowMeta: any) => {
-        setReviewEventID(rowData[0]);
+        setReviewAccountID(rowData[0]);
         setReviewOpen(true);
     };
 
@@ -122,14 +122,13 @@ export function PendingTab() {
 
     const onRowsSelect = (curRowSelected: any, allRowsSelected: any) => {
         try {
-            console.log(allRowsSelected);
-            let selectedEventID = "";
+            let selectedOrganiserID = "";
             allRowsSelected.forEach((element: any) => {
                 const dataIndex = element.dataIndex;
-                const eventID = pendingData[dataIndex][0];
-                selectedEventID += eventID + ',';
+                const organiserID = pendingData[dataIndex][0];
+                selectedOrganiserID += organiserID + ',';
             });
-            setSelectedRows(selectedEventID);
+            setSelectedRows(selectedOrganiserID);
         } catch (error) {
             window.alert(`Error during selecting:${error}`);
         }
@@ -143,11 +142,10 @@ export function PendingTab() {
         setOpenConfirmDialog(false);
     };
     //TODO: change to organiser account deletion
-    const handleDelete = () => {
+    const handleDelete = (id: any) => {
         const formData = new FormData;
-        formData.append('eventId', selectedRows);
-        // Implement  delete logic
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/delete`, {
+        formData.append('organiserID', selectedRows);
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser/delete`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -186,10 +184,10 @@ export function PendingTab() {
         onRowsSelect: onRowsSelect,
         onRowClick: handleRowClick,
         onRowsDelete: handleClickDeleteIcon,
-        downloadOptions: { filename: `AuthenTicket Pending Event Data(${new Date().toDateString()}).csv` },
+        downloadOptions: { filename: `AuthenTicket Pending Organiser Account Data(${new Date().toDateString()}).csv` },
         sortOrder: {
             name: 'Created At',
-            direction: 'desc'
+            direction: 'asc'
         }
     };
 
@@ -226,7 +224,7 @@ export function PendingTab() {
             }
 
             {reviewOpen ?
-                <ReviewEvent open={setReviewOpen} setReload={setReload} setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} eventID={reviewEventID} />
+                <ReviewEvent open={setReviewOpen} setReload={setReload} setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} accountID={reviewAccountID} />
                 : null}
             <Dialog open={openConfirmDialog} onClose={handleCloseConfirmDialog}>
                 <DialogTitle>Confirm Delete</DialogTitle>
@@ -295,23 +293,54 @@ export function AllTab() {
     const [openLoadingModal, setLoadingModal] = React.useState(false);
 
     //for datatable
-    const columns = ["Account ID", "Role", "Name", "Email",
+    const columns = [
+        {
+            name: "Account ID",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value}</Typography>
+            }
+        },
+        {
+            name: "Role",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value}</Typography>
+            }
+        },
+        {
+            name: "Name",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value}</Typography>
+            }
+        },
+        {
+            name: "Email",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value}</Typography>
+            }
+        },
         {
             name: "Date of Birth",
             options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+                customBodyRender: (value: any) => {
+                    const dob = new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric" });
+                    return (
+                        <Typography>
+                            {dob === "Invalid Date" ? "NA" : dob}
+                        </Typography>
+                    )
+                }
             }
         },
         {
             name: "Description",
             options: {
-                customBodyRender: (value: string) => <span>{value.length < 15 ? value : value.slice(0, 15) + '....'}</span>
+                customBodyRender: (value: string) => <Typography>{value.length < 15 ? value : value.slice(0, 15) + '....'}</Typography>
             }
         },
         {
-            name: "Create At",
+            name: "Created At",
             options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+                customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
             }
         },
         {
@@ -319,9 +348,9 @@ export function AllTab() {
             options: {
                 customBodyRender: (value: string) => {
                     return (
-                        <span>
+                        <Typography>
                             {value === "" ? "NO REMARKS YET" : value.length < 15 ? value : value.slice(0, 15) + '....'}
-                        </span>
+                        </Typography>
                     )
                 }
             }
@@ -347,14 +376,19 @@ export function AllTab() {
                 }
             }
         },
-        "Reviewd By",
+        {
+            name: "Reviewd By",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value === "" ? "NOT REVIEW YET" : value}</Typography>
+            }
+        },
     ];
     const [allData, setAllData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
 
     const loadAllData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -371,23 +405,99 @@ export function AllTab() {
                     setAlertMsg(`Fetch data faile, code: ${response.status}`);
                 } else {
                     const apiResponse = await response.json();
-                    console.log(apiResponse)
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    // data.forEach((event: any) => {
-                    //     let reviewedByEmail = event.reviewedBy !== null ? event.reviewedBy.email : "";
-                    //     let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
-                    //     const row = [event.eventId, event.eventName, event.eventDescription,
-                    //     event.eventDate, event.ticketSaleDate,
-                    //     event.organiser.email,
-                    //         reviewRemarks, event.reviewStatus,
-                    //         reviewedByEmail]
-                    //     fetchData.push(row)
-                    // });
-                    setAllData(fetchData);
+                    data.forEach((organiser: any) => {
+                        //check if the vaule if null, if yes, set to ""
+                        let reviewedByEmail = organiser.reviewedBy !== null ? organiser.reviewedBy.email : "";
+                        let reviewRemarks = organiser.reviewRemarks !== null ? organiser.reviewRemarks : "";
+
+                        const row = [organiser.organiserId, organiser.role, organiser.name, organiser.email, '-',
+                        organiser.description, organiser.createdAt,
+                            reviewRemarks, organiser.reviewStatus,
+                            reviewedByEmail]
+                        fetchData.push(row)
+                    });
+                    setAllData((old: any) => [...old, ...fetchData]);
+                    loadUserData();
+                    loadAdminData();
                     setDataLoaded(true);
                     //close the modal
                     setLoadingModal(false);
+                }
+            })
+            .catch((err) => {
+                //close the modal
+                setLoadingModal(false);
+                window.alert(err);
+            });
+    }
+
+    const loadUserData = async () => {
+        // //calling backend API
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/user`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'GET',
+        })
+            .then(async (response) => {
+                if (response.status != 200) {
+                    //close the modal
+                    setLoadingModal(false);
+                    //show alert msg
+                    setOpenSnackbar(true);
+                    setAlertType('error');
+                    setAlertMsg(`Fetch data faile, code: ${response.status}`);
+                } else {
+                    const apiResponse = await response.json();
+                    const data = apiResponse.data;
+                    const fetchData: any = [];
+                    data.forEach((user: any) => {
+
+                        const row = [user.userId, user.role, user.name, user.email, user.dateOfBirth,
+                            '-', user.createdAt,
+                            '-', '-', '-']
+                        fetchData.push(row)
+                    });
+                    setAllData((old: any) => [...old, ...fetchData]);
+                }
+            })
+            .catch((err) => {
+                //close the modal
+                setLoadingModal(false);
+                window.alert(err);
+            });
+    }
+
+    const loadAdminData = async () => {
+        // //calling backend API
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/admin`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'GET',
+        })
+            .then(async (response) => {
+                if (response.status != 200) {
+                    //close the modal
+                    setLoadingModal(false);
+                    //show alert msg
+                    setOpenSnackbar(true);
+                    setAlertType('error');
+                    setAlertMsg(`Fetch data faile, code: ${response.status}`);
+                } else {
+                    const data = await response.json();
+                    const fetchData: any = [];
+                    data.forEach((admin: any) => {
+                        const row = [admin.adminId, admin.role, admin.name, admin.email, '-',
+                            '-', admin.createdAt,
+                            '-', '-', '-']
+                        fetchData.push(row)
+                    });
+                    setAllData((old: any) => [...old, ...fetchData]);
                 }
             })
             .catch((err) => {
@@ -406,7 +516,7 @@ export function AllTab() {
     };
 
 
-    //for deletion
+    //TODO: for deletion
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [selectedRows, setSelectedRows] = useState('');
 
@@ -462,7 +572,7 @@ export function AllTab() {
             })
             .catch((error) => {
                 // Handle any error that occurred during the update process
-                window.alert(`Error during deleting pending event:${error}`);
+                window.alert(`Error during deleting :${error}`);
             });
         // After the deletion is successful, close the dialog
         handleCloseConfirmDialog();
@@ -473,13 +583,15 @@ export function AllTab() {
         print: true,
         download: true,
         rowHover: true,
+        selectableRows: false,
         onRowsSelect: onRowsSelect,
-        onRowClick: handleRowClick,
+        //for now disable onclick
+        // onRowClick: handleRowClick,
         onRowsDelete: handleClickDeleteIcon,
-        downloadOptions: { filename: `AuthenTicket All Event Data(${new Date().toDateString()}).csv` },
+        downloadOptions: { filename: `AuthenTicket All Account Data(${new Date().toDateString()}).csv` },
         sortOrder: {
-            name: 'Event ID',
-            direction: 'desc'
+            name: 'Role',
+            direction: 'asc'
         }
     };
 

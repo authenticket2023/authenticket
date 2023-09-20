@@ -21,8 +21,8 @@ const style = {
 
 export default function ReviewAccount(props: any) {
     const token = window.localStorage.getItem('accessToken');
-    const [eventID, setEventID] = React.useState(props.eventID);
-    const [eventDetail, setEventDetail]: any = React.useState();
+    const [accountID, setAccountID] = React.useState(props.accountID);
+    const [organiserDetail, setOrganiserDetail]: any = React.useState();
     const [loaded, setLoaded]: any = React.useState(false);
     const [reviewOpen, setReviewOpen] = React.useState(true);
     const [remarks, setRemarks]: any = React.useState(null);
@@ -32,11 +32,12 @@ export default function ReviewAccount(props: any) {
         props.open(false);
     }
 
-    const loadEventDetailByID = async () => {
+    const loadOrganiserDetailByID = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/${eventID}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser/${accountID}`, {
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             method: 'GET',
         })
@@ -44,8 +45,9 @@ export default function ReviewAccount(props: any) {
                 if (response.status == 200) {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
+                    console.log(data);
                     setRemarks(data.reviewRemarks);
-                    setEventDetail(data);
+                    setOrganiserDetail(data);
                     setLoaded(true);
                 } else {
                     //passing to parent component
@@ -60,12 +62,20 @@ export default function ReviewAccount(props: any) {
             });
     }
 
-    const updateEventStatus = async (status: string) => {
+    const updateOrganiserStatus = async (status: string) => {
         const formData = new FormData();
-        formData.append('eventId', eventID);
+        formData.append('organiserId', accountID);
+        if (remarks == '') {
+            setRemarks(null);
+        }
         formData.append('reviewRemarks', remarks);
         formData.append('reviewStatus', status);
-        formData.append('reviewedBy', "8");
+        formData.append('reviewedBy', "1");
+        if (status == 'approved') {
+            formData.append('enabled', 'true');
+        } else {
+            formData.append('enabled', 'false');
+        }
         fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -98,10 +108,10 @@ export default function ReviewAccount(props: any) {
     const handleRemarks = (event: any) => {
         setRemarks(event.target.value);
     };
-    
+
     const handleAccept = (event: any) => {
         event.preventDefault();
-        updateEventStatus('approved');
+        updateOrganiserStatus('approved');
     }
 
     const handleReject = (event: any) => {
@@ -110,14 +120,14 @@ export default function ReviewAccount(props: any) {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg(`Please enter the reason for rejection!`);
-        }else {
-            updateEventStatus('rejected');
+        } else {
+            updateOrganiserStatus('rejected');
         }
     }
 
     useEffect(() => {
         if (!loaded) {
-            loadEventDetailByID();
+            loadOrganiserDetailByID();
         }
     }, []);
 
@@ -139,66 +149,28 @@ export default function ReviewAccount(props: any) {
                 >
                     <Box sx={{ ...style, width: 800, mt: '15%', mb: '15%', height: 800 }} textAlign='center'>
                         <Sheet>
-                            <Typography variant="h2" >{eventDetail.eventName}</Typography>
-                            <Grid container spacing={3} sx={{ textAlign: "left" }}>
-                                {/* first row */}
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6">Description</Typography>
-                                    <Typography>{eventDetail.eventDescription}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6">Other Info</Typography>
-                                    <Typography>{eventDetail.otherEventInfo}</Typography>
-                                </Grid>
-                                {/* second row */}
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6">Event Date</Typography>
-                                    <Typography>{new Date(eventDetail.eventDate).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6">Ticket Sale Date</Typography>
-                                    <Typography>{new Date(eventDetail.ticketSaleDate).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
-                                </Grid>
-                                {/* third row */}
-                                <Grid item xs={12} sm={6}>
-                                    <Typography variant="h6">Event Venue</Typography>
-                                    <Typography>{eventDetail.venue.venueName}</Typography>
-                                    <Typography>{eventDetail.venue.venueLocation}</Typography>
-                                </Grid>
+                            <Avatar
+                                src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_organiser_profile/${organiserDetail.logoImage}`}
+                                style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    margin: "auto",
+                                }}
+                            />
+                            <Grid container spacing={3} sx={{ textAlign: "left", mt:5 }}>
+
                                 <Grid item xs={12} md={6}>
                                     <Typography variant="h6">
                                         Organiser Info
                                     </Typography>
-                                    <Typography>Name: {eventDetail.organiser.name}</Typography>
-                                    <Typography>Email: {eventDetail.organiser.email}</Typography>
+                                    <Typography>Name: {organiserDetail.name}</Typography>
+                                    <Typography>Email: {organiserDetail.email}</Typography>
                                 </Grid>
-                                {/* Artists */}
-                                <Grid item xs={12} md={12} container justifyContent="center">
-                                    <Typography variant="h6">Artists</Typography>
-                                    <Grid container spacing={2} justifyContent="center">
-                                        {eventDetail.artists.map((artist: any, index: any) => (
-                                            <Grid item xs={12} sm={6} key={index}>
-                                                <Box display="flex" flexDirection="column" alignItems="center">
-                                                    <ListItem>
-                                                        <ListItemAvatar>
-                                                            <Avatar src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/artists/${artist.artistImage}`} />
-                                                        </ListItemAvatar>
-                                                        <ListItemText primary={artist.artistName} />
-                                                    </ListItem>
-                                                </Box>
-                                            </Grid>
-                                        ))}
-                                    </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant="h6">Description</Typography>
+                                    <Typography>{organiserDetail.description}</Typography>
                                 </Grid>
-                                <Grid item xs={12} md={12}>
-                                    <CardMedia
-                                        component="img"
-                                        height="400"
-                                        alt="Event Poster"
-                                        src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${eventDetail.eventImage}`}
-                                        sx={{ padding: "1em 1em 0 1em", objectFit: "contain" }}
-                                    />
-                                </Grid>
+
                                 <Grid item xs={12} sm={12}>
                                     <TextareaAutosize minRows="7" onChange={handleRemarks}
                                         style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
