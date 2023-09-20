@@ -96,11 +96,11 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
 
                 //change link to log in page
 //                String link = "http://localhost:" + apiPort + "/api/auth/register/";
-                String link ="http://localhost:3000/login";
+                String link ="http://localhost:3000/OrganiserLogin";
                 // Send email to organiser
-                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, "good"), "Your account has been approved");
+                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, eventOrganiser.getReviewRemarks()), "Your account has been approved");
             } else if (reviewStatus.equals("rejected")){
-                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(eventOrganiser.getName(),"bad one bro"), "Your account has been rejected");
+                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(eventOrganiser.getName(), eventOrganiser.getReviewRemarks()), "Your account has been rejected");
             }
             else {
                 throw new IllegalStateException("Review status in unknown state '" + reviewStatus + "'");
@@ -126,20 +126,20 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
 
     }
 
-    public void deleteEventOrganiser(Integer organiserId) {
+    public String deleteEventOrganiser(Integer organiserId) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
 
         if (eventOrganiserOptional.isPresent()) {
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
             if (eventOrganiser.getDeletedAt() != null) {
-                throw new AlreadyDeletedException("Event organiser already deleted");
+                return String.format("Event Organiser %d is already deleted.", organiserId);
             }
 
             eventOrganiser.setDeletedAt(LocalDateTime.now());
             eventOrganiserRepository.save(eventOrganiser);
-
+            return String.format("Event Organiser %d is successfully deleted.", organiserId);
         } else {
-            throw new NonExistentException("Event organiser does not exists");
+            throw new NonExistentException("Event Organiser", organiserId);
         }
     }
 

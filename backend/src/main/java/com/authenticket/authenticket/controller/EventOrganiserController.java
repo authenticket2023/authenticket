@@ -20,8 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
@@ -160,14 +162,29 @@ public class EventOrganiserController extends Utility {
 
 
     @PutMapping("/{organiserId}")
-    public ResponseEntity<GeneralApiResponse> deleteEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
-//        return eventOrganiserService.deleteEventOrganiser(organiserId);
+    public ResponseEntity<GeneralApiResponse> deleteEventOrganiser(@RequestParam("organiserId") String organiserIdString) {
+        try {
+            List<Integer> organiserIdList = Arrays.stream(organiserIdString.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
 
+            //check if all events exist first
+            for(Integer organiserId: organiserIdList){
+                if(eventOrganiserService.findOrganiserById(organiserId).isEmpty()){
+                    throw new NonExistentException(String.format("Organiser %d does not exist, deletion halted", organiserId));
+                }
+            }
 
-            //if delete is successful
-            eventOrganiserService.deleteEventOrganiser(organiserId);
-            return ResponseEntity.ok(generateApiResponse(null, String.format("Event Organiser%d Deleted Successfully", organiserId)));
+            StringBuilder results = new StringBuilder();
 
+            for(Integer organiserId: organiserIdList){
+                results.append(eventOrganiserService.deleteEventOrganiser(organiserId)).append(" ");
+            }
+
+            return ResponseEntity.ok(generateApiResponse(null, results.toString()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(generateApiResponse(null, e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{organiserId}")

@@ -19,7 +19,7 @@ public interface EventOrganiserService {
     EventOrganiser updateEventOrganiserImage (Integer organiserId,String filename);
 
     //updates deleted_at field with datetime, DOES NOT really remove the event
-    void deleteEventOrganiser (Integer organiserId);
+    String deleteEventOrganiser (Integer organiserId);
     //actually removes the event
     String removeEventOrganiser (Integer organiserId);
 
