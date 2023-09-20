@@ -177,11 +177,9 @@ export const NavbarOrganiser = () => {
 
     const handledLogout = () => {
         setAnchorElUser(null);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('accRole');
-        localStorage.removeItem('profileImage');
-        navigate('/Login');
+        sessionStorage.clear();
+        localStorage.clear();
+        navigate('/home');
     };
 
     const handleHomeOrganiser = () => {
@@ -322,11 +320,9 @@ export const NavbarAdmin = () => {
 
     const handledLogout = () => {
         setAnchorElUser(null);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('accRole');
-        localStorage.removeItem('profileImage');
-        navigate('/login');
+        sessionStorage.clear();
+        localStorage.clear();
+        navigate('/home');
     };
 
     const handleHomeAdmin = () => {
