@@ -9,8 +9,9 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Snackbar } from '@mui/material';
-
+import { Alert, IconButton, InputAdornment, Snackbar } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 //image downloads
 import logo from '../../images/logo(orange).png';
 import backgroundImage from '../../images/background.png';
@@ -56,8 +57,14 @@ export const OrganiserLogin = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType]: any = useState('info');
   const [alertMsg, setAlertMsg] = useState('');
+  //for show password icon
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const handleSnackbarClose = () => {
-      setOpenSnackbar(false);
+    setOpenSnackbar(false);
   };
 
   const handleEmail = (e: any) => {
@@ -143,20 +150,20 @@ export const OrganiserLogin = () => {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/Login'>
-                <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
+                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: 0 }} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>
+              <Button sx={{ color: 'black', borderRadius: '18px', marginLeft: 28 }} href='/Login'>
                 User
               </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
+              <Button variant="outlined" sx={{ borderColor: 'black', borderRadius: '25px', color: 'black' }} href='/AdminLogin'>
                 Admin
               </Button>
             </div>
 
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color: 'black' }}>
               Company Log In
             </Typography>
-            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
+            <Typography sx={{ fontWeight: 500, marginBottom: 3, color: 'black' }}>
               Welcome to AuthenTicket
             </Typography>
             <form onSubmit={loginHandler}>
@@ -172,7 +179,7 @@ export const OrganiserLogin = () => {
                 error={emailError}
                 helperText={helperText}
                 onChange={handleEmail}
-                inputProps={{style : {color:'#2E475D'}}}
+                inputProps={{ style: { color: '#2E475D' } }}
               />
               <TextField
                 margin="normal"
@@ -180,11 +187,20 @@ export const OrganiserLogin = () => {
                 fullWidth
                 name="password"
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
                 onChange={handlePassword}
-                inputProps={{style : {color:'#2E475D'}}}
+                InputProps={{
+                  style: { color: '#2E475D' },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Button
                 type="submit"
@@ -195,18 +211,18 @@ export const OrganiserLogin = () => {
                 Log In
               </Button>
 
-              <Grid container style={{marginTop:8}}>
+              <Grid container style={{ marginTop: 8 }}>
                 <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
+                  <Typography variant="body2" style={{ color: '#858585' }}>
                     Don't have an organiser account?{" "}
-                    <Link href="/organiserSignup" variant="body2" style={{color:'#2E475D'}}>
+                    <Link href="/organiserSignup" variant="body2" style={{ color: '#2E475D' }}>
                       {"Register here"}
                     </Link>
                   </Typography>
                 </Grid>
               </Grid>
-              
-              <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
+
+              <Copyright sx={{ mt: 5, mb: 5, color: '#858585', marginTop: 14 }} />
             </form>
           </Box>
         </Grid>

@@ -9,8 +9,9 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Snackbar } from '@mui/material';
-
+import { Alert, IconButton, InputAdornment, Snackbar } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 //image downloads
 import logo from '../../images/logo(orange).png';
 import backgroundImage from '../../images/background.png';
@@ -56,6 +57,13 @@ export const AdminLogin = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType]: any = useState('info');
   const [alertMsg, setAlertMsg] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+
   const handleSnackbarClose = () => {
       setOpenSnackbar(false);
   };
@@ -179,11 +187,20 @@ export const AdminLogin = () => {
                 fullWidth
                 name="password"
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
                 onChange={handlePassword}
-                inputProps={{style : {color:'#2E475D'}}}
+                InputProps={{
+                  style : {color:'#2E475D'},
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Button
                 type="submit"
