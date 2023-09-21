@@ -21,3 +21,11 @@
 - cd to 'authenticket/backend'
   - `chmod +x buildDocker.sh` => make the script executable
   - `./buildDocker.sh` => run the script
+
+## Run in AWS EC2
+- `tmux new-session -s AuthenTicket` => create tmux session (need run in the session, so that after we disconnect from AWS EC2, it will still be running)
+- `tmux attach -t AuthenTicket` => attach tmux session
+  - `ctrl + b and d` => detach tmux session
+  - Note: don't terminate the session.
+- cd to `AuthenTicket` folder
+  - `docker compose up` => to run the docker image (remember to update the images if needed)
