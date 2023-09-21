@@ -82,7 +82,7 @@ export function PendingEventTab() {
     const [dataLoaded, setDataLoaded] = useState(false);
     const loadPendingEventData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/review-status/pending`, {
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/admin/event/review-status/pending`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,

@@ -9,7 +9,8 @@ COPY . .
 RUN rm -rf /app/node_modules
 
 RUN npm install --legacy-peer-deps
-
+# set timezone
+ENV TZ="Asia/Singapore"
 #expose the port
 EXPOSE 3000
 
