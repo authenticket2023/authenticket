@@ -232,18 +232,12 @@ public class AdminController extends Utility {
     @GetMapping("/event-organiser/review-status/{status}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventOrganisersByReviewStatus(@PathVariable("status") String status) {
         List<EventOrganiserDisplayDto> organiserList = eventOrganiserService.findEventOrganisersByReviewStatus(status);
-        if (organiserList == null || organiserList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No %s organisers found.", status)));
-        }
         return ResponseEntity.ok(generateApiResponse(organiserList, String.format("%s organisers successfully returned.", status)));
     }
 
     @GetMapping("/event/review-status/{status}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsByReviewStatus(@PathVariable("status") String status) {
         List<EventDisplayDto> eventList = eventService.findEventsByReviewStatus(status);
-        if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No %s events found.", status)));
-        }
         return ResponseEntity.ok(generateApiResponse(eventList, String.format("%s events successfully returned.", status)));
     }
 }
