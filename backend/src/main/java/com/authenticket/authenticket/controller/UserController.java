@@ -78,7 +78,7 @@ public class UserController extends Utility {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<GeneralApiResponse<Object>> removeUser(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("userId") Integer userId) {
             userService.deleteUser(userId);
             return ResponseEntity.ok(generateApiResponse(null, String.format("User %d Deleted Successfully", userId)));
 

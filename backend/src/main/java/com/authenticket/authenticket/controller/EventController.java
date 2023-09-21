@@ -101,6 +101,15 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(overallEventDto, String.format("Event %d successfully returned.", eventId)));
 
     }
+    @GetMapping("/public/event/featured")
+    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents(Pageable pageable) {
+        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No featured events found"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Featured events successfully returned."));
+
+    }
 
     @GetMapping("/public/event/recently-added")
     public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents(Pageable pageable) {
@@ -112,15 +121,7 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/public/event/featured")
-    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents(Pageable pageable) {
-        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents(pageable);
-        if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No featured events found"));
-        }
-        return ResponseEntity.ok(generateApiResponse(eventList, "Featured events successfully returned."));
 
-    }
 
     @GetMapping("/public/event/bestseller")
     public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents(Pageable pageable) {
@@ -264,6 +265,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
+    //without review, so basically targeted towards organiser
     @PutMapping("/event")
     public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam(value = "eventId") Integer eventId,
@@ -345,21 +347,10 @@ public class EventController extends Utility {
     }
 
     //response not handled yet
-    @DeleteMapping("/event/{eventId}")
-    public String removeEvent(@PathVariable("eventId") Integer eventId) {
-        return eventService.removeEvent(eventId);
-    }
-
-    @PutMapping("/event/approve")
-    public ResponseEntity<?> approveEvent(@RequestParam(value = "eventId") Integer eventId, @RequestParam(value = "approvedBy") Integer approvedBy) {
-        Event event = eventService.approveEvent(eventId, approvedBy);
-        if (event == null) {
-            return ResponseEntity.status(404).body(generateApiResponse(null, "Approve not successful, event does not exist"));
-        } else {
-            return ResponseEntity.ok(generateApiResponse(event, "Event approved successfully"));
-
-        }
-    }
+//    @DeleteMapping("/event/{eventId}")
+//    public String removeEvent(@PathVariable("eventId") Integer eventId) {
+//        return eventService.removeEvent(eventId);
+//    }
 
     @PutMapping("/event/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
@@ -378,7 +369,7 @@ public class EventController extends Utility {
     }
 
 
-    @PostMapping("/public/event/featured")
+    @PostMapping("/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
                                                                          @RequestParam("startDate") LocalDateTime startDate,
                                                                          @RequestParam("endDate") LocalDateTime endDate,

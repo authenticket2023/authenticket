@@ -127,7 +127,8 @@ public class VenueController extends Utility {
         return ResponseEntity.ok(generateApiResponse(updatedVenue, "Venue updated successfully."));
     }
 
-    @PutMapping("/{venueId}")
+
+    @DeleteMapping("/{venueId}")
     public String removeVenue(@PathVariable("venueId") Integer venueId) {
         venueService.removeVenue(venueId);
         return "Ticket removed successfully.";
