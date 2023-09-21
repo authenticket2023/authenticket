@@ -8,6 +8,7 @@ import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
+import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.EventService;
 import org.hibernate.sql.ast.tree.expression.Over;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class EventServiceImpl implements EventService {
 
     private final AmazonS3Service amazonS3Service;
 
+    private final EmailService emailService;
+
     @Autowired
     public EventServiceImpl(EventRepository eventRepository,
                             ArtistRepository artistRepository,
@@ -48,7 +51,8 @@ public class EventServiceImpl implements EventService {
                             EventTicketCategoryRepository eventTicketCategoryRepository,
                             EventDtoMapper eventDTOMapper,
                             ArtistDtoMapper artistDtoMapper,
-                            AmazonS3Service amazonS3Service) {
+                            AmazonS3Service amazonS3Service,
+                            EmailService emailService) {
         this.eventRepository = eventRepository;
         this.artistRepository = artistRepository;
         this.featuredEventRepository = featuredEventRepository;
@@ -57,6 +61,7 @@ public class EventServiceImpl implements EventService {
         this.eventDTOMapper = eventDTOMapper;
         this.artistDtoMapper = artistDtoMapper;
         this.amazonS3Service = amazonS3Service;
+        this.emailService = emailService;
     }
 
     //get all events for home page
@@ -130,11 +135,24 @@ public class EventServiceImpl implements EventService {
         if (eventOptional.isPresent()) {
             Event existingEvent = eventOptional.get();
             eventDTOMapper.update(eventUpdateDto, existingEvent);
+
+            // Send email
+            String reviewStatus = eventUpdateDto.reviewStatus();
+            if (reviewStatus != null) {
+                if(reviewStatus.equals("approved") || reviewStatus.equals("rejected")) {
+                    EventOrganiser eventOrganiser = existingEvent.getOrganiser();
+                    // Send email to organiser
+                    System.out.println("Testing now");
+                    emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildEventReviewEmail(existingEvent), "Event Review");
+                    System.out.println("Done now");
+                }
+            }
+
             eventRepository.save(existingEvent);
             return existingEvent;
         }
 
-        throw new NonExistentException("Event does not exist");
+        throw new NonExistentException("Event", eventUpdateDto.eventId());
     }
 
 
