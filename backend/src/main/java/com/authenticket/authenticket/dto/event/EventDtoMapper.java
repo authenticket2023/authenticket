@@ -10,6 +10,7 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventRepository;
@@ -93,6 +94,31 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 this.applyEventHomeDto(featuredEvent.getEvent()),
                 featuredEvent.getStartDate(),
                 featuredEvent.getEndDate()
+        );
+
+    }
+
+    public EventAdminDisplayDto applyEventAdminDisplayDto(Event event) {
+        String organiserEmail = null;
+        if(event.getOrganiser() != null){
+            organiserEmail = event.getOrganiser().getEmail();
+        }
+
+        String reviewedBy = null;
+        if(event.getReviewedBy()!=null ){
+            reviewedBy = event.getReviewedBy().getEmail();
+        }
+        return new EventAdminDisplayDto(
+                event.getEventId(),
+                event.getEventName(),
+                event.getEventDescription(),
+                event.getEventDate(),
+                event.getTicketSaleDate(),
+                organiserEmail,
+                event.getReviewRemarks(),
+                event.getReviewStatus(),
+                reviewedBy,
+                event.getDeletedAt()
         );
 
     }
@@ -195,6 +221,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     public List<OverallEventDto> mapOverallEventDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyOverallEventDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventAdminDisplayDto> mapEventAdminDisplayDto(List<Event> eventList) {
+        return eventList.stream()
+                .map(this::applyEventAdminDisplayDto)
                 .collect(Collectors.toList());
     }
 

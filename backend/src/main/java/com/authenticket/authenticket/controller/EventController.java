@@ -169,7 +169,7 @@ public class EventController extends Utility {
     @GetMapping("/event")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
         try {
-            List<OverallEventDto> eventList = eventService.findAllEvent();
+            List<EventAdminDisplayDto> eventList = eventService.findAllEvent();
             if (eventList.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
             } else {
