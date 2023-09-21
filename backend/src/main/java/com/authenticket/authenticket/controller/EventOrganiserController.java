@@ -155,8 +155,7 @@ public class EventOrganiserController extends Utility {
             }
         }
 
-
-        return ResponseEntity.ok(eventOrganiser);
+        return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
     }
 
 

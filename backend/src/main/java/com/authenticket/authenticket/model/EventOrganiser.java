@@ -43,11 +43,14 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
     @Column(name = "enabled")
     private Boolean enabled = false;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reviewed_by")
     private Admin admin;
+    @JsonIgnore
     @Column(name = "review_status")
     private String reviewStatus;
+    @JsonIgnore
     @Column(name = "review_remarks")
     private String reviewRemarks;
     @Getter
