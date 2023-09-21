@@ -5,8 +5,12 @@ import com.authenticket.authenticket.model.EventType;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventTypeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(
@@ -28,6 +32,15 @@ public class EventTypeController extends Utility {
     @GetMapping("/test")
     public String test() {
         return "test successful";
+    }
+
+    @GetMapping
+    public ResponseEntity<?> findAllEvents() {
+        List<EventType> eventTypeList = eventTypeService.findAllEventType();
+        if (eventTypeList.isEmpty() || eventTypeList ==null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body( generateApiResponse(null, "Event Types Not Found"));
+        }
+        return ResponseEntity.ok( generateApiResponse(eventTypeList, "Event Types Returned Successfully"));
     }
 
     @PostMapping

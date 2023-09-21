@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface EventTypeService {
 
-//    List<EventType> findAllEventType();
+    List<EventType> findAllEventType();
 //    Optional<EventType> findEventTypeById(Integer eventTypeId);
     EventType saveEventType (EventType eventType);
 //    EventType updateEventType (EventType eventType);
