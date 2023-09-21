@@ -87,11 +87,13 @@ export function PendingTab() {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    data.forEach((organiser: any) => {
-                        const row = [organiser.organiserId, organiser.name, organiser.email,
-                        organiser.description, organiser.createdAt];
-                        fetchData.push(row);
-                    });
+                    if(data != null) {
+                        data.forEach((organiser: any) => {
+                            const row = [organiser.organiserId, organiser.name, organiser.email,
+                            organiser.description, organiser.createdAt];
+                            fetchData.push(row);
+                        });
+                    }
                     setPendingData(fetchData);
                     setDataLoaded(true);
                     //close the modal

@@ -83,11 +83,11 @@ export function EventDetails(props: any) {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Sale date cannot be after Event date!!!");
-        } else if (props.ticketNumber == 0) {
+        } else if (props.ticketNumberVIP < 0 || props.ticketNumberCat1 < 0 || props.ticketNumberCat2 < 0|| props.ticketNumberCat3 < 0|| props.ticketNumberCat4 < 0) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
-            props.setAlertMsg("Invlid number of ticket avaliable cannot be 0!!!");
+            props.setAlertMsg("Invlid number of ticket avaliable: cannot be less than 0!!!");
         } else {
             //mean all the input is correct
             props.handleComplete();

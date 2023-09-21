@@ -79,11 +79,11 @@ export const EventOrganiser = () => {
     const [saleDate, setSaleDate] = React.useState<Dayjs>(dayjs(currentDateTime));
     const [eventDescription, setEventDescription] = useState('');
     const [otherInfo, setOtherInfo] = useState('');
-    const [ticketNumberVIP, setTicketNumberVIP] = useState(0);
-    const [ticketNumberCat1, setTicketNumberCat1] = useState(0);
-    const [ticketNumberCat2, setTicketNumberCat2] = useState(0);
-    const [ticketNumberCat3, setTicketNumberCat3] = useState(0);
-    const [ticketNumberCat4, setTicketNumberCat4] = useState(0);
+    const [ticketNumberVIP, setTicketNumberVIP] = useState(100);
+    const [ticketNumberCat1, setTicketNumberCat1] = useState(100);
+    const [ticketNumberCat2, setTicketNumberCat2] = useState(100);
+    const [ticketNumberCat3, setTicketNumberCat3] = useState(100);
+    const [ticketNumberCat4, setTicketNumberCat4] = useState(100);
     const [VIPPrice, setVIPPrice] = useState(0);
     const [cat1Price, setCat1Price] = useState(0);
     const [cat2Price, setCat2Price] = useState(0);
