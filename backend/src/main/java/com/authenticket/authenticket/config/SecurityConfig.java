@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/event-organiser").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser").hasAuthority("ORGANISER")
                         .requestMatchers(HttpMethod.GET,"/api/event-organiser/{organiserId}").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser/delete").hasAuthority("ORGANISER")//waiting for yikai
+                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser/delete").hasAnyAuthority("ADMIN","ORGANISER")//waiting for yikai
                         .requestMatchers(HttpMethod.DELETE,"/api/event-organiser/{organiserId}").hasAnyAuthority("ADMIN","ORGANISER")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser/image").hasAuthority("ORGANISER")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser/events/{organiserId}").hasAuthority("ORGANISER")
