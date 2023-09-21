@@ -70,7 +70,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserProfile").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserImage").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET,"/api/user/{userId}").hasAnyAuthority("ADMIN", "USER") //waiting for yikai
+                        .requestMatchers(HttpMethod.GET,"/api/user/{userId}").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/user/{userId}").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/user").hasAuthority("ADMIN")
 
