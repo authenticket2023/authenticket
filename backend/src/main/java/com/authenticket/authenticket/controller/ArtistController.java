@@ -17,7 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping(path = "/api/artist")
 public class ArtistController extends Utility {
     private final ArtistRepository artistRepository;
@@ -78,7 +83,7 @@ public class ArtistController extends Utility {
 
     }
 
-    @PutMapping("/updateArtistImage")
+    @PutMapping("/image")
     public ResponseEntity<GeneralApiResponse<Object>> updateArtistImage(@RequestParam("artistImage") MultipartFile artistImage,
                                                                          @RequestParam("imageName") String imageName,
                                                                          @RequestParam("artistId") Integer artistId) {

@@ -16,7 +16,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event", schema = "dev")
+@Table(name = "event")
 @EqualsAndHashCode(callSuper = true)
 public class Event extends BaseEntity {
     @Id

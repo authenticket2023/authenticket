@@ -16,7 +16,7 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "app_user", schema = "dev")
+@Table(name = "app_user")
 public class User extends BaseEntity implements UserDetails{
     @Id
     @GeneratedValue(

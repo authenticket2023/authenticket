@@ -20,7 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_organiser", schema = "dev")
+@Table(name = "event_organiser")
 @EqualsAndHashCode(callSuper = true)
 public class EventOrganiser extends BaseEntity implements UserDetails {
     @Id

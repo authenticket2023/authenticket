@@ -1,11 +1,8 @@
 package com.authenticket.authenticket.service;
 
-import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserFullDisplayDto;
-import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.User;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;

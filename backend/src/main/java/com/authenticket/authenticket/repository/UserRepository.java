@@ -11,12 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Repository
-@Transactional(readOnly = true)
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
 
-    @Transactional
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE User a " +
             "SET a.enabled = TRUE WHERE a.email = ?1")
     void enableAppUser(String email);

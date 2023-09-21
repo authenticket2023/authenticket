@@ -160,7 +160,7 @@ public class EventOrganiserController extends Utility {
 
 
 
-    @PutMapping("/{organiserId}")
+    @PutMapping("/delete")
     public ResponseEntity<GeneralApiResponse> deleteEventOrganiser(@RequestParam("organiserId") String organiserIdString) {
         try {
             List<Integer> organiserIdList = Arrays.stream(organiserIdString.split(","))

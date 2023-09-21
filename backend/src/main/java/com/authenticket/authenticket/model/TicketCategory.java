@@ -12,7 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ticket_categories", schema = "dev")
+@Table(name = "ticket_categories")
 @JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
 public class TicketCategory extends BaseEntity {
     @Id

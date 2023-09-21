@@ -21,7 +21,12 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        methods = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST, RequestMethod.DELETE},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping(path = "/api/venue")
 
 public class VenueController extends Utility {
@@ -103,9 +108,9 @@ public class VenueController extends Utility {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateVenue(@RequestParam(value = "venueId") Integer venueId,
-                                       @RequestParam(value = "venueName") String venueName,
-                                       @RequestParam(value = "venueLocation") String venueLocation,
-                                       @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
+                                         @RequestParam(value = "venueName") String venueName,
+                                         @RequestParam(value = "venueLocation") String venueLocation,
+                                         @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
         Venue updatedVenue = venueService.updateVenue(venueId, venueName, venueLocation);
 
         //update file image if not null
@@ -127,10 +132,9 @@ public class VenueController extends Utility {
         return ResponseEntity.ok(generateApiResponse(updatedVenue, "Venue updated successfully."));
     }
 
-
     @DeleteMapping("/{venueId}")
     public String removeVenue(@PathVariable("venueId") Integer venueId) {
         venueService.removeVenue(venueId);
-        return "Ticket removed successfully.";
+        return "Venue removed successfully.";
     }
 }

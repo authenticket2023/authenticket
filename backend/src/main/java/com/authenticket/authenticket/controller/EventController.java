@@ -396,20 +396,20 @@ public class EventController extends Utility {
     }
 
     //getting artist list for one specific event
-    @GetMapping("/event/getArtistsByEvent")
-    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
-        try {
-            Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
-            if (artistList.isEmpty()) {
-                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty", eventId)));
-
-            }
-
-            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned", eventId)));
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
-        }
-    }
+//    @GetMapping("/event/getArtistsByEvent")
+//    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
+//        try {
+//            Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
+//            if (artistList.isEmpty()) {
+//                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty", eventId)));
+//
+//            }
+//
+//            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned", eventId)));
+//        } catch (DataIntegrityViolationException e) {
+//            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+//        }
+//    }
 
     @PutMapping("/event/addTicketCategory")
     public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
@@ -464,14 +464,14 @@ public class EventController extends Utility {
 //        return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully removed from event"));
 //    }
 
-    @GetMapping("/event/{eventId}/getTicketCategory")
-    public ResponseEntity<GeneralApiResponse> getTicketCategory(
-            @RequestParam("eventId") Integer eventId) {
-        Optional<Event> optionalEvent = eventRepository.findById(eventId);
-        if (optionalEvent.isEmpty()) {
-            throw new NonExistentException("Event does not exist");
-        }
-        Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();
-        return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
-    }
+//    @GetMapping("/event/{eventId}/getTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> getTicketCategory(
+//            @RequestParam("eventId") Integer eventId) {
+//        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+//        if (optionalEvent.isEmpty()) {
+//            throw new NonExistentException("Event does not exist");
+//        }
+//        Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();
+//        return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
+//    }
 }

@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "artist", schema = "dev")
+@Table(name = "artist")
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
 public class Artist extends BaseEntity {
