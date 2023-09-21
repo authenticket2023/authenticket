@@ -63,7 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser/image").hasAuthority("ORGANISER")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser/events/{organiserId}").hasAuthority("ORGANISER")
 
-                        .requestMatchers("/api/event-type/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/event-type/**").hasAnyAuthority("ADMIN", "ORGANISER")
 
                         .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/ticket/**").hasAuthority("ADMIN")
