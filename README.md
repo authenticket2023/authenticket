@@ -1,6 +1,8 @@
 # Authenticket
 
 ## Docker
+### build and run both frontend & backend
+- At root directory => `docker compose up`
 ### frontend
 - cd to 'authenticket/frontend'
   - Build the image : `docker build -t authenticket-frontend .`
