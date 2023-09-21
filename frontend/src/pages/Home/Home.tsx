@@ -22,12 +22,18 @@ import { async } from "q";
 import { CardActionArea } from "@mui/material";
 
 export const Home = () => {
-
+  
   const [featured, setFeatured]: any = React.useState();
   const [bestSellers, setBestSellers]: any = React.useState();
   const [loaded, setLoaded]: any = React.useState(false);
   const [bsLoaded, setBSLoaded]: any = React.useState(false);
-
+  
+  useEffect(() => {
+    if (!loaded || !bsLoaded) {
+      loadFeatured();
+      // loadBestSellers();
+    }
+  }, []);
   const loadFeatured = async () => {
     // //calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/featured`, {
@@ -41,6 +47,7 @@ export const Home = () => {
           const apiResponse = await response.json();
           const data = apiResponse.data;
           setFeatured(data);
+          loadBestSellers();
           setLoaded(true);
         } else {
           //passing to parent component
@@ -53,7 +60,7 @@ export const Home = () => {
 
   const loadBestSellers = async () => {
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/bestseller`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/bestseller?page=0&size=7`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -65,6 +72,7 @@ export const Home = () => {
           const data = apiResponse.data;
           setBestSellers(data);
           setBSLoaded(true);
+          console.log(data);
         } else {
           //passing to parent component
         }
@@ -171,8 +179,8 @@ export const Home = () => {
   function BestSellerItem(props: any) {
     return (
       <Box marginTop = {2} marginRight={1}>
-        <Card sx={{minHeight: 175}}>
-          <CardMedia image={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage}`}>
+        <Card sx={{minHeight: 175, minWidth: 250}}>
+          <CardMedia image={`https://i.imgur.com/UKi8jbp.png`}>
           </CardMedia>
           <CardActionArea href='#'>
           </CardActionArea>
@@ -185,9 +193,9 @@ export const Home = () => {
   }
 
   function BestSellersCarousell() {
-    const bestSellerListItems = bestSellers.map((event: any) => {
-      return <BestSellerItem eventName={event.eventName} eventImage={event.eventImage}></BestSellerItem>
-    });
+    // const bestSellerListItems = bestSellers.map((event: any) => {
+      // return <BestSellerItem eventName={event.eventName} eventImage={event.eventImage}></BestSellerItem>
+    // });
     return <Carousel
       additionalTransfrom={0}
       arrows
@@ -242,19 +250,15 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {bestSellerListItems}
+      <Box>hi</Box>
+      {/* {bestSellerListItems} */}
+      <BestSellerItem eventName={bestSellers[0].eventName} eventImage={bestSellers[0].eventImage}></BestSellerItem>
     </Carousel>;
   }
 
 
 
 
-  useEffect(() => {
-    if (!loaded || !bsLoaded) {
-      loadFeatured();
-      loadBestSellers();
-    }
-  }, []);
 
   return (
     <>
