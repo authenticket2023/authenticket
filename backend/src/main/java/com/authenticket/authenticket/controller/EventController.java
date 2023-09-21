@@ -105,7 +105,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents(Pageable pageable) {
         List<FeaturedEventDto> eventList = eventService.findFeaturedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No featured events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No featured events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Featured events successfully returned."));
 
@@ -115,7 +115,8 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents(Pageable pageable) {
         List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No recently added events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No recently added events found"));
+
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
 
@@ -127,7 +128,8 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents(Pageable pageable) {
         List<EventHomeDto> eventList = eventService.findBestSellerEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No bestseller events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No bestseller events found"));
+
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Bestseller events successfully returned."));
 
@@ -137,7 +139,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents(Pageable pageable) {
         List<EventHomeDto> eventList = eventService.findUpcomingEventsByTicketSalesDate(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No upcoming events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No upcoming events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
 
@@ -147,7 +149,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findCurrentEventsByEventDate(Pageable pageable) {
         List<EventHomeDto> eventList = eventService.findCurrentEventsByEventDate(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No current events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No current events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Current events successfully returned."));
 
@@ -157,7 +159,7 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findPastEventsByEventDate(Pageable pageable) {
         List<EventHomeDto> eventList = eventService.findPastEventsByEventDate(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No past events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No past events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Past events successfully returned."));
 
