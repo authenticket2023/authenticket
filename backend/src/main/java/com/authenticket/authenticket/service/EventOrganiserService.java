@@ -12,14 +12,14 @@ public interface EventOrganiserService {
     List<EventOrganiserDisplayDto> findAllEventOrganisers();
 
     List<Event> findAllEventsByOrganiser(Integer organiserId);
-    List<EventOrganiserDisplayDto> findAllPendingOrganisers();
+    List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status);
     Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId);
     EventOrganiser saveEventOrganiser (EventOrganiser eventOrganiser);
     EventOrganiser updateEventOrganiser (EventOrganiserUpdateDto eventOrganiserUpdateDto);
     EventOrganiser updateEventOrganiserImage (Integer organiserId,String filename);
 
     //updates deleted_at field with datetime, DOES NOT really remove the event
-    void deleteEventOrganiser (Integer organiserId);
+    String deleteEventOrganiser (Integer organiserId);
     //actually removes the event
     String removeEventOrganiser (Integer organiserId);
 

@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.repository;
 
-import com.authenticket.authenticket.dto.event.EventHomeDto;
 import com.authenticket.authenticket.model.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,16 +27,22 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                     "WHERE E.event_id = :eventId")
     List<Object[]> getArtistByEventId(@Param("eventId") Integer eventId);
 
-    //for get all for homepage
-    Page<Event> findAllByReviewStatusAndDeletedAtIsNull(String reviewStatus, Pageable pageable);
 
+    //ADMIN
     //for get all for admin
     List<Event> findAllByOrderByEventIdAsc();
 
-    //recently added (order by created at)
-    List<Event> findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(String reviewStatus);
+    //get all pending approval events for admin
+    List<Event> findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(String reviewStatus);
 
-    //bestseller
+    //HOME
+    //for get all for homepage
+    Page<Event> findAllByReviewStatusAndDeletedAtIsNull(String reviewStatus, Pageable pageable);
+
+    //recently added (order by created at)
+    Page<Event> findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(String reviewStatus, Pageable pageable);
+
+    //bestseller (order by ticket sales percentage)
     @Query(nativeQuery = true,
             value = "SELECT *" +
                     "FROM " +
@@ -46,13 +51,20 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                     "AND E.deleted_at IS NULL " +
                     "AND E.total_tickets > 0 " +
                     "ORDER BY (CAST(E.total_tickets_sold AS DECIMAL) / E.total_tickets) DESC," +
-                    "E.total_tickets DESC " +
-                    "LIMIT 7")
-    List<Event> findBestSellerEvents();
+                    "E.total_tickets DESC ",
+            countQuery = "SELECT count(*) FROM dev.Event AS E " +
+                    "WHERE E.review_status = 'approved' " +
+                    "AND E.deleted_at IS NULL " +
+                    "AND E.total_tickets > 0 ")
+    Page<Event> findBestSellerEvents(Pageable pageable);
 
     //upcoming ticket sales
-    List<Event> findTop7ByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(String reviewStatus, LocalDateTime currentDate);
+    Page<Event> findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(String reviewStatus, LocalDateTime currentDate, Pageable pageable);
 
-    //get all pending approval events
-    List<Event> findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(String reviewStatus);
+    //current event (ongoing events that are NOT past)
+    Page<Event> findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc(String reviewStatus, LocalDateTime currentDate, Pageable pageable);
+
+    //past event (event date past current date)
+    Page<Event> findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc(String reviewStatus, LocalDateTime currentDate, Pageable pageable);
+
 }

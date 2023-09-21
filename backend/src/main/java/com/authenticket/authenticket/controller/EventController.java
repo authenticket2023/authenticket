@@ -103,8 +103,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/recently-added")
-    public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
-        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No recently added events found"));
         }
@@ -113,8 +113,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/featured")
-    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
-        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents(Pageable pageable) {
+        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No featured events found"));
         }
@@ -123,8 +123,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/bestseller")
-    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
-        List<EventHomeDto> eventList = eventService.findBestSellerEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findBestSellerEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No bestseller events found"));
         }
@@ -133,12 +133,32 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/public/event/upcoming")
-    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
-        List<EventHomeDto> eventList = eventService.findUpcomingEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findUpcomingEventsByTicketSalesDate(pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No upcoming events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
+
+    }
+
+    @GetMapping("/public/event/current")
+    public ResponseEntity<GeneralApiResponse<Object>> findCurrentEventsByEventDate(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findCurrentEventsByEventDate(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No current events found"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Current events successfully returned."));
+
+    }
+
+    @GetMapping("/public/event/past")
+    public ResponseEntity<GeneralApiResponse<Object>> findPastEventsByEventDate(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findPastEventsByEventDate(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No past events found"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Past events successfully returned."));
 
     }
 
@@ -244,7 +264,6 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
-
     @PutMapping("/event")
     public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam(value = "eventId") Integer eventId,
@@ -255,10 +274,7 @@ public class EventController extends Utility {
                                          @RequestParam(value = "otherEventInfo", required = false) String otherEventInfo,
                                          @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
                                          @RequestParam(value = "venueId", required = false) Integer venueId,
-                                         @RequestParam(value = "typeId", required = false) Integer typeId,
-                                         @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
-                                         @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
-                                         @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy) {
+                                         @RequestParam(value = "typeId", required = false) Integer typeId) {
         Venue venue = null;
         if (venueId != null) {
             Optional<Venue> venueOptional = venueRepository.findById(venueId);
@@ -279,18 +295,7 @@ public class EventController extends Utility {
             }
         }
 
-        Admin admin = null;
-        if (reviewedBy != null) {
-            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
-
-            if (adminOptional.isPresent()) {
-                admin = adminOptional.get();
-            } else {
-                throw new NonExistentException("Admin does not exist");
-            }
-        }
-
-        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
+        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, null, null, null);
         Event event = eventService.updateEvent(eventUpdateDto);
         //update event image if not null
         if (eventImageFile != null) {
@@ -477,15 +482,5 @@ public class EventController extends Utility {
         }
         Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();
         return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
-    }
-
-    @GetMapping("/event/review-status/{status}")
-    public ResponseEntity<GeneralApiResponse<Object>> findEventsByReviewStatus(@PathVariable("status") String status) {
-        List<EventDisplayDto> eventList = eventService.findEventsByReviewStatus(status);
-        if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No %s events found.", status)));
-        }
-        return ResponseEntity.ok(generateApiResponse(eventList, String.format("%s events successfully returned.", status)));
-
     }
 }
