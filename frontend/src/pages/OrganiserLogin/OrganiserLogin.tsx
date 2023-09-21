@@ -102,7 +102,8 @@ export const OrganiserLogin = () => {
           localStorage.setItem('email', loginResponse.data.orgDetails.email);
           localStorage.setItem('username', loginResponse.data.orgDetails.name);
           localStorage.setItem('description', loginResponse.data.orgDetails.description);
-          localStorage.setItem('role', loginResponse.data.orgDetails.role)
+          localStorage.setItem('role', loginResponse.data.orgDetails.role);
+          localStorage.setItem('profileImage', loginResponse.data.orgDetails.logoImage);
           navigate('/HomeOrganiser');
 
         } else {

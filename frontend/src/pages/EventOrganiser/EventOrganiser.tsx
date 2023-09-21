@@ -75,6 +75,7 @@ export const EventOrganiser = () => {
         currentDateTime = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + ' ' + today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
 
     const [eventName, setEventName] = useState('');
+    const [eventType, setEventType] = useState('');
     const [eventDate, setEventDate] = React.useState<Dayjs>(dayjs(currentDateTime));
     const [saleDate, setSaleDate] = React.useState<Dayjs>(dayjs(currentDateTime));
     const [eventDescription, setEventDescription] = useState('');
@@ -119,15 +120,15 @@ export const EventOrganiser = () => {
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
 
-        const formattedTimestamp = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        const formattedTimestamp = `${year}-${month}-${day}T${hours}:${minutes}:00`;
 
         return formattedTimestamp;
     }
 
     const token = window.localStorage.getItem('accessToken');
     const role = window.localStorage.getItem('role');
+    const organiserId : any= window.localStorage.getItem('id');
     const handleCreateEvent = () => {
         //retrieve venue from DB
         const addTicketCategory = async (eventId: any) => {
@@ -183,7 +184,7 @@ export const EventOrganiser = () => {
                 } else {
                     setOpenSnackbar(true);
                     setAlertType('success');
-                    setAlertMsg('Event created successfully!!!');
+                    setAlertMsg('Event created successfully!!! Please wait for our administrator to review!!!');
                 }
             } catch (err) {
                 window.alert(err);
@@ -197,8 +198,7 @@ export const EventOrganiser = () => {
         formData.append('eventDescription', eventDescription);
         formData.append('ticketSaleDate', TimestampConverter(Number(saleDate)));
         formData.append('file', selectedFiles[0]);
-        //TODO: this get from login?
-        formData.append('organiserId', '1');
+        formData.append('organiserId', organiserId);
         formData.append('venueId', venue);
         //if the event venue is not in the list, user will enter the venue, add it to other info
         if(venue == '999') {
@@ -208,7 +208,7 @@ export const EventOrganiser = () => {
         }
         formData.append('artistId', artistList.toString());
         //TODO: pending
-        formData.append('typeId', '3');
+        formData.append('typeId', eventType);
 
         //calling create event backend API
         fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
@@ -270,6 +270,7 @@ export const EventOrganiser = () => {
                             {activeStep == 0 ? <EventDetails
                                 currentDateTime={currentDateTime}
                                 eventName={eventName}
+                                eventType={eventType}
                                 eventDate={eventDate}
                                 eventDescription={eventDescription}
                                 ticketNumberVIP={ticketNumberVIP}
@@ -285,6 +286,7 @@ export const EventOrganiser = () => {
                                 saleDate={saleDate}
                                 otherInfo={otherInfo}
                                 setEventName={setEventName}
+                                setEventType={setEventType}
                                 setEventDescription={setEventDescription}
                                 setEventDate={setEventDate}
                                 setTicketNumberVIP={setTicketNumberVIP}

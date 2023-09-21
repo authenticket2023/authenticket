@@ -45,7 +45,6 @@ export default function ReviewAccount(props: any) {
                 if (response.status == 200) {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
-                    console.log(data);
                     setRemarks(data.reviewRemarks);
                     setOrganiserDetail(data);
                     setLoaded(true);

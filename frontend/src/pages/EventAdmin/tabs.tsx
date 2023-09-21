@@ -360,6 +360,29 @@ export function AllEventTab() {
             }
         },
         "Reviewd By",
+        {
+            name: "Deleted At",
+            options: {
+                customBodyRender: (value: any) => {
+                    const getColor = (value: string) => {
+                        if (value === null) {
+                            return 'black';
+                        } else {
+                            return 'red';
+                        }
+                    };
+                    return (
+
+                        <Typography style={{ color: getColor(value) }}>
+                            {
+                                value == null ? "-" :
+                                    new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })
+                            }
+                        </Typography>
+                    )
+                }
+            }
+        },
     ];
     const [allEventData, setAllEventData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -382,7 +405,6 @@ export function AllEventTab() {
                     setAlertMsg(`Fetch data faile, code: ${response.status}`);
                 } else {
                     const apiResponse = await response.json();
-                    console.log(apiResponse)
                     const data = apiResponse.data;
                     const fetchData: any = [];
                     data.forEach((event: any) => {
@@ -390,9 +412,9 @@ export function AllEventTab() {
                         let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
                         const row = [event.eventId, event.eventName, event.eventDescription,
                         event.eventDate, event.ticketSaleDate,
-                        event.organiser.email,
+                        event.organiserEmail,
                             reviewRemarks, event.reviewStatus,
-                            reviewedByEmail]
+                            reviewedByEmail, event.deletedAt]
                         fetchData.push(row)
                     });
                     setAllEventData(fetchData);

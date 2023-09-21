@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Typography, LinearProgress, Modal, Button, Snackbar, Alert, 
+    Box, Typography, LinearProgress, Modal, Button, Snackbar, Alert,
     Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
@@ -63,6 +63,7 @@ export function PendingTab() {
                 customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
             }
         },
+
     ];
     const [pendingData, setPendingData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -87,7 +88,7 @@ export function PendingTab() {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    if(data != null) {
+                    if (data != null) {
                         data.forEach((organiser: any) => {
                             const row = [organiser.organiserId, organiser.name, organiser.email,
                             organiser.description, organiser.createdAt];
@@ -337,12 +338,6 @@ export function AllTab() {
             }
         },
         {
-            name: "Created At",
-            options: {
-                customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
-            }
-        },
-        {
             name: "Review Remarks",
             options: {
                 customBodyRender: (value: string) => {
@@ -381,6 +376,35 @@ export function AllTab() {
                 customBodyRender: (value: any) => <Typography>{value === "" ? "NOT REVIEW YET" : value}</Typography>
             }
         },
+        {
+            name: "Created At",
+            options: {
+                customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
+            }
+        },
+        {
+            name: "Deleted At",
+            options: {
+                customBodyRender: (value: any) => {
+                    const getColor = (value: string) => {
+                        if (value === null) {
+                            return 'black';
+                        } else {
+                            return 'red';
+                        }
+                    };
+                    return (
+
+                        <Typography style={{ color: getColor(value) }}>
+                            {
+                                value == null ? "-" :
+                                    new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })
+                            }
+                        </Typography>
+                    )
+                }
+            }
+        },
     ];
     const [allData, setAllData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -411,10 +435,10 @@ export function AllTab() {
                         let reviewedByEmail = organiser.reviewedBy !== null ? organiser.reviewedBy.email : "";
                         let reviewRemarks = organiser.reviewRemarks !== null ? organiser.reviewRemarks : "";
 
-                        const row = [organiser.organiserId, organiser.role, organiser.name, organiser.email, '-',
-                        organiser.description, organiser.createdAt,
-                            reviewRemarks, organiser.reviewStatus,
-                            reviewedByEmail]
+                        const row = [organiser.organiserId, organiser.role,
+                        organiser.name, organiser.email, '-', organiser.description,
+                            reviewRemarks, organiser.reviewStatus, reviewedByEmail,
+                        organiser.createdAt, organiser.deletedAt]
                         fetchData.push(row)
                     });
                     setAllData((old: any) => [...old, ...fetchData]);
@@ -452,12 +476,13 @@ export function AllTab() {
                 } else {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
+                    console.log(data)
                     const fetchData: any = [];
                     data.forEach((user: any) => {
 
                         const row = [user.userId, user.role, user.name, user.email, user.dateOfBirth,
-                            '-', user.createdAt,
-                            '-', '-', '-']
+                            '-', '-', '-', '-',
+                        user.createdAt, user.deletedAt]
                         fetchData.push(row)
                     });
                     setAllData((old: any) => [...old, ...fetchData]);
@@ -492,8 +517,8 @@ export function AllTab() {
                     const fetchData: any = [];
                     data.forEach((admin: any) => {
                         const row = [admin.adminId, admin.role, admin.name, admin.email, '-',
-                            '-', admin.createdAt,
-                            '-', '-', '-']
+                            '-', '-', '-', '-',
+                        admin.createdAt, admin.deletedAt]
                         fetchData.push(row)
                     });
                     setAllData((old: any) => [...old, ...fetchData]);

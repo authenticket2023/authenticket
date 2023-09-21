@@ -8,7 +8,13 @@ import dayjs, { Dayjs } from 'dayjs';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export function EventDetails(props: any) {
+    useEffect(() => {
 
+        if (eventTypeList.length == 0) {
+            eventTypeFetcher();
+        }
+      
+    }, [props.venue]);
     const handleEventName = (event: any) => {
         props.setEventName(event.target.value);
     };
@@ -69,7 +75,36 @@ export function EventDetails(props: any) {
     const handleOtherInfo = (event: any) => {
         props.setOtherInfo(event.target.value);
     };
+    const token = window.localStorage.getItem('accessToken');
+    const [eventTypeList, setEventTypeList]: any = React.useState([]);
+    //retrieve artists from DB
+    const eventTypeFetcher = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-type`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                method: 'GET'
+            });
 
+            if (response.status !== 200) {
+                //show alert msg
+                props.setOpenSnackbar(true);
+                props.setAlertType('error');
+                props.setAlertMsg("error fetching data!!!");
+            } else {
+                const data = await response.json();
+                console.log(data);
+                setEventTypeList(data['data']);
+            }
+        } catch (err) {
+            window.alert(err);
+        }
+    };
+    const handleEventType = (event: any) => {
+        props.setEventType(event.target.value);
+    };
     const handleConfirm = (event: any) => {
         event.preventDefault();
         //input validation
@@ -83,7 +118,7 @@ export function EventDetails(props: any) {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Sale date cannot be after Event date!!!");
-        } else if (props.ticketNumberVIP < 0 || props.ticketNumberCat1 < 0 || props.ticketNumberCat2 < 0|| props.ticketNumberCat3 < 0|| props.ticketNumberCat4 < 0) {
+        } else if (props.ticketNumberVIP < 0 || props.ticketNumberCat1 < 0 || props.ticketNumberCat2 < 0 || props.ticketNumberCat3 < 0 || props.ticketNumberCat4 < 0) {
             //show alert msg
             props.setOpenSnackbar(true);
             props.setAlertType('error');
@@ -103,7 +138,7 @@ export function EventDetails(props: any) {
                         Basic Information
                     </Typography>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} sm={8}>
+                        <Grid item xs={12} sm={4}>
                             <TextField
                                 required
                                 label="Event name"
@@ -112,7 +147,23 @@ export function EventDetails(props: any) {
                                 onChange={handleEventName}
                             />
                         </Grid>
-
+                        <Grid item xs={12} sm={4}>
+                            <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Event Type</InputLabel>
+                                    <Select
+                                        value={props.eventType}
+                                        label="Event Type"
+                                        onChange={handleEventType}
+                                        required
+                                    >
+                                        {eventTypeList.map((eventType: any) => (
+                                            <MenuItem key={eventType.eventTypeId} value={eventType.eventTypeId}>{eventType.eventTypeName}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        </Grid>
                         <Grid item xs={12} sm={4}>
                             <BasicDatePicker onDateChange={handleEventDate} value={dayjs(props.eventDate)} label="Event Date" />
                         </Grid>

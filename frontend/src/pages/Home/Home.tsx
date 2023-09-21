@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { NavbarNotLoggedIn } from "../../Navbar";
+import { NavbarNotLoggedIn, NavbarLoggedIn } from "../../Navbar";
 import { styled, alpha } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
