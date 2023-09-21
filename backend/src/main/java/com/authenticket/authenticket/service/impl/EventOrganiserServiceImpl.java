@@ -102,9 +102,6 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
             } else if (reviewStatus.equals("rejected")){
                 emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(eventOrganiser.getName(), eventOrganiser.getReviewRemarks()), "Your account has been rejected");
             }
-            else {
-                throw new IllegalStateException("Review status in unknown state '" + reviewStatus + "'");
-            }
         }
 
         eventOrganiserRepository.save(eventOrganiser);
