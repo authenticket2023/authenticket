@@ -46,7 +46,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          //console.log(data);
+          console.log(data);
             const featuredArr = data.map((featured : any) => ({
               featuredId: featured.featuredId,
               eventId: featured.event.eventId,
@@ -62,8 +62,8 @@ export const Home = () => {
             }));
           setFeatured(featuredArr);
           featuredArr.map((item: any) => console.log(item));
-          setLoaded(true);
           loadBestSellers();
+          setLoaded(true);
           //console.log(featuredArr);
         } else {
           //passing to parent component
@@ -115,7 +115,7 @@ export const Home = () => {
       return {
         key: row.id,
         children: (
-          <BearSlideCard bgUrl={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.event.eventImage}`}>
+          <BearSlideCard bgUrl={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}>
             <div style={{ height: "100%", backgroundImage: row.bg }} />
           </BearSlideCard>
         ),
@@ -141,10 +141,10 @@ export const Home = () => {
               Featured
             </Typography>
             <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-              {row.event.eventName}
+              {row.eventName}
             </Typography>
             <Typography variant="subtitle2" justifyItems="center" color="white">
-              {row.event.eventDescription}
+              {row.eventDescription}
             </Typography>
             <Box marginTop={2} marginLeft={2}>
               <Button
@@ -278,9 +278,14 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      <Box>hi</Box>
       {/* {bestSellerListItems} */}
-      <BestSellerItem eventName={bestSellers[0].eventName} eventImage={bestSellers[0].eventImage}></BestSellerItem>
+      {/* <BestSellerItem eventName={bestSellers[0].eventName} eventImage={bestSellers[0].eventImage}></BestSellerItem> */}
+      {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
+        <BestSellerItem
+          eventName = {bs.eventName} 
+          eventImage = {bs.eventImage}
+        />
+      ))}
 
     </Carousel>;
   }
