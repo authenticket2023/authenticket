@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { NavbarNotLoggedIn } from "../../Navbar";
+import { NavbarNotLoggedIn, NavbarLoggedIn } from "../../Navbar";
 import { styled, alpha } from "@mui/material/styles";
 import CardMedia from '@mui/material/CardMedia'
 import Card from '@mui/material/Card';
@@ -22,7 +22,6 @@ import { async } from "q";
 import { CardActionArea } from "@mui/material";
 
 export const Home = () => {
-
 
   const token = window.localStorage.getItem('accessToken');
   const [featured, setFeatured]: any = React.useState([]);
@@ -538,6 +537,7 @@ export const Home = () => {
                 alignItems="center"
                 justifyContent="center"
               >
+
                 <Grid item md={6}>
                   <Box
                     sx={{
@@ -622,6 +622,7 @@ export const Home = () => {
           </Grid>
         </Box>
         : null}
+
     </>
   );
 };

@@ -9,8 +9,9 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import DownloadIcon from '@mui/icons-material/Download';
-
+import { Alert, IconButton, InputAdornment, Snackbar } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 //image downloads
 import logo from '../../images/logo(orange).png';
 import backgroundImage from '../../images/background.png';
@@ -36,7 +37,7 @@ const myTheme = createTheme({
   }
 });
 
-export function Login() {
+export const Login = () => {
 
   let navigate = useNavigate();
   //validation method
@@ -52,6 +53,20 @@ export function Login() {
   //validation
   const [emailError, setEmailError] = useState(false);
   const [helperText, setHelperText] = useState('');
+  //for pop up message => error , warning , info , success
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertType, setAlertType]: any = useState('info');
+  const [alertMsg, setAlertMsg] = useState('');
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+  //for show password icon
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   const handleEmail = (e: any) => {
     setEmail(e.target.value);
@@ -69,37 +84,33 @@ export function Login() {
       setEmailError(false);
       setHelperText('');
     }
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_PRODUCTION_URL}/user/login`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
       method: 'POST',
-      body: JSON.stringify({
-        "email": email,
-        "password": password,
-      })
+      body: formData
     })
       .then(async (response) => {
-        if (response.status != 200) {
-          window.alert("Email/Password invalid!");
-        } else {
-
+        if (response.status === 200) {
           const loginResponse = await response.json();
-          const data = loginResponse.data;
           //pass the info to the local storage, so other page can access them
-          localStorage.setItem('accessToken', data.accessToken);
-          localStorage.setItem('userName', data.name);
-          localStorage.setItem('accRole', data.accRole);
-          localStorage.setItem('linkedElderly', data.linkedElderly);
-          localStorage.setItem('profileImage', data.profileImage);
-          localStorage.setItem('email', data.email);
+          localStorage.setItem('accessToken', loginResponse.data.token);
+          localStorage.setItem('id', loginResponse.data.userDetails.userId);
+          localStorage.setItem('role', "USER");
+          localStorage.setItem('email', loginResponse.data.userDetails.email);
+          localStorage.setItem('username', loginResponse.data.userDetails.name);
+          localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
+          localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
 
-          if (data.accRole == 'Admin') {
-            navigate('/home-admin');
-          } else {
-            navigate('/home');
-          }
+          navigate('/Home');
+        } else {
+          const loginResponse = await response.json();
+          setOpenSnackbar(true);
+          setAlertType('warning');
+          setAlertMsg(loginResponse.message);
         }
 
       })
@@ -140,13 +151,19 @@ export function Login() {
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
               <a href='/Login'>
-                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: -210, marginTop: 10, position: 'absolute' }} />
+                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: 0 }} />
               </a>
+              <Button sx={{ color: 'black', borderRadius: '18px', marginLeft: 25 }} href='/OrganiserLogin'>
+                Organiser
+              </Button>
+              <Button variant="outlined" sx={{ borderColor: 'black', borderRadius: '25px', color: 'black' }} href='/AdminLogin'>
+                Admin
+              </Button>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'#2E475D' }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color: 'black' }}>
               Hi there!
             </Typography>
-            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'#2E475D' }}>
+            <Typography sx={{ fontWeight: 500, marginBottom: 3, color: 'black' }}>
               Welcome to AuthenTicket
             </Typography>
             <form onSubmit={loginHandler}>
@@ -162,7 +179,7 @@ export function Login() {
                 error={emailError}
                 helperText={helperText}
                 onChange={handleEmail}
-                inputProps={{style : {color:'#2E475D'}}}
+                inputProps={{ style: { color: '#2E475D' } }}
               />
               <TextField
                 margin="normal"
@@ -170,46 +187,54 @@ export function Login() {
                 fullWidth
                 name="password"
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'} 
                 id="password"
                 autoComplete="current-password"
                 onChange={handlePassword}
-                inputProps={{style : {color:'#2E475D'}}}
+                InputProps={{
+                  style: { color: '#2E475D' } ,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
+             
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, backgroundColor: '#FF5C35' }}
+                sx={{ mt: 3, mb: 2, backgroundColor: 'black' }}
               >
                 Log In
               </Button>
-              <Grid container alignItems="center" justifyContent="center">
+              <Grid container>
                 <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
+                  <Typography variant="body2" style={{ color: '#858585' }}>
                     Don't have an account?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
+                    <Link href="/signUp" variant="body2" style={{ color: '#2E475D' }}>
                       {"Sign Up"}
                     </Link>
                   </Typography>
                 </Grid>
               </Grid>
 
-              <Grid container alignItems="center" justifyContent="center" style={{marginTop:8}}>
-                <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
-                    Are you an organiser?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
-                      {"Register here"}
-                    </Link>
-                  </Typography>
-                </Grid>
-              </Grid>
-              
-              <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
+
+              <Copyright sx={{ mt: 5, mb: 5, color: '#858585', marginTop: 14 }} />
             </form>
           </Box>
         </Grid>
+
+        {/* error feedback */}
+        <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
+          <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+            {alertMsg}
+          </Alert>
+        </Snackbar>
+
       </Grid>
     </ThemeProvider>
   );

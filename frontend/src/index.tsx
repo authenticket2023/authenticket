@@ -18,7 +18,17 @@ import { Profile } from './pages/Profile';
 import { Signup } from './pages/Signup';
 import { Support } from './pages/Support';
 import { Venue } from './pages/Venue';
+//for organiser user
+import { HomeOrganiser } from './pages/HomeOrganiser';
+import { EventOrganiser } from './pages/EventOrganiser';
+import { OrganiserSignup } from './pages/OrganiserSignup';
+import { OrganiserLogin } from './pages/OrganiserLogin';
 //for admin user
+import { HomeAdmin } from './pages/HomeAdmin';
+import { EventAdmin } from './pages/EventAdmin';
+import { ArtistAdmin } from './pages/ArtistAdmin';
+import { VenueAdmin } from './pages/VenueAdmin';
+import { AdminLogin } from './pages/AdminLogin';
 
 const container: any = document.getElementById('root');
 const root = createRoot(container);
@@ -38,6 +48,15 @@ root.render(
 			<Route path="/Venue" element={<Venue />} />
 			<Route path="/Forbidden" element={<Forbidden />} />
 			<Route path="/*" element={<Page404 />} />
+			<Route path="/HomeOrganiser" element={<HomeOrganiser />} />
+			<Route path="/EventOrganiser" element={<EventOrganiser />} />
+			<Route path="/HomeAdmin" element={<HomeAdmin />} />
+			<Route path="/EventAdmin" element={<EventAdmin />} />
+			<Route path="/VenueAdmin" element={<VenueAdmin />} />
+			<Route path="/ArtistAdmin" element={<ArtistAdmin />} />
+			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
+			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
+			<Route path="/AdminLogin" element={<AdminLogin />} />
 		</Routes>
 	</BrowserRouter>);
 
