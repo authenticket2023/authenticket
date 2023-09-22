@@ -5,9 +5,13 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { NavbarNotLoggedIn } from '../../Navbar';
-import { InputAdornment, TextField } from '@mui/material';
+import { Grid, InputAdornment, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import { CardActionArea } from '@mui/material';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -44,10 +48,72 @@ interface TabPanelProps {
 
 export const Event = () => {
     useEffect(() => {
+        loadCurrEvents();
     }, []);
 
     //variables
     const [value, setValue] = useState(0);
+    const [currEvents, setCurrEvents] = useState([]);
+    const [pastEvents, setPastEvents] = useState([]);
+
+    const loadCurrEvents = async () => {
+        //call backend API
+        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/current?page=0&size=20`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            method: 'GET',
+          })
+            .then(async (response) => {
+              if (response.status == 200) {
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                // console.log(data);
+                const currEventsArr = data.map((event : any) => ({
+                    eventId: event.eventId,
+                    eventName: event.eventName,
+                    eventDescription: event.eventDescription,
+                    eventImage: event.eventImage,
+                    eventType: event.eventType,
+                    eventDate: event.eventDate,
+                    totalTickets: event.totalTickets,
+                    eventLocation: event.eventLocation,
+                  }));
+
+                setCurrEvents(currEventsArr);
+                // currEventsArr.map((item: any) => console.log(item));
+              } else {
+                //passing to parent component
+              }
+            })
+            .catch((err) => {
+              window.alert(err);
+            });
+    }
+
+    function EventCard(props: any) {
+        return (
+            <Card sx={{ maxWidth: 345 }}>
+                <CardActionArea>
+                <CardMedia
+                    component="img"
+                    height="140"
+                    image="/static/images/cards/contemplative-reptile.jpg"
+                    alt="green iguana"
+                />
+                <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                    Lizard
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                    Lizards are a widespread group of squamate reptiles, with over 6,000
+                    species, ranging across all continents except Antarctica
+                    </Typography>
+                </CardContent>
+                </CardActionArea>
+            </Card>
+        )
+    }
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -94,7 +160,15 @@ export const Event = () => {
 
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-                    Item One
+                    <div style={{ overflowX: 'hidden', overflowY: 'scroll', maxHeight: '400px' }}>
+                        <Grid container spacing={2}>
+                            {currEvents.map((event: any, index) => (
+                                <Grid item key={index} xs={12} sm={6}>
+                                    <EventCard/>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </div>
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={1}>
                     Item Two
