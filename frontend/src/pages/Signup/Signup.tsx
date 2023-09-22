@@ -62,10 +62,11 @@ export function Signup() {
 }
 
   //validation methods
-  const validateEmail = (email : any) => {
+  const validateEmail = (email: any) => {
     // Regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    const harmfulTextRegex = /[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\/)/gi;
+    return emailRegex.test(email) && harmfulTextRegex.test(email);
   };
   
   const validateDob = (dob : any) => {
@@ -80,7 +81,8 @@ export function Signup() {
   const validatePassword = (password : any) => {
     // Regular expression to validate password
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    return passwordRegex.test(password);
+    const harmfulTextRegex = /[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\/)/gi;
+    return passwordRegex.test(password) && harmfulTextRegex.test(password);
   }
 
   //variables
@@ -211,7 +213,7 @@ export function Signup() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-              <a href='/Login'>
+              <a href='/Home'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
               <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
