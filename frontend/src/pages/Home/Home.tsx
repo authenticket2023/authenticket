@@ -23,8 +23,8 @@ import { CardActionArea } from "@mui/material";
 
 export const Home = () => {
   
-  const [featured, setFeatured]: any = React.useState();
-  const [bestSellers, setBestSellers]: any = React.useState();
+  const [featured, setFeatured]: any = React.useState([]);
+  const [bestSellers, setBestSellers]: any = React.useState([]);
   const [loaded, setLoaded]: any = React.useState(false);
   const [bsLoaded, setBSLoaded]: any = React.useState(false);
   
@@ -36,7 +36,7 @@ export const Home = () => {
   }, []);
   const loadFeatured = async () => {
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/featured`, {
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/featured?page=0&size=3`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -46,9 +46,25 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          setFeatured(data);
-          loadBestSellers();
+          //console.log(data);
+            const featuredArr = data.map((featured : any) => ({
+              featuredId: featured.featuredId,
+              eventId: featured.event.eventId,
+              eventName: featured.event.eventName,
+              eventDescription: featured.event.eventDescription,
+              eventImage: featured.event.eventImage,
+              eventType: featured.event.eventType,
+              eventDate: featured.event.eventDate,
+              totalTickets: featured.event.totalTickets,
+              eventLocation: featured.event.eventLocation,
+              eventStartDate: featured.startDate,
+              eventEndDate: featured.endDate,
+            }));
+          setFeatured(featuredArr);
+          featuredArr.map((item: any) => console.log(item));
           setLoaded(true);
+          loadBestSellers();
+          //console.log(featuredArr);
         } else {
           //passing to parent component
         }
@@ -70,9 +86,21 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          setBestSellers(data);
+          const bsArr = data.map((bestseller : any) => ({
+            eventId: bestseller.eventId,
+            eventName: bestseller.eventName,
+            eventDescription: bestseller.eventDescription,
+            eventImage: bestseller.eventImage,
+            eventType: bestseller.eventType,
+            eventDate: bestseller.eventDate,
+            totalTickets: bestseller.totalTickets,
+            eventLocation: bestseller.eventLocation,
+          }))
+
+          setBestSellers(bsArr);
           setBSLoaded(true);
-          console.log(data);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
         } else {
           //passing to parent component
         }
@@ -253,6 +281,7 @@ export const Home = () => {
       <Box>hi</Box>
       {/* {bestSellerListItems} */}
       <BestSellerItem eventName={bestSellers[0].eventName} eventImage={bestSellers[0].eventImage}></BestSellerItem>
+
     </Carousel>;
   }
 
