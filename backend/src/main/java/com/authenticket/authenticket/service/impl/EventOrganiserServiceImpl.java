@@ -26,8 +26,12 @@ import java.util.stream.Collectors;
 import com.authenticket.authenticket.service.Utility;
 @Service
 public class EventOrganiserServiceImpl extends Utility implements EventOrganiserService {
-    @Value("${authenticket.api-port}")
-    private String apiPort;
+//    @Value("${authenticket.frontend-dev-url}")
+//    private String apiUrl;
+
+    @Value("${authenticket.frontend-production-url}")
+    private String apiUrl;
+
 
     private final EventOrganiserRepository eventOrganiserRepository;
     private final EventOrganiserDtoMapper eventOrganiserDtoMapper;
@@ -95,8 +99,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
                 eventOrganiser.setPassword(passwordEncoder.encode(password));
 
                 //change link to log in page
-//                String link = "http://localhost:" + apiPort + "/api/auth/register/";
-                String link ="http://localhost:3000/OrganiserLogin";
+                String link = apiUrl + "/OrganiserLogin";
                 // Send email to organiser
                 emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, eventOrganiser.getReviewRemarks()), "Your account has been approved");
             } else if (reviewStatus.equals("rejected")){
