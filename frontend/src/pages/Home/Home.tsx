@@ -22,16 +22,21 @@ import { async } from "q";
 import { CardActionArea } from "@mui/material";
 
 export const Home = () => {
-  
+
+
+  const token = window.localStorage.getItem('accessToken');
   const [featured, setFeatured]: any = React.useState([]);
   const [bestSellers, setBestSellers]: any = React.useState([]);
+  const [recents, setRecents]: any = React.useState([]);
+  const [upcoming, setUpcoming]: any = React.useState([]);
   const [loaded, setLoaded]: any = React.useState(false);
   const [bsLoaded, setBSLoaded]: any = React.useState(false);
+  const [recLoaded, setRecLoaded]: any = React.useState(false);
+  const [upcLoaded, setUpcLoaded]: any = React.useState(false);
   
   useEffect(() => {
-    if (!loaded || !bsLoaded) {
+    if (!loaded || !bsLoaded || !recLoaded) {
       loadFeatured();
-      // loadBestSellers();
     }
   }, []);
   const loadFeatured = async () => {
@@ -63,6 +68,8 @@ export const Home = () => {
           setFeatured(featuredArr);
           featuredArr.map((item: any) => console.log(item));
           loadBestSellers();
+          loadRecents();
+          loadUpcoming();
           setLoaded(true);
           //console.log(featuredArr);
         } else {
@@ -99,6 +106,78 @@ export const Home = () => {
 
           setBestSellers(bsArr);
           setBSLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
+
+  const loadRecents = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/recently-added`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((recent : any) => ({
+            eventId: recent.eventId,
+            eventName: recent.eventName,
+            eventDescription: recent.eventDescription,
+            eventImage: recent.eventImage,
+            eventType: recent.eventType,
+            eventDate: recent.eventDate,
+            totalTickets: recent.totalTickets,
+            eventLocation: recent.eventLocation,
+          }))
+
+          setRecents(bsArr);
+          setRecLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
+
+  const loadUpcoming = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/upcoming?page=0&size=10`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((upcm : any) => ({
+            eventId: upcm.eventId,
+            eventName: upcm.eventName,
+            eventDescription: upcm.eventDescription,
+            eventImage: upcm.eventImage,
+            eventType: upcm.eventType,
+            eventDate: upcm.eventDate,
+            totalTickets: upcm.totalTickets,
+            eventLocation: upcm.eventLocation,
+          }))
+
+          setUpcoming(bsArr);
+          setUpcLoaded(true);
           //console.log(data);
           //bsArr.map((item: any) => console.log(item));
         } else {
@@ -204,12 +283,17 @@ export const Home = () => {
     },
   }));
 
-  function BestSellerItem(props: any) {
+  function TicketItem(props: any) {
     return (
       <Box marginTop = {2} marginRight={1}>
-        <Card sx={{minHeight: 175, minWidth: 250}}>
-          <CardMedia image={`https://i.imgur.com/UKi8jbp.png`}>
-          </CardMedia>
+        <Card  sx={{
+          minHeight: 175,
+          minWidth: 400, 
+          maxHeight: 175, 
+          maxWidth: 400, 
+          backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`, 
+          backgroundSize: 'contain',
+          }}>
           <CardActionArea href='#'>
           </CardActionArea>
         </Card>
@@ -221,9 +305,6 @@ export const Home = () => {
   }
 
   function BestSellersCarousell() {
-    // const bestSellerListItems = bestSellers.map((event: any) => {
-      // return <BestSellerItem eventName={event.eventName} eventImage={event.eventImage}></BestSellerItem>
-    // });
     return <Carousel
       additionalTransfrom={0}
       arrows
@@ -278,18 +359,142 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {/* {bestSellerListItems} */}
-      {/* <BestSellerItem eventName={bestSellers[0].eventName} eventImage={bestSellers[0].eventImage}></BestSellerItem> */}
       {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
-        <BestSellerItem
+        <TicketItem
           eventName = {bs.eventName} 
           eventImage = {bs.eventImage}
         />
       ))}
-
     </Carousel>;
   }
 
+  function RecentCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {recents.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName = {bs.eventName} 
+          eventImage = {bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
+
+  function UpcomingCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {upcoming.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName = {bs.eventName} 
+          eventImage = {bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
 
 
 
@@ -299,7 +504,11 @@ export const Home = () => {
       {loaded ?
         <Box>
           <div>
+            {/* if (token != null){
+              <NavbarLoggedIn />
+            } else { */}
             <NavbarNotLoggedIn />
+{/* } */}
             <Paper
               elevation={5}
               sx={{
@@ -390,7 +599,7 @@ export const Home = () => {
           </Typography>
           <Grid container>
             <Grid item xs={12}>
-              <BestSellersCarousell></BestSellersCarousell>
+              <RecentCarousell></RecentCarousell>
             </Grid>
           </Grid>
           <Box bgcolor="#FF5C35" marginTop={12}>
@@ -408,7 +617,7 @@ export const Home = () => {
           </Typography>
           <Grid container>
             <Grid item xs={12} marginBottom={8}>
-              <BestSellersCarousell></BestSellersCarousell>
+              <UpcomingCarousell></UpcomingCarousell>
             </Grid>
           </Grid>
         </Box>
