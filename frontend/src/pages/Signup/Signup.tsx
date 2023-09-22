@@ -151,7 +151,7 @@ export function Signup() {
     formData.append('dateOfBirth', TimestampConverter(Number(dob)));
 
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userRegister`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/userRegister`, {
       method: 'POST',
       body: formData
     })

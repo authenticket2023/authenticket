@@ -1,18 +1,27 @@
 # from base image node
 FROM node:18-alpine
 
+# set working directory
 WORKDIR /app
 
-# copy other files as well
+# Copies package.json and package-lock.json to Docker environment
+COPY package*.json ./
+
+# Installs all node packages
+RUN npm install
+
+# Copies everything over to Docker environment
 COPY . .
 
-RUN rm -rf /app/node_modules
+# Build for production.
+RUN npm run build
 
-RUN npm install --legacy-peer-deps
-# set timezone
-ENV TZ="Asia/Singapore"
-#expose the port
+# Install `serve` to run the application.
+RUN npm install -g serve
+
+# Uses port which is used by the actual application
 EXPOSE 3000
 
-# command to run when intantiate an image
-CMD ["npm","start"]
+# Run application
+# CMD [ "npm", "start" ]
+CMD serve -s build

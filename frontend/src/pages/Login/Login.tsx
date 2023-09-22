@@ -89,7 +89,7 @@ export const Login = () => {
     formData.append('email', email);
     formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/userAuthenticate`, {
       method: 'POST',
       body: formData
     })

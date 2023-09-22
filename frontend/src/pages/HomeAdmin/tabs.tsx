@@ -69,7 +69,7 @@ export function PendingTab() {
     const [dataLoaded, setDataLoaded] = useState(false);
     const loadPendingData = async () => {
         //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/admin/event-organiser/review-status/pending`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/event-organiser/review-status/pending`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -145,7 +145,7 @@ export function PendingTab() {
     const handleDelete = (id: any) => {
         const formData = new FormData;
         formData.append('organiserId', selectedRows);
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser/delete`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event-organiser/delete`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -411,7 +411,7 @@ export function AllTab() {
 
     const loadAllData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event-organiser`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -458,7 +458,7 @@ export function AllTab() {
 
     const loadUserData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/user`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/user`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -497,7 +497,7 @@ export function AllTab() {
 
     const loadAdminData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/admin`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -571,7 +571,7 @@ export function AllTab() {
         const formData = new FormData;
         formData.append('eventId', selectedRows);
         // Implement  delete logic
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/delete`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event/delete`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },

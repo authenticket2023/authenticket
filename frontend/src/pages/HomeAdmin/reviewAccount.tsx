@@ -34,7 +34,7 @@ export default function ReviewAccount(props: any) {
 
     const loadOrganiserDetailByID = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-organiser/${accountID}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event-organiser/${accountID}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -72,7 +72,7 @@ export default function ReviewAccount(props: any) {
         } else {
             formData.append('enabled', 'false');
         }
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/admin/updateEventOrganiser`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/updateEventOrganiser`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },

@@ -80,7 +80,7 @@ export function EventDetails(props: any) {
     //retrieve artists from DB
     const eventTypeFetcher = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event-type`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/event-type`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -362,7 +362,7 @@ export function VenueArtist(props: any) {
     //retrieve artists from DB
     const artistFetcher = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/artist`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/artist`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -388,7 +388,7 @@ export function VenueArtist(props: any) {
     const venueFetcher = async () => {
         try {
             const token = window.localStorage.getItem('accessToken');
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/venue`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/venue`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',

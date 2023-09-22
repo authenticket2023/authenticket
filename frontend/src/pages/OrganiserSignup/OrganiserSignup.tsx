@@ -89,7 +89,7 @@ export function OrganiserSignup() {
     formData.append('description', companyDescription);
 
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/eventOrgRegister`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/eventOrgRegister`, {
       headers: {
       },
       method: 'POST',
