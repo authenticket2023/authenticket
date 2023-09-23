@@ -17,6 +17,7 @@ import "bear-react-carousel/dist/index.css";
 import BearCarousel, {
   TBearSlideItemDataList,
   BearSlideCard,
+  BearSlideImage,
 } from "bear-react-carousel";
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
@@ -38,6 +39,7 @@ export const Home = () => {
       loadFeatured();
     }
   }, []);
+
   const loadFeatured = async () => {
     // //calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/featured?page=0&size=3`, {
@@ -192,9 +194,26 @@ export const Home = () => {
       return {
         key: row.id,
         children: (
-          <BearSlideCard bgUrl={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}>
-            <div style={{ height: "100%", backgroundImage: row.bg }} />
+          <BearSlideCard>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '400px',
+            }}>
+              <img
+                src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                }}
+              />
+            </div>
           </BearSlideCard>
+
         ),
       };
     });
@@ -598,8 +617,8 @@ export const Home = () => {
             </Grid>
           </Grid>
           <Box bgcolor="#FF5C35" marginTop={12}>
-            <Grid container alignItems="center" justifyContent="center">
-              <Grid item xs={5} marginTop={4} marginBottom={4}>
+            <Grid container justifyContent="center" alignItems="center">
+              <Grid item xs={5} marginTop={4} marginBottom={4} >
                 <CustomBanner />
               </Grid>
               <Grid item xs={5} marginLeft={4}>
