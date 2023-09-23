@@ -40,7 +40,7 @@ export const Home = () => {
   }, []);
   const loadFeatured = async () => {
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/featured?page=0&size=3`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/featured?page=0&size=3`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -82,7 +82,7 @@ export const Home = () => {
 
   const loadBestSellers = async () => {
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/bestseller?page=0&size=7`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/bestseller?page=0&size=7`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -118,7 +118,7 @@ export const Home = () => {
 
   const loadRecents = async () => {
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/recently-added`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/recently-added`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -154,7 +154,7 @@ export const Home = () => {
 
   const loadUpcoming = async () => {
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/upcoming?page=0&size=10`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/upcoming?page=0&size=10`, {
       headers: {
         'Content-Type': 'application/json',
       },
