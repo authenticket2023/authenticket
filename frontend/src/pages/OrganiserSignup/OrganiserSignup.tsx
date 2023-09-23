@@ -41,10 +41,11 @@ export function OrganiserSignup() {
   let navigate = useNavigate();
 
   //validation methods
-  const validateEmail = (email : any) => {
+  const validateEmail = (email: any) => {
     // Regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    const harmfulTextRegex = /[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\/)/gi;
+    return emailRegex.test(email) && harmfulTextRegex.test(email);
   };
 
   //variables
@@ -89,7 +90,7 @@ export function OrganiserSignup() {
     formData.append('description', companyDescription);
 
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/eventOrgRegister`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/eventOrgRegister`, {
       headers: {
       },
       method: 'POST',
@@ -151,7 +152,7 @@ export function OrganiserSignup() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-              <a href='/Login'>
+              <a href='/Home'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
               <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>

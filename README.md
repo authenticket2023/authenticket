@@ -17,10 +17,11 @@
   - Build the image : `docker build -t authenticket-backend .` => name of the jar file need match in the Dockerfile
   - Run the image : `docker run -dp 127.0.0.1:8080:8080 authenticket-backend`
 
-### Run buildDocker.sh (replace with your own docker ID)
-- cd to 'authenticket/backend'
-  - `chmod +x buildDocker.sh` => make the script executable
-  - `./buildDocker.sh` => run the script
+### Run build_and_push.sh (replace with your own docker ID)
+- This script will build both frontend and backend docker image and push them to Docker Hub
+- cd to 'authenticket'
+  - `chmod +x build_and_push.sh` => make the script executable
+  - `./build_and_push.sh` => run the script
 
 ## Run in AWS EC2
 - `tmux new-session -s AuthenTicket` => create tmux session (need run in the session, so that after we disconnect from AWS EC2, it will still be running)

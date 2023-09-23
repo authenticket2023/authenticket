@@ -29,7 +29,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
@@ -101,6 +105,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(overallEventDto, String.format("Event %d successfully returned.", eventId)));
 
     }
+
     @GetMapping("/public/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents(Pageable pageable) {
         List<FeaturedEventDto> eventList = eventService.findFeaturedEvents(pageable);
@@ -121,7 +126,6 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
 
     }
-
 
 
     @GetMapping("/public/event/bestseller")
@@ -330,15 +334,15 @@ public class EventController extends Utility {
                     .collect(Collectors.toList());
 
             //check if all events exist first
-            for(Integer eventId: eventIdList){
-                if(eventRepository.findById(eventId).isEmpty()){
+            for (Integer eventId : eventIdList) {
+                if (eventRepository.findById(eventId).isEmpty()) {
                     throw new NonExistentException(String.format("Event %d does not exist, deletion halted", eventId));
                 }
             }
 
             StringBuilder results = new StringBuilder();
 
-            for(Integer eventId: eventIdList){
+            for (Integer eventId : eventIdList) {
                 results.append(eventService.deleteEvent(eventId)).append(" ");
             }
 

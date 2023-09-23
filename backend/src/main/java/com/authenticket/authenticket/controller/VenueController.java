@@ -12,6 +12,7 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import com.authenticket.authenticket.service.impl.VenueServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,11 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
         methods = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST, RequestMethod.DELETE},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"

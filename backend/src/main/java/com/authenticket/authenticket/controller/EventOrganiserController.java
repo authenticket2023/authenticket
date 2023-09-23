@@ -27,7 +27,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
@@ -43,7 +47,10 @@ public class EventOrganiserController extends Utility {
     private final AdminRepository adminRepository;
 
     @Autowired
-    public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService, AmazonS3Service amazonS3Service, PasswordEncoder passwordEncoder, AdminRepository adminRepository) {
+    public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService,
+                                    AmazonS3Service amazonS3Service,
+                                    PasswordEncoder passwordEncoder,
+                                    AdminRepository adminRepository) {
         this.eventOrganiserService = eventOrganiserService;
         this.amazonS3Service = amazonS3Service;
         this.passwordEncoder = passwordEncoder;
