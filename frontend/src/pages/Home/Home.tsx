@@ -50,7 +50,6 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          console.log(data);
           const featuredArr = data.map((featured: any) => ({
             featuredId: featured.featuredId,
             eventId: featured.event.eventId,
@@ -587,7 +586,7 @@ export const Home = () => {
           </Typography>
           <Grid container>
             <Grid item xs={12}>
-              <BestSellersCarousell></BestSellersCarousell>
+              <BestSellersCarousell />
             </Grid>
           </Grid>
           <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
@@ -595,16 +594,16 @@ export const Home = () => {
           </Typography>
           <Grid container>
             <Grid item xs={12}>
-              <RecentCarousell></RecentCarousell>
+              <RecentCarousell />
             </Grid>
           </Grid>
           <Box bgcolor="#FF5C35" marginTop={12}>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item xs={5} marginTop={4} marginBottom={4}>
-                <CustomBanner></CustomBanner>
+                <CustomBanner />
               </Grid>
               <Grid item xs={5} marginLeft={4}>
-                <TextAnimationsCarousel></TextAnimationsCarousel>
+                <TextAnimationsCarousel />
               </Grid>
             </Grid>
           </Box>
@@ -613,7 +612,7 @@ export const Home = () => {
           </Typography>
           <Grid container>
             <Grid item xs={12} marginBottom={8}>
-              <UpcomingCarousell></UpcomingCarousell>
+              <UpcomingCarousell />
             </Grid>
           </Grid>
         </Box>
