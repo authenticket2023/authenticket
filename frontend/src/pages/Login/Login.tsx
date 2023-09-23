@@ -101,8 +101,8 @@ export const Login = () => {
           localStorage.setItem('role', "USER");
           localStorage.setItem('email', loginResponse.data.userDetails.email);
           localStorage.setItem('username', loginResponse.data.userDetails.name);
-          localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
-          localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
+          localStorage.setItem('dob', loginResponse.data.userDetails.dateOfBirth);
+          localStorage.setItem('profileImage',loginResponse.data.userDetails.profileImage);
 
           navigate('/Home');
         } else {

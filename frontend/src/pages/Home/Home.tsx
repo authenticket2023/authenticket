@@ -66,7 +66,6 @@ export const Home = () => {
             eventEndDate: featured.endDate,
           }));
           setFeatured(featuredArr);
-          featuredArr.map((item: any) => console.log(item));
           loadBestSellers();
           loadRecents();
           loadUpcoming();
