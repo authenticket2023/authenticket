@@ -32,7 +32,7 @@ export const Home = () => {
   const [bsLoaded, setBSLoaded]: any = React.useState(false);
   const [recLoaded, setRecLoaded]: any = React.useState(false);
   const [upcLoaded, setUpcLoaded]: any = React.useState(false);
-  
+
   useEffect(() => {
     if (!loaded || !bsLoaded || !recLoaded) {
       loadFeatured();
@@ -51,19 +51,19 @@ export const Home = () => {
           const apiResponse = await response.json();
           const data = apiResponse.data;
           console.log(data);
-            const featuredArr = data.map((featured : any) => ({
-              featuredId: featured.featuredId,
-              eventId: featured.event.eventId,
-              eventName: featured.event.eventName,
-              eventDescription: featured.event.eventDescription,
-              eventImage: featured.event.eventImage,
-              eventType: featured.event.eventType,
-              eventDate: featured.event.eventDate,
-              totalTickets: featured.event.totalTickets,
-              eventLocation: featured.event.eventLocation,
-              eventStartDate: featured.startDate,
-              eventEndDate: featured.endDate,
-            }));
+          const featuredArr = data.map((featured: any) => ({
+            featuredId: featured.featuredId,
+            eventId: featured.event.eventId,
+            eventName: featured.event.eventName,
+            eventDescription: featured.event.eventDescription,
+            eventImage: featured.event.eventImage,
+            eventType: featured.event.eventType,
+            eventDate: featured.event.eventDate,
+            totalTickets: featured.event.totalTickets,
+            eventLocation: featured.event.eventLocation,
+            eventStartDate: featured.startDate,
+            eventEndDate: featured.endDate,
+          }));
           setFeatured(featuredArr);
           featuredArr.map((item: any) => console.log(item));
           loadBestSellers();
@@ -92,7 +92,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          const bsArr = data.map((bestseller : any) => ({
+          const bsArr = data.map((bestseller: any) => ({
             eventId: bestseller.eventId,
             eventName: bestseller.eventName,
             eventDescription: bestseller.eventDescription,
@@ -128,7 +128,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          const bsArr = data.map((recent : any) => ({
+          const bsArr = data.map((recent: any) => ({
             eventId: recent.eventId,
             eventName: recent.eventName,
             eventDescription: recent.eventDescription,
@@ -164,7 +164,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          const bsArr = data.map((upcm : any) => ({
+          const bsArr = data.map((upcm: any) => ({
             eventId: upcm.eventId,
             eventName: upcm.eventName,
             eventDescription: upcm.eventDescription,
@@ -284,15 +284,15 @@ export const Home = () => {
 
   function TicketItem(props: any) {
     return (
-      <Box marginTop = {2} marginRight={1}>
-        <Card  sx={{
+      <Box marginTop={2} marginRight={1}>
+        <Card sx={{
           minHeight: 175,
-          minWidth: 400, 
-          maxHeight: 175, 
-          maxWidth: 400, 
-          backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`, 
+          minWidth: 400,
+          maxHeight: 175,
+          maxWidth: 400,
+          backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
           backgroundSize: 'contain',
-          }}>
+        }}>
           <CardActionArea href='#'>
           </CardActionArea>
         </Card>
@@ -360,8 +360,8 @@ export const Home = () => {
     >
       {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
         <TicketItem
-          eventName = {bs.eventName} 
-          eventImage = {bs.eventImage}
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
         />
       ))}
     </Carousel>;
@@ -424,8 +424,8 @@ export const Home = () => {
     >
       {recents.map((bs: { eventName: any; eventImage: any; }) => (
         <TicketItem
-          eventName = {bs.eventName} 
-          eventImage = {bs.eventImage}
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
         />
       ))}
     </Carousel>;
@@ -488,8 +488,8 @@ export const Home = () => {
     >
       {upcoming.map((bs: { eventName: any; eventImage: any; }) => (
         <TicketItem
-          eventName = {bs.eventName} 
-          eventImage = {bs.eventImage}
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
         />
       ))}
     </Carousel>;
@@ -503,11 +503,7 @@ export const Home = () => {
       {loaded ?
         <Box>
           <div>
-            {/* if (token != null){
-              <NavbarLoggedIn />
-            } else { */}
-            <NavbarNotLoggedIn />
-{/* } */}
+            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
             <Paper
               elevation={5}
               sx={{

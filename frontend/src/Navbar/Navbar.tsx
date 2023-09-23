@@ -180,6 +180,7 @@ export const NavbarLoggedIn = () => {
         sessionStorage.clear();
         localStorage.clear();
         navigate('/home');
+        window. location. reload();
     };
 
     const handleHome = () => {
