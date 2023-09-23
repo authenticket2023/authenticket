@@ -55,9 +55,7 @@ export const EventOrganiser = () => {
         setActiveStep(step);
     };
 
-    //TODO: need add validation
     const handleComplete = () => {
-        console.log(activeStep);
         const newCompleted = completed;
         newCompleted[activeStep] = true;
         setCompleted(newCompleted);
