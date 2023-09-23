@@ -65,8 +65,8 @@ export function Signup() {
   const validateEmail = (email: any) => {
     // Regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const harmfulTextRegex = /[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\/)/gi;
-    return emailRegex.test(email) && harmfulTextRegex.test(email);
+    
+    return emailRegex.test(email);
   };
   
   const validateDob = (dob : any) => {
