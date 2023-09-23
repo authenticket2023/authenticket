@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { NavbarNotLoggedIn, NavbarLoggedIn } from "../../Navbar";
 import { styled, alpha } from "@mui/material/styles";
+import CardMedia from '@mui/material/CardMedia'
+import Card from '@mui/material/Card';
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -15,31 +17,203 @@ import "bear-react-carousel/dist/index.css";
 import BearCarousel, {
   TBearSlideItemDataList,
   BearSlideCard,
+  BearSlideImage,
 } from "bear-react-carousel";
+import { async } from "q";
+import { CardActionArea } from "@mui/material";
 
 export const Home = () => {
-  useEffect(() => { 
+
+  const token = window.localStorage.getItem('accessToken');
+  const [featured, setFeatured]: any = React.useState([]);
+  const [bestSellers, setBestSellers]: any = React.useState([]);
+  const [recents, setRecents]: any = React.useState([]);
+  const [upcoming, setUpcoming]: any = React.useState([]);
+  const [loaded, setLoaded]: any = React.useState(false);
+  const [bsLoaded, setBSLoaded]: any = React.useState(false);
+  const [recLoaded, setRecLoaded]: any = React.useState(false);
+  const [upcLoaded, setUpcLoaded]: any = React.useState(false);
+
+  useEffect(() => {
+    if (!loaded || !bsLoaded || !recLoaded) {
+      loadFeatured();
+    }
   }, []);
 
-  const images = [
-    { id: 1, color: "green" },
-    { id: 2, color: "blue" },
-    { id: 3, color: "gray" },
-    { id: 4, color: "white" },
-    { id: 5, color: "black" },
-    { id: 6, color: "yellow" },
-    { id: 7, color: "purple" },
-    { id: 8, color: "red" },
-  ];
+  const loadFeatured = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/featured?page=0&size=3`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const featuredArr = data.map((featured: any) => ({
+            featuredId: featured.featuredId,
+            eventId: featured.event.eventId,
+            eventName: featured.event.eventName,
+            eventDescription: featured.event.eventDescription,
+            eventImage: featured.event.eventImage,
+            eventType: featured.event.eventType,
+            eventDate: featured.event.eventDate,
+            totalTickets: featured.event.totalTickets,
+            eventLocation: featured.event.eventLocation,
+            eventStartDate: featured.startDate,
+            eventEndDate: featured.endDate,
+          }));
+          setFeatured(featuredArr);
+          featuredArr.map((item: any) => console.log(item));
+          loadBestSellers();
+          loadRecents();
+          loadUpcoming();
+          setLoaded(true);
+          //console.log(featuredArr);
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
+
+  const loadBestSellers = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/bestseller?page=0&size=7`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((bestseller: any) => ({
+            eventId: bestseller.eventId,
+            eventName: bestseller.eventName,
+            eventDescription: bestseller.eventDescription,
+            eventImage: bestseller.eventImage,
+            eventType: bestseller.eventType,
+            eventDate: bestseller.eventDate,
+            totalTickets: bestseller.totalTickets,
+            eventLocation: bestseller.eventLocation,
+          }))
+
+          setBestSellers(bsArr);
+          setBSLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
+
+  const loadRecents = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/recently-added`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((recent: any) => ({
+            eventId: recent.eventId,
+            eventName: recent.eventName,
+            eventDescription: recent.eventDescription,
+            eventImage: recent.eventImage,
+            eventType: recent.eventType,
+            eventDate: recent.eventDate,
+            totalTickets: recent.totalTickets,
+            eventLocation: recent.eventLocation,
+          }))
+
+          setRecents(bsArr);
+          setRecLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
+
+  const loadUpcoming = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/upcoming?page=0&size=10`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((upcm: any) => ({
+            eventId: upcm.eventId,
+            eventName: upcm.eventName,
+            eventDescription: upcm.eventDescription,
+            eventImage: upcm.eventImage,
+            eventType: upcm.eventType,
+            eventDate: upcm.eventDate,
+            totalTickets: upcm.totalTickets,
+            eventLocation: upcm.eventLocation,
+          }))
+
+          setUpcoming(bsArr);
+          setUpcLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
 
   const CustomBanner = () => {
-    const bearSlideItemData: TBearSlideItemDataList = images.map((row) => {
+    const bearSlideItemData: TBearSlideItemDataList = featured.map((row: any) => {
       return {
         key: row.id,
         children: (
           <BearSlideCard>
-            <div style={{ height: "100%", backgroundColor: row.color }} />
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '400px',
+            }}>
+              <img
+                src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                }}
+              />
+            </div>
           </BearSlideCard>
+
         ),
       };
     });
@@ -48,51 +222,37 @@ export const Home = () => {
         data={bearSlideItemData}
         height="400px"
         isEnableLoop
-        isDebug
         isEnableAutoPlay
       />
     );
   };
 
-  const featureText = [
-    { id: 1, text: "green" },
-    { id: 2, text: "blue" },
-    { id: 3, text: "gray" },
-    { id: 4, text: "white" },
-    { id: 5, text: "black" },
-    { id: 6, text: "yellow" },
-    { id: 7, text: "purple" },
-    { id: 8, text: "red" },
-  ]
-
   const TextAnimationsCarousel = () => {
-    const slideItemData: TBearSlideItemDataList = featureText.map(row => {
+    const slideItemData: TBearSlideItemDataList = featured.map((row: any) => {
       return {
-        key: row.id,
-        children: <Box bgcolor="#FF5C35" marginTop={8}>
-          <Typography variant="h6" color="white" marginLeft={2}>
-            Featured
-          </Typography>
-          <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-            Lauv: the between albums tour
-          </Typography>
-          <Typography variant="subtitle2" justifyItems="center" color="white">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta
-            earum ullam repellat minus, cumque, tempore fugit officia delectus
-            omnis numquam dolor adipisci ut voluptatem dolore odit cum sunt?
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto
-            maiores reprehenderit veritatis eveniet possimus ex odio? Reiciendis, ducimus.
-            Placeat recusandae nulla nisi vitae est quod libero sint? Laborum, at maiores.
-          </Typography>
-          <Box marginTop={2} marginLeft={2}>
-            <Button
-              variant="outlined"
-              sx={{ color: "white", borderColor: "white" }}
-            >
-              Get tickets
-            </Button>
+        key: row.featuredId,
+        children: (
+          <Box bgcolor="#FF5C35" marginTop={8}>
+            <Typography variant="h6" color="white" marginLeft={2}>
+              Featured
+            </Typography>
+            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
+              {row.eventName}
+            </Typography>
+            <Typography variant="subtitle2" justifyItems="center" color="white">
+              {row.eventDescription}
+            </Typography>
+            <Box marginTop={2} marginLeft={2}>
+              <Button
+                variant="outlined"
+                href='#'
+                sx={{ color: "white", borderColor: "white" }}
+              >
+                Get tickets
+              </Button>
+            </Box>
           </Box>
-        </Box>
+        ),
       };
     });
     return (
@@ -101,12 +261,10 @@ export const Home = () => {
         height="400px"
         isEnableAutoPlay
         isEnableLoop
-        isDebug
+
       />
     );
   };
-
-
 
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -142,209 +300,343 @@ export const Home = () => {
     },
   }));
 
-  function TicketCarousel() {
+  function TicketItem(props: any) {
     return (
-      <Carousel
-        additionalTransfrom={0}
-        arrows
-        autoPlaySpeed={3000}
-        centerMode={false}
-        className=""
-        containerClass="container"
-        dotListClass=""
-        draggable
-        focusOnSelect={false}
-        infinite
-        itemClass=""
-        keyBoardControl
-        minimumTouchDrag={80}
-        partialVisible
-        pauseOnHover
-        renderArrowsWhenDisabled={false}
-        renderButtonGroupOutside={false}
-        renderDotsOutside={false}
-        responsive={{
-          desktop: {
-            breakpoint: {
-              max: 3000,
-              min: 1024,
-            },
-            items: 3,
-            partialVisibilityGutter: 20,
-          },
-          mobile: {
-            breakpoint: {
-              max: 464,
-              min: 0,
-            },
-            items: 1,
-            partialVisibilityGutter: 30,
-          },
-          tablet: {
-            breakpoint: {
-              max: 1024,
-              min: 464,
-            },
-            items: 2,
-            partialVisibilityGutter: 30,
-          },
-        }}
-        rewind={false}
-        rewindWithAnimation={false}
-        rtl={false}
-        shouldResetAutoplay
-        showDots={false}
-        sliderClass=""
-        slidesToSlide={1}
-        swipeable
-      >
-        <Box>
-          <Grid container>
-            <Grid item>
-              <img src="https://picsum.photos/400/250" />
-            </Grid>
-          </Grid>
-        </Box>
-        <Box>
-          <Grid container marginRight={5}>
-            <Grid item>
-              <img src="https://picsum.photos/400/250" />
-            </Grid>
-          </Grid>
-        </Box>
-        <Box>
-          <Grid container marginRight={5}>
-            <Grid item>
-              <img src="https://picsum.photos/400/250" />
-            </Grid>
-          </Grid>
-        </Box>
-        <Box>
-          <Grid container marginRight={5}>
-            <Grid item>
-              <img src="https://picsum.photos/400/250" />
-            </Grid>
-          </Grid>
-        </Box>
-      </Carousel>
-    );
+      <Box marginTop={2} marginRight={1}>
+        <Card sx={{
+          minHeight: 175,
+          minWidth: 400,
+          maxHeight: 175,
+          maxWidth: 400,
+          backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
+          backgroundSize: 'contain',
+        }}>
+          <CardActionArea href='#'>
+          </CardActionArea>
+        </Card>
+        <Typography>
+          {props.eventName}
+        </Typography>
+      </Box>
+    )
   }
+
+  function BestSellersCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
+
+  function RecentCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {recents.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
+
+  function UpcomingCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {upcoming.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
+
+
+
 
   return (
     <>
-      <div>
-        <NavbarNotLoggedIn />
-        <Paper
-          elevation={5}
-          sx={{
-            position: "relative",
-            backgroundColor: "grey.800",
-            color: "#fff",
-            mb: 4,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            backgroundImage: `url(https://i.imgur.com/UKi8jbp.png)`,
-          }}
-        >
-          <Box
-            sx={{
-              position: "relative",
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              backgroundColor: "rgba(0,0,0,.3)",
-            }}
-          />
-          <Grid
-            container
-            spacing={4}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Grid item md={6}>
+      {loaded ?
+        <Box>
+          <div>
+            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
+            <Paper
+              elevation={5}
+              sx={{
+                position: "relative",
+                backgroundColor: "grey.800",
+                color: "#fff",
+                mb: 4,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundImage: `url(https://i.imgur.com/UKi8jbp.png)`,
+              }}
+            >
               <Box
                 sx={{
                   position: "relative",
-                  p: { xs: 3, md: 6 },
-                  pr: { md: 0 },
+                  top: 0,
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                  backgroundColor: "rgba(0,0,0,.3)",
                 }}
+              />
+              <Grid
+                container
+                spacing={4}
+                alignItems="center"
+                justifyContent="center"
               >
-                <br />
-                <br />
-                <Typography
-                  component="h1"
-                  variant="h3"
-                  color="inherit"
-                  align="center"
-                  sx={{fontWeight:600, whiteSpace:"nowrap"}}
-                >
-                  Unlock Unforgettable Experiences
-                </Typography>
-                <Typography
-                  component="h1"
-                  variant="h6"
-                  color="inherit"
-                  gutterBottom
-                  align="center"
-                  sx={{fontWeight:400}}
-                >
-                  your gateway to premier event adventures
-                </Typography>
-                <br />
-                <Search sx={{backgroundColor:"white", borderRadius:"10px"}}>
-                  <SearchIconWrapper>
-                    <SearchIcon sx={{ color: "#9C9C9C" }} />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder="Search…"
-                    inputProps={{ "aria-label": "search" }}
-                    fullWidth
-                  />
-                </Search>
-                <br />
-                <br />
-                <br />
-              </Box>
+
+                <Grid item md={6}>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      p: { xs: 3, md: 6 },
+                      pr: { md: 0 },
+                    }}
+                  >
+                    <br />
+                    <br />
+                    <Typography
+                      component="h1"
+                      variant="h3"
+                      color="inherit"
+                      align="center"
+                    >
+                      Unlock Unforgettable Experiences
+                    </Typography>
+                    <Typography
+                      component="h1"
+                      variant="h6"
+                      color="inherit"
+                      gutterBottom
+                      align="center"
+                    >
+                      your gateway to premier event adventures
+                    </Typography>
+                    <br />
+                    <br />
+                    <br />
+                    <Search>
+                      <SearchIconWrapper>
+                        <SearchIcon sx={{ color: "#3b3b3b" }} />
+                      </SearchIconWrapper>
+                      <StyledInputBase
+                        placeholder="Search…"
+                        inputProps={{ "aria-label": "search" }}
+                        fullWidth
+                      />
+                    </Search>
+                    <br />
+                    <br />
+                    <br />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </div>
+          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+            Best Sellers
+          </Typography>
+          <Grid container>
+            <Grid item xs={12}>
+              <BestSellersCarousell />
             </Grid>
           </Grid>
-        </Paper>
-      </div>
-      <Typography marginLeft={15} marginTop={8} marginBottom={1} sx={{ fontWeight: "bold" , fontSize:16}}>
-        Best Sellers
-      </Typography>
-      <Grid container>
-        <Grid item xs={12}>
-          <TicketCarousel></TicketCarousel>
-        </Grid>
-      </Grid>
-      <Typography marginLeft={15} marginTop={8} marginBottom={1} sx={{ fontWeight: "bold", fontSize:16 }}>
-        Recently Added
-      </Typography>
-      <Grid container>
-        <Grid item xs={12}>
-          <TicketCarousel></TicketCarousel>
-        </Grid>
-      </Grid>
-      <Box bgcolor="#FF5C35" marginTop={12}>
-        <Grid container alignItems='center' justifyContent='center'>
-          <Grid item xs={5} marginTop={4} marginBottom={4}>
-            <CustomBanner></CustomBanner>
+          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+            New on AuthenTicket
+          </Typography>
+          <Grid container>
+            <Grid item xs={12}>
+              <RecentCarousell />
+            </Grid>
           </Grid>
-          <Grid item xs={5} marginLeft={4}>
-            <TextAnimationsCarousel></TextAnimationsCarousel>
+          <Box bgcolor="#FF5C35" marginTop={12}>
+            <Grid container justifyContent="center" alignItems="center">
+              <Grid item xs={5} marginTop={4} marginBottom={4} >
+                <CustomBanner />
+              </Grid>
+              <Grid item xs={5} marginLeft={4}>
+                <TextAnimationsCarousel />
+              </Grid>
+            </Grid>
+          </Box>
+          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+            Recently Added
+          </Typography>
+          <Grid container>
+            <Grid item xs={12} marginBottom={8}>
+              <UpcomingCarousell />
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
-      <Typography marginLeft={15} marginTop={8} marginBottom={1} sx={{ fontWeight: "bold", fontSize:16 }}>
-        Upcoming Sales
-      </Typography>
-      <Grid container>
-        <Grid item xs={12} marginBottom={8}>
-          <TicketCarousel></TicketCarousel>
-        </Grid>
-      </Grid>
+        </Box>
+        : null}
+
     </>
   );
 };
