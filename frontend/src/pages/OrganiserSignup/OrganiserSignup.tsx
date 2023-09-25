@@ -9,9 +9,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
-
+import Filter from 'bad-words';
 //image download
 import backgroundImage from '../../images/background.png';
+import words from '../../extra-words.json';
 
 function Copyright(props: any) {
   return (
@@ -37,10 +38,17 @@ const myTheme = createTheme({
 });
 
 export function OrganiserSignup() {
+    //profanity filter
+    const filter = new Filter();
+    filter.addWords(...words);
 
   let navigate = useNavigate();
 
   //validation methods
+  const validateName = (name: any) => {
+    // Regular expression to validate email format
+    return filter.isProfane(name);
+  };
   const validateEmail = (email: any) => {
     // Regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -52,6 +60,8 @@ export function OrganiserSignup() {
   const [companyName, setCompanyName] = useState('');
   const [companyDescription, setCompanyDescription] = useState('');
   //validation
+  const [companyNameError, setCompanyNameError] = useState(false);
+  const [companyNameHelperText, setCompanyNameHelperText] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [emailHelperText, setEmailHelperText] = useState('');
   //error , warning , info , success
@@ -74,6 +84,14 @@ export function OrganiserSignup() {
     event.preventDefault();
 
     //checking validations, returning error message if conditions not met
+    if (validateName(companyName)) {
+      setCompanyNameError(true);
+      setCompanyNameHelperText('Please enter an appropriate name');
+      return;
+    } else {
+      setCompanyNameError(false);
+      setCompanyNameHelperText('');
+    }
     if (!validateEmail(companyEmail)) {
       setEmailError(true);
       setEmailHelperText('Please enter a valid email address');
@@ -176,6 +194,8 @@ export function OrganiserSignup() {
                 autoComplete="companyName"
                 autoFocus
                 size="medium"
+                error={companyNameError}
+                helperText={companyNameHelperText}
                 onChange={handleCompanyName}
               />
               <TextField

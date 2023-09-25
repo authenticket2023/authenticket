@@ -14,10 +14,12 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import moment from 'moment';
+import Filter from 'bad-words';
 
 //image download
 import backgroundImage from '../../images/background.png';
 import dayjs from 'dayjs';
+import words from '../../extra-words.json';
 
 function Copyright(props: any) {
   return (
@@ -43,6 +45,9 @@ const myTheme = createTheme({
 });
 
 export function Signup() {
+  //profanity filter
+  const filter = new Filter();
+  filter.addWords(...words);
 
   let navigate = useNavigate();
 
@@ -62,6 +67,11 @@ export function Signup() {
 }
 
   //validation methods
+  const validateName = (name: any) => {
+    // Regular expression to validate email format
+    return filter.isProfane(name);
+  };
+
   const validateEmail = (email: any) => {
     // Regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,6 +101,8 @@ export function Signup() {
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
   //validation
+  const [nameError, setNameError] = useState(false);
+  const [nameHelperText, setNameHelperText] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [emailHelperText, setEmailHelperText] = useState('');
   const [dobError, setDobError] = useState(false);
@@ -121,6 +133,14 @@ export function Signup() {
     event.preventDefault();
 
     //checking validations, returning error message if conditions not met
+    if (validateName(name)) {
+      setNameError(true);
+      setNameHelperText('Please enter an appropriate name');
+      return;
+    } else {
+      setNameError(false);
+      setNameHelperText('');
+    }
     if (!validateEmail(email)) {
       setEmailError(true);
       setEmailHelperText('Please enter a valid email address');
@@ -237,6 +257,8 @@ export function Signup() {
                 autoComplete="name"
                 autoFocus
                 size="medium"
+                error={nameError}
+                helperText={nameHelperText}
                 onChange={handleName}
               />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
