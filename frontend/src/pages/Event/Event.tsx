@@ -163,7 +163,7 @@ export const Event = () => {
           {/* Search Bar */}
           <Box
             component="form"
-            sx={{ '& > :not(style)': { width: '25ch' }, marginLeft: 140, marginBottom: 3 }}
+            sx={{ '& > :not(style)': { width: '25ch' }, marginLeft: 140, marginBottom: 3 , position:'relative'}}
             noValidate
             autoComplete='off'
           >
@@ -189,13 +189,13 @@ export const Event = () => {
 
         {/* Section 2: current events */}
         <Box sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
-          <CustomTabPanel value={value} index={0}>
-            <Grid container spacing={2} sx={{ mb: 10, }} alignItems="left" justifyContent="left">
+          <CustomTabPanel value={value} index={0} >
+            <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
               {currEvents.map((event: any, index) => (
                 <React.Fragment key={index}>
                   {/* offset sm 1*/}
-                  <Grid item xs={12} sm={1} />
-                  <Grid item xs={12} sm={5}>
+                  {/* <Grid item xs={12} sm={1} /> */}
+                  <Grid item xs={5}>
                     <DisplayEvent event={event} />
                   </Grid>
                 </React.Fragment>
@@ -204,12 +204,12 @@ export const Event = () => {
           </CustomTabPanel>
           {/* Section 2: past events */}
           <CustomTabPanel value={value} index={1}>
-            <Grid container spacing={2} sx={{ mb: 10, }} alignItems="left" justifyContent="left">
+            <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
               {pastEvents.map((event: any, index) => (
                 <React.Fragment key={index}>
                   {/* offset sm 1*/}
-                  <Grid item xs={12} sm={1} />
-                  <Grid item xs={12} sm={5}>
+                  {/* <Grid item xs={12} sm={1} /> */}
+                  <Grid item xs={5}>
                     <DisplayEvent event={event} />
                   </Grid>
                 </React.Fragment>

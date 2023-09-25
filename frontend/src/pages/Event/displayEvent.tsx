@@ -35,7 +35,7 @@ function formatDate(dateString: string): string {
 export default function dsiplayEvent(props: eventInfo) {
 
     return (
-        <Card sx={{ maxWidth: 600, minHeight: 300, minWidth: 600, mt: 3, backgroundColor: '#F5F5F5' }} >
+        <Card sx={{ minHeight: 300 ,mt: 3, backgroundColor: '#F8F8F8', borderRadius:'10px' }} >
             <CardActionArea>
                 <CardMedia
                     component="img"
