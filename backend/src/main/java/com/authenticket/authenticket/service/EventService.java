@@ -2,10 +2,8 @@ package com.authenticket.authenticket.service;
 
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.*;
-import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
-import com.authenticket.authenticket.repository.EventRepository;
 import org.springframework.data.domain.Pageable;
 
 import java.util.*;
@@ -16,14 +14,17 @@ public interface EventService {
     List<EventHomeDto> findAllPublicEvent(Pageable pageable);
 
     //get all events for admin
-    List<OverallEventDto> findAllEvent();
+    List<EventAdminDisplayDto> findAllEvent();
     OverallEventDto findEventById(Integer eventId);
 
     //get methods
-    List<EventHomeDto> findRecentlyAddedEvents();
-    List<FeaturedEventDto> findFeaturedEvents();
-    List<EventHomeDto> findBestSellerEvents();
-    List<EventHomeDto> findUpcomingEvents();
+    List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable);
+    List<FeaturedEventDto> findFeaturedEvents(Pageable pageable);
+    List<EventHomeDto> findBestSellerEvents(Pageable pageable);
+    List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable); //based on ticket sale dates
+    List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable); //event date not past the current date
+    List<EventHomeDto> findPastEventsByEventDate(Pageable pageable);//event date past the current date
+
 
     Event saveEvent (Event event);
     FeaturedEventDto saveFeaturedEvent (FeaturedEvent featuredEvent);

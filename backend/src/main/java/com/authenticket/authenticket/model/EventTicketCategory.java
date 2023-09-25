@@ -14,7 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_ticket_category", schema = "dev")
+@Table(name = "event_ticket_category")
 @IdClass(EventTicketCategoryId.class)
 public class EventTicketCategory {
     @Id

@@ -12,6 +12,7 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import com.authenticket.authenticket.service.impl.VenueServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,16 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
+        methods = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST, RequestMethod.DELETE},
+        allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
+        allowCredentials = "true"
+)
 @RequestMapping(path = "/api/venue")
 
 public class VenueController extends Utility {
@@ -103,9 +113,9 @@ public class VenueController extends Utility {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateVenue(@RequestParam(value = "venueId") Integer venueId,
-                                       @RequestParam(value = "venueName") String venueName,
-                                       @RequestParam(value = "venueLocation") String venueLocation,
-                                       @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
+                                         @RequestParam(value = "venueName") String venueName,
+                                         @RequestParam(value = "venueLocation") String venueLocation,
+                                         @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
         Venue updatedVenue = venueService.updateVenue(venueId, venueName, venueLocation);
 
         //update file image if not null
@@ -127,9 +137,9 @@ public class VenueController extends Utility {
         return ResponseEntity.ok(generateApiResponse(updatedVenue, "Venue updated successfully."));
     }
 
-    @PutMapping("/{venueId}")
+    @DeleteMapping("/{venueId}")
     public String removeVenue(@PathVariable("venueId") Integer venueId) {
         venueService.removeVenue(venueId);
-        return "Ticket removed successfully.";
+        return "Venue removed successfully.";
     }
 }

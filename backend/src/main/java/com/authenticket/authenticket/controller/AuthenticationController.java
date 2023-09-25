@@ -26,7 +26,11 @@ import java.time.LocalDate;
 
 @RestController
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
         methods = {RequestMethod.GET, RequestMethod.POST},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
@@ -61,7 +65,7 @@ public class AuthenticationController extends Utility{
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             boolean jwtValidity = jwtService.isTokenValid(token, userDetails);
             if (jwtValidity) {
-                return ResponseEntity.status(200).body(generateApiResponse(true, "valid token"));
+                return ResponseEntity.status(200).body(generateApiResponse(true, "valid token." + userDetails.getAuthorities()));
             }
             return ResponseEntity.status(200).body(generateApiResponse(false, "invalid token"));
         }

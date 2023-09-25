@@ -6,6 +6,8 @@ import com.authenticket.authenticket.service.EventTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EventTypeServiceImpl implements EventTypeService {
 
@@ -14,7 +16,9 @@ public class EventTypeServiceImpl implements EventTypeService {
     public EventTypeServiceImpl(EventTypeRepository eventTypeRepository) {
         this.eventTypeRepository = eventTypeRepository;
     }
-
+    public List<EventType> findAllEventType(){
+        return eventTypeRepository.findAll();
+    }
     public EventType saveEventType(EventType eventType){
        return eventTypeRepository.save(eventType);
    }

@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.service.impl;
 
 
+import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
@@ -25,8 +26,12 @@ import java.util.stream.Collectors;
 import com.authenticket.authenticket.service.Utility;
 @Service
 public class EventOrganiserServiceImpl extends Utility implements EventOrganiserService {
-    @Value("${authenticket.api-port}")
-    private String apiPort;
+//    @Value("${authenticket.frontend-dev-url}")
+//    private String apiUrl;
+
+    @Value("${authenticket.frontend-production-url}")
+    private String apiUrl;
+
 
     private final EventOrganiserRepository eventOrganiserRepository;
     private final EventOrganiserDtoMapper eventOrganiserDtoMapper;
@@ -64,8 +69,8 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         return new ArrayList<>();
     }
 
-    public List<EventOrganiserDisplayDto> findAllPendingOrganisers() {
-        return eventOrganiserDtoMapper.map(eventOrganiserRepository.findByReviewStatusContainsAndDeletedAtIsNull("pending"));
+    public List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status) {
+        return eventOrganiserDtoMapper.map(eventOrganiserRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(status));
     }
 
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {
@@ -94,15 +99,11 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
                 eventOrganiser.setPassword(passwordEncoder.encode(password));
 
                 //change link to log in page
-//                String link = "http://localhost:" + apiPort + "/api/auth/register/";
-                String link ="http://localhost:3000/login";
+                String link = apiUrl + "/OrganiserLogin";
                 // Send email to organiser
-                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, "good"), "Your account has been approved");
+                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, eventOrganiser.getReviewRemarks()), "Your account has been approved");
             } else if (reviewStatus.equals("rejected")){
-                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(eventOrganiser.getName(),"bad one bro"), "Your account has been rejected");
-            }
-            else {
-                throw new IllegalStateException("Review status in unknown state '" + reviewStatus + "'");
+                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(eventOrganiser.getName(), eventOrganiser.getReviewRemarks()), "Your account has been rejected");
             }
         }
 
@@ -125,20 +126,20 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
 
     }
 
-    public void deleteEventOrganiser(Integer organiserId) {
+    public String deleteEventOrganiser(Integer organiserId) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
 
         if (eventOrganiserOptional.isPresent()) {
             EventOrganiser eventOrganiser = eventOrganiserOptional.get();
             if (eventOrganiser.getDeletedAt() != null) {
-                throw new AlreadyDeletedException("Event organiser already deleted");
+                return String.format("Event Organiser %d is already deleted.", organiserId);
             }
 
             eventOrganiser.setDeletedAt(LocalDateTime.now());
             eventOrganiserRepository.save(eventOrganiser);
-
+            return String.format("Event Organiser %d is successfully deleted.", organiserId);
         } else {
-            throw new NonExistentException("Event organiser does not exists");
+            throw new NonExistentException("Event Organiser", organiserId);
         }
     }
 

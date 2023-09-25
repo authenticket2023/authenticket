@@ -20,7 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_organiser", schema = "dev")
+@Table(name = "event_organiser")
 @EqualsAndHashCode(callSuper = true)
 public class EventOrganiser extends BaseEntity implements UserDetails {
     @Id
@@ -43,11 +43,14 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
     @Column(name = "enabled")
     private Boolean enabled = false;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reviewed_by")
     private Admin admin;
+    @JsonIgnore
     @Column(name = "review_status")
     private String reviewStatus;
+    @JsonIgnore
     @Column(name = "review_remarks")
     private String reviewRemarks;
     @Getter

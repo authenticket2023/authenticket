@@ -9,8 +9,9 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Snackbar } from '@mui/material';
-
+import { Alert, IconButton, InputAdornment, Snackbar } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 //image downloads
 import logo from '../../images/logo(orange).png';
 import backgroundImage from '../../images/background.png';
@@ -45,7 +46,6 @@ export const Login = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-
   //variables
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,8 +57,15 @@ export const Login = () => {
   const [alertType, setAlertType]: any = useState('info');
   const [alertMsg, setAlertMsg] = useState('');
   const handleSnackbarClose = () => {
-      setOpenSnackbar(false);
+    setOpenSnackbar(false);
   };
+  //for show password icon
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   const handleEmail = (e: any) => {
     setEmail(e.target.value);
@@ -81,26 +88,23 @@ export const Login = () => {
     formData.append('email', email);
     formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/auth/userAuthenticate`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/userAuthenticate`, {
       method: 'POST',
       body: formData
     })
       .then(async (response) => {
         if (response.status === 200) {
-
           const loginResponse = await response.json();
           //pass the info to the local storage, so other page can access them
           localStorage.setItem('accessToken', loginResponse.data.token);
           localStorage.setItem('id', loginResponse.data.userDetails.userId);
+          localStorage.setItem('role', "USER");
           localStorage.setItem('email', loginResponse.data.userDetails.email);
           localStorage.setItem('username', loginResponse.data.userDetails.name);
-          localStorage.setItem('dob', loginResponse.data.userDetails.date_of_birth);
-          localStorage.setItem('profileImage', loginResponse.data.userDetails.profile_image);
-
-          
+          localStorage.setItem('dob', loginResponse.data.userDetails.dateOfBirth);
+          localStorage.setItem('profileImage',loginResponse.data.userDetails.profileImage);
 
           navigate('/Home');
-
         } else {
           const loginResponse = await response.json();
           setOpenSnackbar(true);
@@ -145,20 +149,20 @@ export const Login = () => {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'left', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-              <a href='/Login'>
-                <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
+              <a href='/Home'>
+                <img src={logo} alt="Logo" width={70} height={45} style={{ marginLeft: 0 }} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
+              <Button sx={{ color: 'black', borderRadius: '18px', marginLeft: 25 }} href='/OrganiserLogin'>
                 Organiser
               </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
+              <Button variant="outlined" sx={{ borderColor: 'black', borderRadius: '25px', color: 'black' }} href='/AdminLogin'>
                 Admin
               </Button>
             </div>
-            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color:'black' }}>
+            <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 55, letterSpacing: -2, marginTop: 12, marginBottom: -1.5, color: 'black' }}>
               Hi there!
             </Typography>
-            <Typography sx={{ fontWeight: 500, marginBottom: 3, color:'black' }}>
+            <Typography sx={{ fontWeight: 500, marginBottom: 3, color: 'black' }}>
               Welcome to AuthenTicket
             </Typography>
             <form onSubmit={loginHandler}>
@@ -174,7 +178,7 @@ export const Login = () => {
                 error={emailError}
                 helperText={helperText}
                 onChange={handleEmail}
-                inputProps={{style : {color:'#2E475D'}}}
+                inputProps={{ style: { color: '#2E475D' } }}
               />
               <TextField
                 margin="normal"
@@ -182,12 +186,22 @@ export const Login = () => {
                 fullWidth
                 name="password"
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'} 
                 id="password"
                 autoComplete="current-password"
                 onChange={handlePassword}
-                inputProps={{style : {color:'#2E475D'}}}
+                InputProps={{
+                  style: { color: '#2E475D' } ,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
+             
               <Button
                 type="submit"
                 fullWidth
@@ -198,17 +212,17 @@ export const Login = () => {
               </Button>
               <Grid container>
                 <Grid item>
-                  <Typography variant="body2" style={{color:'#858585'}}>
+                  <Typography variant="body2" style={{ color: '#858585' }}>
                     Don't have an account?{" "}
-                    <Link href="/signUp" variant="body2" style={{color:'#2E475D'}}>
+                    <Link href="/signUp" variant="body2" style={{ color: '#2E475D' }}>
                       {"Sign Up"}
                     </Link>
                   </Typography>
                 </Grid>
               </Grid>
 
-              
-              <Copyright sx={{ mt: 5, mb: 5, color:'#858585', marginTop:14 }} />
+
+              <Copyright sx={{ mt: 5, mb: 5, color: '#858585', marginTop: 14 }} />
             </form>
           </Box>
         </Grid>

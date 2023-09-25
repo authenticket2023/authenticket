@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
-@Table(name = "venue", schema = "dev")
+@Table(name = "venue")
 @EqualsAndHashCode(callSuper = true)
 public class Venue extends BaseEntity {
     @Id

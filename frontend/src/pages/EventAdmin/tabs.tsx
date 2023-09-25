@@ -82,7 +82,7 @@ export function PendingEventTab() {
     const [dataLoaded, setDataLoaded] = useState(false);
     const loadPendingEventData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/review-status/pending`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/event/review-status/pending`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -101,11 +101,13 @@ export function PendingEventTab() {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    data.forEach((event: any) => {
-                        const row = [event.eventId, event.eventName, event.eventDescription,
-                        event.eventDate, event.ticketSaleDate, event.createdAt]
-                        fetchData.push(row)
-                    });
+                    if (data != null) {
+                        data.forEach((event: any) => {
+                            const row = [event.eventId, event.eventName, event.eventDescription,
+                            event.eventDate, event.ticketSaleDate, event.createdAt]
+                            fetchData.push(row)
+                        });
+                    }
                     setPendingEventData(fetchData);
                     setDataLoaded(true);
                     //close the modal
@@ -158,7 +160,7 @@ export function PendingEventTab() {
         const formData = new FormData;
         formData.append('eventId', selectedRows);
         // Implement  delete logic
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/delete`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event/delete`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -217,7 +219,7 @@ export function PendingEventTab() {
             {dataLoaded ?
 
                 <MUIDataTable
-                    title={"Pening Event Lists"}
+                    title={"Pending Event Lists"}
                     data={pendingEventData}
                     columns={columns}
                     options={options}
@@ -360,12 +362,35 @@ export function AllEventTab() {
             }
         },
         "Reviewd By",
+        {
+            name: "Deleted At",
+            options: {
+                customBodyRender: (value: any) => {
+                    const getColor = (value: string) => {
+                        if (value === null) {
+                            return 'black';
+                        } else {
+                            return 'red';
+                        }
+                    };
+                    return (
+
+                        <Typography style={{ color: getColor(value) }}>
+                            {
+                                value == null ? "-" :
+                                    new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })
+                            }
+                        </Typography>
+                    )
+                }
+            }
+        },
     ];
     const [allEventData, setAllEventData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
     const loadAllEventData = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
@@ -382,7 +407,6 @@ export function AllEventTab() {
                     setAlertMsg(`Fetch data faile, code: ${response.status}`);
                 } else {
                     const apiResponse = await response.json();
-                    console.log(apiResponse)
                     const data = apiResponse.data;
                     const fetchData: any = [];
                     data.forEach((event: any) => {
@@ -390,9 +414,9 @@ export function AllEventTab() {
                         let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
                         const row = [event.eventId, event.eventName, event.eventDescription,
                         event.eventDate, event.ticketSaleDate,
-                        event.organiser.email,
+                        event.organiserEmail,
                             reviewRemarks, event.reviewStatus,
-                            reviewedByEmail]
+                            reviewedByEmail, event.deletedAt]
                         fetchData.push(row)
                     });
                     setAllEventData(fetchData);
@@ -447,7 +471,7 @@ export function AllEventTab() {
         const formData = new FormData;
         formData.append('eventId', selectedRows);
         // Implement  delete logic
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event/delete`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event/delete`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -506,7 +530,7 @@ export function AllEventTab() {
             {dataLoaded ?
 
                 <MUIDataTable
-                    title={"Pening Event Lists"}
+                    title={"Event Lists"}
                     data={allEventData}
                     columns={columns}
                     options={options}

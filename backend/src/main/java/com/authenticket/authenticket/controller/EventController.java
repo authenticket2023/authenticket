@@ -29,7 +29,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
@@ -102,43 +106,66 @@ public class EventController extends Utility {
 
     }
 
-    @GetMapping("/public/event/recently-added")
-    public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents() {
-        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents();
-        if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No recently added events found"));
-        }
-        return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
-
-    }
-
     @GetMapping("/public/event/featured")
-    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents() {
-        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findFeaturedEvents(Pageable pageable) {
+        List<FeaturedEventDto> eventList = eventService.findFeaturedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No featured events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No featured events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Featured events successfully returned."));
 
     }
 
-    @GetMapping("/public/event/bestseller")
-    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
-        List<EventHomeDto> eventList = eventService.findBestSellerEvents();
+    @GetMapping("/public/event/recently-added")
+    public ResponseEntity<GeneralApiResponse<Object>> findRecentlyAddedEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findRecentlyAddedEvents(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No bestseller events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No recently added events found"));
+
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Recently added events successfully returned."));
+
+    }
+
+
+    @GetMapping("/public/event/bestseller")
+    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findBestSellerEvents(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(null, "No bestseller events found"));
+
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Bestseller events successfully returned."));
 
     }
 
     @GetMapping("/public/event/upcoming")
-    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents() {
-        List<EventHomeDto> eventList = eventService.findUpcomingEvents();
+    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEvents(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findUpcomingEventsByTicketSalesDate(pageable);
         if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, "No upcoming events found"));
+            return ResponseEntity.ok(generateApiResponse(null, "No upcoming events found"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events successfully returned."));
+
+    }
+
+    @GetMapping("/public/event/current")
+    public ResponseEntity<GeneralApiResponse<Object>> findCurrentEventsByEventDate(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findCurrentEventsByEventDate(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(null, "No current events found"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Current events successfully returned."));
+
+    }
+
+    @GetMapping("/public/event/past")
+    public ResponseEntity<GeneralApiResponse<Object>> findPastEventsByEventDate(Pageable pageable) {
+        List<EventHomeDto> eventList = eventService.findPastEventsByEventDate(pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(null, "No past events found"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Past events successfully returned."));
 
     }
 
@@ -146,7 +173,7 @@ public class EventController extends Utility {
     @GetMapping("/event")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEvent() {
         try {
-            List<OverallEventDto> eventList = eventService.findAllEvent();
+            List<EventAdminDisplayDto> eventList = eventService.findAllEvent();
             if (eventList.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
             } else {
@@ -244,7 +271,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
-
+    //without review, so basically targeted towards organiser
     @PutMapping("/event")
     public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam(value = "eventId") Integer eventId,
@@ -255,10 +282,7 @@ public class EventController extends Utility {
                                          @RequestParam(value = "otherEventInfo", required = false) String otherEventInfo,
                                          @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
                                          @RequestParam(value = "venueId", required = false) Integer venueId,
-                                         @RequestParam(value = "typeId", required = false) Integer typeId,
-                                         @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
-                                         @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
-                                         @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy) {
+                                         @RequestParam(value = "typeId", required = false) Integer typeId) {
         Venue venue = null;
         if (venueId != null) {
             Optional<Venue> venueOptional = venueRepository.findById(venueId);
@@ -279,18 +303,7 @@ public class EventController extends Utility {
             }
         }
 
-        Admin admin = null;
-        if (reviewedBy != null) {
-            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
-
-            if (adminOptional.isPresent()) {
-                admin = adminOptional.get();
-            } else {
-                throw new NonExistentException("Admin does not exist");
-            }
-        }
-
-        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, reviewRemarks, reviewStatus, admin);
+        EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, null, null, null);
         Event event = eventService.updateEvent(eventUpdateDto);
         //update event image if not null
         if (eventImageFile != null) {
@@ -321,15 +334,15 @@ public class EventController extends Utility {
                     .collect(Collectors.toList());
 
             //check if all events exist first
-            for(Integer eventId: eventIdList){
-                if(eventRepository.findById(eventId).isEmpty()){
+            for (Integer eventId : eventIdList) {
+                if (eventRepository.findById(eventId).isEmpty()) {
                     throw new NonExistentException(String.format("Event %d does not exist, deletion halted", eventId));
                 }
             }
 
             StringBuilder results = new StringBuilder();
 
-            for(Integer eventId: eventIdList){
+            for (Integer eventId : eventIdList) {
                 results.append(eventService.deleteEvent(eventId)).append(" ");
             }
 
@@ -340,21 +353,10 @@ public class EventController extends Utility {
     }
 
     //response not handled yet
-    @DeleteMapping("/event/{eventId}")
-    public String removeEvent(@PathVariable("eventId") Integer eventId) {
-        return eventService.removeEvent(eventId);
-    }
-
-    @PutMapping("/event/approve")
-    public ResponseEntity<?> approveEvent(@RequestParam(value = "eventId") Integer eventId, @RequestParam(value = "approvedBy") Integer approvedBy) {
-        Event event = eventService.approveEvent(eventId, approvedBy);
-        if (event == null) {
-            return ResponseEntity.status(404).body(generateApiResponse(null, "Approve not successful, event does not exist"));
-        } else {
-            return ResponseEntity.ok(generateApiResponse(event, "Event approved successfully"));
-
-        }
-    }
+//    @DeleteMapping("/event/{eventId}")
+//    public String removeEvent(@PathVariable("eventId") Integer eventId) {
+//        return eventService.removeEvent(eventId);
+//    }
 
     @PutMapping("/event/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
@@ -373,7 +375,7 @@ public class EventController extends Utility {
     }
 
 
-    @PostMapping("/public/event/featured")
+    @PostMapping("/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
                                                                          @RequestParam("startDate") LocalDateTime startDate,
                                                                          @RequestParam("endDate") LocalDateTime endDate,
@@ -400,20 +402,20 @@ public class EventController extends Utility {
     }
 
     //getting artist list for one specific event
-    @GetMapping("/event/getArtistsByEvent")
-    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
-        try {
-            Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
-            if (artistList.isEmpty()) {
-                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty", eventId)));
-
-            }
-
-            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned", eventId)));
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
-        }
-    }
+//    @GetMapping("/event/getArtistsByEvent")
+//    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
+//        try {
+//            Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
+//            if (artistList.isEmpty()) {
+//                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty", eventId)));
+//
+//            }
+//
+//            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned", eventId)));
+//        } catch (DataIntegrityViolationException e) {
+//            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+//        }
+//    }
 
     @PutMapping("/event/addTicketCategory")
     public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
@@ -468,24 +470,14 @@ public class EventController extends Utility {
 //        return ResponseEntity.ok(generateApiResponse(eventDisplayDto, "Ticket Category successfully removed from event"));
 //    }
 
-    @GetMapping("/event/{eventId}/getTicketCategory")
-    public ResponseEntity<GeneralApiResponse> getTicketCategory(
-            @RequestParam("eventId") Integer eventId) {
-        Optional<Event> optionalEvent = eventRepository.findById(eventId);
-        if (optionalEvent.isEmpty()) {
-            throw new NonExistentException("Event does not exist");
-        }
-        Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();
-        return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
-    }
-
-    @GetMapping("/event/review-status/{status}")
-    public ResponseEntity<GeneralApiResponse<Object>> findEventsByReviewStatus(@PathVariable("status") String status) {
-        List<EventDisplayDto> eventList = eventService.findEventsByReviewStatus(status);
-        if (eventList == null || eventList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("No %s events found.", status)));
-        }
-        return ResponseEntity.ok(generateApiResponse(eventList, String.format("%s events successfully returned.", status)));
-
-    }
+//    @GetMapping("/event/{eventId}/getTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> getTicketCategory(
+//            @RequestParam("eventId") Integer eventId) {
+//        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+//        if (optionalEvent.isEmpty()) {
+//            throw new NonExistentException("Event does not exist");
+//        }
+//        Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();
+//        return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
+//    }
 }

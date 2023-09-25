@@ -26,8 +26,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationServiceImpl extends Utility implements AuthenticationService {
 
-    @Value("${authenticket.api-port}")
-    private String apiPort;
+//    @Value("${authenticket.frontend-dev-url}")
+//    private String apiUrl;
+
+    @Value("${authenticket.frontend-production-url}")
+    private String apiUrl;
 
     // All repos
     private final UserRepository userRepository;
@@ -80,7 +83,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         var existingOrg = organiserRepository.findByEmail(request.getEmail());
         var jwtToken = jwtServiceImpl.generateToken(request);
 
-        String link = "http://localhost:" + apiPort + "/api/auth/userRegister/userConfirm?token=" + jwtToken;
+        String link = apiUrl +"/api/auth/userRegister/userConfirm?token=" + jwtToken;
 
         if(existingUser.isPresent() || existingAdmin.isPresent() || existingOrg.isPresent()){
             if(existingUser.isPresent() && !existingUser.get().getEnabled()){

@@ -17,6 +17,5 @@ public record EventDisplayDto(Integer eventId,
                               LocalDateTime updatedAt,
                               Set<Artist> artistSet,
                               Set<EventTicketCategoryDisplayDto> ticketCategorySet
-//                       LocalDateTime deletedAt
 ) {
 }

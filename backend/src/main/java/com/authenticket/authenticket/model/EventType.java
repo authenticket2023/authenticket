@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_type", schema = "dev")
+@Table(name = "event_type")
 @EqualsAndHashCode(callSuper = true)
 public class EventType extends BaseEntity {
     @Id

@@ -4,7 +4,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { NavbarNotLoggedIn } from '../../Navbar';
+import { NavbarNotLoggedIn,NavbarLoggedIn } from '../../Navbar';
 import { Grid, InputAdornment, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Divider from '@mui/material/Divider';
@@ -48,6 +48,7 @@ interface TabPanelProps {
   }
 
 export const Event = () => {
+  const token = window.localStorage.getItem('accessToken');
     useEffect(() => {
         loadCurrEvents();
     }, []);
@@ -59,7 +60,7 @@ export const Event = () => {
 
     const loadCurrEvents = async () => {
         //call backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/current?page=0&size=20`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/current?page=0&size=20`, {
             headers: {
               'Content-Type': 'application/json',
             },
@@ -69,7 +70,7 @@ export const Event = () => {
               if (response.status == 200) {
                 const apiResponse = await response.json();
                 const data = apiResponse.data;
-                // console.log(data);
+                console.log(data);
                 const currEventsArr = data.map((event : any) => ({
                     eventId: event.eventId,
                     eventName: event.eventName,
@@ -88,6 +89,7 @@ export const Event = () => {
               }
             })
             .catch((err) => {
+           
               window.alert(err);
             });
     }
@@ -98,7 +100,7 @@ export const Event = () => {
 
     return (
         <div>
-            < NavbarNotLoggedIn />
+             {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
             
             <Box sx={{ width: '100%', position:'sticky' }}>
                 <Box sx={{ borderBottom: 0 }}>

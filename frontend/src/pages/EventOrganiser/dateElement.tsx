@@ -22,7 +22,7 @@ export default function BasicDatePicker({ onDateChange, value, label}: BasicDate
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateTimePicker
         label={label}
-        format="YYYY-MM-DD HH:mm:ss"
+        format="YYYY-MM-DD HH:mm"
         value={value}
         disablePast
         onChange={handleDatePickerChange} 

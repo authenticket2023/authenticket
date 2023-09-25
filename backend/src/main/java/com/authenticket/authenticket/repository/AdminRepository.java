@@ -14,12 +14,4 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface AdminRepository extends JpaRepository<Admin, Integer> {
     Optional<Admin> findByEmail(String email);
-
-    @Transactional
-    @Modifying
-    @Query("UPDATE EventOrganiser a " +
-            "SET a.enabled = TRUE, a.admin = ?2 WHERE a.email = ?1")
-    void enableEventOrganisation(String email, String adminId);
-
-//    ObservationFilter findById(Integer adminId);
 }

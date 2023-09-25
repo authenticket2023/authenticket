@@ -8,8 +8,11 @@ import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
+import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.EventService;
+import org.hibernate.sql.ast.tree.expression.Over;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +41,8 @@ public class EventServiceImpl implements EventService {
 
     private final AmazonS3Service amazonS3Service;
 
+    private final EmailService emailService;
+
     @Autowired
     public EventServiceImpl(EventRepository eventRepository,
                             ArtistRepository artistRepository,
@@ -46,7 +51,8 @@ public class EventServiceImpl implements EventService {
                             EventTicketCategoryRepository eventTicketCategoryRepository,
                             EventDtoMapper eventDTOMapper,
                             ArtistDtoMapper artistDtoMapper,
-                            AmazonS3Service amazonS3Service) {
+                            AmazonS3Service amazonS3Service,
+                            EmailService emailService) {
         this.eventRepository = eventRepository;
         this.artistRepository = artistRepository;
         this.featuredEventRepository = featuredEventRepository;
@@ -55,17 +61,18 @@ public class EventServiceImpl implements EventService {
         this.eventDTOMapper = eventDTOMapper;
         this.artistDtoMapper = artistDtoMapper;
         this.amazonS3Service = amazonS3Service;
+        this.emailService = emailService;
     }
 
     //get all events for home page
     public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
-        return eventDTOMapper.mapPageEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable).getContent());
     }
 
 
     //find all events for admin
-    public List<OverallEventDto> findAllEvent() {
-        return eventDTOMapper.mapOverallEventDto(eventRepository.findAllByOrderByEventIdAsc());
+    public List<EventAdminDisplayDto> findAllEvent() {
+        return eventDTOMapper.mapEventAdminDisplayDto(eventRepository.findAllByOrderByEventIdAsc());
     }
 
     public OverallEventDto findEventById(Integer eventId) {
@@ -77,25 +84,35 @@ public class EventServiceImpl implements EventService {
         }
         return null;
     }
-
-    public List<EventHomeDto> findRecentlyAddedEvents() {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved"));
+    //find recently added events by created at date for home
+    public List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved", pageable).getContent());
 
     }
 
-    public List<FeaturedEventDto> findFeaturedEvents() {
-        List<FeaturedEvent> featuredEvents = featuredEventRepository.findTop5FeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now());
-        return eventDTOMapper.mapFeaturedEventDto(featuredEvents);
+    public List<FeaturedEventDto> findFeaturedEvents(Pageable pageable) {
+        Page<FeaturedEvent> featuredEvents = featuredEventRepository.findAllFeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now(),pageable);
+        return eventDTOMapper.mapFeaturedEventDto(featuredEvents.getContent());
     }
 
-    public List<EventHomeDto> findBestSellerEvents() {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents());
+    public List<EventHomeDto> findBestSellerEvents(Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents(pageable).getContent());
     }
 
 
-    public List<EventHomeDto> findUpcomingEvents() {
+    public List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findTop7ByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate));
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate,pageable).getContent());
+    }
+
+    public List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable) {
+        LocalDateTime currentDate = LocalDateTime.now();
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc("approved", currentDate,pageable).getContent());
+    }
+
+    public List<EventHomeDto> findPastEventsByEventDate(Pageable pageable) {
+        LocalDateTime currentDate = LocalDateTime.now();
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc("approved", currentDate,pageable).getContent());
     }
 
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
@@ -118,11 +135,24 @@ public class EventServiceImpl implements EventService {
         if (eventOptional.isPresent()) {
             Event existingEvent = eventOptional.get();
             eventDTOMapper.update(eventUpdateDto, existingEvent);
+
+            // Send email
+            String reviewStatus = eventUpdateDto.reviewStatus();
+            if (reviewStatus != null) {
+                if(reviewStatus.equals("approved") || reviewStatus.equals("rejected")) {
+                    EventOrganiser eventOrganiser = existingEvent.getOrganiser();
+                    // Send email to organiser
+                    System.out.println("Testing now");
+                    emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildEventReviewEmail(existingEvent), "Event Review");
+                    System.out.println("Done now");
+                }
+            }
+
             eventRepository.save(existingEvent);
             return existingEvent;
         }
 
-        throw new NonExistentException("Event does not exist");
+        throw new NonExistentException("Event", eventUpdateDto.eventId());
     }
 
 

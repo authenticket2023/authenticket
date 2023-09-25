@@ -21,6 +21,7 @@ const style = {
 
 export default function ReviewEvent(props: any) {
     const token = window.localStorage.getItem('accessToken');
+    const adminID: any = window.localStorage.getItem('id');
     const [eventID, setEventID] = React.useState(props.eventID);
     const [eventDetail, setEventDetail]: any = React.useState();
     const [loaded, setLoaded]: any = React.useState(false);
@@ -34,7 +35,7 @@ export default function ReviewEvent(props: any) {
 
     const loadEventDetailByID = async () => {
         // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/public/event/${eventID}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/${eventID}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -65,8 +66,8 @@ export default function ReviewEvent(props: any) {
         formData.append('eventId', eventID);
         formData.append('reviewRemarks', remarks);
         formData.append('reviewStatus', status);
-        formData.append('reviewedBy', "8");
-        fetch(`${process.env.REACT_APP_BACKEND_DEV_URL}/event`, {
+        formData.append('reviewedBy', adminID );
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/updateEvent`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },

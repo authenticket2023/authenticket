@@ -20,12 +20,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
@@ -41,7 +47,10 @@ public class EventOrganiserController extends Utility {
     private final AdminRepository adminRepository;
 
     @Autowired
-    public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService, AmazonS3Service amazonS3Service, PasswordEncoder passwordEncoder, AdminRepository adminRepository) {
+    public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService,
+                                    AmazonS3Service amazonS3Service,
+                                    PasswordEncoder passwordEncoder,
+                                    AdminRepository adminRepository) {
         this.eventOrganiserService = eventOrganiserService;
         this.amazonS3Service = amazonS3Service;
         this.passwordEncoder = passwordEncoder;
@@ -70,7 +79,9 @@ public class EventOrganiserController extends Utility {
     @GetMapping("/{organiserId}")
     public ResponseEntity<?> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
         Optional<EventOrganiserDisplayDto> organiserDisplayDtoOptional = eventOrganiserService.findOrganiserById(organiserId);
-        return organiserDisplayDtoOptional.map(eventOrganiserDisplayDto -> ResponseEntity.ok(generateApiResponse(eventOrganiserDisplayDto, String.format("Event organiser %d successfully returned.", organiserId)))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Event organiser with id %d not found", organiserId))));
+        return organiserDisplayDtoOptional.map(eventOrganiserDisplayDto ->
+                ResponseEntity.ok(generateApiResponse(eventOrganiserDisplayDto, String.format("Event organiser %d successfully returned.", organiserId))))
+                .orElseGet(() -> ResponseEntity.ok(generateApiResponse(null, String.format("Event organiser with id %d not found", organiserId))));
 
     }
 
@@ -82,12 +93,6 @@ public class EventOrganiserController extends Utility {
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
 
-    }
-
-    @GetMapping("/pending")
-    public ResponseEntity<?> findAllPendingOrganisers() {
-        List<EventOrganiserDisplayDto> organisers = eventOrganiserService.findAllPendingOrganisers();
-        return ResponseEntity.ok(generateApiResponse(organisers, "All organisers awaiting review retrieved successfully"));
     }
 
 //    @GetMapping("/events/findMappedOrganisers")
@@ -116,24 +121,11 @@ public class EventOrganiserController extends Utility {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateEventOrganiser(@RequestParam("organiserId") Integer organiserId,
+    public ResponseEntity<?> updateEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId,
                                                   @RequestParam(value = "name", required = false) String name,
                                                   @RequestParam(value = "description", required = false) String description,
-                                                  @RequestParam(value = "password", required = false) String password,
-                                                  @RequestParam(value = "reviewStatus", required = false) String reviewStatus,
-                                                  @RequestParam(value = "reviewRemarks", required = false) String reviewRemarks,
-                                                  @RequestParam(value = "reviewedBy", required = false) Integer reviewedBy,
-                                                  @RequestParam(value = "enabled", required = false) Boolean enabled) {
-        Admin admin = null;
-        if (reviewedBy != null) {
-            Optional<Admin> adminOptional = adminRepository.findById(reviewedBy);
-            if(adminOptional.isEmpty()) {
-                throw new NonExistentException("Admin with ID " + reviewedBy + " does not exist");
-            }
-            admin = adminOptional.get();
-        }
-
-        EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, enabled, reviewStatus, reviewRemarks, admin);
+                                                  @RequestParam(value = "password", required = false) String password) {
+        EventOrganiserUpdateDto eventOrganiserUpdateDto = new EventOrganiserUpdateDto(organiserId, name, description, password, null, null, null, null);
         EventOrganiser eventOrganiser = eventOrganiserService.updateEventOrganiser(eventOrganiserUpdateDto);
         if (eventOrganiser != null) {
             return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
@@ -172,21 +164,35 @@ public class EventOrganiserController extends Utility {
             }
         }
 
-
-        return ResponseEntity.ok(eventOrganiser);
+        return ResponseEntity.ok(generateApiResponse(eventOrganiser, String.format("Event organiser %d updated successfully.", organiserId)));
     }
 
 
 
-    @PutMapping("/{organiserId}")
-    public ResponseEntity<GeneralApiResponse> deleteEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
-//        return eventOrganiserService.deleteEventOrganiser(organiserId);
+    @PutMapping("/delete")
+    public ResponseEntity<GeneralApiResponse> deleteEventOrganiser(@RequestParam("organiserId") String organiserIdString) {
+        try {
+            List<Integer> organiserIdList = Arrays.stream(organiserIdString.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
 
+            //check if all events exist first
+            for(Integer organiserId: organiserIdList){
+                if(eventOrganiserService.findOrganiserById(organiserId).isEmpty()){
+                    throw new NonExistentException(String.format("Organiser %d does not exist, deletion halted", organiserId));
+                }
+            }
 
-            //if delete is successful
-            eventOrganiserService.deleteEventOrganiser(organiserId);
-            return ResponseEntity.ok(generateApiResponse(null, String.format("Event Organiser%d Deleted Successfully", organiserId)));
+            StringBuilder results = new StringBuilder();
 
+            for(Integer organiserId: organiserIdList){
+                results.append(eventOrganiserService.deleteEventOrganiser(organiserId)).append(" ");
+            }
+
+            return ResponseEntity.ok(generateApiResponse(null, results.toString()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(generateApiResponse(null, e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{organiserId}")

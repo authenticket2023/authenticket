@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "featured_event", schema = "dev")
+@Table(name = "featured_event")
 @EqualsAndHashCode(callSuper = true)
 public class FeaturedEvent extends BaseEntity {
     @Id

@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "Admin", schema = "dev")
+@Table(name = "Admin")
 public class Admin extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(

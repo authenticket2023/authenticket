@@ -20,7 +20,11 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(
-        origins = "http://localhost:3000",
+        origins = {
+                "${authenticket.frontend-production-url}",
+                "${authenticket.frontend-dev-url}",
+                "${authenticket.loadbalancer-url}"
+        },
         methods = {RequestMethod.GET, RequestMethod.PUT},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
@@ -78,7 +82,7 @@ public class UserController extends Utility {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<GeneralApiResponse<Object>> removeUser(@PathVariable("userId") Integer userId) {
+    public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("userId") Integer userId) {
             userService.deleteUser(userId);
             return ResponseEntity.ok(generateApiResponse(null, String.format("User %d Deleted Successfully", userId)));
 

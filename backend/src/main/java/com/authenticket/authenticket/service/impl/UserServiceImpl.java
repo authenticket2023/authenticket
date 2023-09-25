@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
 
-
     private final UserDtoMapper userDtoMapper;
 
     @Autowired
@@ -52,6 +51,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public Optional<UserFullDisplayDto> findById(Integer userId) {
         return userRepository.findById(userId).map(userDtoMapper::fullApply);
     }
+//    public Optional<User> findById(Integer userId){
+//        return userRepository.findById(userId);
+//    }
 
     public UserDisplayDto updateUser(User newUser){
         Optional<User> userOptional = userRepository.findByEmail(newUser.getEmail());
