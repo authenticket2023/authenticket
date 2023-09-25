@@ -85,7 +85,7 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventType().getEventTypeName(),
                 event.getEventDate(),
                 event.getTotalTickets(),
-                event.getVenue().getVenueLocation());
+                event.getVenue().getVenueName());
     }
 
     public FeaturedEventDto applyFeaturedEventDto(FeaturedEvent featuredEvent) {

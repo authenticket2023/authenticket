@@ -9,7 +9,7 @@ public record EventHomeDto(Integer eventId,
                            String eventType,
                            LocalDateTime eventDate,
                            Integer totalTickets,
-                           String eventLocation
+                           String eventVenue
 
                            ) {
 }
