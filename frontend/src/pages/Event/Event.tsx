@@ -89,7 +89,7 @@ export const Event = () => {
             eventType: event.eventType,
             eventDate: event.eventDate,
             totalTickets: event.totalTickets,
-            eventLocation: event.eventLocation,
+            eventVenue: event.eventVenue,
           }));
 
           setCurrEvents(currEventsArr);
@@ -127,7 +127,7 @@ export const Event = () => {
             eventType: event.eventType,
             eventDate: event.eventDate,
             totalTickets: event.totalTickets,
-            eventLocation: event.eventLocation,
+            eventVenue: event.eventVenue,
           }));
 
           setPastEvents(pastEvents);

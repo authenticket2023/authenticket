@@ -22,7 +22,7 @@ interface eventInfo {
         eventType: string;
         eventDate: string;
         totalTickets: number;
-        eventLocation: string;
+        eventVenue: string;
     }
 }
 
@@ -50,7 +50,7 @@ export default function dsiplayEvent(props: eventInfo) {
                     </Typography>
 
                     <Grid item xs={12} sm={12} sx={{ mb: 2, display: 'flex' }}>
-                        <Button variant="outlined" sx={{ backgroundColor: 'white', borderColor: '#FF5C35',mr:2, color: '#FF5C35',}} > {props.event.eventLocation}</Button>
+                        <Button variant="outlined" sx={{ backgroundColor: 'white', borderColor: '#FF5C35',mr:2, color: '#FF5C35',}} > {props.event.eventVenue}</Button>
                         <Button variant="outlined" sx={{ backgroundColor: 'white', borderColor: '#FF5C35' , color: '#FF5C35', }}> {props.event.eventType}</Button>
                     </Grid>
                     <Typography variant="body2" color="text.secondary">
