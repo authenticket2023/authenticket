@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
-import { Grid, InputAdornment, TextField } from '@mui/material';
+import { Alert, Grid, InputAdornment, Snackbar, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Divider from '@mui/material/Divider';
 import Card from '@mui/material/Card';
@@ -53,6 +53,15 @@ export const Event = () => {
     loadCurrEvents();
   }, []);
 
+  //for alert
+  //error , warning , info , success
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertType, setAlertType]: any = useState('info');
+  const [alertMsg, setAlertMsg] = useState('');
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
   //variables
   const [value, setValue] = useState(0);
   const [currEvents, setCurrEvents] = useState([]);
@@ -70,6 +79,7 @@ export const Event = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
+          console.log(data)
           const currEventsArr = data.map((event: any) => ({
             eventId: event.eventId,
             eventName: event.eventName,
@@ -82,13 +92,17 @@ export const Event = () => {
           }));
 
           setCurrEvents(currEventsArr);
-          currEventsArr.map((item: any) => console.log(item));
         } else {
-          //passing to parent component
+          //display alert, for fetch fail
+          setOpenSnackbar(true);
+          setAlertType('error');
+          setAlertMsg(`Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`);
         }
       })
       .catch((err) => {
-        window.alert(err);
+        setOpenSnackbar(true);
+        setAlertType('error');
+        setAlertMsg(`Oops something went wrong! Error : ${err}`);
       });
   }
 
@@ -99,10 +113,10 @@ export const Event = () => {
   return (
     <div>
       {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
-      <Box sx={{ height: '800px', overflow: 'hidden', position: 'relative' }}>
-
+      {/* i dont know why cannt use percentage for height, i guess we have to use fixed px */}
+      <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', }}>
         {/* Section 1 */}
-        <Box sx={{ width: '100%', position: 'sticky', mt: 5, borderBottom: 1 }}>
+        <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5 }}>
           <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: 5, marginLeft: 15 }}>
             <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '32px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
             <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '32px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
@@ -135,25 +149,31 @@ export const Event = () => {
         </Box>
 
         {/* Section 2: current events */}
-        <Box sx={{ overflowY: 'auto', height: '100%', padding: '10px' }}>
+        <Box sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
           <CustomTabPanel value={value} index={0}>
-            {/* <div style={{ overflowX: 'hidden', overflowY: 'scroll', maxHeight: '400px', marginTop: -140 }}> */}
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ mb: 10, }} alignItems="left" justifyContent="left">
               {currEvents.map((event: any, index) => (
-                <Grid item key={index} xs={12} sm={6}>
-                  <DisplayEvent event={event} />
-                </Grid>
+                <React.Fragment key={index}>
+                  {/* offset sm 1*/}
+                  <Grid item xs={12} sm={1}/>
+                  <Grid item xs={12} sm={5}>
+                    <DisplayEvent event={event} />
+                  </Grid>
+                </React.Fragment>
               ))}
             </Grid>
-            {/* </div> */}
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
             Item Two
           </CustomTabPanel>
-
         </Box>
-
       </Box>
+
+      <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+          {alertMsg}
+        </Alert>
+      </Snackbar>
     </div>
 
   )
