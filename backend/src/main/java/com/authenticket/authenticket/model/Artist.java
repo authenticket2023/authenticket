@@ -29,12 +29,8 @@ public class Artist extends BaseEntity {
     @Column(name = "artist_image")
     private String artistImage;
 
-    @ManyToMany(mappedBy ="artists")
+    @ManyToMany(mappedBy ="artists", cascade = CascadeType.REMOVE)
     @JsonIgnore
-//    @JoinTable(
-//            name = "artist_event",
-//            joinColumns = @JoinColumn(name = "artist_id", referencedColumnName = "artist_id"),
-//            inverseJoinColumns = @JoinColumn(name = "event_id", referencedColumnName = "event_id"))
     private Set<Event> events;
 }
 

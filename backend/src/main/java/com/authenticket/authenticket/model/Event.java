@@ -70,7 +70,7 @@ public class Event extends BaseEntity {
     private Venue venue;
 
 //    @Getter
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.REMOVE)
     @JsonIgnore
     @JoinTable(
             schema = "dev",
