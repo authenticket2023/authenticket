@@ -36,7 +36,7 @@ function formatDate(dateString: string): string {
 export default function dsiplayEvent(props: eventInfo) {
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        // <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
             <Card sx={{ maxWidth: 500 }}>
                 <CardActionArea>
                     <CardMedia
@@ -70,6 +70,6 @@ export default function dsiplayEvent(props: eventInfo) {
                     </CardContent>
                 </CardActionArea>
             </Card>
-        </div>
+        // </div>
     )
 }
