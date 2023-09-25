@@ -21,6 +21,7 @@ import BearCarousel, {
 } from "bear-react-carousel";
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
+import { Link } from 'react-router-dom';
 
 export const Home = () => {
 
@@ -244,7 +245,7 @@ export const Home = () => {
             <Box marginTop={2} marginLeft={2}>
               <Button
                 variant="outlined"
-                href='#'
+                href={`/EventDetails/${row.eventId}`}
                 sx={{ color: "white", borderColor: "white" }}
               >
                 Get tickets
@@ -302,6 +303,7 @@ export const Home = () => {
   function TicketItem(props: any) {
     return (
       <Box marginTop={2} marginRight={1}>
+      <Link to={`/EventDetails/${props.eventId}`} style={{ textDecoration: 'none' }}>
         <Card sx={{
           minHeight: 175,
           minWidth: 400,
@@ -310,9 +312,8 @@ export const Home = () => {
           backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
           backgroundSize: 'contain',
         }}>
-          <CardActionArea href='#'>
-          </CardActionArea>
         </Card>
+      </Link>
         <Typography>
           {props.eventName}
         </Typography>

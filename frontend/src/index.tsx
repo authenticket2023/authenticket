@@ -18,6 +18,7 @@ import { Profile } from './pages/Profile';
 import { Signup } from './pages/Signup';
 import { Support } from './pages/Support';
 import { Venue } from './pages/Venue';
+import { EventDetails } from './pages/EventDetails';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
@@ -57,6 +58,7 @@ root.render(
 			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
 			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
 			<Route path="/AdminLogin" element={<AdminLogin />} />
+			<Route path="/EventDetails/:eventId" element={<EventDetails />} />
 		</Routes>
 	</BrowserRouter>);
 
