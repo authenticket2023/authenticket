@@ -5,7 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
-import { Alert, Grid, InputAdornment, Snackbar, TextField } from '@mui/material';
+import { Alert, Grid, IconButton, InputAdornment, Snackbar, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Divider from '@mui/material/Divider';
 import Card from '@mui/material/Card';
@@ -13,6 +13,8 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import DisplayEvent from './displayEvent';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import TuneIcon from '@mui/icons-material/Tune';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -153,38 +155,53 @@ export const Event = () => {
     <div>
       {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
       {/* i dont know why cannt use percentage for height, i guess we have to use fixed px */}
-      <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', }}>
+      <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
         {/* Section 1 */}
-        <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5 }}>
-          <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: 5, marginLeft: 15 }}>
-            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '32px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
-            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '32px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
+        <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5 , borderColor:'#CACACA', }}>
+          <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
+            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
+            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
           </Tabs>
           {/* Search Bar */}
           <Box
             component="form"
-            sx={{ '& > :not(style)': { width: '25ch' }, marginLeft: 140, marginBottom: 3 , position:'relative'}}
+            sx={{  display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 15, paddingRight: 15 , width:'50ch', marginTop:-6, marginBottom:3, marginLeft:120}}
             noValidate
             autoComplete='off'
-          >
+        >
             <TextField
-              id="input-with-icon-textfield"
-              size="small"
-              label="Search"
-              variant='outlined'
-              fullWidth
-              // onChange={handleSearch}
-              InputProps={{
+            id="input-with-icon-textfield"
+            size="small"
+            label="Search"
+            variant='outlined'
+            fullWidth
+            // onChange={handleSearch}
+            InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
+                <InputAdornment position="start">
                     <SearchIcon />
-                  </InputAdornment>
-                )
-              }}
-            >
-
-            </TextField>
-          </Box>
+                </InputAdornment>
+                ),
+            }}
+            />
+            <IconButton aria-label="filter"
+            // aria-describedby={id}
+            // onClick={handleFilterClick} 
+            sx={{
+              border: "1px solid #8E8E8E",
+              borderRadius: '5px',
+              marginLeft:1,
+              height:39.5,
+              width:39.5,
+            //   backgroundColor: open ? "#30685e" : "white",
+            //   color: open ? "white" : "#30685e",
+              ":hover": {
+                bgcolor: "#8E8E8E",
+                color: "white"
+              }
+            }}>
+            <TuneIcon /></IconButton>
+        </Box>
         </Box>
 
         {/* Section 2: current events */}

@@ -35,23 +35,23 @@ function formatDate(dateString: string): string {
 export default function dsiplayEvent(props: eventInfo) {
 
     return (
-        <Card sx={{ minHeight: 300 ,mt: 3, backgroundColor: '#F8F8F8', borderRadius:'10px' }} >
+        <Card sx={{ minHeight: 260 ,mt: 3, maxHeight: 260, backgroundColor: '#F8F8F8', borderRadius:'10px', }} >
             <CardActionArea>
                 <CardMedia
                     component="img"
-                    height='200'
+                    height='110'
                     style={{ objectFit: 'scale-down' }}
                     image={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.event.eventImage}`}
                     alt="event image"
                 />
-                <CardContent>
-                    <Typography gutterBottom variant="h5" component="div" style={{ font: 'roboto', fontWeight: 500, fontSize: '24px', marginTop: -5 }}>
+                <CardContent style={{justifyContent:'left', alignItems:'left', marginLeft:18}}>
+                    <Typography gutterBottom variant="h5" component="div" style={{ font: 'roboto', fontWeight: 500, fontSize: '20px', marginTop: -5 }}>
                         {props.event.eventName}
                     </Typography>
 
                     <Grid item xs={12} sm={12} sx={{ mb: 2, display: 'flex' }}>
-                        <Button variant="outlined" sx={{ backgroundColor: 'white', borderColor: '#FF5C35',mr:2, color: '#FF5C35',}} > {props.event.eventVenue}</Button>
-                        <Button variant="outlined" sx={{ backgroundColor: 'white', borderColor: '#FF5C35' , color: '#FF5C35', }}> {props.event.eventType}</Button>
+                        <Button variant="outlined" sx={{ backgroundColor: 'white', borderColor: '#FF5C35',mr:1, color: '#FF5C35', fontSize:'12px', size:'small', height:'30px'}} > {props.event.eventVenue}</Button>
+                        <Button variant="outlined" sx={{ backgroundColor: 'white', borderColor: '#FF5C35' , color: '#FF5C35', fontSize:'12px', size:'small', height:'30px'}}> {props.event.eventType}</Button>
                     </Grid>
                     <Typography variant="body2" color="text.secondary">
                         Date
@@ -59,16 +59,16 @@ export default function dsiplayEvent(props: eventInfo) {
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <Box>
-                                <Typography variant="body2" color="black">
+                                <Typography variant="body2" color="black" style={{fontWeight:500}}>
                                     {formatDate(props.event.eventDate)}
                                 </Typography>
                             </Box>
                         </Grid>
                         <Grid item xs={12} sm={4} />
                         <Grid item xs={12} sm={2}>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <GroupsIcon />
-                                <Typography sx={{ ml: 1 }} variant="body2" color="black">
+                            <Box sx={{ display: 'flex', alignItems: 'center' , marginRight:10, }}>
+                                <GroupsIcon style={{color:'#8E8E8E'}}/>
+                                <Typography sx={{ ml: 1 }} variant="body2" style={{color:'#8E8E8E', fontWeight:500, marginLeft:5, marginTop:1.5}}>
                                     {props.event.totalTickets}
                                 </Typography>
                             </Box>
