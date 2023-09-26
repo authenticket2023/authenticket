@@ -190,7 +190,7 @@ export function Signup() {
           setAlertMsg(`Email ${email} sign up successful! An email will be sent shortly, please verify your account`);
           setTimeout(() => {
             navigate('/login');
-          }, 4000);
+          }, 2000);
         }
 
       })
