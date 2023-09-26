@@ -32,7 +32,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 //    @Value("${authenticket.backend-dev-url}")
 //    private String backendUrl;
 
-    @Value("${authenticket.frontend-production-url}")
+    @Value("${authenticket.loadbalancer-url}")
     private String frontendUrl;
 
     @Value("${authenticket.backend-production-url}")
