@@ -581,11 +581,11 @@ export function EventPoster(props: any) {
                         <Grid container spacing={2} sx={{ marginLeft: 2 }}>
                             <Grid item xs={12}></Grid>
                             {props.selectedFiles != null && (
-                                <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
+                                <ImageList sx={{ width: 575, height: "100%" }} cols={1} rowHeight={250}>
                                     {props.selectedFiles.map((file: any, index: any) => (
                                         <ImageListItem key={index}>
                                             <img
-                                                src={`${URL.createObjectURL(file)}?w=164&h=164&fit=crop&auto=format`}
+                                                src={`${URL.createObjectURL(file)}?w=575&h=250&fit=crop&auto=format`}
                                                 srcSet={`${URL.createObjectURL(file)}`}
                                                 alt={`Selected ${index + 1}`}
                                                 loading="lazy"
