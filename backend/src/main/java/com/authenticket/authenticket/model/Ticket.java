@@ -17,6 +17,7 @@ public class Ticket extends BaseEntity {
     @Column(name = "ticket_id")
     private Integer ticketId;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
