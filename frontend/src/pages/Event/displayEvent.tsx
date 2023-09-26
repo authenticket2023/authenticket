@@ -36,7 +36,7 @@ export default function dsiplayEvent(props: eventInfo) {
 
     return (
         <Card sx={{ minHeight: 260 ,mt: 3, maxHeight: 260, backgroundColor: '#F8F8F8', borderRadius:'10px', }} >
-            <CardActionArea>
+            <CardActionArea href={`/EventDetails/${props.event.eventId}`}>
                 <CardMedia
                     component="img"
                     height='110'
