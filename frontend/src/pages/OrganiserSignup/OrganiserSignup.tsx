@@ -9,9 +9,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Snackbar, Alert, } from '@mui/material';
-
+import Filter from 'bad-words';
 //image download
 import backgroundImage from '../../images/background.png';
+import words from '../../extra-words.json';
 
 function Copyright(props: any) {
   return (
@@ -37,15 +38,21 @@ const myTheme = createTheme({
 });
 
 export function OrganiserSignup() {
+    //profanity filter
+    const filter = new Filter();
+    filter.addWords(...words);
 
   let navigate = useNavigate();
 
   //validation methods
+  const validateName = (name: any) => {
+    // Regular expression to validate email format
+    return filter.isProfane(name);
+  };
   const validateEmail = (email: any) => {
     // Regular expression to validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const harmfulTextRegex = /[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\/)/gi;
-    return emailRegex.test(email) && harmfulTextRegex.test(email);
+    return emailRegex.test(email);
   };
 
   //variables
@@ -53,6 +60,8 @@ export function OrganiserSignup() {
   const [companyName, setCompanyName] = useState('');
   const [companyDescription, setCompanyDescription] = useState('');
   //validation
+  const [companyNameError, setCompanyNameError] = useState(false);
+  const [companyNameHelperText, setCompanyNameHelperText] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [emailHelperText, setEmailHelperText] = useState('');
   //error , warning , info , success
@@ -75,6 +84,14 @@ export function OrganiserSignup() {
     event.preventDefault();
 
     //checking validations, returning error message if conditions not met
+    if (validateName(companyName)) {
+      setCompanyNameError(true);
+      setCompanyNameHelperText('Please enter an appropriate name');
+      return;
+    } else {
+      setCompanyNameError(false);
+      setCompanyNameHelperText('');
+    }
     if (!validateEmail(companyEmail)) {
       setEmailError(true);
       setEmailHelperText('Please enter a valid email address');
@@ -155,12 +172,27 @@ export function OrganiserSignup() {
               <a href='/Home'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>
-                User
-              </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
-                Admin
-              </Button>
+              <div
+                style={{
+                  backgroundColor: '#F2F2F2',
+                  height: '47px',
+                  width: '250px',
+                  display: 'flex',
+                  borderRadius: '25px',
+                  alignItems: 'flex-end',
+                  marginLeft:165
+                }}
+              >
+                  <Button variant="contained" sx={{ color: 'white', borderRadius: '18px', marginLeft:1, marginBottom:0.6, backgroundColor: 'black', paddingRight:1, paddingLeft:1 }} href='/OrganiserLogin'>
+                    Organiser
+                  </Button>
+                  <Button  sx={{ borderColor: 'black', borderRadius: '25px', color: 'black', marginBottom:0.6, marginLeft:1 }} href='/AdminLogin'>
+                    Admin
+                  </Button>
+                  <Button sx={{ borderColor: 'black', borderRadius: '25px', marginRight:1, marginBottom:0.6, color:'black' }} href='/logIn'>
+                    User
+                  </Button>
+              </div>
             </div>
 
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 8, marginBottom: 1 }}>
@@ -177,6 +209,8 @@ export function OrganiserSignup() {
                 autoComplete="companyName"
                 autoFocus
                 size="medium"
+                error={companyNameError}
+                helperText={companyNameHelperText}
                 onChange={handleCompanyName}
               />
               <TextField

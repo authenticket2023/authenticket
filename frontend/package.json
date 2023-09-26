@@ -19,6 +19,7 @@
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "@types/react-helmet": "^6.1.6",
+    "bad-words": "^3.0.4",
     "bear-react-carousel": "^4.0.10-alpha.1",
     "bootstrap": "^5.2.3",
     "date-fns": "^2.30.0",
@@ -60,6 +61,7 @@
     ]
   },
   "devDependencies": {
+    "@types/bad-words": "^3.0.1",
     "@types/mui-datatables": "^4.3.5",
     "webpack": "^5.88.1"
   }

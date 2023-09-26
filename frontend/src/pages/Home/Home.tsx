@@ -21,6 +21,7 @@ import BearCarousel, {
 } from "bear-react-carousel";
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
+import { Link } from 'react-router-dom';
 
 export const Home = () => {
   const token = window.localStorage.getItem("accessToken");
@@ -68,7 +69,6 @@ export const Home = () => {
             eventEndDate: featured.endDate,
           }));
           setFeatured(featuredArr);
-          featuredArr.map((item: any) => console.log(item));
           loadBestSellers();
           loadRecents();
           loadUpcoming();
@@ -98,6 +98,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
+          // console.log(data);
           const bsArr = data.map((bestseller: any) => ({
             eventId: bestseller.eventId,
             eventName: bestseller.eventName,
@@ -112,7 +113,7 @@ export const Home = () => {
           setBestSellers(bsArr);
           setBSLoaded(true);
           //console.log(data);
-          //bsArr.map((item: any) => console.log(item));
+          // bsArr.map((item: any) => console.log(item));
         } else {
           //passing to parent component
         }
@@ -250,7 +251,7 @@ export const Home = () => {
                     <Box marginTop={2} marginLeft={2}>
                       <Button
                         variant="outlined"
-                        href="#"
+                         href={`/EventDetails/${row.eventId}`}
                         sx={{ color: "white", borderColor: "white" }}
                       >
                         Get tickets
@@ -259,6 +260,8 @@ export const Home = () => {
                   </Box>
                 </Grid>
               </Grid>
+
+  
             </Box>
           ),
         };
@@ -313,19 +316,21 @@ export const Home = () => {
   function TicketItem(props: any) {
     return (
       <Box marginTop={2} marginRight={1}>
-        <Card
-          sx={{
-            minHeight: 175,
-            minWidth: 400,
-            maxHeight: 175,
-            maxWidth: 400,
-            backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
-            backgroundSize: "cover",
-          }}
-        >
-          <CardActionArea href="#"></CardActionArea>
+      <Link to={`/EventDetails/${props.eventId}`} style={{ textDecoration: 'none' }}>
+        <Card sx={{
+          minHeight: 175,
+          minWidth: 400,
+          maxHeight: 175,
+          maxWidth: 400,
+          backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
+          backgroundSize: 'contain',
+        }}>
         </Card>
-        <Typography>{props.eventName}</Typography>
+      </Link>
+        <Typography>
+          {props.eventName}
+        </Typography>
+
       </Box>
     );
   }
@@ -376,21 +381,28 @@ export const Home = () => {
             items: 2,
             partialVisibilityGutter: 30,
           },
-        }}
-        rewind={false}
-        rewindWithAnimation={false}
-        rtl={false}
-        shouldResetAutoplay
-        showDots={false}
-        sliderClass=""
-        slidesToSlide={1}
-        swipeable
-      >
-        {bestSellers.map((bs: { eventName: any; eventImage: any }) => (
-          <TicketItem eventName={bs.eventName} eventImage={bs.eventImage} />
-        ))}
-      </Carousel>
-    );
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {bestSellers.map((bs: { eventName: any; eventImage: any; eventId: any; }) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+          eventId={bs.eventId}
+        />
+      ))}
+    </Carousel>;
+
   }
 
   function RecentCarousell() {
@@ -439,21 +451,30 @@ export const Home = () => {
             items: 2,
             partialVisibilityGutter: 30,
           },
-        }}
-        rewind={false}
-        rewindWithAnimation={false}
-        rtl={false}
-        shouldResetAutoplay
-        showDots={false}
-        sliderClass=""
-        slidesToSlide={1}
-        swipeable
-      >
-        {recents.map((bs: { eventName: any; eventImage: any }) => (
-          <TicketItem eventName={bs.eventName} eventImage={bs.eventImage} />
-        ))}
-      </Carousel>
-    );
+
+
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {recents.map((bs: { eventName: any; eventImage: any; eventId: any;}) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+          eventId={bs.eventId}
+        />
+      ))}
+    </Carousel>;
+
   }
 
   function UpcomingCarousell() {
@@ -502,21 +523,27 @@ export const Home = () => {
             items: 2,
             partialVisibilityGutter: 30,
           },
-        }}
-        rewind={false}
-        rewindWithAnimation={false}
-        rtl={false}
-        shouldResetAutoplay
-        showDots={false}
-        sliderClass=""
-        slidesToSlide={1}
-        swipeable
-      >
-        {upcoming.map((bs: { eventName: any; eventImage: any }) => (
-          <TicketItem eventName={bs.eventName} eventImage={bs.eventImage} />
-        ))}
-      </Carousel>
-    );
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {upcoming.map((bs: { eventName: any; eventImage: any; eventId: any;}) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+          eventId={bs.eventId}
+        />
+      ))}
+    </Carousel>;
   }
 
   return (

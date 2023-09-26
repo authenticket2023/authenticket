@@ -101,11 +101,13 @@ export function PendingEventTab() {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     const fetchData: any = [];
-                    data.forEach((event: any) => {
-                        const row = [event.eventId, event.eventName, event.eventDescription,
-                        event.eventDate, event.ticketSaleDate, event.createdAt]
-                        fetchData.push(row)
-                    });
+                    if (data != null) {
+                        data.forEach((event: any) => {
+                            const row = [event.eventId, event.eventName, event.eventDescription,
+                            event.eventDate, event.ticketSaleDate, event.createdAt]
+                            fetchData.push(row)
+                        });
+                    }
                     setPendingEventData(fetchData);
                     setDataLoaded(true);
                     //close the modal

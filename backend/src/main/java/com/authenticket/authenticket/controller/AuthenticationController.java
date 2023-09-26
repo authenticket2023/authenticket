@@ -70,7 +70,7 @@ public class AuthenticationController extends Utility{
             return ResponseEntity.status(200).body(generateApiResponse(false, "invalid token"));
         }
         catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(400).body(generateApiResponse(null, "user not found"));
+            return ResponseEntity.status(400).body(generateApiResponse(null, "email not registered"));
         } catch (SignatureException e) {
             return ResponseEntity.status(400).body(generateApiResponse(false, "invalid token, token should not be trusted"));
         }
@@ -114,7 +114,7 @@ public class AuthenticationController extends Utility{
             AuthenticationUserResponse response = service.userAuthenticate(email, password);
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome " + email));
         } catch (UsernameNotFoundException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null,e.getMessage()));
+            return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
         }
         catch (BadCredentialsException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
@@ -152,7 +152,7 @@ public class AuthenticationController extends Utility{
             AuthenticationOrgResponse response = service.orgAuthenticate(email, password);
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome " + email));
         } catch (UsernameNotFoundException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null,e.getMessage()));
+            return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
         }
         catch (BadCredentialsException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
@@ -188,7 +188,7 @@ public class AuthenticationController extends Utility{
             AuthenticationAdminResponse response = service.adminAuthenticate(email, password);
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome " + email));
         } catch (UsernameNotFoundException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null,e.getMessage()));
+            return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
         }
         catch (BadCredentialsException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
