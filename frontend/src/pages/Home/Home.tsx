@@ -1,191 +1,641 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { ResponsiveAppBar } from '../../Navbar';
-import { Box, Grid, Typography } from '@mui/material';
-import { styled } from '@mui/system';
-import backgroundImage from '../../images/background.png';
-import ElderlyStatus from './elderlyStatus';
-import Posts from './posts';
-import Notifications from './notifications';
-import DisplayElderly from './displayElderly';
-
-// background styling
-const Background = styled("div")({
-    position: 'absolute',
-    width: '100%',
-    height: '45%',
-    backgroundImage: `url(${backgroundImage})`,
-    backgroundPosition: 'center',
-    backgroundSize: 'cover',
-    backgroundRepeat: 'no-repeat'
-})
+import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import { NavbarNotLoggedIn, NavbarLoggedIn } from "../../Navbar";
+import { styled, alpha } from "@mui/material/styles";
+import CardMedia from '@mui/material/CardMedia'
+import Card from '@mui/material/Card';
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import SearchIcon from "@mui/icons-material/Search";
+import InputBase from "@mui/material/InputBase";
+import Button from "@mui/material/Button";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import "bear-react-carousel/dist/index.css";
+import BearCarousel, {
+  TBearSlideItemDataList,
+  BearSlideCard,
+  BearSlideImage,
+} from "bear-react-carousel";
+import { async } from "q";
+import { CardActionArea } from "@mui/material";
 
 export const Home = () => {
 
-    useEffect(() => {
-        elderlyStatuses();
-        getPosts();
-    }, []);
+  const token = window.localStorage.getItem('accessToken');
+  const [featured, setFeatured]: any = React.useState([]);
+  const [bestSellers, setBestSellers]: any = React.useState([]);
+  const [recents, setRecents]: any = React.useState([]);
+  const [upcoming, setUpcoming]: any = React.useState([]);
+  const [loaded, setLoaded]: any = React.useState(false);
+  const [bsLoaded, setBSLoaded]: any = React.useState(false);
+  const [recLoaded, setRecLoaded]: any = React.useState(false);
+  const [upcLoaded, setUpcLoaded]: any = React.useState(false);
 
-    const userName = window.localStorage.getItem('userName');
-    const token = window.localStorage.getItem('accessToken');
-    const email = window.localStorage.getItem('email');
-    const [elderly, setElderly]: any[] = useState([]);
-    const [posts, setPosts]: any[] = useState([]);
-    const [displayOpen, setdisplayOpen] = React.useState(false);
-    const [selectedElderlyStatus, setSelectedElderlyStatus]: any[] = useState([]);
-
-    //for the elderlyStatus popup
-    const handleOpenElderlyDetails = (selectedElderly:any) => {
-        setdisplayOpen(true);
-        setSelectedElderlyStatus(selectedElderly);
+  useEffect(() => {
+    if (!loaded || !bsLoaded || !recLoaded) {
+      loadFeatured();
     }
+  }, []);
 
-    const elderlyStatuses = async () => {
-        try {
-            const APImethod = 'getByUser';
-
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_PRODUCTION_URL}/elderly/${APImethod}?email=${email}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                method: 'GET',
-            });
-
-            if (!response.ok) {
-                const apiResponse = await response.json();
-                return;
-            }
-
-            //getting the elderly information of each linked elderly
-            const elderlyResponse = await response.json();
-            const elderlyArray = elderlyResponse.map((elderly: any) => ({
-                id: elderly.id,
-                name: elderly.name,
-                image: `${process.env.REACT_APP_BACKEND_IMAGES_URL}/trained_face/${elderly.photo}`,
-                status: elderly.status.awake.toUpperCase() === 'TRUE' ? 'Awake' : 'Asleep',
-                activity: elderly.status.current_activity,
-                medication: elderly.status.taken_med.toUpperCase() === 'TRUE' ? 'Taken' : 'Not Taken',
-                condition: elderly.status.condition,
-                elderlyData: elderly
-            }));
-            setElderly(elderlyArray);
-        } catch (error) {
-            
+  const loadFeatured = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/featured?page=0&size=3`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const featuredArr = data.map((featured: any) => ({
+            featuredId: featured.featuredId,
+            eventId: featured.event.eventId,
+            eventName: featured.event.eventName,
+            eventDescription: featured.event.eventDescription,
+            eventImage: featured.event.eventImage,
+            eventType: featured.event.eventType,
+            eventDate: featured.event.eventDate,
+            totalTickets: featured.event.totalTickets,
+            eventLocation: featured.event.eventLocation,
+            eventStartDate: featured.startDate,
+            eventEndDate: featured.endDate,
+          }));
+          setFeatured(featuredArr);
+          loadBestSellers();
+          loadRecents();
+          loadUpcoming();
+          setLoaded(true);
+          //console.log(featuredArr);
+        } else {
+          //passing to parent component
         }
-    };
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
 
-    const getPosts = async () => {
-        try {
-            const APImethod = 'getByUser';
+  const loadBestSellers = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/bestseller?page=0&size=7`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((bestseller: any) => ({
+            eventId: bestseller.eventId,
+            eventName: bestseller.eventName,
+            eventDescription: bestseller.eventDescription,
+            eventImage: bestseller.eventImage,
+            eventType: bestseller.eventType,
+            eventDate: bestseller.eventDate,
+            totalTickets: bestseller.totalTickets,
+            eventLocation: bestseller.eventLocation,
+          }))
 
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_PRODUCTION_URL}/post/${APImethod}?email=${email}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                method: 'GET',
-            });
-
-            if (!response.ok) {
-                const apiResponse = await response.json();
-                return;
-            }
-
-            const postResponse = await response.json();
-
-            //getting post information
-            const postArray = postResponse.map((post: any) => ({
-                id: post.id,
-                elderlyInvolved: post.elderlyInvolved,
-                caption: post.activity_type,
-                time: post.dateTime,
-                imagesCount: post.imagesCount,
-                images: post.postImages,
-                description: post.description,
-            }));
-
-            const elderlyInvolvedArray = postArray.map((postItem: any) => postItem.elderlyInvolved);
-            const imagesArray = postArray.map((postItem: any) => postItem.images);
-            setPosts(postArray);
-
-        } catch (error) {
-            console.error('Error fetching', error);
+          setBestSellers(bsArr);
+          setBSLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
         }
-    };
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
 
+  const loadRecents = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/recently-added`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((recent: any) => ({
+            eventId: recent.eventId,
+            eventName: recent.eventName,
+            eventDescription: recent.eventDescription,
+            eventImage: recent.eventImage,
+            eventType: recent.eventType,
+            eventDate: recent.eventDate,
+            totalTickets: recent.totalTickets,
+            eventLocation: recent.eventLocation,
+          }))
 
+          setRecents(bsArr);
+          setRecLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
+
+  const loadUpcoming = async () => {
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/upcoming?page=0&size=10`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const bsArr = data.map((upcm: any) => ({
+            eventId: upcm.eventId,
+            eventName: upcm.eventName,
+            eventDescription: upcm.eventDescription,
+            eventImage: upcm.eventImage,
+            eventType: upcm.eventType,
+            eventDate: upcm.eventDate,
+            totalTickets: upcm.totalTickets,
+            eventLocation: upcm.eventLocation,
+          }))
+
+          setUpcoming(bsArr);
+          setUpcLoaded(true);
+          //console.log(data);
+          //bsArr.map((item: any) => console.log(item));
+        } else {
+          //passing to parent component
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
+
+  const CustomBanner = () => {
+    const bearSlideItemData: TBearSlideItemDataList = featured.map((row: any) => {
+      return {
+        key: row.id,
+        children: (
+          <BearSlideCard>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '400px',
+            }}>
+              <img
+                src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                }}
+              />
+            </div>
+          </BearSlideCard>
+
+        ),
+      };
+    });
     return (
-        <div>
-            {
-                token == null ?
-                    <Navigate to="/Login" /> : <Navigate to="/Home" />
-            }
-            < ResponsiveAppBar />
+      <BearCarousel
+        data={bearSlideItemData}
+        height="400px"
+        isEnableLoop
+        isEnableAutoPlay
+      />
+    );
+  };
 
-            <Background />
+  const TextAnimationsCarousel = () => {
+    const slideItemData: TBearSlideItemDataList = featured.map((row: any) => {
+      return {
+        key: row.featuredId,
+        children: (
+          <Box bgcolor="#FF5C35" marginTop={8}>
+            <Typography variant="h6" color="white" marginLeft={2}>
+              Featured
+            </Typography>
+            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
+              {row.eventName}
+            </Typography>
+            <Typography variant="subtitle2" justifyItems="center" color="white">
+              {row.eventDescription}
+            </Typography>
+            <Box marginTop={2} marginLeft={2}>
+              <Button
+                variant="outlined"
+                href='#'
+                sx={{ color: "white", borderColor: "white" }}
+              >
+                Get tickets
+              </Button>
+            </Box>
+          </Box>
+        ),
+      };
+    });
+    return (
+      <BearCarousel
+        data={slideItemData}
+        height="400px"
+        isEnableAutoPlay
+        isEnableLoop
 
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Typography component="h1" align="center" sx={{ color: 'white', position: 'absolute', fontFamily: 'Roboto', fontWeight: 500, fontSize: 42, marginTop: 5 }}>
-                    Welcome, {userName}!
-                </Typography>
-            </div>
+      />
+    );
+  };
 
-            {/* display elderly status */}
-            <main>
-                <Box display='flex' justifyContent='center' alignItems='center' height='60vh' width='100%'>
-                    <Grid container spacing={-5} justifyContent="center">
+  const Search = styled("div")(({ theme }) => ({
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.5),
+    "&:hover": {
+      backgroundColor: alpha(theme.palette.common.white, 0.6),
+    },
+    marginLeft: 0,
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: theme.spacing(1),
+      width: "100%",
+    },
+  }));
 
-                        {elderly.length > 0 ? 
-                                elderly.map((elderly: any) => (
-                                <Grid item key={elderly.id} xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <ElderlyStatus post={elderly} onClick={()=>handleOpenElderlyDetails(elderly.elderlyData)} />
-                                    {displayOpen ?
-                                        <DisplayElderly open={setdisplayOpen} elderly={selectedElderlyStatus} />
+  const SearchIconWrapper = styled("div")(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: "100%",
+    position: "absolute",
+    pointerEvents: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }));
 
-                                        : null}
-                                </Grid>
-                        )) : (<Typography textAlign={'center'} fontSize={"28px"} color={"#ADADAD"} sx={{zIndex:1, marginTop:-3, marginLeft:2.5}}>No Linked Elderly</Typography>)}
-                    </Grid>
-                </Box>
-            </main>
+  const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: "black",
+    "& .MuiInputBase-input": {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(5)})`,
+    },
+  }));
 
-            {/* display posts */}
-            <div>
-                <Typography component="h2" align="left" alignItems="left" sx={{ color: 'black', position: 'absolute', fontFamily: 'Roboto', fontWeight: 500, fontSize: 22, marginLeft: 15, marginTop: -9 }}>
-                    Posts
-                </Typography>
-            </div>
-
-            <main style={{marginLeft:40}}>
-                <Grid container spacing={2} sx={{marginBottom:20}}>
-                    <Grid item xs={8}>
-                        <Box width='70%'>
-                            <Grid container spacing={56} flexDirection='column'>
-                                {posts.map((post: any) => (
-                                    <Grid item key={post.id}> 
-                                        <Posts
-                                            post={post}
-                                            elderlyInvolvedArray={post.elderlyInvolved}
-                                            imagesArray={post.images} 
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Box>
-                    </Grid>
-
-                    {/* display notifications */}
-                    <Grid item xs={4}>
-                        <Box>
-                            <Notifications />
-                        </Box>
-                    </Grid>
-                </Grid>
-            </main>
-
-        </div>
+  function TicketItem(props: any) {
+    return (
+      <Box marginTop={2} marginRight={1}>
+        <Card sx={{
+          minHeight: 175,
+          minWidth: 400,
+          maxHeight: 175,
+          maxWidth: 400,
+          backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
+          backgroundSize: 'contain',
+        }}>
+          <CardActionArea href='#'>
+          </CardActionArea>
+        </Card>
+        <Typography>
+          {props.eventName}
+        </Typography>
+      </Box>
     )
-}
+  }
 
+  function BestSellersCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
+
+  function RecentCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {recents.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
+
+  function UpcomingCarousell() {
+    return <Carousel
+      additionalTransfrom={0}
+      arrows
+      autoPlaySpeed={3000}
+      centerMode={false}
+      className=""
+      containerClass="container"
+      dotListClass=""
+      draggable
+      focusOnSelect={false}
+      infinite
+      itemClass=""
+      keyBoardControl
+      minimumTouchDrag={80}
+      partialVisible
+      pauseOnHover
+      renderArrowsWhenDisabled={false}
+      renderButtonGroupOutside={false}
+      renderDotsOutside={false}
+      responsive={{
+        desktop: {
+          breakpoint: {
+            max: 3000,
+            min: 1024,
+          },
+          items: 3,
+          partialVisibilityGutter: 20,
+        },
+        mobile: {
+          breakpoint: {
+            max: 464,
+            min: 0,
+          },
+          items: 1,
+          partialVisibilityGutter: 30,
+        },
+        tablet: {
+          breakpoint: {
+            max: 1024,
+            min: 464,
+          },
+          items: 2,
+          partialVisibilityGutter: 30,
+        },
+      }}
+      rewind={false}
+      rewindWithAnimation={false}
+      rtl={false}
+      shouldResetAutoplay
+      showDots={false}
+      sliderClass=""
+      slidesToSlide={1}
+      swipeable
+    >
+      {upcoming.map((bs: { eventName: any; eventImage: any; }) => (
+        <TicketItem
+          eventName={bs.eventName}
+          eventImage={bs.eventImage}
+        />
+      ))}
+    </Carousel>;
+  }
+
+
+
+
+  return (
+    <>
+      {loaded ?
+        <Box>
+          <div>
+            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
+            <Paper
+              elevation={5}
+              sx={{
+                position: "relative",
+                backgroundColor: "grey.800",
+                color: "#fff",
+                mb: 4,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                backgroundImage: `url(https://i.imgur.com/UKi8jbp.png)`,
+              }}
+            >
+              <Box
+                sx={{
+                  position: "relative",
+                  top: 0,
+                  bottom: 0,
+                  right: 0,
+                  left: 0,
+                  backgroundColor: "rgba(0,0,0,.3)",
+                }}
+              />
+              <Grid
+                container
+                spacing={4}
+                alignItems="center"
+                justifyContent="center"
+              >
+
+                <Grid item md={6}>
+                  <Box
+                    sx={{
+                      position: "relative",
+                      p: { xs: 3, md: 6 },
+                      pr: { md: 0 },
+                    }}
+                  >
+                    <br />
+                    <br />
+                    <Typography
+                      component="h1"
+                      variant="h3"
+                      color="inherit"
+                      align="center"
+                    >
+                      Unlock Unforgettable Experiences
+                    </Typography>
+                    <Typography
+                      component="h1"
+                      variant="h6"
+                      color="inherit"
+                      gutterBottom
+                      align="center"
+                    >
+                      your gateway to premier event adventures
+                    </Typography>
+                    <br />
+                    <br />
+                    <br />
+                    <Search>
+                      <SearchIconWrapper>
+                        <SearchIcon sx={{ color: "#3b3b3b" }} />
+                      </SearchIconWrapper>
+                      <StyledInputBase
+                        placeholder="Search…"
+                        inputProps={{ "aria-label": "search" }}
+                        fullWidth
+                      />
+                    </Search>
+                    <br />
+                    <br />
+                    <br />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Paper>
+          </div>
+          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+            Best Sellers
+          </Typography>
+          <Grid container>
+            <Grid item xs={12}>
+              <BestSellersCarousell />
+            </Grid>
+          </Grid>
+          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+            New on AuthenTicket
+          </Typography>
+          <Grid container>
+            <Grid item xs={12}>
+              <RecentCarousell />
+            </Grid>
+          </Grid>
+          <Box bgcolor="#FF5C35" marginTop={12}>
+            <Grid container justifyContent="center" alignItems="center">
+              <Grid item xs={5} marginTop={4} marginBottom={4} >
+                <CustomBanner />
+              </Grid>
+              <Grid item xs={5} marginLeft={4}>
+                <TextAnimationsCarousel />
+              </Grid>
+            </Grid>
+          </Box>
+          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+            Recently Added
+          </Typography>
+          <Grid container>
+            <Grid item xs={12} marginBottom={8}>
+              <UpcomingCarousell />
+            </Grid>
+          </Grid>
+        </Box>
+        : null}
+
+    </>
+  );
+};

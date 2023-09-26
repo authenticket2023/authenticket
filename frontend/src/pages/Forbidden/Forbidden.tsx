@@ -5,8 +5,15 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 export const Forbidden = () => {
     let navigate = useNavigate();
+    const role : any = window.localStorage.getItem('role');
     const handleClick = (e: any) => {
-        navigate('/');
+        if(role == 'ADMIN') {
+            navigate('/HomeAdmin');
+        } else if(role == 'ORGANISER') {
+            navigate('/HomeOrganiser');
+        } else {
+            navigate('/Home');
+        }
     }
 
     return (

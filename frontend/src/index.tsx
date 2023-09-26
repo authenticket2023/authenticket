@@ -7,41 +7,56 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { createRoot } from 'react-dom/client';
 //for normal user
-import { Health } from './pages/Health';
+import { About } from './pages/About';
+import { Forbidden } from './pages/Forbidden';
+import { Event } from './pages/Event';
+import { FAQ } from './pages/FAQ';
 import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Page404 } from './pages/Page404';
 import { Profile } from './pages/Profile';
-import { About } from './pages/About';
 import { Signup } from './pages/Signup';
-import { Forbidden } from './pages/Forbidden';
+import { Support } from './pages/Support';
+import { Venue } from './pages/Venue';
+//for organiser user
+import { HomeOrganiser } from './pages/HomeOrganiser';
+import { EventOrganiser } from './pages/EventOrganiser';
+import { OrganiserSignup } from './pages/OrganiserSignup';
+import { OrganiserLogin } from './pages/OrganiserLogin';
 //for admin user
-import { Elderly_admin } from './pages/Elderly(admin)';
-import { Home_admin } from './pages/Home(admin)';
-import { Post_admin } from './pages/Post(admin)';
-import { Record_admin } from './pages/Record(admin)';
-
-
+import { HomeAdmin } from './pages/HomeAdmin';
+import { EventAdmin } from './pages/EventAdmin';
+import { ArtistAdmin } from './pages/ArtistAdmin';
+import { VenueAdmin } from './pages/VenueAdmin';
+import { AdminLogin } from './pages/AdminLogin';
 
 const container: any = document.getElementById('root');
 const root = createRoot(container);
 root.render(
 	<BrowserRouter>
 		<Routes>
-			<Route path="/Health" element={<Health />} />
 			<Route path="/Home" element={<Home />} />
 			<Route path="/" element={<Navigate to="/Home" />} />
+			<Route path="/About" element={<About />} />
 			<Route path="/Login" element={<Login />} />
 			<Route path="/404" element={<Page404 />} />
 			<Route path="/Profile" element={<Profile />} />
-			<Route path="/About" element={<About />} />
 			<Route path="/Signup" element={<Signup />} />
+			<Route path="/Event" element={<Event />} />
+			<Route path="/FAQ" element={<FAQ />} />
+			<Route path="/Support" element={<Support />} />
+			<Route path="/Venue" element={<Venue />} />
 			<Route path="/Forbidden" element={<Forbidden />} />
 			<Route path="/*" element={<Page404 />} />
-			<Route path="/Home-admin" element={<Home_admin />} />
-			<Route path="/Elderly-admin" element={<Elderly_admin />} />
-			<Route path="/Post-admin" element={<Post_admin />} />
-			<Route path="/Record-admin" element={<Record_admin/>} />
+			<Route path="/HomeOrganiser" element={<HomeOrganiser />} />
+			<Route path="/EventOrganiser" element={<EventOrganiser />} />
+			<Route path="/HomeAdmin" element={<HomeAdmin />} />
+			<Route path="/EventAdmin" element={<EventAdmin />} />
+			<Route path="/VenueAdmin" element={<VenueAdmin />} />
+			<Route path="/ArtistAdmin" element={<ArtistAdmin />} />
+			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
+			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
+			<Route path="/AdminLogin" element={<AdminLogin />} />
 		</Routes>
 	</BrowserRouter>);
 
