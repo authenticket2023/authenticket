@@ -209,7 +209,7 @@ export default function ReviewEvent(props: any) {
                             </Grid>
                             <Sheet sx={{ alignItems: "center", mb: 5, mt: 5 }}>
                                 <Button color="error" variant="contained" onClick={handleReject} >Reject</Button>
-                                <Button color="success" variant="contained" sx={{ ml: 10 }} onClick={handleAccept}>Accpet</Button>
+                                <Button color="success" variant="contained" sx={{ ml: 10 }} onClick={handleAccept}>Accept</Button>
                             </Sheet>
                         </Sheet>
                     </Box>
