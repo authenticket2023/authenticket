@@ -12,6 +12,7 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AuthenticationServiceImpl;
 import com.authenticket.authenticket.service.impl.JwtServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -22,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.security.SignatureException;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 
 @RestController
@@ -95,11 +98,17 @@ public class AuthenticationController extends Utility{
     }
 
     @GetMapping(path = "/userRegister/userConfirm")
-    public ResponseEntity<GeneralApiResponse> userConfirm(@RequestParam("token") String token){
+    public ResponseEntity<GeneralApiResponse> userConfirm(@RequestParam("token") String token,
+                                                          @RequestParam("redirect") String redirect){
         try{
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(new URI(redirect));
             AuthenticationUserResponse response = service.confirmUserToken(token);
-            return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome"));
-        } catch (AwaitingVerificationException | IllegalStateException e){
+            return ResponseEntity
+                    .status(200)
+                    .headers(headers).build();
+//                    .body(generateApiResponse(response, "Welcome"));
+        } catch (AwaitingVerificationException | IllegalStateException | URISyntaxException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, e.getMessage()));
         }
     }

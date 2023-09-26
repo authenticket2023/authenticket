@@ -45,10 +45,10 @@ public class VenueServiceImpl implements VenueService {
 
     public Venue updateVenue(Integer venueId, String venueName, String venueLocation) {
         Optional<Venue> optionalOldVenue = venueRepository.findById(venueId);
-        Venue oldVenue = optionalOldVenue.get();
         if (optionalOldVenue.isEmpty()) {
             throw new NonExistentException("Venue with ID " + venueId + " does not exist");
         }
+        Venue oldVenue = optionalOldVenue.get();
 
         Optional<Venue> venueUpdateNameCheck = venueRepository.findByVenueName(venueName);
         if (venueUpdateNameCheck.isPresent() && (optionalOldVenue.get() != venueUpdateNameCheck.get())) {

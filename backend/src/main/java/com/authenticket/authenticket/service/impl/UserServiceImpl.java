@@ -59,7 +59,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Optional<User> userOptional = userRepository.findByEmail(newUser.getEmail());
 
         if(userOptional.isPresent()){
-            System.out.println("hello");
             User existingUser = userOptional.get();
             userDtoMapper.update(newUser, existingUser);
             userRepository.save(existingUser);
