@@ -59,6 +59,7 @@ root.render(
 			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
 			<Route path="/AdminLogin" element={<AdminLogin />} />
 			<Route path="/EventDetails/:eventId" element={<EventDetails />} />
+			<Route path="http://13.228.86.148:3000/api/auth/userRegister/userConfirm"/>
 		</Routes>
 	</BrowserRouter>);
 

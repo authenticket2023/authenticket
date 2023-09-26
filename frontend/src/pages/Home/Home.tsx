@@ -93,6 +93,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
+          // console.log(data);
           const bsArr = data.map((bestseller: any) => ({
             eventId: bestseller.eventId,
             eventName: bestseller.eventName,
@@ -107,7 +108,7 @@ export const Home = () => {
           setBestSellers(bsArr);
           setBSLoaded(true);
           //console.log(data);
-          //bsArr.map((item: any) => console.log(item));
+          // bsArr.map((item: any) => console.log(item));
         } else {
           //passing to parent component
         }
@@ -376,10 +377,11 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
+      {bestSellers.map((bs: { eventName: any; eventImage: any; eventId: any; }) => (
         <TicketItem
           eventName={bs.eventName}
           eventImage={bs.eventImage}
+          eventId={bs.eventId}
         />
       ))}
     </Carousel>;

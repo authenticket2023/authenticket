@@ -3,10 +3,11 @@ import { Navigate } from 'react-router-dom';
 import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
 import { useParams } from 'react-router-dom';
 import { Box } from '@mui/system';
-import { Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { Button } from 'react-bootstrap';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import Avatar from '@mui/material/Avatar';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -55,6 +56,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
     //set variables
     const [eventDetails, setEventDetails]: any = React.useState();
     const [value, setValue] = useState(0);
+    const [artistDetails, setArtistDetails]: any = React.useState([]);
 
     const loadEventDetails = async () => {
         // //calling backend API
@@ -68,8 +70,17 @@ export const EventDetails: React.FC = (): JSX.Element => {
             if (response.status == 200) {
               const apiResponse = await response.json();
               const data = apiResponse.data;
-              setEventDetails(data);
               console.log(data);
+              setEventDetails(data);
+            //   const artistDetails = data.artists.map((artist: any) => ({
+            //     artistId: artist.artistId,
+            //     artistName: artist.artistName,
+            //     artistImage: artist.artistImage
+            //   }))
+              const array = data.artists;
+              console.log(array[0].artistId);
+              setArtistDetails(artistDetails);
+            //   console.log(data);
             } else {
               //passing to parent component
             }
@@ -114,6 +125,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
         )}
 
         {/* Content Tabs */}
+        {eventDetails && (
         <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: '100vh' }}>
             <Box sx={{ width: '90%' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -125,7 +137,35 @@ export const EventDetails: React.FC = (): JSX.Element => {
                 </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-                Item One
+                    <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
+                        Event Description
+                    </Typography>
+                    <Typography style={{font:'Roboto', fontWeight:300, fontSize:'16px', marginBottom:20}}>
+                        {eventDetails.eventDescription}
+                    </Typography>
+                    <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
+                        Event Information
+                    </Typography>
+                    <Typography style={{font:'Roboto', fontWeight:300, fontSize:'16px', marginBottom:20}}>
+                        {eventDetails.otherEventInfo}
+                    </Typography>
+                    <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
+                        About the Artist
+                    </Typography>
+                    <Grid container spacing={2}>
+                        {artistDetails.map((artist: any) => (
+                            <div style={{display:'flex', flexDirection:'row'}}>
+                                {/* <Avatar 
+                                    alt={eventDetails.artists.artistName} 
+                                    src="`url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${eventDetails.artists.artistImage})`"
+                                    style={{height:'70px', width:'70px', marginTop:13, marginLeft:5}}
+                                /> */}
+                                <Typography>
+                                    {eventDetails.artists.artistName}
+                                </Typography>
+                            </div>
+                        ))}
+                    </Grid>
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={1}>
                 Item Two
@@ -138,6 +178,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                 </CustomTabPanel>
             </Box>
             </Box>
+            )}
         </Box>
 
  
