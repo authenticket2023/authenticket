@@ -191,74 +191,74 @@ export const Home = () => {
   }
 
   const CustomBanner = () => {
-    const bearSlideItemData: TBearSlideItemDataList = featured.map((row: any) => {
-      return {
-        key: row.id,
-        children: (
-          <BearSlideCard>
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              height: '400px',
-            }}>
-              <img
-                src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                }}
-              />
-            </div>
-          </BearSlideCard>
-
-        ),
-      };
-    });
+    const bearSlideItemData: TBearSlideItemDataList = featured.map(
+      (row: any) => {
+        return {
+          key: row.id,
+          children: (
+            <Box bgcolor="#FF5C35">
+              <Grid container justifyContent={"center"}>
+                <Grid item xs={6} bgcolor="#FF5C35">
+                  <BearSlideCard>
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        height: "400px",
+                      }}
+                    >
+                      <img
+                        src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                        }}
+                      />
+                    </div>
+                  </BearSlideCard>
+                </Grid>
+                <Grid item xs={5} marginLeft={4}>
+                  <Box bgcolor="#FF5C35" marginTop={12}>
+                    <Typography variant="h6" color="white" marginLeft={2}>
+                      Featured
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      color="white"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {row.eventName}
+                    </Typography>
+                    <Typography
+                      variant="subtitle2"
+                      justifyItems="center"
+                      color="white"
+                    >
+                      {row.eventDescription}
+                    </Typography>
+                    <Box marginTop={2} marginLeft={2}>
+                      <Button
+                        variant="outlined"
+                         href={`/EventDetails/${row.eventId}`}
+                        sx={{ color: "white", borderColor: "white" }}
+                      >
+                        Get tickets
+                      </Button>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          ),
+        };
+      });
     return (
       <BearCarousel
         data={bearSlideItemData}
-        height="400px"
-        isEnableLoop
-        isEnableAutoPlay
-      />
-    );
-  };
-
-  const TextAnimationsCarousel = () => {
-    const slideItemData: TBearSlideItemDataList = featured.map((row: any) => {
-      return {
-        key: row.featuredId,
-        children: (
-          <Box bgcolor="#FF5C35" marginTop={8}>
-            <Typography variant="h6" color="white" marginLeft={2}>
-              Featured
-            </Typography>
-            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-              {row.eventName}
-            </Typography>
-            <Typography variant="subtitle2" justifyItems="center" color="white">
-              {row.eventDescription}
-            </Typography>
-            <Box marginTop={2} marginLeft={2}>
-              <Button
-                variant="outlined"
-                href={`/EventDetails/${row.eventId}`}
-                sx={{ color: "white", borderColor: "white" }}
-              >
-                Get tickets
-              </Button>
-            </Box>
-          </Box>
-        ),
-      };
-    });
-    return (
-      <BearCarousel
-        data={slideItemData}
         height="400px"
         isEnableAutoPlay
         isEnableLoop
@@ -620,15 +620,8 @@ export const Home = () => {
               <RecentCarousell />
             </Grid>
           </Grid>
-          <Box bgcolor="#FF5C35" marginTop={12}>
-            <Grid container justifyContent="center" alignItems="center">
-              <Grid item xs={5} marginTop={4} marginBottom={4} >
-                <CustomBanner />
-              </Grid>
-              <Grid item xs={5} marginLeft={4}>
-                <TextAnimationsCarousel />
-              </Grid>
-            </Grid>
+          <Box bgcolor="#FF5C35" marginTop={12} >
+             <CustomBanner></CustomBanner>
           </Box>
           <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
             Recently Added
