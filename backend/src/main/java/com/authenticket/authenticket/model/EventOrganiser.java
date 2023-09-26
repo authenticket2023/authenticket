@@ -36,7 +36,7 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 2000)
     private String description;
     @Column(name = "logo_image")
     private String logoImage;

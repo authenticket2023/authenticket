@@ -23,7 +23,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
     private final AmazonS3 amazonS3;
 
     @Autowired
-    public AmazonS3ServiceImpl(AmazonS3 amazonS3){
+    public AmazonS3ServiceImpl(AmazonS3 amazonS3) {
         this.amazonS3 = amazonS3;
     }
 
@@ -38,35 +38,34 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 //        return url.toString();
 //    }
 
-    private File convertMultiPartFileToFile (MultipartFile file){
+    private File convertMultiPartFileToFile(MultipartFile file) {
         File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        try (FileOutputStream fos = new FileOutputStream(convertFile)){
+        try (FileOutputStream fos = new FileOutputStream(convertFile)) {
             fos.write(file.getBytes());
-        } catch (IOException e){
+        } catch (IOException e) {
             log.error("Error converting multipart file to file", e);
         }
         return convertFile;
     }
 
 
-
-    public String uploadFile(MultipartFile file, String imageName, String fileType){
-        if(!amazonS3.doesBucketExistV2(bucketName)){
+    public String uploadFile(MultipartFile file, String imageName, String fileType) {
+        if (!amazonS3.doesBucketExistV2(bucketName)) {
             throw new NonExistentException("Bucket does not exist");
         }
 
 
         String fileName;
-        if(fileType.equals("event_images")){
+        if (fileType.equals("event_images")) {
             fileName = "event_images/" + imageName;
-        } else if (fileType.equals("user_profile")){
-            fileName = "user_profile/" + imageName ;
-        } else if (fileType.equals("event_organiser_profile")){
-            fileName = "event_organiser_profile/" + imageName ;
-        } else if (fileType.equals("venue_image")){
-            fileName = "venue_image/" + imageName ;
-        }else if (fileType.equals("artist_image")){
-            fileName = "artist_image/" + imageName ;
+        } else if (fileType.equals("user_profile")) {
+            fileName = "user_profile/" + imageName;
+        } else if (fileType.equals("event_organiser_profile")) {
+            fileName = "event_organiser_profile/" + imageName;
+        } else if (fileType.equals("venue_image")) {
+            fileName = "venue_image/" + imageName;
+        } else if (fileType.equals("artist_image")) {
+            fileName = "artists/" + imageName;
         } else {
             //exception handling
             throw new NonExistentException("File type input does not exist");
@@ -80,40 +79,48 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
     }
 
     public String deleteFile(String imageName, String fileType) {
-        if(!amazonS3.doesBucketExistV2(bucketName)){
+        if (!amazonS3.doesBucketExistV2(bucketName)) {
             throw new NonExistentException("Bucket does not exist");
         }
         String fileName;
-        if(fileType.equals("event_images")){
+        if (fileType.equals("event_images")) {
             fileName = "event_images/" + imageName;
-        } else if (fileType.equals("user_profile")){
+        } else if (fileType.equals("user_profile")) {
             fileName = "user_profile/" + imageName;
-        } else if (fileType.equals("event_organiser_profile")){
-            fileName = "event_organiser_profile/" + imageName ;
+        } else if (fileType.equals("event_organiser_profile")) {
+            fileName = "event_organiser_profile/" + imageName;
+        } else if (fileType.equals("venue_image")) {
+            fileName = "venue_image/" + imageName;
+        } else if (fileType.equals("artist_image")) {
+            fileName = "artists/" + imageName;
         } else {
             //exception handling
             throw new NonExistentException("File type input does not exist");
         }
-        if(!amazonS3.doesObjectExist(bucketName, fileName)){
+        if (!amazonS3.doesObjectExist(bucketName, fileName)) {
             throw new NonExistentException("File type input does not exist");
         }
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
-        return "File deleted: " +fileName;
+        return "File deleted: " + fileName;
     }
 
     public String displayFile(String imageName, String fileType) {
-        if(!amazonS3.doesBucketExistV2(bucketName)){
+        if (!amazonS3.doesBucketExistV2(bucketName)) {
             throw new NonExistentException("Bucket does not exist");
         }
         String fileName;
-        if(fileType.equals("event_images")){
+        if (fileType.equals("event_images")) {
             fileName = "event_images/" + imageName;
-        } else if (fileType.equals("user_profile")){
+        } else if (fileType.equals("user_profile")) {
             fileName = "user_profile/" + imageName;
+        } else if (fileType.equals("venue_image")) {
+            fileName = "venue_image/" + imageName;
+        } else if (fileType.equals("artist_image")) {
+            fileName = "artists/" + imageName;
         } else {
             //exception handling
             throw new NonExistentException("File type input does not exist");
         }
-        return "https://authenticket.s3.ap-southeast-1.amazonaws.com/" +fileName;
+        return "https://authenticket.s3.ap-southeast-1.amazonaws.com/" + fileName;
     }
 }

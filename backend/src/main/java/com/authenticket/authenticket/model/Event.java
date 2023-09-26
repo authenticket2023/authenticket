@@ -27,13 +27,13 @@ public class Event extends BaseEntity {
     @Column(name = "event_name", nullable = false)
     private String eventName;
 
-    @Column(name = "event_description", nullable = false)
+    @Column(name = "event_description", nullable = false, length = 2000)
     private String eventDescription;
 
     @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
-    @Column(name = "other_event_info")
+    @Column(name = "other_event_info", length = 2000)
     private String otherEventInfo;
 
     @Column(name = "event_image")
