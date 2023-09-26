@@ -26,11 +26,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationServiceImpl extends Utility implements AuthenticationService {
 
-    @Value("${authenticket.frontend-dev-url}")
+//    @Value("${authenticket.frontend-dev-url}")
+//    private String frontendUrl;
+//
+//    @Value("${authenticket.backend-dev-url}")
+//    private String backendUrl;
+
+    @Value("${authenticket.frontend-production-url}")
     private String frontendUrl;
 
-    @Value("${authenticket.backend-dev-url}")
+    @Value("${authenticket.backend-production-url}")
     private String backendUrl;
+
 
     // All repos
     private final UserRepository userRepository;
