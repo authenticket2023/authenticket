@@ -13,7 +13,7 @@ export const HomeOrganiser = () => {
         <div>
             {
                 token != null && role == 'ORGANISER' ?
-                <Navigate to="/EventOrganiser" /> :  <Navigate to="/Forbidden" />
+                <Navigate to="/HomeOrganiser" /> :  <Navigate to="/Forbidden" />
             }
             < NavbarOrganiser />
             <h1>
