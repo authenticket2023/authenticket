@@ -91,8 +91,8 @@ export function Signup() {
   const validatePassword = (password : any) => {
     // Regular expression to validate password
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    const harmfulTextRegex = /[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\/)/gi;
-    return passwordRegex.test(password) && harmfulTextRegex.test(password);
+    
+    return passwordRegex.test(password);
   }
 
   //variables
@@ -236,12 +236,27 @@ export function Signup() {
               <a href='/Home'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
-                Organiser
-              </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
-                Admin
-              </Button>
+              <div
+                style={{
+                  backgroundColor: '#F2F2F2',
+                  height: '47px',
+                  width: '250px',
+                  display: 'flex',
+                  borderRadius: '25px',
+                  alignItems: 'flex-end',
+                  marginLeft:165
+                }}
+              >
+                  <Button sx={{ color: 'black', borderRadius: '18px', marginLeft:1, marginBottom:0.6 }} href='/OrganiserLogin'>
+                    Organiser
+                  </Button>
+                  <Button  sx={{ borderColor: 'black', borderRadius: '25px', color: 'black', marginBottom:0.6, marginLeft:1 }} href='/AdminLogin'>
+                    Admin
+                  </Button>
+                  <Button variant="contained" sx={{ borderColor: 'black', borderRadius: '25px', backgroundColor: 'black', marginRight:1, marginBottom:0.6 }} href='/logIn'>
+                    User
+                  </Button>
+              </div>
             </div>
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 8, marginBottom: 1 }}>
               Create your account

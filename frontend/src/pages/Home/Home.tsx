@@ -21,6 +21,7 @@ import BearCarousel, {
 } from "bear-react-carousel";
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
+import { Link } from 'react-router-dom';
 
 export const Home = () => {
 
@@ -92,6 +93,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
+          // console.log(data);
           const bsArr = data.map((bestseller: any) => ({
             eventId: bestseller.eventId,
             eventName: bestseller.eventName,
@@ -106,7 +108,7 @@ export const Home = () => {
           setBestSellers(bsArr);
           setBSLoaded(true);
           //console.log(data);
-          //bsArr.map((item: any) => console.log(item));
+          // bsArr.map((item: any) => console.log(item));
         } else {
           //passing to parent component
         }
@@ -244,7 +246,7 @@ export const Home = () => {
             <Box marginTop={2} marginLeft={2}>
               <Button
                 variant="outlined"
-                href='#'
+                href={`/EventDetails/${row.eventId}`}
                 sx={{ color: "white", borderColor: "white" }}
               >
                 Get tickets
@@ -302,6 +304,7 @@ export const Home = () => {
   function TicketItem(props: any) {
     return (
       <Box marginTop={2} marginRight={1}>
+      <Link to={`/EventDetails/${props.eventId}`} style={{ textDecoration: 'none' }}>
         <Card sx={{
           minHeight: 175,
           minWidth: 400,
@@ -310,9 +313,8 @@ export const Home = () => {
           backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
           backgroundSize: 'contain',
         }}>
-          <CardActionArea href='#'>
-          </CardActionArea>
         </Card>
+      </Link>
         <Typography>
           {props.eventName}
         </Typography>
@@ -375,10 +377,11 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
+      {bestSellers.map((bs: { eventName: any; eventImage: any; eventId: any; }) => (
         <TicketItem
           eventName={bs.eventName}
           eventImage={bs.eventImage}
+          eventId={bs.eventId}
         />
       ))}
     </Carousel>;

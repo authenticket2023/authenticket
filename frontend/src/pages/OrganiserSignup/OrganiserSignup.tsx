@@ -172,12 +172,27 @@ export function OrganiserSignup() {
               <a href='/Home'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:28}} href='/Login'>
-                User
-              </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
-                Admin
-              </Button>
+              <div
+                style={{
+                  backgroundColor: '#F2F2F2',
+                  height: '47px',
+                  width: '250px',
+                  display: 'flex',
+                  borderRadius: '25px',
+                  alignItems: 'flex-end',
+                  marginLeft:165
+                }}
+              >
+                  <Button variant="contained" sx={{ color: 'white', borderRadius: '18px', marginLeft:1, marginBottom:0.6, backgroundColor: 'black', paddingRight:1, paddingLeft:1 }} href='/OrganiserLogin'>
+                    Organiser
+                  </Button>
+                  <Button  sx={{ borderColor: 'black', borderRadius: '25px', color: 'black', marginBottom:0.6, marginLeft:1 }} href='/AdminLogin'>
+                    Admin
+                  </Button>
+                  <Button sx={{ borderColor: 'black', borderRadius: '25px', marginRight:1, marginBottom:0.6, color:'black' }} href='/logIn'>
+                    User
+                  </Button>
+              </div>
             </div>
 
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 8, marginBottom: 1 }}>

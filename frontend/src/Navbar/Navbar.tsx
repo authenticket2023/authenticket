@@ -153,7 +153,7 @@ export const NavbarLoggedIn = () => {
     let navigate = useNavigate();
 
     let profileImage: any = window.localStorage.getItem('profileImage');
-    const profileImageSrc = `${process.env.REACT_APP_PROFILE_IMAGE_URL}/user_profile_images/${profileImage}`;
+    const profileImageSrc = `${process.env.REACT_APP_S3_URL}/user_profile_images/${profileImage}`;
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -335,7 +335,7 @@ export const NavbarOrganiser = () => {
 
 
     let profileImage: any = window.localStorage.getItem('profileImage');
-    const profileImageSrc = `${process.env.REACT_APP_PROFILE_IMAGE_URL}/event_organiser_profile/${profileImage}`;
+    const profileImageSrc = `${process.env.REACT_APP_S3_URL}/event_organiser_profile/${profileImage}`;
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
