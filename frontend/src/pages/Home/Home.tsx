@@ -466,11 +466,10 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {recents.map((bs: { eventName: any; eventImage: any; eventId: any;}) => (
+      {recents.map((bs: { eventName: any; eventImage: any; }) => (
         <TicketItem
           eventName={bs.eventName}
           eventImage={bs.eventImage}
-          eventId={bs.eventId}
         />
       ))}
     </Carousel>;
@@ -536,11 +535,10 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {upcoming.map((bs: { eventName: any; eventImage: any; eventId: any;}) => (
+      {upcoming.map((bs: { eventName: any; eventImage: any; }) => (
         <TicketItem
           eventName={bs.eventName}
           eventImage={bs.eventImage}
-          eventId={bs.eventId}
         />
       ))}
     </Carousel>;
