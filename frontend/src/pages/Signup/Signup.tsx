@@ -8,13 +8,15 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Snackbar, Alert, } from '@mui/material';
+import { TextField, Button, Snackbar, Alert, IconButton, InputAdornment} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import moment from 'moment';
 import Filter from 'bad-words';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 //image download
 import backgroundImage from '../../images/background.png';
@@ -113,6 +115,12 @@ export function Signup() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType] : any= useState('info');
   const [alertMsg, setAlertMsg] = useState('');
+  //for show password icon
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   //handler method section
   const handleEmail = (e: any) => {
@@ -314,12 +322,22 @@ export function Signup() {
                 fullWidth
                 name="password"
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'} 
                 id="password"
                 autoComplete="current-password"
                 error={passwordError}
                 helperText={passwordHelperText}
                 onChange={handlePassword}
+                InputProps={{
+                  style: { color: '#2E475D' } ,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Button
                 type="submit"

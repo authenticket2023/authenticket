@@ -179,7 +179,7 @@ export const NavbarLoggedIn = () => {
         setAnchorElUser(null);
         sessionStorage.clear();
         localStorage.clear();
-        navigate('/home');
+        navigate('/logIn');
         window. location. reload();
     };
 
@@ -356,7 +356,7 @@ export const NavbarOrganiser = () => {
         setAnchorElUser(null);
         sessionStorage.clear();
         localStorage.clear();
-        navigate('/home');
+        navigate('/logIn');
     };
 
     const handleHomeOrganiser = () => {
@@ -496,7 +496,7 @@ export const NavbarAdmin = () => {
         setAnchorElUser(null);
         sessionStorage.clear();
         localStorage.clear();
-        navigate('/home');
+        navigate('/logIn');
     };
 
     const handleHomeAdmin = () => {
