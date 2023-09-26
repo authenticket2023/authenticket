@@ -22,6 +22,7 @@ import BearCarousel, {
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
 import { Link } from 'react-router-dom';
+import backgroundImage from '../../images/backgroundImage.png';
 
 export const Home = () => {
 
@@ -536,7 +537,7 @@ export const Home = () => {
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
-                backgroundImage: `url(https://i.imgur.com/UKi8jbp.png)`,
+                backgroundImage: `url(${backgroundImage})`,
               }}
             >
               <Box
