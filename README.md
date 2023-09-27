@@ -1,4 +1,11 @@
-# Authenticket
+# CS203 - CSD (G3T7) : Authenticket
+## Team Member : 
+- [CHUA YI KAI](https://github.com/ChuaYiKai)
+- [GEORGIA NG](https://github.com/georgiaxng)
+- [LIM ZHENGLONG BRIAN](https://github.com/Liseon617)
+- [NAUFAL SYAQIL BIN AZMI](https://github.com/nafutofu)
+- [PAN MINGWEI](https://github.com/xXxPMWxXx)
+- [PETRINA WONG JING TING](https://github.com/petrinawjt)
 ## prerequisite
 - Frontend (React) : Node V18 (Typescript)
 - Backend(Spring Boot) : Java JDK 17 
