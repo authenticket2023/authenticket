@@ -11,6 +11,6 @@ public interface TicketService {
     TicketDisplayDto findTicketById(Integer ticketId);
 //    Ticket saveTicket(Integer userId, Integer eventId, Integer categoryId) throws ApiRequestException;
 //    Ticket updateTicket(Integer ticketId, Integer userId);
-    void deleteTicket(Integer ticketId);
-    void removeTicket(Integer ticketId);
+//    void deleteTicket(Integer ticketId);
+//    void removeTicket(Integer ticketId);
 }

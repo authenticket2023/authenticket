@@ -1,22 +1,22 @@
 package com.authenticket.authenticket.controller;
 
 
+import com.authenticket.authenticket.dto.section.SeatAllocationDto;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.*;
+import com.authenticket.authenticket.model.Section;
+import com.authenticket.authenticket.model.TicketCategory;
+import com.authenticket.authenticket.model.Venue;
 import com.authenticket.authenticket.repository.SectionRepository;
 import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.Utility;
-import com.authenticket.authenticket.service.impl.EventTypeServiceImpl;
 import com.authenticket.authenticket.service.impl.SectionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(
@@ -62,14 +62,13 @@ public class SectionController extends Utility {
 //    }
 
     @PostMapping
-    public ResponseEntity<?> saveSection(@RequestParam(value ="svgFile", required = false) MultipartFile svgFile,
-                                         @RequestParam(value ="sectionId") Integer sectionId,
-                                         @RequestParam(value ="venueId") Integer venueId,
-                                         @RequestParam(value ="catId") Integer catId,
-                                         @RequestParam(value ="noOfRows") Integer noOfRows,
-                                         @RequestParam(value ="noOfSeatsPerRow") Integer noOfSeatsPerRow
-                                         ) {
-
+    public ResponseEntity<?> saveSection(@RequestParam(value = "svgFile", required = false) MultipartFile svgFile,
+                                         @RequestParam(value = "sectionId") Integer sectionId,
+                                         @RequestParam(value = "venueId") Integer venueId,
+                                         @RequestParam(value = "catId") Integer catId,
+                                         @RequestParam(value = "noOfRows") Integer noOfRows,
+                                         @RequestParam(value = "noOfSeatsPerRow") Integer noOfSeatsPerRow
+    ) {
 
 
         Venue venue = venueRepository.findById(venueId).orElse(null);
@@ -79,9 +78,17 @@ public class SectionController extends Utility {
         } else if (ticketCategory == null) {
             throw new NonExistentException("Ticket Category does not exist");
         }
-        Section newSection = new Section(sectionId,venue,ticketCategory,noOfRows,noOfSeatsPerRow);
+        Section newSection = new Section(sectionId, venue, ticketCategory, noOfRows, noOfSeatsPerRow);
         Section section = sectionService.saveSection(newSection);
 
-        return ResponseEntity.ok( generateApiResponse(section, "Section Created Successfully"));
+        return ResponseEntity.ok(generateApiResponse(section, "Section Created Successfully"));
+    }
+
+    @PostMapping("/seat-allocation")
+    public ResponseEntity<?> seatAllocation(@RequestParam(value = "eventId") Integer eventId,
+                                            @RequestParam(value = "sectionId") Integer sectionId,
+                                            @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
+        List<SeatAllocationDto> seatAllocationDtoList = sectionService.seatAllocation(eventId, sectionId, ticketsToPurchase);
+        return ResponseEntity.ok(generateApiResponse(null, "seatAllocation method called"));
     }
 }
