@@ -60,7 +60,7 @@ export function AllEvent() {
             options: {
                 customBodyRender: (value: string) => <span>{value.length < 15 ? value : value.slice(0, 15) + '....'}</span>
             }
-        },
+        }, "Event Type", 
         {
             name: "Event Date",
             options: {
@@ -69,6 +69,12 @@ export function AllEvent() {
         },
         {
             name: "Ticket Sale Date",
+            options: {
+                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+            }
+        },
+        {
+            name: "Submission Date",
             options: {
                 customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
             }
@@ -153,12 +159,11 @@ export function AllEvent() {
                 } else {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
-                    console.log(data)
                     const fetchData: any = [];
                     data.forEach((event: any) => {
                         let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
-                        const row = [event.eventId, event.eventName, event.eventDescription,
-                        event.eventDate, event.ticketSaleDate,
+                        const row = [event.eventId, event.eventName, event.eventDescription,event.eventType.eventTypeName,
+                        event.eventDate, event.ticketSaleDate, event.createdAt,
                             reviewRemarks, event.reviewStatus,
                             event.deletedAt]
                         fetchData.push(row)
@@ -210,7 +215,7 @@ export function AllEvent() {
             {dataLoaded ?
 
                 <MUIDataTable
-                    title={"Event Lists"}
+                    title={`${organiserName} - Events`}
                     data={allEventData}
                     columns={columns}
                     options={options}

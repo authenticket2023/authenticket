@@ -2,7 +2,7 @@ import {
     Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import BasicDatePicker from './dateElement';
+import BasicDatePicker from '../../utility/dateElement';
 import { Sheet } from '@mui/joy';
 import dayjs, { Dayjs } from 'dayjs';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -21,7 +21,6 @@ export function EventDetails(props: any) {
 
     const handleEventDescription = (event: any) => {
         props.setEventDescription(event.target.value);
-
     };
 
     const handleEventDate = (newDate: Dayjs | null) => {
@@ -73,7 +72,6 @@ export function EventDetails(props: any) {
                 props.setAlertMsg("error fetching data!!!");
             } else {
                 const data = await response.json();
-                console.log(data);
                 setEventTypeList(data['data']);
             }
         } catch (err) {
@@ -463,7 +461,6 @@ export function VenueArtist(props: any) {
                         </Grid>
 
                     </Grid>
-
                 </Sheet>
             </Box>
             <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
