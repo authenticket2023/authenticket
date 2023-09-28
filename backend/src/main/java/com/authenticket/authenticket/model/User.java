@@ -77,7 +77,7 @@ public class User extends BaseEntity implements UserDetails{
         return this.enabled;
     }
 
-    @OneToMany(mappedBy = "user")
-    private List<Ticket> tickets = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")
+//    private List<Ticket> tickets = new ArrayList<>();
 }
 

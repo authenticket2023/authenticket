@@ -43,20 +43,20 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.findTicketById(ticketId));
     }
 
-    @PostMapping
-    public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Integer userId,
-                                       @RequestParam(value = "eventId") Integer eventId,
-                                       @RequestParam(value = "categoryId") Integer categoryId) {
-        Ticket savedTicket = ticketService.saveTicket(userId, eventId, categoryId);
-        return ResponseEntity.ok(savedTicket);
-    }
-
-    @PutMapping
-    public ResponseEntity<?> updateTicket(@RequestParam(value = "ticketId") Integer ticketId,
-                                          @RequestParam(value = "userId") Integer userId) {
-        Ticket ticket = ticketService.updateTicket(ticketId, userId);
-        return ResponseEntity.ok(ticket);
-    }
+//    @PostMapping
+//    public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Integer userId,
+//                                       @RequestParam(value = "eventId") Integer eventId,
+//                                       @RequestParam(value = "categoryId") Integer categoryId) {
+//        Ticket savedTicket = ticketService.saveTicket(userId, eventId, categoryId);
+//        return ResponseEntity.ok(savedTicket);
+//    }
+//
+//    @PutMapping
+//    public ResponseEntity<?> updateTicket(@RequestParam(value = "ticketId") Integer ticketId,
+//                                          @RequestParam(value = "userId") Integer userId) {
+//        Ticket ticket = ticketService.updateTicket(ticketId, userId);
+//        return ResponseEntity.ok(ticket);
+//    }
 
     @PutMapping("/{ticketId}")
     public String deleteTicket(@PathVariable("ticketId") Integer ticketId) {
