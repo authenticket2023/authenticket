@@ -1,23 +1,16 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.amazonaws.services.kms.model.AlreadyExistsException;
-import com.authenticket.authenticket.TicketCategoryJSON;
-import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
-import com.authenticket.authenticket.dto.ticket.TicketUpdateDto;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
-import com.authenticket.authenticket.exception.ApiRequestException;
-import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.PresaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 @Service
 public class PresaleServiceImpl implements PresaleService {
@@ -37,36 +30,55 @@ public class PresaleServiceImpl implements PresaleService {
         this.presaleInterestRepository = presaleInterestRepository;
     }
 
-    public List<User> findUsersInterestedByEvent(Integer eventId) {
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-        if (eventOptional.isEmpty()) {
-            throw new NonExistentException("Event", eventId);
-        }
-        return presaleInterestRepository.findAllByEvent(eventOptional.get()).stream().map(x->x.getUser()).toList();
+    public List<User> findUsersInterestedByEvent(Event event) {
+        return presaleInterestRepository.findAllByEvent(event).stream().map(PresaleInterest::getUser).toList();
     }
 
-    public void addPresaleInterest(Integer userId, Integer eventId){
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-        Optional<User> userOptional = userRepository.findById(userId);
+    public List<User> findUsersSelectedForEvent(Event event, Boolean selected) {
+        return presaleInterestRepository.findAllByEventAndIsSelected(event, selected).stream().map(PresaleInterest::getUser).toList();
+    }
 
-        if (eventOptional.isEmpty()) {
-            throw new NonExistentException("Event", eventId);
-        }
-
-        if (userOptional.isEmpty()){
-            throw new NonExistentException("User", userId);
-        }
-        Event event = eventOptional.get();
-        User user = userOptional.get();
-
+    public void setPresaleInterest(User user, Event event, Boolean selected){
         EventUserId eventUserId = new EventUserId(user, event);
         Optional<PresaleInterest> presaleInterestOptional = presaleInterestRepository.findById(eventUserId);
 
-        if (presaleInterestOptional.isEmpty()){
-            presaleInterestRepository.save(new PresaleInterest(user, event, false));
-            return;
+        if (!selected && presaleInterestOptional.isPresent()) {
+          throw new AlreadyExistsException("User with ID " + user.getUserId() + " already expressed interest for event '" + event.getEventName() + "'");
+        }
+        presaleInterestRepository.save(new PresaleInterest(user, event, selected));
+    }
+
+    public List<User> selectPresaleUsersForEvent(Event event) {
+        List<User> users = findUsersInterestedByEvent(event);
+        int totalTickets = event.getTotalTickets();
+        int presaleWinnersCount = users.size();
+
+        if (users.size() * MAX_TICKETS_SOLD_PER_USER > totalTickets) {
+            presaleWinnersCount = totalTickets / MAX_TICKETS_SOLD_PER_USER;
         }
 
-        throw new AlreadyExistsException("User ID " + userId + " already expressed interest for event ID " + eventId);
+        Random rand = new Random();
+
+        List<User> winners = new ArrayList<>();
+        ArrayList<User> duplicate = new ArrayList(users);
+        for (int i = 0; i < presaleWinnersCount; i++) {
+
+            // take a random index between 0 to size
+            // of given List
+            int randomIndex = rand.nextInt(duplicate.size());
+
+            // add element in temporary list
+            winners.add(duplicate.get(randomIndex));
+            setPresaleInterest(duplicate.get(randomIndex), event, true);
+
+            //Trigger Email sending interval
+
+
+            // Remove selected element from original list
+            duplicate.remove(randomIndex);
+        }
+        event.setHasPresaleUsers(true);
+        eventRepository.save(event);
+        return winners;
     }
 }

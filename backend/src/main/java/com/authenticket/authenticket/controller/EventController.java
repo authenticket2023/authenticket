@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
-import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
@@ -13,7 +12,6 @@ import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
-import com.authenticket.authenticket.service.impl.PresaleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -50,6 +47,8 @@ public class EventController extends Utility {
 
     private final EventRepository eventRepository;
 
+    private final UserRepository userRepository;
+
     private final EventOrganiserRepository eventOrganiserRepository;
 
     private final AdminRepository adminRepository;
@@ -69,7 +68,8 @@ public class EventController extends Utility {
                            VenueRepository venueRepository,
                            EventTypeRepository eventTypeRepository,
                            EventDtoMapper eventDtoMapper,
-                           PresaleService presaleService) {
+                           PresaleService presaleService,
+                           UserRepository userRepository) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
@@ -79,6 +79,7 @@ public class EventController extends Utility {
         this.eventTypeRepository = eventTypeRepository;
         this.eventDtoMapper = eventDtoMapper;
         this.presaleService = presaleService;
+        this.userRepository = userRepository;
     }
 
 
@@ -223,7 +224,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-                    ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, null);
+                    ticketSaleDate, 0, 0, null, "pending", null, false, false,false, eventOrganiser, venue, null, eventType, null);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -456,8 +457,32 @@ public class EventController extends Utility {
     @PutMapping("/event/indicateInterest")
     public ResponseEntity<GeneralApiResponse> userIndicateInterest(@RequestParam Integer userId,
                                                                    @RequestParam Integer eventId) {
-        presaleService.addPresaleInterest(userId,eventId);
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new NonExistentException("User", userId);
+        }
+        presaleService.setPresaleInterest(userOptional.get(), eventOptional.get(), false);
         return ResponseEntity.ok(generateApiResponse(null, "Presale interest recorded"));
+    }
+
+    @GetMapping("/event/selectUsers")
+    public ResponseEntity<GeneralApiResponse> eventSelectUsers(@RequestParam Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        if (!eventOptional.get().getHasPresaleUsers()) {
+
+            List<User> winners = presaleService.selectPresaleUsersForEvent(eventOptional.get());
+            return ResponseEntity.ok(generateApiResponse(winners, "Users allowed in presale selected"));
+        }
+
+        return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(eventOptional.get(), true), "Already selected winners for event id " + eventId));
     }
 
 //    @PutMapping("/addTicketCategory")

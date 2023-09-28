@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface PresaleInterestRepository extends JpaRepository<PresaleInterest, EventUserId> {
     List<PresaleInterest> findAllByEvent(Event event);
+    List<PresaleInterest> findAllByEventAndIsSelected(Event event, Boolean isSelected);
 }

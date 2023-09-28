@@ -59,6 +59,15 @@ public class Event extends BaseEntity {
     @Column(name = "review_remarks")
     private String reviewRemarks;
 
+    @Column(name = "is_enhanced")
+    private Boolean isEnhanced;
+
+    @Column(name = "has_presale")
+    private Boolean hasPresale;
+
+    @Column(name = "has_presale_users")
+    private Boolean hasPresaleUsers;
+
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "organiser_id", nullable = false)
