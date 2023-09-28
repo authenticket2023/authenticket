@@ -8,6 +8,7 @@ import { Button } from 'react-bootstrap';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Avatar from '@mui/material/Avatar';
+import { SeatMap } from './SeatMap';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -168,7 +169,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                     </Grid>
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={1}>
-                Item Two
+                <SeatMap/>
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={2}>
                 Item Three
