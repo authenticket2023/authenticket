@@ -1,11 +1,18 @@
 package com.authenticket.authenticket.dto.user;
 
 import com.authenticket.authenticket.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.function.Function;
 
 @Service
 public class UserDtoMapper implements Function<User, UserDisplayDto> {
+    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    public UserDtoMapper(PasswordEncoder passwordEncoder){
+        this.passwordEncoder=passwordEncoder;
+    }
     public UserDisplayDto apply(User user){
         return new UserDisplayDto(
                 user.getUserId(),
@@ -37,7 +44,8 @@ public class UserDtoMapper implements Function<User, UserDisplayDto> {
             oldUser.setName(newUser.getName());
         }
         if(newUser.getPassword() != null){
-            oldUser.setPassword(newUser.getPassword());
+            String passwordEncode = passwordEncoder.encode(newUser.getPassword());
+            oldUser.setPassword(passwordEncode);
         }
     }
 }
