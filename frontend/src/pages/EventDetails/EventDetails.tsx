@@ -8,6 +8,11 @@ import { Button } from 'react-bootstrap';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Avatar from '@mui/material/Avatar';
+import { InfoBox, InfoBoxEnhanced } from './InfoBox';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { format } from 'date-fns';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -42,6 +47,28 @@ interface TabPanelProps {
     };
   }
 
+  function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return format(date, "dd MMMM yyyy");
+  }
+
+  const formatTime = (timeString: string): string => {
+    const date = new Date(timeString);
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+  
+    // Convert hours to 12-hour format
+    const modifier = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12 || 12;
+  
+    // Format minutes with leading zero if necessary
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+  
+    // Concatenate hours, minutes, and AM/PM modifier
+    return `${hours}.${formattedMinutes}${modifier}`;
+  };
+  
+
 
 export const EventDetails: React.FC = (): JSX.Element => {
     useEffect(() => {
@@ -70,7 +97,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
             if (response.status == 200) {
               const apiResponse = await response.json();
               const data = apiResponse.data;
-              console.log(data);
+              // console.log(data);
               setEventDetails(data);
             //   const artistDetails = data.artists.map((artist: any) => ({
             //     artistId: artist.artistId,
@@ -78,9 +105,13 @@ export const EventDetails: React.FC = (): JSX.Element => {
             //     artistImage: artist.artistImage
             //   }))
               const array = data.artists;
-              console.log(array[0].artistId);
-              setArtistDetails(artistDetails);
+              // console.log(array[0].artistId);
+              setArtistDetails(array);
             //   console.log(data);
+            // console.log(artistDetails[0].artistName);
+            // {artistDetails.map((artist: any) => {
+            //   console.log(artist);
+            // })}
             } else {
               //passing to parent component
             }
@@ -129,7 +160,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
         <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: '100vh' }}>
             <Box sx={{ width: '90%' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" textColor='inherit' TabIndicatorProps={{ style: {background: 'black'} }}>
                     <Tab label="General Info" {...a11yProps(0)} />
                     <Tab label="Ticket Pricing" {...a11yProps(1)} />
                     <Tab label="Ticket Sales" {...a11yProps(2)} />
@@ -137,35 +168,48 @@ export const EventDetails: React.FC = (): JSX.Element => {
                 </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-                    <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
-                        Event Description
-                    </Typography>
-                    <Typography style={{font:'Roboto', fontWeight:300, fontSize:'16px', marginBottom:20}}>
-                        {eventDetails.eventDescription}
-                    </Typography>
-                    <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
-                        Event Information
-                    </Typography>
-                    <Typography style={{font:'Roboto', fontWeight:300, fontSize:'16px', marginBottom:20}}>
-                        {eventDetails.otherEventInfo}
-                    </Typography>
-                    <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
-                        About the Artist
-                    </Typography>
-                    <Grid container spacing={2}>
-                        {artistDetails.map((artist: any) => (
-                            <div style={{display:'flex', flexDirection:'row'}}>
-                                {/* <Avatar 
-                                    alt={eventDetails.artists.artistName} 
-                                    src="`url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${eventDetails.artists.artistImage})`"
-                                    style={{height:'70px', width:'70px', marginTop:13, marginLeft:5}}
-                                /> */}
-                                <Typography>
-                                    {eventDetails.artists.artistName}
-                                </Typography>
-                            </div>
-                        ))}
+                  <Grid container spacing={12} style={{}}>
+                    <Grid item xs={8}>
+                      <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
+                          Event Description
+                      </Typography>
+                      <Typography style={{font:'Roboto', fontWeight:300, fontSize:'16px', marginBottom:20}}>
+                          {eventDetails.eventDescription}
+                      </Typography>
+                      <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
+                          Event Information
+                      </Typography>
+                      <Typography style={{font:'Roboto', fontWeight:300, fontSize:'16px', marginBottom:20}}>
+                          {eventDetails.otherEventInfo}
+                      </Typography>
+                      <Typography style={{font:'Roboto', fontWeight:500, fontSize:'20px'}}>
+                          The Artists
+                      </Typography>
+                      <Grid container spacing={2}>
+                          {artistDetails.map((artist: any) => (
+                              <div style={{display:'flex', flexDirection:'row'}}>
+                                  <Avatar 
+                                      alt={artist.artistName} 
+                                      src={`${process.env.REACT_APP_S3_URL}/artists/${artist.artistImage}`}
+                                      style={{height:'85px', width:'85px', marginTop:30, marginLeft:35}}
+                                  />
+                                  <Typography style={{font:'Roboto', marginTop:55, marginLeft:12, fontSize:'18px', fontWeight:500}}>
+                                      {artist.artistName}
+                                  </Typography>
+                              </div>
+                          ))}
+                      </Grid>
+                      </Grid>
+                    
+                    {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
+                    <Grid item xs={4}>
+                      <InfoBox
+                        eventDate={eventDetails.eventDate}
+                        venueName={eventDetails.venue.venueName}
+                      />
+
                     </Grid>
+                  </Grid>
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={1}>
                 Item Two
