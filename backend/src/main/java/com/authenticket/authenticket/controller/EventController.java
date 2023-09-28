@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
                 "${authenticket.frontend-dev-url}",
                 "${authenticket.loadbalancer-url}"
         },
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
@@ -188,7 +188,7 @@ public class EventController extends Utility {
 
 
     @PostMapping("/event")
-    public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<GeneralApiResponse<Object>> saveEvent(@RequestParam("file") MultipartFile file,
                                        @RequestParam("eventName") String eventName,
                                        @RequestParam("eventDescription") String eventDescription,
                                        @RequestParam("eventDate") LocalDateTime eventDate,
@@ -284,7 +284,7 @@ public class EventController extends Utility {
 
     //without review, so basically targeted towards organiser
     @PutMapping("/event")
-    public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
+    public ResponseEntity<GeneralApiResponse<Object>> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam(value = "eventId") Integer eventId,
                                          @RequestParam(value = "eventName", required = false) String eventName,
                                          @RequestParam(value = "eventDescription", required = false) String eventDescription,

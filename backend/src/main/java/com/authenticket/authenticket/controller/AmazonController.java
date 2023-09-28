@@ -31,21 +31,20 @@ public class AmazonController extends Utility {
 
 
     @PostMapping("/uploadFile")
-    public ResponseEntity<GeneralApiResponse>  fileUpload(@RequestParam(value = "file") MultipartFile file,
+    public ResponseEntity<GeneralApiResponse<Object>>  fileUpload(@RequestParam(value = "file") MultipartFile file,
                                                           @RequestParam(value = "imageName") String imageName,
                                                           @RequestParam(value = "file-type") String fileType){
         return ResponseEntity.status(200).body(generateApiResponse(null, service.uploadFile(file, imageName, fileType)));
     }
     @DeleteMapping("/deleteFile")
-    public ResponseEntity<GeneralApiResponse> fileDelete(@RequestParam(value = "imageName") String imageName,
+    public ResponseEntity<GeneralApiResponse<Object>> fileDelete(@RequestParam(value = "imageName") String imageName,
                                              @RequestParam(value = "file-type") String fileType) {
         return ResponseEntity.status(200).body(generateApiResponse( null, service.deleteFile(imageName, fileType)));
     }
 
     @GetMapping("/displayFile")
-    public ResponseEntity<GeneralApiResponse>  fileDisplay(@RequestParam(value = "imageName") String imageName,
+    public ResponseEntity<GeneralApiResponse<Object>>  fileDisplay(@RequestParam(value = "imageName") String imageName,
                                               @RequestParam(value = "file-type") String fileType){
         return ResponseEntity.status(200).body(generateApiResponse( service.displayFile(imageName, fileType), "url generated"));
     }
-
 }
