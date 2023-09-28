@@ -20,9 +20,6 @@ public interface EventOrganiserService {
 
     //updates deleted_at field with datetime, DOES NOT really remove the event
     String deleteEventOrganiser (Integer organiserId);
-    //actually removes the event
-    String removeEventOrganiser (Integer organiserId);
-
 //    EventOrganiser approveOrganiser(Integer organiserId, Integer adminId, String status, String remarks);
 
 //    EventOrganiser rejectOrganiser (Integer organiserId);
