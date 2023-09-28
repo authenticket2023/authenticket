@@ -1,7 +1,10 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
 import com.authenticket.authenticket.dto.user.UserFullDisplayDto;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
+import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,32 +14,35 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
-    @InjectMocks
-    private UserDtoMapper userDtoMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     private UserServiceImpl underTest;
 
     @BeforeEach
     void setUp(){
+        UserDtoMapper userDtoMapper = new UserDtoMapper(passwordEncoder);
         underTest = new UserServiceImpl(userRepository, userDtoMapper);
     }
 
     //Test for findAllUser
     @Test
-    void canFindAllUser() {
+    void testFindAllUser() {
         // Arrange: Set up any necessary mock behaviors for userRepository
         List<User> mockUserList = new ArrayList<>(); // Create a list of mock User objects
         when(userRepository.findAll()).thenReturn(mockUserList); // Mock the behavior of findAll
@@ -51,7 +57,7 @@ class UserServiceImplTest {
 
     //Test for loadUserByUsername
     @Test
-    void canLoadUserByUsernameWhenUserExists() {
+    void testLoadUserByUsernameWhenUserExists() {
         // Arrange
         String email = "test@example.com";
         User user = User.builder()
@@ -77,7 +83,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void shouldThrowUsernameNotFoundExceptionWhenUserDoesNotExist() {
+    void testThrowUsernameNotFoundExceptionWhenUserDoesNotExist() {
         // Arrange
         String email = "nonexistent@example.com";
 
@@ -91,7 +97,7 @@ class UserServiceImplTest {
     // Test for findById
     //not working
     @Test
-    void canFindUserByIdWhenUserExists() {
+    void testFindUserByIdWhenUserExists() {
         // Arrange
         Integer userId = 99;
         User user = User.builder()
@@ -105,7 +111,7 @@ class UserServiceImplTest {
                 .tickets(null)
                 .build();
 
-        userRepository.save(user);
+
         // Mock the userRepository behavior
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -119,7 +125,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void shouldReturnEmptyOptionalWhenUserDoesNotExist() {
+    void testFindUserByIdWhenUserDoesNotExist() {
         // Arrange
         Integer userId = -1;
 
@@ -134,14 +140,180 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUser() {
+    void testUpdateUserWhenUserExists() {
+        // Arrange
+        Integer userId = 99;
+        String email = "test@example.com";
+        User newUser = User.builder()
+                .userId(userId)
+                .name("GeorgiaTest")
+                .email(email)
+                .password("password1")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(null)
+                .enabled(false)
+                .tickets(null)
+                .build();
+
+        User existingUser = User.builder()
+                .userId(userId)
+                .name("UpdatedGeorgia")
+                .email(email)
+                .password("update")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(null)
+                .enabled(false)
+                .tickets(null)
+                .build();
+
+        ArgumentCaptor<User> userArgumentCaptor =
+                ArgumentCaptor.forClass(User.class);
+
+        // Act
+        // Mock the userRepository behavior
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
+
+        // Mocking the behavior of userDtoMapper.update (assuming it doesn't throw exceptions)
+        UserDisplayDto result = underTest.updateUser(newUser);
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User updatedUser= userArgumentCaptor.getValue();
+
+        // Assert
+        assertNotNull(result);
+        assertNotNull(updatedUser);
     }
 
     @Test
-    void deleteUser() {
+    public void testUpdateUserWhenUserDoesNotExist() {
+        // Arrange
+        User nonExistingUser = User.builder()
+                .userId(-1)
+                .name("UpdatedGeorgia")
+                .email("test@example.com")
+                .password("update")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(null)
+                .enabled(false)
+                .tickets(null)
+                .build();
+
+        // Act
+        UserDisplayDto result = underTest.updateUser(nonExistingUser);
+
+        // Assert
+        assertNull(result);
     }
 
     @Test
-    void updateProfileImage() {
+    public void testDeleteUserWhenUserExistsAndNotDeleted() {
+        // Arrange
+        Integer userId = 99;
+        User user = User.builder()
+                .userId(userId)
+                .name("Georgia")
+                .email("test@example.com")
+                .password("password")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(null)
+                .enabled(false)
+                .tickets(null)
+                .build();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        underTest.deleteUser(userId);
+
+        // Assert
+        assertNotNull(user.getDeletedAt());
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    public void testDeleteUserWhenUserExistsAndAlreadyDeleted() {
+        // Arrange
+        Integer userId = 99;
+        User user = User.builder()
+                .userId(userId)
+                .name("Georgia")
+                .email("test@example.com")
+                .password("password")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(null)
+                .enabled(false)
+                .tickets(null)
+                .build();
+        user.setDeletedAt(LocalDateTime.now());
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // Act and Assert
+        assertThrows(AlreadyDeletedException.class, () -> underTest.deleteUser(userId));
+    }
+
+    @Test
+    public void testDeleteUserWhenUserDoesNotExist() {
+        // Arrange
+        Integer userId = -1;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(NonExistentException.class, () -> underTest.deleteUser(userId));
+    }
+
+    @Test
+    public void testUpdateProfileImageWhenUserExists() {
+        // Arrange
+        Integer userId = 99;
+        String filename = "image.jpg";
+        User newUser = User.builder()
+                .userId(userId)
+                .name("GeorgiaTest")
+                .email("test@example.com")
+                .password("password")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(filename)
+                .enabled(false)
+                .tickets(null)
+                .build();
+
+        User existingUser = User.builder()
+                .userId(userId)
+                .name("GeorgiaTest")
+                .email("test@example.com")
+                .password("password")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(null)
+                .enabled(false)
+                .tickets(null)
+                .build();
+
+        ArgumentCaptor<User> userArgumentCaptor =
+                ArgumentCaptor.forClass(User.class);
+
+        // Act
+        // Mock the userRepository behavior
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+
+        // Mocking the behavior of userDtoMapper.update (assuming it doesn't throw exceptions)
+        UserDisplayDto result = underTest.updateProfileImage(filename, userId);
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User updatedUser= userArgumentCaptor.getValue();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(newUser, updatedUser);
+    }
+
+    @Test
+    public void testUpdateProfileImageWhenUserDoesNotExist() {
+        // Arrange
+        Integer userId = -1;
+        String filename = "image.jpg";
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Act
+        UserDisplayDto result = underTest.updateProfileImage(filename, userId);
+
+        // Assert
+        assertNull(result);
     }
 }
