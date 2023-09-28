@@ -10,8 +10,10 @@ import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
+import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
+import com.authenticket.authenticket.service.impl.PresaleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +44,8 @@ import java.util.stream.Collectors;
 public class EventController extends Utility {
     private final EventServiceImpl eventService;
 
+    private final PresaleService presaleService;
+
     private final AmazonS3Service amazonS3Service;
 
     private final EventRepository eventRepository;
@@ -64,7 +68,8 @@ public class EventController extends Utility {
                            AdminRepository adminRepository,
                            VenueRepository venueRepository,
                            EventTypeRepository eventTypeRepository,
-                           EventDtoMapper eventDtoMapper) {
+                           EventDtoMapper eventDtoMapper,
+                           PresaleService presaleService) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
@@ -73,6 +78,7 @@ public class EventController extends Utility {
         this.venueRepository = venueRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.eventDtoMapper = eventDtoMapper;
+        this.presaleService = presaleService;
     }
 
 
@@ -445,6 +451,13 @@ public class EventController extends Utility {
             eventService.updateTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice(), ticketCategoryJSON.getAvailableTickets(), ticketCategoryJSON.getTotalTicketsPerCat());
         }
         return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
+    }
+
+    @PutMapping("/event/indicateInterest")
+    public ResponseEntity<GeneralApiResponse> userIndicateInterest(@RequestParam Integer userId,
+                                                                   @RequestParam Integer eventId) {
+        presaleService.addPresaleInterest(userId,eventId);
+        return ResponseEntity.ok(generateApiResponse(null, "Presale interest recorded"));
     }
 
 //    @PutMapping("/addTicketCategory")

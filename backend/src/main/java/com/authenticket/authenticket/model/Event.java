@@ -132,6 +132,7 @@ public class Event extends BaseEntity {
     }
 
 
+
     @Override
     public int hashCode() {
         return Objects.hash(eventName);
