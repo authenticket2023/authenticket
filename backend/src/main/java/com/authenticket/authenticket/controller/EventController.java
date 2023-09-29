@@ -5,6 +5,7 @@ import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
@@ -492,12 +493,18 @@ public class EventController extends Utility {
         if (eventOptional.isEmpty()) {
             throw new NonExistentException("Event", eventId);
         }
+        Event event = eventOptional.get();
+
+        if (LocalDateTime.now().isAfter(event.getTicketSaleDate())) {
+            throw new ApiRequestException("The presale interest indication period for event '" + event.getEventName() + "' has ended.");
+        }
 
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new NonExistentException("User", userId);
         }
-        presaleService.setPresaleInterest(userOptional.get(), eventOptional.get(), false, false);
+
+        presaleService.setPresaleInterest(userOptional.get(), event, false, false);
         return ResponseEntity.ok(generateApiResponse(null, "Presale interest recorded"));
     }
 
