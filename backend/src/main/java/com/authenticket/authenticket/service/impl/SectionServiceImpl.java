@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.authenticket.authenticket.dto.section.EventSectionDisplayDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Section;
@@ -110,9 +109,7 @@ public class SectionServiceImpl implements SectionService {
         return ticketList;
     }
 
-    public List<EventSectionDisplayDto> getSectionDetailsForEvent(Integer eventId) {
-        return null;
-    };
+
 
     public Section saveSection(Section section) {
         return sectionRepository.save(section);

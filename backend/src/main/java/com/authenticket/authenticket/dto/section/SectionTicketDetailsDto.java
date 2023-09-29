@@ -1,12 +1,12 @@
 package com.authenticket.authenticket.dto.section;
 
 
-public record EventSectionDisplayDto(
+public record SectionTicketDetailsDto(
         Integer sectionId,
-        Integer venueId,
         Integer catId,
-        Integer availableTickets,
-        Integer totalTickets,
+        Integer totalSeats,
+        Integer occupiedSeats,
+        Integer availableSeats,
         String status
         ) {
 }

@@ -4,8 +4,8 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
-import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -216,7 +215,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-                    ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, null,null);
+                    ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, null, null);
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -444,6 +443,20 @@ public class EventController extends Utility {
             eventService.updateTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice(), ticketCategoryJSON.getAvailableTickets(), ticketCategoryJSON.getTotalTicketsPerCat());
         }
         return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
+    }
+
+    @GetMapping("/public/event/section-ticket-details/{eventId}")
+    public ResponseEntity<GeneralApiResponse> findAllSectionsByEvent(
+            @PathVariable("eventId") Integer eventId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) {
+            throw new NonExistentException("Event does not exist");
+        }
+
+        List<SectionTicketDetailsDto> sectionDetailsForEvent = eventService.findSectionDetailsForEvent(event);
+
+
+        return ResponseEntity.ok(generateApiResponse(sectionDetailsForEvent, "Success returning all section ticket details for event"));
     }
 
 //    @PutMapping("/addTicketCategory")

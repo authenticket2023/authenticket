@@ -1,7 +1,6 @@
 package com.authenticket.authenticket.controller;
 
 
-import com.authenticket.authenticket.dto.section.SeatAllocationDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventRepository;
@@ -78,6 +77,8 @@ public class SectionController extends Utility {
             throw new NonExistentException("Venue does not exist");
         } else if (ticketCategory == null) {
             throw new NonExistentException("Ticket Category does not exist");
+        } else if(sectionRepository.findById(sectionId).orElse(null)!=null){
+            throw new IllegalArgumentException(String.format("Section with id %d already exists", sectionId));
         }
         Section newSection = new Section(sectionId, venue, ticketCategory, noOfRows, noOfSeatsPerRow);
         Section section = sectionService.saveSection(newSection);

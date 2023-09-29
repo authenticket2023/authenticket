@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.dto.section;
 
 
-public record SeatAllocationDto(
+public record SectionDisplayDto(
         Integer sectionId,
         Integer venueId,
         Integer catId,
