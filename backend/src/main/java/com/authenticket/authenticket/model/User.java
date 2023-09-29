@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -76,6 +77,10 @@ public class User extends BaseEntity implements UserDetails{
     public boolean isEnabled() {
         return this.enabled;
     }
+
+    @OneToMany( mappedBy = "user")
+    @JsonIgnore
+    private List<Order> orders = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "user")
 //    private List<Ticket> tickets = new ArrayList<>();

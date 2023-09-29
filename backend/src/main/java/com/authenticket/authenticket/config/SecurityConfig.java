@@ -64,6 +64,8 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/event-type/**").hasAnyAuthority("ADMIN", "ORGANISER")
 
+                        .requestMatchers("/api/order/**").hasAuthority("USER")
+
                         .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/ticket/**").hasAuthority("ADMIN")
 

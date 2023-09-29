@@ -77,8 +77,6 @@ public class ArtistController extends Utility {
         Artist newArtist = new Artist(null, name, null, null);
         Artist saveArtist = artistService.saveArtist(newArtist);
         return ResponseEntity.ok(generateApiResponse(saveArtist,"Artist created successfully"));
-
-
     }
 
     @PutMapping("/{artistId}")

@@ -22,11 +22,6 @@ public class Ticket {
     @Column(name = "ticket_id")
     private Integer ticketId;
 
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "order_id", nullable = false)
-//    private Order order;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
@@ -62,4 +57,9 @@ public class Ticket {
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
+
+//    @ManyToOne
+//    @JsonIgnore
+//    @JoinColumn(name = "order_id", nullable = false)
+//    private Order order;
 }
