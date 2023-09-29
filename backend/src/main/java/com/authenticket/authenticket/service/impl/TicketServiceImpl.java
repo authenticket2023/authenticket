@@ -2,8 +2,6 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
-import com.authenticket.authenticket.dto.ticket.TicketUpdateDto;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,11 +22,9 @@ public class TicketServiceImpl implements TicketService {
 
     private final UserRepository userRepository;
 
-
     private final EventRepository eventRepository;
 
-
-    private final EventTicketCategoryRepository eventTicketCategoryRepository;
+    private final TicketPricingRepository ticketPricingRepository;
 
     private final SectionRepository sectionRepository;
 
@@ -43,16 +38,16 @@ public class TicketServiceImpl implements TicketService {
     public TicketServiceImpl(TicketCategoryRepository ticketCategoryRepository,
                              UserRepository userRepository,
                              EventRepository eventRepository,
-                             EventTicketCategoryRepository eventTicketCategoryRepository,
                              TicketRepository ticketRepository,
                              TicketDisplayDtoMapper ticketDisplayDtoMapper,
-                             SectionRepository sectionRepository) {
+                             SectionRepository sectionRepository, TicketPricingRepository ticketPricingRepository) {
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.ticketRepository = ticketRepository;
         this.ticketDisplayDtoMapper = ticketDisplayDtoMapper;
         this.sectionRepository =sectionRepository;
+        this.ticketPricingRepository = ticketPricingRepository;
     }
 
     public List<TicketDisplayDto> findAllTicket() {
@@ -188,7 +183,7 @@ public class TicketServiceImpl implements TicketService {
         int[][] seatMatrix = new int[rowNo][colNo];
 
         //fill up seatMatrix with occupied seats
-        List<Ticket> ticketList = ticketRepository.findAllByEventEventIdAndSectionSectionId(event.getEventId(), section.getSectionId());
+        List<Ticket> ticketList = ticketRepository.findAllByTicketPricingEventEventIdAndSectionSectionId(event.getEventId(), section.getSectionId());
         for (Ticket ticket : ticketList) {
             Integer ticketRowNo = ticket.getRowNo();
             Integer ticketSeatNo = ticket.getSeatNo();
@@ -240,15 +235,24 @@ public class TicketServiceImpl implements TicketService {
 
         TicketCategory ticketCategory = section.getTicketCategory();
 
+        EventTicketCategoryId id = new EventTicketCategoryId(ticketCategory, event);
+        Optional<TicketPricing> optionalTicketPricing = ticketPricingRepository.findById(id);
+        if (optionalTicketPricing.isEmpty()) {
+            throw new NonExistentException("Ticket Pricing", id);
+        }
+
+        TicketPricing ticketPricing = optionalTicketPricing.get();
+
+
         for (int i = 0; i < rowNo; i++) {
-            if (ticketRepository.countByEventEventIdAndSectionSectionIdAndRowNo(event.getEventId(), section.getSectionId(), rowNo + 1) == colNo) {
+            if (ticketRepository.countByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(event.getEventId(), section.getSectionId(), rowNo + 1) == colNo) {
                 System.out.println(String.format("ROW %d FULL", i));
                 continue;
             }
             List<Ticket> ticketList = new ArrayList<>();
 
             //find all tickets for row
-            List<Ticket> ticketsForRow = ticketRepository.findAllByEventEventIdAndSectionSectionIdAndRowNo(event.getEventId(), section.getSectionId(), i + 1);
+            List<Ticket> ticketsForRow = ticketRepository.findAllByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(event.getEventId(), section.getSectionId(), i + 1);
 
             //initialise all seats for row
             List<Integer> seatsAvailableForRow = new ArrayList<>();
@@ -267,7 +271,7 @@ public class TicketServiceImpl implements TicketService {
 
             if (!setOfSeats.isEmpty()) {
                 for (Integer seatNo : setOfSeats) {
-                    Ticket newTicket = new Ticket(null, event, ticketCategory, section, i + 1, seatNo, null, null);
+                    Ticket newTicket = new Ticket(null, ticketPricing, section, i + 1, seatNo, null, null);
                     ticketList.add(newTicket);
                 }
                 //save to db

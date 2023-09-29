@@ -47,7 +47,7 @@ public class SectionServiceImpl implements SectionService {
         int[][] seatMatrix = new int[rowNo][colNo];
 
         //fill up seatMatrix with occupied seats
-        List<Ticket> ticketList = ticketRepository.findAllByTicketPricing_Event_EventId(eventId);
+        List<Ticket> ticketList = ticketRepository.findAllByTicketPricing_Event_EventId(event.getEventId());
         for (Ticket ticket : ticketList) {
             Integer ticketRowNo = ticket.getRowNo();
             Integer ticketSeatNo = ticket.getSeatNo();

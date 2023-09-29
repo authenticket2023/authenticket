@@ -14,6 +14,7 @@ import org.webjars.NotFoundException;
 import java.util.*;
 import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -147,7 +148,7 @@ public class TicketController extends Utility {
         }
         TicketPricing ticketPricing = optionalTicketPricing.get();
 
-        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder);
+        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder,null);
 
         Ticket savedTicket = ticketService.saveTicket(ticket);
         return ResponseEntity.ok(savedTicket);

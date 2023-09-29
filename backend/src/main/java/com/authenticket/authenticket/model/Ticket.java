@@ -23,6 +23,7 @@ public class Ticket extends BaseEntity {
     @Column(name = "ticket_id")
     private Integer ticketId;
 
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
@@ -57,4 +58,6 @@ public class Ticket extends BaseEntity {
     @JsonIgnore
     @JoinColumn(name = "order_id")
     private Order order;
+
+
 }

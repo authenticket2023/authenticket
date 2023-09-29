@@ -1,8 +1,5 @@
 package com.authenticket.authenticket.repository;
 
-import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
-import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.Section;
 import com.authenticket.authenticket.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
-    List<Ticket> findAllByEventEventIdAndSectionSectionId(Integer eventId, Integer sectionId);
-    List<Ticket> findAllByEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, Integer sectionId,Integer rowNo);
-    Integer countByEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, Integer sectionId, Integer rowNo);
+    List<Ticket> findAllByTicketPricingEventEventIdAndSectionSectionId(Integer eventId, Integer sectionId);
+    List<Ticket> findAllByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, Integer sectionId, Integer rowNo);
+    Integer countByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, Integer sectionId, Integer rowNo);
 
     @Query(
             nativeQuery = true, value="SELECT " +
