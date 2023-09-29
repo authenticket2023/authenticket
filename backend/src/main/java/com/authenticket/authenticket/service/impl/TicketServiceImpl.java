@@ -122,4 +122,8 @@ public class TicketServiceImpl implements TicketService {
 //            throw new NonExistentException("Ticket does not exist");
 //        }
 //    }
+
+    public void ticketRemoveAll(List<Ticket> ticketList) {
+        ticketRepository.deleteAll(ticketList);
+    }
 }

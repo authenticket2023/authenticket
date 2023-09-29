@@ -3,10 +3,8 @@ package com.authenticket.authenticket.controller;
 
 import com.authenticket.authenticket.dto.section.SeatAllocationDto;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Section;
-import com.authenticket.authenticket.model.Ticket;
-import com.authenticket.authenticket.model.TicketCategory;
-import com.authenticket.authenticket.model.Venue;
+import com.authenticket.authenticket.model.*;
+import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.SectionRepository;
 import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
@@ -38,14 +36,16 @@ public class SectionController extends Utility {
 
     private final VenueRepository venueRepository;
     private final TicketCategoryRepository ticketCategoryRepository;
+    private final EventRepository eventRepository;
 
 
     @Autowired
-    public SectionController(SectionServiceImpl sectionService, SectionRepository sectionRepository, VenueRepository venueRepository, TicketCategoryRepository ticketCategoryRepository) {
+    public SectionController(SectionServiceImpl sectionService, SectionRepository sectionRepository, VenueRepository venueRepository, TicketCategoryRepository ticketCategoryRepository, EventRepository eventRepository) {
         this.sectionService = sectionService;
         this.sectionRepository = sectionRepository;
         this.venueRepository = venueRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
+        this.eventRepository = eventRepository;
     }
 
     @GetMapping("/test")
@@ -89,7 +89,29 @@ public class SectionController extends Utility {
     public ResponseEntity<?> seatAllocation(@RequestParam(value = "eventId") Integer eventId,
                                             @RequestParam(value = "sectionId") Integer sectionId,
                                             @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
-        List<Ticket> seatAllocationDtoList = sectionService.seatAllocate(eventId, sectionId, ticketsToPurchase);
-        return ResponseEntity.ok(generateApiResponse(null, "seatAllocation method called"));
+        List<Ticket> ticketList;
+        try{
+            ticketList = sectionService.seatAllocate(eventId, sectionId, ticketsToPurchase);
+        } catch(Exception e){
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+        return ResponseEntity.ok(generateApiResponse(ticketList, String.format("%d seats successfully assigned", ticketsToPurchase)));
+    }
+
+    @PostMapping("/seat-matrix")
+    public ResponseEntity<?> seatMatrix(@RequestParam(value = "eventId") Integer eventId,
+                                            @RequestParam(value = "sectionId") Integer sectionId) {
+
+        //get section details
+        Section section = sectionRepository.findById(sectionId).orElse(null);
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        if (section == null) {
+            throw new NonExistentException("Section does not exist");
+        } else if (event ==null) {
+            throw new NonExistentException("Event does not exist");
+        }
+        sectionService.getCurrentSeatMatrix(event,section);
+        return ResponseEntity.ok(generateApiResponse(null, "seat matrix method called"));
     }
 }

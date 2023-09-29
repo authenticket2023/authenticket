@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "ticket")
-public class Ticket {
+public class Ticket extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id")
@@ -27,10 +27,10 @@ public class Ticket {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-//        @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "cat_id", nullable = false)
-//    private TicketCategory ticketCategory;
+        @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private TicketCategory ticketCategory;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,10 +53,6 @@ public class Ticket {
 //            @JoinColumn(name="category_id", referencedColumnName="category_id", nullable = false)
 //    })
 //    private EventTicketCategory eventTicketCategory;
-
-    @CreationTimestamp
-    @Column(updatable = false, name = "created_at")
-    private LocalDateTime createdAt;
 
     @ManyToOne
     @JsonIgnore
