@@ -57,7 +57,7 @@ interface Files {
     image4?: any;
     image5?: any;
 }
-// http://localhost:8000/api/face/post-face
+
 export const createFacialInfo = async (req: any, res: any, next: NextFunction) => {
     try {
         console.log('Creating Facial Information');
@@ -180,19 +180,35 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
     }
 }
 
-
-// http://localhost:8000/api/face/check-face
 export const facialVerification = async (req: any, res: any, next: NextFunction) => {
     try {
-        const { file } = req.files;
+        const { image } = req.files;
         const eventID = req.body.eventID;
 
-        let result = await getDescriptorsFromDB(file.data, eventID);
+        let result = await getDescriptorsFromDB(image.data, eventID);
 
         return res.status(200).json({
             message: `Facial information found : ${result[0]._label}`
         });
 
+    } catch (error: any) {
+        return res.status(400).json({ message: String(error.message) });
+    }
+
+};
+
+export const checkImage = async (req: any, res: any, next: NextFunction) => {
+    try {
+        console.log("========= Calling checkImage =========");
+        const { image } = req.files;
+        const img = await canvas.loadImage(image.data);
+        const numOfFaces = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+        if (numOfFaces.length != 1) {
+            throw new Error(`Detected ${numOfFaces.length} faces in the image. Please choose another image with only one facical in it!`);
+        }
+        return res.status(200).json({
+            message: `Detected ${numOfFaces.length} faces in the image. Image valid!`
+        });
     } catch (error: any) {
         return res.status(400).json({ message: String(error.message) });
     }
