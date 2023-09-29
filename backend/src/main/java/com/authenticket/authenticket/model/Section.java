@@ -28,7 +28,7 @@ public class Section extends BaseEntity {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cat_id", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private TicketCategory ticketCategory;
 
     @Column(name = "no_of_rows", nullable = false)
