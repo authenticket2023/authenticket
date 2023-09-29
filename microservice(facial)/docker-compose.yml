@@ -1,0 +1,19 @@
+version: '3.4'
+services:
+  myapp:
+    container_name: ts-node-docker-starter
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        - PORT = ${PORT}
+    ports:
+      - 8000:${PORT}
+    env_file:
+      - .env
+    volumes:
+      - ./:/usr/local/apps/myapp
+      - ignore:/usr/local/apps/myapp/node_modules/
+volumes:
+  ignore:
