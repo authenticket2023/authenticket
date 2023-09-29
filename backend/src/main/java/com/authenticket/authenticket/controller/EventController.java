@@ -75,7 +75,6 @@ public class EventController extends Utility {
         this.eventDtoMapper = eventDtoMapper;
     }
 
-
     @GetMapping("/public/event/test")
     public String test() {
         return "test successful";

@@ -53,4 +53,8 @@ public class Ticket extends BaseEntity {
 //            @JoinColumn(name="category_id", referencedColumnName="category_id", nullable = false)
 //    })
 //    private EventTicketCategory eventTicketCategory;
+//    @ManyToOne
+//    @JsonIgnore
+//    @JoinColumn(name = "order_id", nullable = false)
+//    private Order order;
 }
