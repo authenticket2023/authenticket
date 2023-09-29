@@ -8,10 +8,8 @@ import java.util.List;
 
 public interface SectionService {
     Section saveSection (Section Section);
-    List<Ticket> seatAllocate(Integer sectionId, Integer eventId, Integer ticketsToPurchase);
+
     int[][] getCurrentSeatMatrix(Event event, Section section);
-    List<Ticket> findAdjacentSeatsOf(Event event, Section section, Integer ticketCount);
-    String[] getSeatCombinationRank(Integer ticketCount);
-    Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section);
+
 
 }

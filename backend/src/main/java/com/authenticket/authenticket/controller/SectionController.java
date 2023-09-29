@@ -9,12 +9,15 @@ import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.SectionServiceImpl;
+import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
@@ -33,33 +36,32 @@ public class SectionController extends Utility {
     private final SectionServiceImpl sectionService;
     private final SectionRepository sectionRepository;
 
+    private final TicketServiceImpl ticketService;
+
     private final VenueRepository venueRepository;
     private final TicketCategoryRepository ticketCategoryRepository;
     private final EventRepository eventRepository;
 
 
     @Autowired
-    public SectionController(SectionServiceImpl sectionService, SectionRepository sectionRepository, VenueRepository venueRepository, TicketCategoryRepository ticketCategoryRepository, EventRepository eventRepository) {
+    public SectionController(SectionServiceImpl sectionService,
+                             SectionRepository sectionRepository,
+                             VenueRepository venueRepository,
+                             TicketCategoryRepository ticketCategoryRepository,
+                             EventRepository eventRepository,
+                             TicketServiceImpl ticketService) {
         this.sectionService = sectionService;
         this.sectionRepository = sectionRepository;
         this.venueRepository = venueRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.eventRepository = eventRepository;
+        this.ticketService =ticketService;
     }
 
     @GetMapping("/test")
     public String test() {
         return "test successful";
     }
-
-//    @GetMapping
-//    public ResponseEntity<?> findAllEvents() {
-//        List<EventType> eventTypeList = eventTypeService.findAllEventType();
-//        if (eventTypeList.isEmpty() || eventTypeList ==null){
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body( generateApiResponse(null, "Event Types Not Found"));
-//        }
-//        return ResponseEntity.ok( generateApiResponse(eventTypeList, "Event Types Returned Successfully"));
-//    }
 
     @PostMapping
     public ResponseEntity<?> saveSection(@RequestParam(value = "svgFile", required = false) MultipartFile svgFile,
@@ -86,21 +88,12 @@ public class SectionController extends Utility {
         return ResponseEntity.ok(generateApiResponse(section, "Section Created Successfully"));
     }
 
-    @PostMapping("/seat-allocation")
-    public ResponseEntity<?> seatAllocation(@RequestParam(value = "eventId") Integer eventId,
-                                            @RequestParam(value = "sectionId") Integer sectionId,
-                                            @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
-        List<Ticket> ticketList;
-        try{
-            ticketList = sectionService.seatAllocate(eventId, sectionId, ticketsToPurchase);
-        } catch(Exception e){
-            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
-        }
-        return ResponseEntity.ok(generateApiResponse(ticketList, String.format("%d seats successfully assigned", ticketsToPurchase)));
-    }
+
+
 
     @PostMapping("/seat-matrix")
-    public ResponseEntity<?> seatMatrix(@RequestParam(value = "eventId") Integer eventId,
+    public ResponseEntity<?> seatMatrix(
+            @RequestParam(value = "eventId") Integer eventId,
                                             @RequestParam(value = "sectionId") Integer sectionId) {
 
         //get section details
