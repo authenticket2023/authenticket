@@ -27,6 +27,7 @@ import backgroundImage from '../../images/backgroundImage.png';
 export const Home = () => {
 
   const token = window.localStorage.getItem('accessToken');
+  const role = window.localStorage.getItem('role');
   const [featured, setFeatured]: any = React.useState([]);
   const [bestSellers, setBestSellers]: any = React.useState([]);
   const [recents, setRecents]: any = React.useState([]);
@@ -527,6 +528,14 @@ export const Home = () => {
         <Box>
           <div>
             {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
+            {
+                token != null && role == 'ADMIN' ?
+                    <Navigate to="/HomeAdmin" /> : null
+            }
+            {
+                token != null && role == 'ORGANISER' ?
+                    <Navigate to="/HomeOrganiser" /> :  null
+            }
             <Paper
               elevation={5}
               sx={{
