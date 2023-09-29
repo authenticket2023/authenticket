@@ -1,10 +1,9 @@
 import {
     Box, Typography, Modal,
-    Grid, Button, Avatar, ListItemText, ListItem, CardMedia, TextareaAutosize, TextField, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox
+    Grid, Button, ListItemText, CardMedia, TextareaAutosize, TextField, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Sheet } from '@mui/joy';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import BasicDatePicker from '../../utility/dateElement';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -75,7 +74,6 @@ export default function UpdateEvent(props: any) {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
                     setEventDetail(data);
-                    console.log(data)
                     //convert event type to id for dropdown
                     if (data.eventType == 'Musical') {
                         setEventType('1');
@@ -91,7 +89,7 @@ export default function UpdateEvent(props: any) {
                     setEventDate(dayjs(data.eventDate));
                     setSaleDate(dayjs(data.ticketSaleDate));
                     setEventDescription(data.eventDescription);
-                    setOtherInfo(data.otherInfo);
+                    setOtherInfo(data.otherEventInfo);
                     setLoaded(true);
                     //push selected artist
                     data.artists.map((artist: any) => {
@@ -218,10 +216,53 @@ export default function UpdateEvent(props: any) {
         setSelectedFile(file);
     };
 
+    const updateArtists =async () => {
+        let artistIdString = '';
+        //change selected artists ID into '1,2,3,4' format
+        selectedArtistList.map((item: any) => {
+            artistIdString += `${item},`;
+        });
 
+        const formData = new FormData();
+        formData.append('eventId', eventID);
+        formData.append('artistIdString', artistIdString);
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event/updateEventArtist`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'PUT',
+            body: formData
+        })
+            .then(async (response) => {
+                const apiResponse = await response.json();
+                if (response.status == 200) {
+                    props.setOpenSnackbar(true);
+                    props.setAlertType('success');
+                    props.setAlertMsg(`Information for Event ID ${eventID} has been successfully updated!`);
+                    setReviewOpen(false);
+                    //to update parent element
+                    props.open(false);
+                    props.setReload(true);
+                } else {
+                    props.setOpenSnackbar(true);
+                    props.setAlertType('error');
+                    props.setAlertMsg(`${apiResponse['message']}`);
+                }
+            })
+            .catch((err) => {
+                //close the modal
+                setReviewOpen(false);
+                //to update parent element
+                props.open(false);
+                props.setReload(true);
+                window.alert(err);
+            });
+        
+    }
 
     //update event details
     const updateEventStatus = async () => {
+      
         if (!(dayjs(eventDate).isAfter(dayjs(currentDateTime)) && dayjs(saleDate).isAfter(dayjs(currentDateTime)))) {
             //show alert msg
             props.setOpenSnackbar(true);
@@ -244,8 +285,7 @@ export default function UpdateEvent(props: any) {
             if (fileUploaded) {
                 formData.append('file', selectedFile);
             }
-            //TODO: update artists
-            
+
             fetch(`${process.env.REACT_APP_BACKEND_URL}/event`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -256,13 +296,7 @@ export default function UpdateEvent(props: any) {
                 .then(async (response) => {
                     const apiResponse = await response.json();
                     if (response.status == 200) {
-                        props.setOpenSnackbar(true);
-                        props.setAlertType('success');
-                        props.setAlertMsg(`${apiResponse['message']}`);
-                        setReviewOpen(false);
-                        //to update parent element
-                        props.open(false);
-                        props.setReload(true);
+                        updateArtists();
                     } else {
                         props.setOpenSnackbar(true);
                         props.setAlertType('error');
@@ -271,6 +305,10 @@ export default function UpdateEvent(props: any) {
                 })
                 .catch((err) => {
                     //close the modal
+                    setReviewOpen(false);
+                    //to update parent element
+                    props.open(false);
+                    props.setReload(true);
                     window.alert(err);
                 });
         }
