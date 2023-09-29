@@ -261,6 +261,10 @@ public class EventController extends Utility {
                 .map(Double::parseDouble)
                 .collect(Collectors.toList());
 
+        if (ticketPrices.size() != 5) {
+            throw new IllegalStateException("Ticket Prices should have 5 values");
+        }
+
         eventService.addTicketCategory(1, eventId, ticketPrices.get(0));
         eventService.addTicketCategory(2, eventId, ticketPrices.get(1));
         eventService.addTicketCategory(3, eventId, ticketPrices.get(2));
@@ -306,15 +310,20 @@ public class EventController extends Utility {
             }
         }
 
-        List<Double> ticketPrices = Arrays.stream(ticketPricesString.split(","))
-                .map(Double::parseDouble)
-                .collect(Collectors.toList());
+        if (ticketPricesString != null) {
+            List<Double> ticketPrices = Arrays.stream(ticketPricesString.split(","))
+                    .map(Double::parseDouble)
+                    .toList();
 
-        eventService.updateTicketPricing(1, eventId, ticketPrices.get(0));
-        eventService.updateTicketPricing(2, eventId, ticketPrices.get(1));
-        eventService.updateTicketPricing(3, eventId, ticketPrices.get(2));
-        eventService.updateTicketPricing(4, eventId, ticketPrices.get(3));
-        eventService.updateTicketPricing(5, eventId, ticketPrices.get(4));
+            if (ticketPrices.size() != 5) {
+                throw new IllegalStateException("Ticket Prices should have 5 values");
+            }
+            eventService.updateTicketPricing(1, eventId, ticketPrices.get(0));
+            eventService.updateTicketPricing(2, eventId, ticketPrices.get(1));
+            eventService.updateTicketPricing(3, eventId, ticketPrices.get(2));
+            eventService.updateTicketPricing(4, eventId, ticketPrices.get(3));
+            eventService.updateTicketPricing(5, eventId, ticketPrices.get(4));
+        }
 
         EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, null, null, null);
         Event event = eventService.updateEvent(eventUpdateDto);
