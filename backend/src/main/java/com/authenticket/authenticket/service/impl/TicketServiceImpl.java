@@ -50,7 +50,6 @@ public class TicketServiceImpl implements TicketService {
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
-        this.eventTicketCategoryRepository = eventTicketCategoryRepository;
         this.ticketRepository = ticketRepository;
         this.ticketDisplayDtoMapper = ticketDisplayDtoMapper;
         this.sectionRepository =sectionRepository;
@@ -72,22 +71,11 @@ public class TicketServiceImpl implements TicketService {
         throw new ApiRequestException("Ticket not found");
     }
 
-//    public Ticket saveTicket(Integer userId, Integer eventId, Integer categoryId) throws ApiRequestException {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new NonExistentException("Error Saving Ticket: User not found"));
-//        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NonExistentException("Error Saving Ticket: Event not found"));
-//        TicketCategory ticketCategory = ticketCategoryRepository.findById(categoryId).orElseThrow(() -> new NonExistentException("Error Saving Ticket: TicketCategory not found"));
-//        Optional<EventTicketCategory> optionalEventTicketCategory = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
-//        if (optionalEventTicketCategory.isEmpty()) {
-//            throw new NonExistentException("Error Saving Ticket: Event Ticket Category does not exist");
-//        }
-//        Ticket ticket = new Ticket(null, user, optionalEventTicketCategory.get());
-//        return ticketRepository.save(ticket);
-//    }
-//
-//    public Ticket updateTicket(Integer ticketId, Integer userId) {
-//        userRepository.findById(userId).orElseThrow(() -> new NonExistentException("Error Updating Ticket: User not found"));
-//
-//        TicketUpdateDto ticketUpdateDto = new TicketUpdateDto(ticketId, userId);
+    public Ticket saveTicket(Ticket ticket) {
+        return ticketRepository.save(ticket);
+    }
+
+//    public Ticket updateTicket(TicketUpdateDto ticketUpdateDto) {
 //        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketUpdateDto.ticketId());
 //
 //        if (ticketOptional.isPresent()) {
@@ -99,8 +87,8 @@ public class TicketServiceImpl implements TicketService {
 //
 //        throw new NonExistentException("Error Updating Ticket: Ticket not found");
 //    }
-
-
+//
+//
 //    public void deleteTicket(Integer ticketId) {
 //        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
 //
@@ -116,7 +104,7 @@ public class TicketServiceImpl implements TicketService {
 //            throw new NonExistentException("Ticket does not exist");
 //        }
 //    }
-
+//
 //    public void removeTicket(Integer ticketId) {
 //        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
 //

@@ -40,9 +40,9 @@ public interface EventService {
 
     Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
     EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId);
-    EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat);
+    EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price);
 
-    void updateTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat);
+    void updateTicketPricing(Integer catId, Integer eventId, Double price);
 
     EventDisplayDto removeTicketCategory(Integer catId, Integer eventId);
 

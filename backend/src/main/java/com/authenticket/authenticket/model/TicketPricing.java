@@ -14,9 +14,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "event_ticket_category")
+@Table(name = "ticket_pricing")
 @IdClass(EventTicketCategoryId.class)
-public class EventTicketCategory {
+public class TicketPricing {
     @Id
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
@@ -30,12 +30,6 @@ public class EventTicketCategory {
 
     @Column(name = "price")
     private Double price;
-
-    @Column(name = "available_tickets")
-    private Integer availableTickets;
-
-    @Column(name = "total_tickets_per_cat")
-    private Integer totalTicketsPerCat;
 
     @Override
     public int hashCode() {

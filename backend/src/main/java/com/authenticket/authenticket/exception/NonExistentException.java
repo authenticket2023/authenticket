@@ -5,8 +5,8 @@ public class NonExistentException extends ApiRequestException{
         super(message);
     }
 
-    public NonExistentException(String object, Integer id) {
-        super(object + " with ID " + id + " does not exist");
+    public NonExistentException(String object, Object id) {
+        super(object + " with ID " + id.toString() + " does not exist");
     }
 
     public NonExistentException(String message, Throwable cause) {

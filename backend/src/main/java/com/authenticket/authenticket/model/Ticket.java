@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "ticket")
-public class Ticket extends BaseEntity{
+public class Ticket extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id")
@@ -24,13 +25,11 @@ public class Ticket extends BaseEntity{
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
-
-        @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private TicketCategory ticketCategory;
+    @JoinColumns({
+            @JoinColumn(name="event_id", referencedColumnName="event_id", nullable = false),
+            @JoinColumn(name="category_id", referencedColumnName="category_id", nullable = false)
+    })
+    private TicketPricing ticketPricing;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

@@ -85,7 +85,7 @@ public class Event extends BaseEntity {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
-    Set<EventTicketCategory> eventTicketCategorySet = new HashSet<>();
+    Set<TicketPricing> ticketPricingSet = new HashSet<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
@@ -97,23 +97,19 @@ public class Event extends BaseEntity {
     }
 
     @JsonIgnore
-    public Set<EventTicketCategory> getEventTicketCategorySet(){
-        return eventTicketCategorySet;
+    public Set<TicketPricing> getTicketPricingSet(){
+        return ticketPricingSet;
     }
 
-    public void addTicketCategory(TicketCategory ticketCategory, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
-        EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, this, price, availableTickets, totalTicketsPerCat);
-        eventTicketCategorySet.add(eventTicketCategory);
-//        ticketCategory.getEventTicketCategorySet().add(eventTicketCategory);
+    public void addTicketPricing(TicketCategory ticketCategory, Double price) {
+        TicketPricing ticketPricing = new TicketPricing(ticketCategory, this, price);
+        ticketPricingSet.add(ticketPricing);
     }
 
-    public boolean updateTicketCategory(EventTicketCategory eventTicketCategory, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
-//        EventTicketCategoryUpdateDto eventTicketCategoryUpdateDto = new EventTicketCategoryUpdateDto(eventTicketCategory.getCat().getCategoryId(), eventId, price, availableTickets, totalTicketsPerCat);
-        for (EventTicketCategory eventTicketCategoryIter : eventTicketCategorySet) {
-            if (eventTicketCategoryIter.equals(eventTicketCategory)) {
-                eventTicketCategoryIter.setPrice(price);
-                eventTicketCategoryIter.setAvailableTickets(availableTickets);
-                eventTicketCategoryIter.setTotalTicketsPerCat(totalTicketsPerCat);
+    public boolean updateTicketPricing(TicketPricing ticketPricing, Double price) {
+        for (TicketPricing ticketPricingIter : ticketPricingSet) {
+            if (ticketPricingIter.equals(ticketPricing)) {
+                ticketPricingIter.setPrice(price);
                 return true;
             }
         }
@@ -121,16 +117,16 @@ public class Event extends BaseEntity {
     }
 
     public void removeTicketCategory(TicketCategory ticketCategory) {
-        for (Iterator<EventTicketCategory> iterator = eventTicketCategorySet.iterator();
+        for (Iterator<TicketPricing> iterator = ticketPricingSet.iterator();
              iterator.hasNext(); ) {
-            EventTicketCategory eventTicketCategory = iterator.next();
+            TicketPricing ticketPricing = iterator.next();
 
-            if (eventTicketCategory.getEvent().equals(this) &&
-                    eventTicketCategory.getCat().equals(ticketCategory)) {
+            if (ticketPricing.getEvent().equals(this) &&
+                    ticketPricing.getCat().equals(ticketCategory)) {
                 iterator.remove();
 //                eventTicketCategory.getCat_id().getEventTicketCategorySet().remove(eventTicketCategory);
-                eventTicketCategory.setEvent(null);
-                eventTicketCategory.setCat(null);
+                ticketPricing.setEvent(null);
+                ticketPricing.setCat(null);
             }
         }
     }
