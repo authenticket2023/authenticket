@@ -4,6 +4,7 @@ package com.authenticket.authenticket.controller;
 import com.authenticket.authenticket.dto.section.SeatAllocationDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Section;
+import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.model.TicketCategory;
 import com.authenticket.authenticket.model.Venue;
 import com.authenticket.authenticket.repository.SectionRepository;
@@ -88,7 +89,7 @@ public class SectionController extends Utility {
     public ResponseEntity<?> seatAllocation(@RequestParam(value = "eventId") Integer eventId,
                                             @RequestParam(value = "sectionId") Integer sectionId,
                                             @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
-        List<SeatAllocationDto> seatAllocationDtoList = sectionService.seatAllocation(eventId, sectionId, ticketsToPurchase);
+        List<Ticket> seatAllocationDtoList = sectionService.seatAllocate(eventId, sectionId, ticketsToPurchase);
         return ResponseEntity.ok(generateApiResponse(null, "seatAllocation method called"));
     }
 }

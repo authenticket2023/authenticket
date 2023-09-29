@@ -58,8 +58,8 @@ public class Ticket {
     @Column(updatable = false, name = "created_at")
     private LocalDateTime createdAt;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    @JoinColumn(name = "order_id", nullable = false)
-//    private Order order;
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "order_id")
+    private Order order;
 }
