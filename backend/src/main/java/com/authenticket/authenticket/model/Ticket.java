@@ -2,27 +2,27 @@ package com.authenticket.authenticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EqualsAndHashCode(callSuper = true)
 @Table(name = "ticket")
-public class Ticket extends BaseEntity {
+public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id")
     private Integer ticketId;
 
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "order_id", nullable = false)
-//    private Order order;
-
-        @JsonIgnore
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
@@ -32,10 +32,10 @@ public class Ticket extends BaseEntity {
 //    @JoinColumn(name = "cat_id", nullable = false)
 //    private TicketCategory ticketCategory;
 
-    //    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "section_id", nullable = false)
-//    private Section section;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id", nullable = false)
+    private Section section;
 
     @Column(name = "row_no")
     private Integer rowNo;
@@ -53,6 +53,11 @@ public class Ticket extends BaseEntity {
 //            @JoinColumn(name="category_id", referencedColumnName="category_id", nullable = false)
 //    })
 //    private EventTicketCategory eventTicketCategory;
+
+    @CreationTimestamp
+    @Column(updatable = false, name = "created_at")
+    private LocalDateTime createdAt;
+
 //    @ManyToOne
 //    @JsonIgnore
 //    @JoinColumn(name = "order_id", nullable = false)

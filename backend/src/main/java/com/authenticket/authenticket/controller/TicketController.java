@@ -58,15 +58,15 @@ public class TicketController {
 //        return ResponseEntity.ok(ticket);
 //    }
 
-    @PutMapping("/{ticketId}")
-    public String deleteTicket(@PathVariable("ticketId") Integer ticketId) {
-        ticketService.deleteTicket(ticketId);
-        return "Ticket deleted successfully";
-    }
-
-    @DeleteMapping("/{ticketId}")
-    public String removeTicket(@PathVariable("ticketId") Integer ticketId) {
-        ticketService.removeTicket(ticketId);
-        return "Ticket removed successfully.";
-    }
+//    @PutMapping("/{ticketId}")
+//    public String deleteTicket(@PathVariable("ticketId") Integer ticketId) {
+//        ticketService.deleteTicket(ticketId);
+//        return "Ticket deleted successfully";
+//    }
+//
+//    @DeleteMapping("/{ticketId}")
+//    public String removeTicket(@PathVariable("ticketId") Integer ticketId) {
+//        ticketService.removeTicket(ticketId);
+//        return "Ticket removed successfully.";
+//    }
 }

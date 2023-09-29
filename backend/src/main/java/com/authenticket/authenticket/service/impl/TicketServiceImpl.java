@@ -97,29 +97,29 @@ public class TicketServiceImpl implements TicketService {
 //    }
 
 
-    public void deleteTicket(Integer ticketId) {
-        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+//    public void deleteTicket(Integer ticketId) {
+//        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+//
+//        if (ticketOptional.isPresent()) {
+//            Ticket ticket = ticketOptional.get();
+//            if (ticket.getDeletedAt() != null) {
+//                throw new AlreadyDeletedException("Ticket already deleted");
+//            }
+//
+//            ticket.setDeletedAt(LocalDateTime.now());
+//            ticketRepository.save(ticket);
+//        } else {
+//            throw new NonExistentException("Ticket does not exist");
+//        }
+//    }
 
-        if (ticketOptional.isPresent()) {
-            Ticket ticket = ticketOptional.get();
-            if (ticket.getDeletedAt() != null) {
-                throw new AlreadyDeletedException("Ticket already deleted");
-            }
-
-            ticket.setDeletedAt(LocalDateTime.now());
-            ticketRepository.save(ticket);
-        } else {
-            throw new NonExistentException("Ticket does not exist");
-        }
-    }
-
-    public void removeTicket(Integer ticketId) {
-        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
-
-        if (ticketOptional.isPresent()) {
-            ticketRepository.deleteById(ticketId);
-        } else {
-            throw new NonExistentException("Ticket does not exist");
-        }
-    }
+//    public void removeTicket(Integer ticketId) {
+//        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+//
+//        if (ticketOptional.isPresent()) {
+//            ticketRepository.deleteById(ticketId);
+//        } else {
+//            throw new NonExistentException("Ticket does not exist");
+//        }
+//    }
 }
