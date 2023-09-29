@@ -38,19 +38,19 @@ export const InfoBox = (props: any) => {
                             {formatDate(props.eventDate)}
                           </Typography>
                         </div>
-                        <div style={{display:'flex', flexDirection:'row', marginLeft:40, marginTop:11 }}>
+                        <div style={{display:'flex', flexDirection:'row', marginLeft:40, marginTop:10 }}>
                           <AccessTimeIcon style={{ fontSize:'30px' }}/>
                           <Typography style={{ marginTop:2.5, marginLeft:8 }}>
                             {formatTime(props.eventDate)}
                           </Typography>
                         </div>
-                        <div style={{display:'flex', flexDirection:'row', marginLeft:40, marginTop:11 }}>
+                        <div style={{display:'flex', flexDirection:'row', marginLeft:40, marginTop:9 }}>
                           <LocationOnIcon style={{ fontSize:'30px' }}/>
                           <Typography style={{ marginTop:3.5, marginLeft:8 }}>
                             {props.venueName}
                           </Typography>
                         </div>
-                        <div style={{display:'flex', marginTop:27, flexDirection:'column', alignItems:'center' }}>
+                        <div style={{display:'flex', marginTop:22, flexDirection:'column', alignItems:'center' }}>
                           <Button
                             variant="outlined"
                             style={{
