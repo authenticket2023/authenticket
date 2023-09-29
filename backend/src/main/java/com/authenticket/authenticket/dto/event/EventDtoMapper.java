@@ -10,13 +10,11 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.EventTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -59,8 +57,8 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     public EventDisplayDto apply(Event event) {
 
         Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
-        if(event.getEventTicketCategorySet() != null){
-            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+        if(event.getTicketPricingSet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getTicketPricingSet());
 
         }
         return new EventDisplayDto(
@@ -187,8 +185,8 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         }
         //map event ticket cat to dto
         Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
-        if(event.getEventTicketCategorySet() != null){
-            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+        if(event.getTicketPricingSet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getTicketPricingSet());
         }
         //convert admin to dto
 

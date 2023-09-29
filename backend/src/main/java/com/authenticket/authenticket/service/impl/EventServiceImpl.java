@@ -10,7 +10,6 @@ import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.EventService;
-import org.hibernate.sql.ast.tree.expression.Over;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -233,28 +232,28 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+    public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
         if (categoryOptional.isPresent() && eventOptional.isPresent()) {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Optional<TicketPricing> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
             if (eventTicketCategoryOptional.isPresent()) {
                 throw new AlreadyExistsException("Ticket Category already linked to stated event");
             }
 
-            event.addTicketCategory(ticketCategory, price, availableTickets, totalTicketsPerCat);
+            event.addTicketPricing(ticketCategory, price);
             //adding to total tickets
-            Integer currentTotalTickets = event.getTotalTickets();
-            currentTotalTickets += totalTicketsPerCat;
-            event.setTotalTickets(currentTotalTickets);
+//            Integer currentTotalTickets = event.getTotalTickets();
+//            currentTotalTickets += totalTicketsPerCat;
+//            event.setTotalTickets(currentTotalTickets);
 
             //adding to total tickets sold
-            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
-            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
-            event.setTotalTicketsSold(currentTotalTicketsSold);
+//            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
+//            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
+//            event.setTotalTicketsSold(currentTotalTicketsSold);
 
             eventRepository.save(event);
             return eventDTOMapper.apply(event);
@@ -282,32 +281,30 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public void updateTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+    public void updateTicketPricing(Integer catId, Integer eventId, Double price) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
         if (categoryOptional.isPresent() && eventOptional.isPresent()) {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
-            if (eventTicketCategoryOptional.isEmpty()) {
+            Optional<TicketPricing> ticketPricingOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            if (ticketPricingOptional.isEmpty()) {
                 throw new NonExistentException("Ticket Category " + ticketCategory.getCategoryName() + " is not linked to Event '" + event.getEventName() + "'");
             }
-            EventTicketCategory eventTicketCategory = eventTicketCategoryOptional.get();
+            TicketPricing ticketPricing = ticketPricingOptional.get();
 
             //adding to total tickets
-            Integer currentTotalTickets = event.getTotalTickets();
-            currentTotalTickets += totalTicketsPerCat;
-            event.setTotalTickets(currentTotalTickets);
+//            Integer currentTotalTickets = event.getTotalTickets();
+//            currentTotalTickets += totalTicketsPerCat;
+//            event.setTotalTickets(currentTotalTickets);
 
             //adding to total tickets sold
-            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
-            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
-            event.setTotalTicketsSold(currentTotalTicketsSold);
+//            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
+//            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
+//            event.setTotalTicketsSold(currentTotalTicketsSold);
 
-            if (!event.updateTicketCategory(eventTicketCategory, price, availableTickets, totalTicketsPerCat)) {
-                throw new NonExistentException("Event " + event.getEventName() + " is not linked to " + ticketCategory.getCategoryName());
-            }
+            event.updateTicketPricing(ticketPricing, price);
             eventRepository.save(event);
         } else {
             if (categoryOptional.isEmpty()) {
@@ -325,7 +322,7 @@ public class EventServiceImpl implements EventService {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Optional<TicketPricing> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
             if (eventTicketCategoryOptional.isEmpty()) {
                 throw new NonExistentException("Ticket Category not linked to stated event");
             }
