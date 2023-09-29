@@ -6,6 +6,7 @@ import com.authenticket.authenticket.repository.PresaleInterestRepository;
 import com.authenticket.authenticket.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -31,6 +30,8 @@ public class EmailServiceImpl implements EmailService {
     private static final int SECONDS_PER_INTERVAL = 60;
 
     private static final int NO_OF_EMAIL_PER_INTERVAL = 2;
+
+    private static final int PRESALE_HOURS = 24;
 
     private final PresaleInterestRepository presaleInterestRepository;
 
@@ -68,7 +69,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Scheduled(fixedRate = 1000 * SECONDS_PER_INTERVAL)
-    public void scheduleByFixedRate() {
+    public void sendScheduledEmails() {
         emailList = presaleInterestRepository.findAllByIsSelectedTrueAndEmailedFalse();
 
         int iterCount = NO_OF_EMAIL_PER_INTERVAL;
@@ -85,8 +86,9 @@ public class EmailServiceImpl implements EmailService {
 
     private void sendUserAlert(int i) {
         PresaleInterest presaleInterest = emailList.get(i);
+        Event event = presaleInterest.getEvent();
 
-        send(presaleInterest.getUser().getEmail(), buildEarlyTicketSaleNotificationEmail(presaleInterest.getUser().getName(), presaleInterest.getEvent().getEventName(),"https://"), "Ticket Presale Notification");
+        send(presaleInterest.getUser().getEmail(), buildEarlyTicketSaleNotificationEmail(presaleInterest.getUser().getName(), event.getEventName(),"https://", event.getTicketSaleDate().plusHours(PRESALE_HOURS).format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy HH:mm:ss a"))), "Ticket Presale Notification");
 
         presaleInterest.setEmailed(true);
         presaleInterestRepository.save(presaleInterest);
@@ -425,7 +427,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
-    public static String buildEarlyTicketSaleNotificationEmail(String name, String eventName, String link) {
+    public static String buildEarlyTicketSaleNotificationEmail(String name, String eventName, String link, String endTime) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
                 "<span style=\"display:none;font-size:1px;color:#fff;max-height:0\"></span>\n" +
@@ -482,7 +484,7 @@ public class EmailServiceImpl implements EmailService {
                 "      <td style=\"font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:1.315789474;max-width:560px\">\n" +
                 "        \n" +
                 "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Congratulations " + name + ",</p>" +
-                "<p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> You have been selected for ticket presale access for the event '" + eventName + "'. You will have until 'enddatetime' to purchase your tickets. Proceed via the link below: </p>" +
+                "<p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> You have been selected for ticket presale access for the event '" + eventName + "'. You will have until <b>" + endTime + "</b> to purchase your tickets. Proceed via the link below: </p>" +
                 "<blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <a href=\"" + link + "\">Purchase Tickets</a> </p></blockquote>" +
                 "        \n" +
                 "      </td>\n" +
