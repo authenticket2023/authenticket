@@ -32,7 +32,7 @@ public class EventServiceImpl implements EventService {
 
     private final TicketCategoryRepository ticketCategoryRepository;
 
-    private final EventTicketCategoryRepository eventTicketCategoryRepository;
+    private final TicketPricingRepository ticketPricingRepository;
 
     private final EventDtoMapper eventDTOMapper;
 
@@ -47,7 +47,7 @@ public class EventServiceImpl implements EventService {
                             ArtistRepository artistRepository,
                             FeaturedEventRepository featuredEventRepository,
                             TicketCategoryRepository ticketCategoryRepository,
-                            EventTicketCategoryRepository eventTicketCategoryRepository,
+                            TicketPricingRepository ticketPricingRepository,
                             EventDtoMapper eventDTOMapper,
                             ArtistDtoMapper artistDtoMapper,
                             AmazonS3Service amazonS3Service,
@@ -56,7 +56,7 @@ public class EventServiceImpl implements EventService {
         this.artistRepository = artistRepository;
         this.featuredEventRepository = featuredEventRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
-        this.eventTicketCategoryRepository = eventTicketCategoryRepository;
+        this.ticketPricingRepository = ticketPricingRepository;
         this.eventDTOMapper = eventDTOMapper;
         this.artistDtoMapper = artistDtoMapper;
         this.amazonS3Service = amazonS3Service;
@@ -239,7 +239,7 @@ public class EventServiceImpl implements EventService {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<TicketPricing> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Optional<TicketPricing> eventTicketCategoryOptional = ticketPricingRepository.findById(new EventTicketCategoryId(ticketCategory, event));
             if (eventTicketCategoryOptional.isPresent()) {
                 throw new AlreadyExistsException("Ticket Category already linked to stated event");
             }
@@ -288,7 +288,7 @@ public class EventServiceImpl implements EventService {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<TicketPricing> ticketPricingOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Optional<TicketPricing> ticketPricingOptional = ticketPricingRepository.findById(new EventTicketCategoryId(ticketCategory, event));
             if (ticketPricingOptional.isEmpty()) {
                 throw new NonExistentException("Ticket Category " + ticketCategory.getCategoryName() + " is not linked to Event '" + event.getEventName() + "'");
             }
@@ -322,7 +322,7 @@ public class EventServiceImpl implements EventService {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<TicketPricing> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Optional<TicketPricing> eventTicketCategoryOptional = ticketPricingRepository.findById(new EventTicketCategoryId(ticketCategory, event));
             if (eventTicketCategoryOptional.isEmpty()) {
                 throw new NonExistentException("Ticket Category not linked to stated event");
             }

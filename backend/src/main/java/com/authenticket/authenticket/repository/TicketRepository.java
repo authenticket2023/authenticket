@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
-    List<Ticket> findAllByEvent_EventId(Integer eventId);
+    List<Ticket> findAllByTicketPricing_Event_EventId(Integer eventId);
 }
