@@ -15,5 +15,5 @@ public interface PresaleService {
 
     public List<User> selectPresaleUsersForEvent(Event event);
 
-    public void setPresaleInterest(User user, Event event, Boolean selected);
+    public void setPresaleInterest(User user, Event event, Boolean selected, Boolean emailed);
 }

@@ -142,9 +142,7 @@ public class EventServiceImpl implements EventService {
                 if(reviewStatus.equals("approved") || reviewStatus.equals("rejected")) {
                     EventOrganiser eventOrganiser = existingEvent.getOrganiser();
                     // Send email to organiser
-                    System.out.println("Testing now");
                     emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildEventReviewEmail(existingEvent), "Event Review");
-                    System.out.println("Done now");
                 }
             }
 
@@ -353,6 +351,4 @@ public class EventServiceImpl implements EventService {
         Set<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
         return artistDisplayDtoList;
     }
-
-
 }

@@ -466,7 +466,7 @@ public class EventController extends Utility {
         if (userOptional.isEmpty()) {
             throw new NonExistentException("User", userId);
         }
-        presaleService.setPresaleInterest(userOptional.get(), eventOptional.get(), false);
+        presaleService.setPresaleInterest(userOptional.get(), eventOptional.get(), false, false);
         return ResponseEntity.ok(generateApiResponse(null, "Presale interest recorded"));
     }
 

@@ -1,19 +1,24 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.config.SchedulerConfig;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.PresaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
 @Service
 public class PresaleServiceImpl implements PresaleService {
+
+    private ScheduledAnnotationBeanPostProcessor postProcessor;
+
+    private SchedulerConfig schedulerConfig;
 
     private final UserRepository userRepository;
 
@@ -24,10 +29,14 @@ public class PresaleServiceImpl implements PresaleService {
     @Autowired
     public PresaleServiceImpl(UserRepository userRepository,
                               EventRepository eventRepository,
-                              PresaleInterestRepository presaleInterestRepository) {
+                              PresaleInterestRepository presaleInterestRepository,
+                              ScheduledAnnotationBeanPostProcessor postProcessor,
+                              SchedulerConfig schedulerConfig) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.presaleInterestRepository = presaleInterestRepository;
+        this.postProcessor = postProcessor;
+        this.schedulerConfig = schedulerConfig;
     }
 
     public List<User> findUsersInterestedByEvent(Event event) {
@@ -38,14 +47,14 @@ public class PresaleServiceImpl implements PresaleService {
         return presaleInterestRepository.findAllByEventAndIsSelected(event, selected).stream().map(PresaleInterest::getUser).toList();
     }
 
-    public void setPresaleInterest(User user, Event event, Boolean selected){
+    public void setPresaleInterest(User user, Event event, Boolean selected, Boolean emailed){
         EventUserId eventUserId = new EventUserId(user, event);
         Optional<PresaleInterest> presaleInterestOptional = presaleInterestRepository.findById(eventUserId);
 
         if (!selected && presaleInterestOptional.isPresent()) {
           throw new AlreadyExistsException("User with ID " + user.getUserId() + " already expressed interest for event '" + event.getEventName() + "'");
         }
-        presaleInterestRepository.save(new PresaleInterest(user, event, selected));
+        presaleInterestRepository.save(new PresaleInterest(user, event, selected, emailed));
     }
 
     public List<User> selectPresaleUsersForEvent(Event event) {
@@ -69,7 +78,7 @@ public class PresaleServiceImpl implements PresaleService {
 
             // add element in temporary list
             winners.add(duplicate.get(randomIndex));
-            setPresaleInterest(duplicate.get(randomIndex), event, true);
+            setPresaleInterest(duplicate.get(randomIndex), event, true, false);
 
             //Trigger Email sending interval
 

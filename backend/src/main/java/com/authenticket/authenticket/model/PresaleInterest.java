@@ -31,6 +31,9 @@ public class PresaleInterest {
     @Column(name = "is_selected")
     private Boolean isSelected;
 
+    @Column(name = "emailed")
+    private Boolean emailed;
+
     @Override
     public int hashCode() {
         return Objects.hash(event, user);
