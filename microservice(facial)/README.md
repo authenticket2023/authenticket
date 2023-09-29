@@ -25,3 +25,6 @@ To generate routing for new file, to show in the swagger UI
 
 ##### Debugging
 - `npm rebuild @tensorflow/tfjs-node --build-from-source` => for backend, as tfjs-node need this cmd to work
+- If still cannot install tfjs-node, can use docker hot reload 
+    - cd microservice(facial)
+    - `docker compose up` => to update code, just stop the compose and compose up again

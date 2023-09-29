@@ -8,73 +8,135 @@ const faceApiService = require("../../services/utils/faceapiService");
 const FaceModel = require('../../models/face');
 const baseDir = path.resolve(__dirname, "../../..");
 
-async function uploadLabeledImages(images: any, label: any, elderlyID: any) {
+async function uploadLabeledImages(index: any, images: any, eventID: any, label: any, sectionID: any, row: any, seat: any) : Promise<boolean> {
     try {
+        console.log(`========== uploadLabeledImages for image ${index} ==========`)
 
         const descriptions = [];
-        // Loop through the images
-        // for (let i = 0; i < images.length; i++) {
-
-        // const img = await canvas.loadImage(images[i]);
         const img = await canvas.loadImage(images);
-        console.log(img)
         const numOfFaces = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
-        console.log(`Detected ${numOfFaces.length} faces in the image.`)
-        if(numOfFaces.length != 1) {
-            return false;
+        console.log(`Detected ${numOfFaces.length} faces in the image ${index}.`)
+        if (numOfFaces.length != 1) {
+            throw new Error(`Detected ${numOfFaces.length} faces in the image. Please choose another image with only one facical in it!`);
         }
 
         // Read each face and save the face descriptions in the descriptions array
         const detections = await faceapi.detectSingleFace(img)
             .withFaceLandmarks()
             .withFaceDescriptor();
-        
+
         descriptions.push(detections.descriptor);
         // }
 
         // Create a new face document with the given label and save it in DB
         const createFace = new FaceModel({
-            label: `${label}(${elderlyID})`,
+            eventID: eventID,
+            sectionID: sectionID,
+            row: row,
+            seat: seat,
+            label: label,
             descriptions: descriptions,
         });
         try {
             await createFace.save();
+            console.log('Data saved successfully.');
             return true;
         } catch (error) {
+            // mean facial info was existed in DB
+            // console.error('Failed to save data:', error);
             return false;
         }
     } catch (error) {
-        console.log(error);
-        return false;
+        throw error;
     }
 }
-
+interface Files {
+    image1: any;
+    image2?: any;
+    image3?: any;
+    image4?: any;
+    image5?: any;
+}
 // http://localhost:8000/api/face/post-face
-// app.post("/post-face", async (req: any, res: any) => {
-export const postface = async (req: any, res: any, next: NextFunction) => {
+export const createFacialInfo = async (req: any, res: any, next: NextFunction) => {
     try {
-        const { file } = req.files;
-
-        const label = req.body.label
-        const elderlyID = req.body.elderlyID
-        let result = await uploadLabeledImages(file.data, label, elderlyID);
-        if (result) {
-            return res.status(200).json({
-                message: "Face data stored successfully",
-            })
-        } else {
-            return res.status(400).json({ message: "Something went wrong, make sure your label is unique and does not existed in the DB." })
+        console.log('Creating Facial Information');
+        const { image1, image2, image3, image4, image5 }: Files = req.files;
+        const { eventID, info1, info2, info3, info4, info5 } = req.body;
+        const info1Array = info1.split(',');
+        if (info1Array.length != 4) {
+            throw new Error(`Invalid info1 field! Please follow the following format : {label,sectionID,row,seat}.`);
         }
-    } catch (error) {
-        console.log(error)
-        return res.status(400).json({ message: "Please make sure the input file is valid type", error: String(error) });
+        let logMessage = '';
+
+        const result = await uploadLabeledImages('1', image1.data, eventID, info1Array[0], info1Array[1], info1Array[2], info1Array[3]);
+
+        if (!result) {
+            logMessage += `Facial data for image 1 already existed in DB. Skipped!\n`;
+        }
+
+        if (image2 != null) {
+            const info2Array = info2.split(',');
+            if (info2Array.length != 4) {
+                throw new Error(`Invalid info2 field! Please follow the following format : {label,sectionID,row,seat}.`);
+            }
+            const result = await uploadLabeledImages('2', image2.data, eventID, info2Array[0], info2Array[1], info2Array[2], info2Array[3]);
+            if (!result) {
+                logMessage += `Facial data for image 2 already existed in DB. Skipped!\n`;
+            }
+        }
+
+        if (image3 != null) {
+            const info3Array = info3.split(',');
+            if (info3Array.length != 4) {
+                throw new Error(`Invalid info3 field! Please follow the following format : {label,sectionID,row,seat}.`);
+            }
+            const result = await uploadLabeledImages('3', image3.data, eventID, info3Array[0], info3Array[1], info3Array[2], info3Array[3]);
+            if (!result) {
+                logMessage += `Facial data for image 3 already existed in DB. Skipped!\n`;
+            }
+        }
+
+        if (image4 != null) {
+            const info4Array = info4.split(',');
+            if (info4Array.length != 4) {
+                throw new Error(`Invalid info4 field! Please follow the following format : {label,sectionID,row,seat}.`);
+            }
+            const result = await uploadLabeledImages('4', image4.data, eventID, info4Array[0], info4Array[1], info4Array[2], info4Array[3]);
+            if (!result) {
+                logMessage += `Facial data for image 4 already existed in DB. Skipped!\n`;
+            }
+        }
+
+        if (image5 != null) {
+            const info5Array = info5.split(',');
+            if (info5Array.length != 4) {
+                throw new Error(`Invalid info5 field! Please follow the following format : {label,sectionID,row,seat}.`);
+            }
+            const result = await uploadLabeledImages('5', image5.data, eventID, info5Array[0], info5Array[1], info5Array[2], info5Array[3]);
+            if (!result) {
+                logMessage += `Facial data for image 5 already existed in DB. Skipped!\n`;
+            }
+        }
+
+        return res.status(200).json({
+            message: `Facial data stored successfully for event ID: ${eventID}`,
+            log: logMessage,
+        })
+
+    } catch (error: any) {
+        return res.status(400).json({ message: String(error.message) });
     }
 }
 
-async function getDescriptorsFromDB(file: any) {
+async function getDescriptorsFromDB(file: any, eventID: any) {
     try {
-        // Get all the face data from mongodb and loop through each of them to read the data
-        let faces = await FaceModel.find();
+        console.log('Getting descriptors from DB.');
+        // Get all the face data from mongodb based on the eventID
+        let faces = await FaceModel.find({ 'eventID': eventID });
+        if (faces.length == 0) {
+            throw new Error(`No faces found in the database for event ID : ${eventID} !`);
+        }
 
         for (let i = 0; i < faces.length; i++) {
             // Change the face data descriptors from Objects to Float32Array type
@@ -90,7 +152,6 @@ async function getDescriptorsFromDB(file: any) {
 
         // Read the image using canvas or other method
         const img = await canvas.loadImage(file);
-        console.log(img)
 
         let temp = faceapi.createCanvasFromMedia(img);
         // Process the image for the model
@@ -99,29 +160,41 @@ async function getDescriptorsFromDB(file: any) {
 
         // Find matching faces
         const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+        console.log(`Detected ${detections.length} faces in the image.`);
+
+        if (detections.length != 1) {
+            throw new Error(`Detected ${detections.length} faces in the image. Please make sure the image only contain 1 face!`);
+        }
+
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
         const results = resizedDetections.map((d: any) => faceMatcher.findBestMatch(d.descriptor));
+        console.log(`For Event ID : ${eventID}`);
+        results.map((item: any) => {
+            console.log(`Found : ${item._label}`);
+        });
+
         return results;
 
     } catch (error) {
-        return error;
+        throw error;
     }
 }
 
 
 // http://localhost:8000/api/face/check-face
-export const checkface = async (req: any, res: any, next: NextFunction) => {
+export const facialVerification = async (req: any, res: any, next: NextFunction) => {
     try {
         const { file } = req.files;
-        let result = await getDescriptorsFromDB(file.data);
+        const eventID = req.body.eventID;
+
+        let result = await getDescriptorsFromDB(file.data, eventID);
 
         return res.status(200).json({
-            result,
+            message: `Facial information found : ${result[0]._label}`
         });
 
-    } catch (error) {
-        console.log(error)
-        return res.status(400).json({ message: "Please make sure the input file is valid type", error: String(error) });
+    } catch (error: any) {
+        return res.status(400).json({ message: String(error.message) });
     }
 
 };

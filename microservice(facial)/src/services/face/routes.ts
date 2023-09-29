@@ -6,6 +6,6 @@ export const faceRouter = express.Router();
 
 /** GET /api/getInfo */
 
-faceRouter.route('/post-face').post(controller.postface);
+faceRouter.route('/createFacialInfo').post(controller.createFacialInfo);
 
-faceRouter.route('/check-face').post(controller.checkface);
+faceRouter.route('/facialVerification').post(controller.facialVerification);
