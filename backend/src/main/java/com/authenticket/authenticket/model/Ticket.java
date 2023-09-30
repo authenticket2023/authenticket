@@ -23,6 +23,7 @@ public class Ticket extends BaseEntity {
     @Column(name = "ticket_id")
     private Integer ticketId;
 
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
@@ -53,8 +54,10 @@ public class Ticket extends BaseEntity {
 //    })
 //    private EventTicketCategory eventTicketCategory;
 
-//    @ManyToOne
-//    @JsonIgnore
-//    @JoinColumn(name = "order_id", nullable = false)
-//    private Order order;
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+
 }

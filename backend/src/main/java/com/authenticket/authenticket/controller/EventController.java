@@ -3,7 +3,10 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.exception.NotApprovedException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -468,6 +471,23 @@ public class EventController extends Utility {
 //        }
 //        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
 //    }
+
+    @GetMapping("/public/event/section-ticket-details/{eventId}")
+    public ResponseEntity<GeneralApiResponse> findAllSectionsByEvent(
+            @PathVariable("eventId") Integer eventId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) {
+            throw new NonExistentException("Event does not exist");
+        } else if (event.getDeletedAt() != null) {
+            throw new AlreadyDeletedException("Event", eventId);
+        } else if (!event.getReviewStatus().equals("approved")) {
+            throw new NotApprovedException("Event", eventId);
+        }
+
+        List<SectionTicketDetailsDto> sectionDetailsForEvent = eventService.findSectionDetailsForEvent(event);
+
+        return ResponseEntity.ok(generateApiResponse(sectionDetailsForEvent, String.format("Success returning all section ticket details for event %d", eventId)));
+    }
 
 //    @PutMapping("/addTicketCategory")
 //    public ResponseEntity<GeneralApiResponse> addTicketCategory(

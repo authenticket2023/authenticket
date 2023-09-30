@@ -9,11 +9,13 @@ import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.webjars.NotFoundException;
 
+import java.util.*;
 import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @RestController
 @CrossOrigin(
@@ -64,6 +66,12 @@ public class TicketController extends Utility {
         return "test successful";
     }
 
+    @PostMapping("/test-post")
+    public String testPost(@RequestParam(value = "eventId") Integer eventId,
+                           @RequestParam(value = "sectionId") Integer sectionId) {
+        return ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(eventId,sectionId).toString();
+    }
+
     @GetMapping
     public List<TicketDisplayDto> findAllTicket() {
         return ticketService.findAllTicket();
@@ -74,6 +82,40 @@ public class TicketController extends Utility {
         return ResponseEntity.ok(ticketService.findTicketById(ticketId));
     }
 
+    @PostMapping("/allocate-seats")
+    public ResponseEntity<?> allocateSeats(@RequestParam(value = "eventId") Integer eventId,
+                                           @RequestParam(value = "sectionId") Integer sectionId,
+                                           @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
+        List<Ticket> ticketList;
+        try{
+            ticketList = ticketService.allocateSeats(eventId, sectionId, ticketsToPurchase);
+        } catch(Exception e){
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+        return ResponseEntity.ok(generateApiResponse(ticketList, String.format("%d seats successfully assigned", ticketsToPurchase)));
+    }
+
+    @DeleteMapping("/unallocate-seats")
+    public ResponseEntity<?> removeTickets(@RequestParam(value = "ticketIdString")String ticketIdString
+    ) {
+        List<Integer> ticketIdList = Arrays.stream(ticketIdString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+
+            ticketService.removeAllTickets(ticketIdList);
+
+        return ResponseEntity.ok(generateApiResponse(null, "Tickets Unallocated Successfully"));
+    }
+
+//    @PostMapping
+//    public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Integer userId,
+//                                       @RequestParam(value = "eventId") Integer eventId,
+//                                       @RequestParam(value = "categoryId") Integer categoryId) {
+//        Ticket savedTicket = ticketService.saveTicket(userId, eventId, categoryId);
+//        return ResponseEntity.ok(savedTicket);
+//    }
+//
     @PostMapping
     public ResponseEntity<?> saveTicket(@RequestParam(value = "eventId") Integer eventId,
                                        @RequestParam(value = "categoryId") Integer categoryId,
@@ -106,7 +148,7 @@ public class TicketController extends Utility {
         }
         TicketPricing ticketPricing = optionalTicketPricing.get();
 
-        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder);
+        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder,null);
 
         Ticket savedTicket = ticketService.saveTicket(ticket);
         return ResponseEntity.ok(savedTicket);

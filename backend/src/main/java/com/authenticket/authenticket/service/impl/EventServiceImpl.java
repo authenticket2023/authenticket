@@ -3,6 +3,8 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.dto.section.SectionDtoMapper;
+import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
@@ -16,10 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -36,9 +35,13 @@ public class EventServiceImpl implements EventService {
 
     private final EventDtoMapper eventDTOMapper;
 
+    private final SectionDtoMapper sectionDtoMapper;
+
     private final ArtistDtoMapper artistDtoMapper;
 
     private final AmazonS3Service amazonS3Service;
+
+    private final TicketRepository ticketRepository;
 
     private final EmailService emailService;
 
@@ -51,7 +54,9 @@ public class EventServiceImpl implements EventService {
                             EventDtoMapper eventDTOMapper,
                             ArtistDtoMapper artistDtoMapper,
                             AmazonS3Service amazonS3Service,
-                            EmailService emailService) {
+                            EmailService emailService,
+                            TicketRepository ticketRepository,
+                            SectionDtoMapper sectionDtoMapper) {
         this.eventRepository = eventRepository;
         this.artistRepository = artistRepository;
         this.featuredEventRepository = featuredEventRepository;
@@ -61,6 +66,8 @@ public class EventServiceImpl implements EventService {
         this.artistDtoMapper = artistDtoMapper;
         this.amazonS3Service = amazonS3Service;
         this.emailService = emailService;
+        this.ticketRepository = ticketRepository;
+        this.sectionDtoMapper = sectionDtoMapper;
     }
 
     //get all events for home page
@@ -349,6 +356,11 @@ public class EventServiceImpl implements EventService {
         Set<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
         return artistDisplayDtoList;
     }
+
+    public List<SectionTicketDetailsDto> findSectionDetailsForEvent(Event event){
+        List<SectionTicketDetailsDto> sectionTicketDetailsDtoList = sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
+        return sectionTicketDetailsDtoList;
+    };
 
 
 }

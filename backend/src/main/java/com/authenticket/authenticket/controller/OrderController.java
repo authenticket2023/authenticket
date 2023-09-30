@@ -118,7 +118,7 @@ public class OrderController extends Utility {
         System.out.println(userOptional);
         if(userOptional.isPresent()){
             User purchaser = userOptional.get();
-            Order newOrder = new Order(null,  orderAmount, LocalDate.now(),purchaser);
+            Order newOrder = new Order(null,  orderAmount, LocalDate.now(),purchaser,null);
             Order savedOrder = orderService.saveOrder(newOrder);
             System.out.println("testing");
             //yet to implement email

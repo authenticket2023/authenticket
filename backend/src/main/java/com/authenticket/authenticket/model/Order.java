@@ -33,8 +33,8 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-//    @OneToMany( mappedBy = "order")
-//    @JsonIgnore
-//    private List<Ticket> tickets = new ArrayList<>();
+    @OneToMany( mappedBy = "order")
+    @JsonIgnore
+    private List<Ticket> tickets = new ArrayList<>();
 
 }
