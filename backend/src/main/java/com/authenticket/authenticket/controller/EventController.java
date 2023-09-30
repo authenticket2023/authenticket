@@ -5,6 +5,7 @@ import com.authenticket.authenticket.JSONFormat;
 import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
@@ -307,7 +308,7 @@ public class EventController extends Utility {
         //setting all the fields for event
         OverallEventDto overallEventDto = eventDtoMapper.applyOverallEventDto(savedEvent);
 
-        return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
+        return ResponseEntity.status(201).body(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
     //without review, so basically targeted towards organiser
@@ -505,7 +506,7 @@ public class EventController extends Utility {
         }
 
         presaleService.setPresaleInterest(userOptional.get(), event, false, false);
-        return ResponseEntity.ok(generateApiResponse(null, "Presale interest recorded"));
+        return ResponseEntity.status(201).body(generateApiResponse(null, "Presale interest recorded"));
     }
 
     @GetMapping("/event/selectUsers")
