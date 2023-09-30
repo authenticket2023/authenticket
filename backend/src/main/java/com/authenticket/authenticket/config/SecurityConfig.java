@@ -34,7 +34,6 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())//by default use bean of corsConfigurationSource
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
 
                         .requestMatchers("/api/aws/**").permitAll()
@@ -66,8 +65,11 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/event-type/**").hasAnyAuthority("ADMIN", "ORGANISER")
 
+                        .requestMatchers("/api/order/**").hasAuthority("USER")
+
                         .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/ticket/**").hasAuthority("ADMIN")
+
+                        .requestMatchers("/api/ticket/**").hasAuthority("USER")
 
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserProfile").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserImage").hasAuthority("USER")
@@ -92,16 +94,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-//    @Bean
-//    CorsConfigurationSource corsConfigurationSource(){
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
-//        configuration.setAllowedHeaders(Arrays.asList("Authorization"));
-//        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source =new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 }

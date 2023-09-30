@@ -40,7 +40,8 @@ public class AdminDtoMapper implements Function<Admin, AdminDisplayDto>  {
             oldAdmin.setName(newAdmin.getName());
         }
         if(newAdmin.getPassword() != null){
-            oldAdmin.setPassword(passwordEncoder.encode(newAdmin.getPassword()));
+            String passwordEncode = passwordEncoder.encode(newAdmin.getPassword());
+            oldAdmin.setPassword(passwordEncode);
         }
     }
 }

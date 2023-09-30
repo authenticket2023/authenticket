@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -30,5 +32,9 @@ public class Venue extends BaseEntity {
 
     @Column(name = "venue_image")
     private String venueImage;
+
+    @OneToMany( mappedBy = "venue")
+    @JsonIgnore
+    private List<Section> sections = new ArrayList<>();
 }
 

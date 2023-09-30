@@ -81,7 +81,7 @@ public class VenueController extends Utility {
             throw new NonExistentException("Venue Image File is null");
         }
 
-        Venue savedVenue = venueService.saveVenue(new Venue(null, venueName, venueLocation, null));
+        Venue savedVenue = venueService.saveVenue(new Venue(null, venueName, venueLocation, null,null));
         //generating the file name with the extension
         String fileExtension = getFileExtension(venueImageFile.getContentType());
         String imageName = savedVenue.getVenueId() + fileExtension;

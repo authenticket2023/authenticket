@@ -194,13 +194,4 @@ public class EventOrganiserController extends Utility {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(generateApiResponse(null, e.getMessage()));
         }
     }
-
-    @DeleteMapping("/{organiserId}")
-    public ResponseEntity<?> removeEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
-        try{
-        return ResponseEntity.ok(eventOrganiserService.removeEventOrganiser(organiserId));}
-        catch(DataIntegrityViolationException e){
-            return ResponseEntity.status(409).body(String.format("The organiser with ID %d cannot be deleted because it has associated events.", organiserId));
-        }
-    }
 }

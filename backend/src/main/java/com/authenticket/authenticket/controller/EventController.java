@@ -1,13 +1,14 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.authenticket.authenticket.JSONFormat;
-import com.authenticket.authenticket.TicketCategoryJSON;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.ApiRequestException;
+import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.exception.NotApprovedException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -27,10 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -88,7 +86,6 @@ public class EventController extends Utility {
         this.presaleService = presaleService;
         this.userRepository = userRepository;
     }
-
 
     @GetMapping("/public/event/test")
     public String test() {
@@ -236,7 +233,9 @@ public class EventController extends Utility {
                                        @RequestParam("venueId") Integer venueId,
                                        @RequestParam("typeId") Integer typeId,
                                        //comma separated string
-                                       @RequestParam("artistId") String artistIdString) {
+                                       @RequestParam("artistId") String artistIdString,
+                                       //comma separated string
+                                       @RequestParam("ticketPrices") String ticketPricesString) {
         String imageName;
         Event savedEvent;
         //Getting the Respective Objects for Organiser, Venue and Type and checking if it exists
@@ -251,13 +250,11 @@ public class EventController extends Utility {
             throw new NonExistentException("Event Type does not exist");
         }
 
-        //totalTickets will be derived from event-ticketCat, set it after adding the ticket categories for event
-
         //save event first to get the event id
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-                    ticketSaleDate, 0, 0, null, "pending", null, false, false,false, eventOrganiser, venue, null, eventType, null);
+            ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -304,6 +301,19 @@ public class EventController extends Utility {
             eventService.addArtistToEvent(artistId, eventId);
         }
 
+        List<Double> ticketPrices = Arrays.stream(ticketPricesString.split(","))
+                .map(Double::parseDouble)
+                .collect(Collectors.toList());
+
+        if (ticketPrices.size() != 5) {
+            throw new IllegalArgumentException("Ticket Prices should have 5 values");
+        }
+
+        eventService.addTicketCategory(1, eventId, ticketPrices.get(0));
+        eventService.addTicketCategory(2, eventId, ticketPrices.get(1));
+        eventService.addTicketCategory(3, eventId, ticketPrices.get(2));
+        eventService.addTicketCategory(4, eventId, ticketPrices.get(3));
+        eventService.addTicketCategory(5, eventId, ticketPrices.get(4));
 
         //setting all the fields for event
         OverallEventDto overallEventDto = eventDtoMapper.applyOverallEventDto(savedEvent);
@@ -322,7 +332,8 @@ public class EventController extends Utility {
                                          @RequestParam(value = "otherEventInfo", required = false) String otherEventInfo,
                                          @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
                                          @RequestParam(value = "venueId", required = false) Integer venueId,
-                                         @RequestParam(value = "typeId", required = false) Integer typeId) {
+                                         @RequestParam(value = "typeId", required = false) Integer typeId,
+                                         @RequestParam(value = "ticketPrices", required = false) String ticketPricesString) {
         Venue venue = null;
         if (venueId != null) {
             Optional<Venue> venueOptional = venueRepository.findById(venueId);
@@ -341,6 +352,21 @@ public class EventController extends Utility {
             } else {
                 throw new NonExistentException("Event type does not exist");
             }
+        }
+
+        if (ticketPricesString != null) {
+            List<Double> ticketPrices = Arrays.stream(ticketPricesString.split(","))
+                    .map(Double::parseDouble)
+                    .toList();
+
+            if (ticketPrices.size() != 5) {
+                throw new IllegalArgumentException("Ticket Prices should have 5 values");
+            }
+            eventService.updateTicketPricing(1, eventId, ticketPrices.get(0));
+            eventService.updateTicketPricing(2, eventId, ticketPrices.get(1));
+            eventService.updateTicketPricing(3, eventId, ticketPrices.get(2));
+            eventService.updateTicketPricing(4, eventId, ticketPrices.get(3));
+            eventService.updateTicketPricing(5, eventId, ticketPrices.get(4));
         }
 
         EventUpdateDto eventUpdateDto = new EventUpdateDto(eventId, eventName, eventDescription, eventDate, eventLocation, otherEventInfo, ticketSaleDate, venue, eventType, null, null, null);
@@ -456,35 +482,52 @@ public class EventController extends Utility {
 //            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
 //        }
 //    }
+//
+//    @PutMapping("/event/addTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
+//        Integer eventId = jsonFormat.getEventId();
+//        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
+//        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
+//            eventService.addTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice());
+//        }
+//        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
+//    }
+//
+//    @PutMapping("/event/updateTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
+//        Integer eventId = jsonFormat.getEventId();
+//        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
+//        Optional<Event> eventOptional = eventRepository.findById(eventId);
+//        if (eventOptional.isPresent()) {
+//            Event event = eventOptional.get();
+//            //resetting value before update
+//            event.setTotalTickets(0);
+//            event.setTotalTicketsSold(0);
+//            eventRepository.save(event);
+//        } else {
+//            throw new NonExistentException("Event does not exist");
+//        }
+//        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
+//            eventService.updateTicketPricing(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice());
+//        }
+//        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
+//    }
 
-    @PutMapping("/event/addTicketCategory")
-    public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
-        Integer eventId = jsonFormat.getEventId();
-        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
-        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
-            eventService.addTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice(), ticketCategoryJSON.getAvailableTickets(), ticketCategoryJSON.getTotalTicketsPerCat());
-        }
-        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
-    }
-
-    @PutMapping("/event/updateTicketCategory")
-    public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
-        Integer eventId = jsonFormat.getEventId();
-        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-        if (eventOptional.isPresent()) {
-            Event event = eventOptional.get();
-            //resetting value before update
-            event.setTotalTickets(0);
-            event.setTotalTicketsSold(0);
-            eventRepository.save(event);
-        } else {
+    @GetMapping("/public/event/section-ticket-details/{eventId}")
+    public ResponseEntity<GeneralApiResponse> findAllSectionsByEvent(
+            @PathVariable("eventId") Integer eventId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) {
             throw new NonExistentException("Event does not exist");
+        } else if (event.getDeletedAt() != null) {
+            throw new AlreadyDeletedException("Event", eventId);
+        } else if (!event.getReviewStatus().equals("approved")) {
+            throw new NotApprovedException("Event", eventId);
         }
-        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
-            eventService.updateTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice(), ticketCategoryJSON.getAvailableTickets(), ticketCategoryJSON.getTotalTicketsPerCat());
-        }
-        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
+
+        List<SectionTicketDetailsDto> sectionDetailsForEvent = eventService.findSectionDetailsForEvent(event);
+
+        return ResponseEntity.ok(generateApiResponse(sectionDetailsForEvent, String.format("Success returning all section ticket details for event %d", eventId)));
     }
 
     @PutMapping("/event/indicateInterest")

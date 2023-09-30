@@ -23,6 +23,8 @@ public class ApiExceptionHandler extends Utility {
                 "Something went wrong: " + e.getMessage()
         );
 
+        e.printStackTrace();
+
         return new ResponseEntity<>(apiException, status);
     }
 

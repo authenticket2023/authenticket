@@ -1,7 +1,6 @@
 package com.authenticket.authenticket.dto.ticket;
 
-public record TicketDisplayDto(Integer ticketId,
-                               Integer userId,
-                               Integer eventId,
-                               Integer categoryId) {
+import com.authenticket.authenticket.model.Event;
+
+public record TicketDisplayDto(Integer ticketId) {
 }

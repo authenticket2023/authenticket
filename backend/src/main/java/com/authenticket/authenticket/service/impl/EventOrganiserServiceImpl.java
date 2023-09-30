@@ -142,24 +142,4 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
             throw new NonExistentException("Event Organiser", organiserId);
         }
     }
-
-    public String removeEventOrganiser(Integer organiserId) {
-
-        Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
-
-        if (eventOrganiserOptional.isPresent()) {
-            EventOrganiser eventOrganiser = eventOrganiserOptional.get();
-            String logoImage = eventOrganiser.getLogoImage();
-
-            eventOrganiserRepository.deleteById(organiserId);
-            if (logoImage != null) {
-                amazonS3Service.deleteFile(logoImage, "event_organiser_profile");
-            }
-
-
-            return "event organiser removed successfully";
-        }
-        return "error: event organiser does not exist";
-
-    }
 }
