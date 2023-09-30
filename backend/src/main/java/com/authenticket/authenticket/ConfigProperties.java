@@ -11,9 +11,14 @@ public record ConfigProperties(
         String frontendProductionUrl,
         String backendDevUrl,
         String backendProductionUrl,
-        String loadBalancerUrl,
+        String loadbalancerUrl,
         String S3BucketName,
         String smtpUsername,
-        String smtpPassword
+        String smtpPassword,
+        String stripeSecret,
+        String stripePublishable,
+        String payPalSecret,
+        String payPalClient,
+        String payPalMode
 ) {
 }

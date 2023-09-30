@@ -6,8 +6,10 @@ import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.repository.UserRepository;
+import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,6 +42,9 @@ public class ApplicationConfig {
         this.adminRepository = adminRepository;
         this.eventOrganiserRepository = eventOrganiserRepository;
     }
+
+    @Value("${authenticket.stripe-secret}")
+    private String stripeApiKey;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -87,6 +92,7 @@ public class ApplicationConfig {
 
     @PostConstruct
     public void init() {
+        Stripe.apiKey = stripeApiKey;//initialise stripe
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Singapore"));
     }
 }
