@@ -15,6 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo from '../images/logo(orange).png';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
+
 export const NavbarNotLoggedIn = () => {
     let navigate = useNavigate();
 
@@ -367,6 +368,10 @@ export const NavbarOrganiser = () => {
         navigate('/EventOrganiser');
     }
 
+    const handleCheckinOrganiser = () => {
+        navigate('/CheckinOrganiser');
+    }
+
     return (
         <AppBar position="sticky" style={{ background: '#000000' }} >
             <Container maxWidth="xl">
@@ -407,6 +412,7 @@ export const NavbarOrganiser = () => {
                         >
                             <Button key='Home' onClick={handleHomeOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
                             <Button key='Event' onClick={handleEventOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Event</Button>
+                            <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Checkin</Button>
                         </Menu>
                     </Box>
                     <Typography
@@ -431,6 +437,7 @@ export const NavbarOrganiser = () => {
                     <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml: 4, display: { xs: 'none', md: 'flex' } }}>
                         <Button key='Home' onClick={handleHomeOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Home</Button>
                         <Button key='Event' onClick={handleEventOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Event</Button>
+                        <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Checkin</Button>
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -457,6 +464,9 @@ export const NavbarOrganiser = () => {
                         >
                             <MenuItem key='Event' onClick={handleEventOrganiser}>
                                 <Typography textAlign="center">Event</Typography>
+                            </MenuItem>
+                            <MenuItem key='Checkin' onClick={handleCheckinOrganiser}>
+                                <Typography textAlign="center">Checkin</Typography>
                             </MenuItem>
                             <MenuItem key='Logout' onClick={handledLogout}>
                                 <Typography textAlign="center">Log out</Typography>
