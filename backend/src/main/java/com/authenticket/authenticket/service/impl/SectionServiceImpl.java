@@ -42,9 +42,8 @@ public class SectionServiceImpl implements SectionService {
     public int[][] getCurrentSeatMatrix(Event event, Section section) {
         //getting dimensions of section
         Integer rowNo = section.getNoOfRows();
-        System.out.println("rows: " + rowNo);
         Integer colNo = section.getNoOfSeatsPerRow();
-        System.out.println("cols: " + rowNo);
+
         int[][] seatMatrix = new int[rowNo][colNo];
 
         //fill up seatMatrix with occupied seats
@@ -52,13 +51,10 @@ public class SectionServiceImpl implements SectionService {
         for (Ticket ticket : ticketList) {
             Integer ticketRowNo = ticket.getRowNo();
             Integer ticketSeatNo = ticket.getSeatNo();
-            System.out.println(ticket.getTicketId());
-            System.out.println(ticketRowNo);
-            System.out.println(ticketSeatNo);
-            System.out.println();
+
             seatMatrix[ticketRowNo - 1][ticketSeatNo - 1] = 1; //minus one cause arrays start from index 0
         }
-
+        System.out.println("----------" + event.getEventId() + " " + section.getSectionId() + "----------");
         //to display for testing purpose
         for (int i = 0; i < rowNo; i++) {
             for (int j = 0; j < colNo; j++) {
@@ -67,6 +63,7 @@ public class SectionServiceImpl implements SectionService {
             System.out.println();
 
         }
+        System.out.println();
 
         return seatMatrix;
     }

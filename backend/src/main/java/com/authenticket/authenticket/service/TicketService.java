@@ -27,5 +27,6 @@ public interface TicketService {
     List<List<Integer>> findConsecutiveGroups(int[] availableSeatsArrayForRow);
     List<Integer> getRandomSubsetOfSeats(List<List<Integer>> consecutiveGroups, int n);
     Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section);
+    Integer getMaxConsecutiveSeatsForSection(Integer eventId, Integer sectionId);
 
 }

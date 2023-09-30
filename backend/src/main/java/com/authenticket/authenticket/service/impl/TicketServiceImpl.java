@@ -46,7 +46,7 @@ public class TicketServiceImpl implements TicketService {
         this.eventRepository = eventRepository;
         this.ticketRepository = ticketRepository;
         this.ticketDisplayDtoMapper = ticketDisplayDtoMapper;
-        this.sectionRepository =sectionRepository;
+        this.sectionRepository = sectionRepository;
         this.ticketPricingRepository = ticketPricingRepository;
     }
 
@@ -150,7 +150,6 @@ public class TicketServiceImpl implements TicketService {
                     .toArray(Integer[]::new);
             try {
                 for (Integer count : currentCombi) {
-                    System.out.println("CURRENT COUNT " + count);
                     //find adjacent seats for each count of the seat combination
                     List<Ticket> ticketNewlyCreated = findConsecutiveSeatsOf(event, section, count);
                     ticketList.addAll(ticketNewlyCreated);
@@ -196,7 +195,7 @@ public class TicketServiceImpl implements TicketService {
 
             seatMatrix[ticketRowNo - 1][ticketSeatNo - 1] = 1; //minus one cause arrays start from index 0
         }
-
+        System.out.println("----------" + event.getEventId() + " " + section.getSectionId() + "----------");
         //to display for testing purpose
         for (int i = 0; i < rowNo; i++) {
             for (int j = 0; j < colNo; j++) {
@@ -205,6 +204,7 @@ public class TicketServiceImpl implements TicketService {
             System.out.println();
 
         }
+        System.out.println();
 
         return seatMatrix;
     }
@@ -220,6 +220,8 @@ public class TicketServiceImpl implements TicketService {
         }
 
         //to display for testing purpose
+        System.out.println("---" + "ASSIGNED SEATS +" +newTicketsList.size() + "---");
+
         for (int i = 0; i < currentSeatMatrix.length; i++) {
             for (int j = 0; j < currentSeatMatrix[0].length; j++) {
                 System.out.print(currentSeatMatrix[i][j] + " ");
@@ -227,14 +229,12 @@ public class TicketServiceImpl implements TicketService {
             System.out.println();
 
         }
+        System.out.println();
 
         return currentSeatMatrix;
     }
 
     public List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount) throws NotFoundException, NonExistentException {
-        //getting seat matrix with occupancy, 0 = empty seats, 1 = taken
-        int[][] currentSeatMatrix = this.getCurrentSeatMatrix(event, section);
-
         //getting dimensions of section
         Integer rowNo = section.getNoOfRows();
         Integer colNo = section.getNoOfSeatsPerRow();
@@ -288,50 +288,6 @@ public class TicketServiceImpl implements TicketService {
 
         throw new NotFoundException(String.format("Consecutive seats of size %d not found ", ticketCount));
 
-
-//            for (int j = 0; j < seatsOccupiedForRow.length - 1; j++) {
-//                //if there are n number of empty seats in between the occupied seats
-//                Integer emptySeatsInBetween = seatsOccupiedForRow[j + 1] - seatsOccupiedForRow[j] -1; //if seat 1 and 5 is occupied, 5-1=4 empty seats which is incorrect, which is why we -1 again
-//                if (emptySeatsInBetween >= ticketCount) {
-//                    Integer upperSeatNo = seatsOccupiedForRow[j] + ticketCount;
-//                    for (int seatNo = seatsOccupiedForRow[j]; seatNo < seatsOccupiedForRow[j + 1]; seatNo++) {
-//                        //add ticket to list
-//                        Ticket newTicket = new Ticket(null, event, ticketCategory, section, i + 1, j + 1, null, null);
-//                        ticketList.add(newTicket);
-//                    }
-//                    //save to db
-//                    ticketRepository.saveAll(ticketList);
-//                    return ticketList
-//                }
-//            }
-
-
-//        for(int i = 0; i < rowNo;i++){
-//            List<Ticket> ticketList = new ArrayList<>();
-//            //check if row is full alr
-//            if(ticketRepository.countByEventEventIdAndSectionSectionIdAndRowNo(event.getEventId(), section.getSectionId(), rowNo+1) == colNo){
-//                System.out.println(String.format("ROW %d FULL", i));
-//                continue;
-//            }
-//            for(int j = 0; j < colNo;j++){
-//
-//                //empty seat
-//                if(currentSeatMatrix[i][j] == 0){
-//                    Ticket newTicket = new Ticket(null,event,ticketCategory,section,i+1,j+1,null,null);
-//                    ticketList.add(newTicket);
-//                    //adjacent seats of size found successfully
-//                    if(ticketList.size() == ticketCount){
-//                        //save tickets in db
-//                        ticketRepository.saveAll(ticketList);
-//                        return ticketList;
-//                    }
-//                } else{
-//                    //if occupied seat found clear and restart the count
-//                    ticketList.clear();
-//                }
-//            }
-//        }
-
     }
 
     public String[] getSeatCombinationRank(Integer ticketCount) {
@@ -353,7 +309,6 @@ public class TicketServiceImpl implements TicketService {
 
         return seatCombiRank;
     }
-
 
     public List<List<Integer>> findConsecutiveGroups(int[] availableSeatsArrayForRow) {
         List<List<Integer>> consecutiveGroups = new ArrayList<>();
@@ -408,18 +363,20 @@ public class TicketServiceImpl implements TicketService {
 
         return selectedSubset;
     }
+
     public Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section) {
-        if(ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(event.getEventId(),section.getSectionId()) ==null){
-            return section.getNoOfRows()* section.getNoOfSeatsPerRow();
+        if (ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(event.getEventId(), section.getSectionId()) == null) {
+            return section.getNoOfRows() * section.getNoOfSeatsPerRow();
         }
-        return ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(event.getEventId(),section.getSectionId());
+        return ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(event.getEventId(), section.getSectionId());
 
     }
 
-    public void removeAllTickets(List<Integer> ticketIdList){
-        List<Ticket> ticketList = ticketRepository.findAllById(ticketIdList);;
+    public void removeAllTickets(List<Integer> ticketIdList) {
+        List<Ticket> ticketList = ticketRepository.findAllById(ticketIdList);
+        ;
 
-        if(ticketList.size() != ticketIdList.size()){
+        if (ticketList.size() != ticketIdList.size()) {
             // Now you can check if there are any missing IDs
             List<Integer> foundTicketIds = ticketList.stream()
                     .map(Ticket::getTicketId)
@@ -429,8 +386,59 @@ public class TicketServiceImpl implements TicketService {
                     .filter(id -> !foundTicketIds.contains(id))
                     .collect(Collectors.toList());
 
-            throw new IllegalArgumentException(String.format("Error deleting tickets, invalid ticket ids: %s",missingTicketIds.toString()));
-        } else{
+            throw new IllegalArgumentException(String.format("Error deleting tickets, invalid ticket ids: %s", missingTicketIds.toString()));
+        } else {
             ticketRepository.deleteAllInBatch(ticketList);
         }
-    };}
+    }
+
+    public Integer getMaxConsecutiveSeatsForSection(Integer eventId, Integer sectionId) {
+        Section section = sectionRepository.findById(sectionId).orElse(null);
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        if (section == null) {
+            throw new NonExistentException("Section does not exist");
+        } else if (event == null) {
+            throw new NonExistentException("Event does not exist");
+        }
+
+        int maxConsecutiveSeatsForSection = 0;
+
+//getting dimensions of section
+        Integer rowNo = section.getNoOfRows();
+        Integer colNo = section.getNoOfSeatsPerRow();
+
+
+        for (int i = 0; i < rowNo; i++) {
+            if (ticketRepository.countByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(event.getEventId(), section.getSectionId(), rowNo + 1) == colNo) {
+                System.out.println(String.format("ROW %d FULL", i));
+                continue;
+            }
+
+            //find all tickets for row
+            List<Ticket> ticketsForRow = ticketRepository.findAllByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(event.getEventId(), section.getSectionId(), i + 1);
+
+            //initialise all seats for row
+            List<Integer> seatsAvailableForRow = new ArrayList<>();
+            for (int j = 0; j < colNo; j++) {
+                seatsAvailableForRow.add(j + 1);
+            }
+            //remove occupied seats from seats available list
+            ticketsForRow.forEach(ticket -> seatsAvailableForRow.remove(ticket.getSeatNo()));
+            int[] availableSeatsArrayForRow = seatsAvailableForRow.stream().mapToInt(Integer::intValue).toArray(); //for the row
+
+            //find consecutive seats
+            List<List<Integer>> consecutiveGroupsOfSeats = findConsecutiveGroups(availableSeatsArrayForRow);
+            for (List<Integer> group : consecutiveGroupsOfSeats) {
+                if (group.size() > maxConsecutiveSeatsForSection) {
+                    maxConsecutiveSeatsForSection = group.size();
+                }
+            }
+
+        }
+
+        return maxConsecutiveSeatsForSection;
+    }
+
+    ;
+}
