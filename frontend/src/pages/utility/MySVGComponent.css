@@ -1,0 +1,14 @@
+
+
+/* Define hover styles for the SVG elements */
+g[id^="field_"]:hover {
+  opacity: 50%;
+  fill: blue;
+  /* Change fill color to blue on hover */
+  cursor: pointer;
+  /* Change cursor to pointer on hover */
+}
+
+.pack {
+  border: 2 px
+}
