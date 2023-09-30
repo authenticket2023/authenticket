@@ -42,11 +42,11 @@ public class Event extends BaseEntity {
     @Column(name = "ticket_sale_date")
     private LocalDateTime ticketSaleDate;
 
-    @Column(name = "total_tickets")
-    private Integer totalTickets;
+//    @Column(name = "total_tickets")
+//    private Integer totalTickets;
 
-    @Column(name = "total_tickets_sold")
-    private Integer totalTicketsSold;
+//    @Column(name = "total_tickets_sold")
+//    private Integer totalTicketsSold;
 
     @ManyToOne
     @JsonIgnore
@@ -139,6 +139,7 @@ public class Event extends BaseEntity {
             }
         }
     }
+
 
 
 

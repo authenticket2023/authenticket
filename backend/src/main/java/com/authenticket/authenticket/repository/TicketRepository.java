@@ -42,6 +42,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id ")
     List<Object[]> findAllTicketDetailsBySectionForEvent(@Param("eventId") Integer eventId);
 
+    Integer countAllByTicketPricingEventEventId(Integer eventId);
+
     List<Ticket> findAllByTicketPricing_Event_EventId(Integer eventId);
     List<Ticket> findAllByOrder(Order order);
 }

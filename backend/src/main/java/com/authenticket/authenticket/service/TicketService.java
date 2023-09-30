@@ -20,6 +20,7 @@ public interface TicketService {
 //    void removeTicket(Integer ticketId);
     void removeAllTickets(List<Integer> ticketList);
 
+
     //seatAllocation
     List<Ticket> allocateSeats(Integer sectionId, Integer eventId, Integer ticketsToPurchase);
     int[][] getCurrentSeatMatrix(Event event, Section section);

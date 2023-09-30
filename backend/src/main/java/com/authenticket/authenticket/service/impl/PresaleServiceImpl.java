@@ -22,6 +22,8 @@ public class PresaleServiceImpl implements PresaleService {
 
     private final UserRepository userRepository;
 
+    private final VenueRepository venueRepository;
+
     private final EventRepository eventRepository;
 
     private final PresaleInterestRepository presaleInterestRepository;
@@ -31,12 +33,14 @@ public class PresaleServiceImpl implements PresaleService {
                               EventRepository eventRepository,
                               PresaleInterestRepository presaleInterestRepository,
                               ScheduledAnnotationBeanPostProcessor postProcessor,
-                              SchedulerConfig schedulerConfig) {
+                              SchedulerConfig schedulerConfig,
+                              VenueRepository venueRepository) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.presaleInterestRepository = presaleInterestRepository;
         this.postProcessor = postProcessor;
         this.schedulerConfig = schedulerConfig;
+        this.venueRepository = venueRepository;
     }
 
     public List<User> findUsersInterestedByEvent(Event event) {
@@ -59,7 +63,7 @@ public class PresaleServiceImpl implements PresaleService {
 
     public List<User> selectPresaleUsersForEvent(Event event) {
         List<User> users = findUsersInterestedByEvent(event);
-        int totalTickets = event.getTotalTickets();
+        int totalTickets = venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId());
         int presaleWinnersCount = users.size();
 
         if (users.size() * MAX_TICKETS_SOLD_PER_USER > totalTickets) {

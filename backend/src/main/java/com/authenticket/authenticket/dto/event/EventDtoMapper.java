@@ -11,9 +11,7 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
-import com.authenticket.authenticket.repository.AdminRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
+import com.authenticket.authenticket.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,28 +28,30 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     private final EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper;
 
-    private final VenueDtoMapper venueDtoMapper;
-
     private final ArtistDtoMapper artistDtoMapper;
 
     private final AdminDtoMapper adminDtoMapper;
 
     private final EventRepository eventRepository;
 
-    private final AdminRepository adminRepository;
+    private final VenueRepository venueRepository;
 
-    private final EventTypeRepository eventTypeRepository;
+    private final TicketRepository ticketRepository;
+
 
     @Autowired
-    public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper, EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper, VenueDtoMapper venueDtoMapper, ArtistDtoMapper artistDtoMapper, AdminDtoMapper adminDtoMapper, EventRepository eventRepository, AdminRepository adminRepository, EventTypeRepository eventTypeRepository) {
+    public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper,
+                          EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper,
+                          VenueDtoMapper venueDtoMapper, ArtistDtoMapper artistDtoMapper,
+                          AdminDtoMapper adminDtoMapper, EventRepository eventRepository,
+                          VenueRepository venueRepository, TicketRepository ticketRepository) {
         this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
         this.eventTicketCategoryDisplayDtoMapper = eventTicketCategoryDisplayDtoMapper;
-        this.venueDtoMapper = venueDtoMapper;
         this.artistDtoMapper = artistDtoMapper;
         this.adminDtoMapper = adminDtoMapper;
         this.eventRepository = eventRepository;
-        this.adminRepository = adminRepository;
-        this.eventTypeRepository = eventTypeRepository;
+        this.venueRepository = venueRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     public EventDisplayDto apply(Event event) {
@@ -82,7 +82,7 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventImage(),
                 event.getEventType().getEventTypeName(),
                 event.getEventDate(),
-                event.getTotalTickets(),
+                venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId()),
                 event.getVenue().getVenueName());
     }
 
@@ -202,8 +202,8 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventDate(),
                 event.getOtherEventInfo(),
                 event.getEventImage(),
-                event.getTotalTickets(),
-                event.getTotalTicketsSold(),
+                venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId()),
+                ticketRepository.countAllByTicketPricingEventEventId(eventId),
                 event.getTicketSaleDate(),
                 event.getReviewStatus(),
                 event.getReviewRemarks(),
