@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" id="Indoor_Stadium" x="0px" y="0px" width="850" height="650" viewBox="2.28 41.365 1112.719 901.946" enable-background="new 0 0 1139.4 1044.5" xmlns="http://www.w3.org/2000/svg">
+<svg version="1.1" id="Indoor_Stadium" x="0px" y="0px" width="850" height="650" viewBox="17.421 33.492 1095.573 756.905" enable-background="new 0 0 1139.4 1044.5" xmlns="http://www.w3.org/2000/svg">
   <g id="directions">
     <g>
       <g>
@@ -442,7 +442,7 @@
         <polygon fill="#95cbe3" points="556.6,207.6 557.8,215.4 559,261.7 557.9,253.9 &#9;&#9;&#9;"/>
       </g>
     </g>
-    <g id="field_222"  enable-background="new    " class="empty">
+    <g id="field_222" enable-background="new    " class="empty">
       <g>
         <polygon fill="#f2a8a8" points="795.1,205.7 839.5,174.5 840.8,182.9 796.3,214.1 &#9;&#9;&#9;"/>
       </g>
@@ -468,7 +468,7 @@
         <polygon fill="#f3a8a8" points="801.2,154.4 839.3,175 795.4,205.8 746,240.3 707.9,219.7 757.3,185.1 &#9;&#9;&#9;"/>
       </g>
     </g>
-    <g id="field_122" enable-background="new     "  class="empty">
+    <g id="field_122" enable-background="new     " class="empty">
       <g>
         <polygon fill="#97cfe8" points="713,263.2 736.3,246.8 737.5,255.2 714.2,271.6 &#9;&#9;&#9;"/>
       </g>
@@ -1843,50 +1843,6 @@
       <g>
         <polygon points="445.3,491 519.6,531.3 490.4,551.7 416.1,511.5 &#9;&#9;&#9;" style="fill: rgb(38, 72, 237);"/>
       </g>
-    </g>
-  </g>
-  <g id="legend_00000023282594527016777300000002964148838209953471_">
-    <text style="white-space: pre; font-size: 16px;" x="30" y="858.324" font-size="16px" font-family="'Averta-Regular'" fill="#231F20">- Seat plan is not drawn to scale</text>
-    <text fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre; font-size: 16px;" x="30" y="876.23">- Colour indicates price category</text>
-    <text fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre; font-size: 16px;" x="30" y="894.136">- Ticket prices exclude booking fees</text>
-    <text fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre; font-size: 16px;" x="30" y="912.042">- Seating layout subject to change</text>
-    <g id="cat_00000032637939116212569280000010653652367632212644_">
-      <rect x="28.6" y="746.4" fill="#EDE83F" width="24.2" height="12.1"/>
-      <rect x="28.6" y="768.4" fill="#32A6DA" width="24.2" height="12.1"/>
-      <rect x="28.6" y="791.3" fill="#EF5454" width="24.2" height="12.1"/>
-      <rect x="28.6" y="814.3" fill="#5FBA46" width="24.2" height="12.1"/>
-      <text transform="matrix(1 0 0 1 57.283 758.4064)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">CAT 1</text>
-      <text transform="matrix(1 0 0 1 99.183 758.4064)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="10" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 115.483 758.4064)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="24" style="white-space: pre;">      </text>
-      <text transform="matrix(1 0 0 1 289.983 758.4064)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">$228</text>
-      <text transform="matrix(1 0 0 1 56.8455 780.6689)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">CAT 2</text>
-      <text transform="matrix(1 0 0 1 101.0455 780.6689)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="8" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 115.0455 780.6689)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="24" style="white-space: pre;">      </text>
-      <text transform="matrix(1 0 0 1 289.5455 780.6689)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">$208</text>
-      <text transform="matrix(1 0 0 1 56.8349 803.4622)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">CAT 3   </text>
-      <text transform="matrix(1 0 0 1 114.3349 803.4622)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="-2" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 115.0349 803.4622)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="24" style="white-space: pre;">      </text>
-      <text transform="matrix(1 0 0 1 289.5349 803.4622)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">$188</text>
-      <text transform="matrix(1 0 0 1 56.9911 825.4756)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">CAT 4</text>
-      <text transform="matrix(1 0 0 1 101.8911 825.4756)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="8" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 115.1911 825.4756)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="24" style="white-space: pre;">      </text>
-      <text transform="matrix(1 0 0 1 289.6911 825.4756)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">$168</text>
-    </g>
-    <text transform="matrix(1 0 0 1 101.7911 849.426)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="8" style="white-space: pre;"> </text>
-    <g>
-      <text transform="matrix(1 0 0 1 106.1758 871.8638)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="4" style="white-space: pre;"> </text>
-      <rect x="28.8" y="723.5" fill="#2648ED" width="24.2" height="12.1"/>
-      <text transform="matrix(1 0 0 1 57.2503 735.7399)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">VIP</text>
-      <text transform="matrix(1 0 0 1 82.1503 735.7399)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 86.3503 735.7399)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="24" style="white-space: pre;">       </text>
-      <text transform="matrix(1 0 0 1 289.9503 735.7399)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;">$498</text>
-    </g>
-    <g>
-      <text transform="matrix(1 0 0 1 228.5503 894.4591)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 231.7503 894.4591)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="24" style="white-space: pre;">  </text>
-      <text transform="matrix(1 0 0 1 229.8503 918.4095)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="-2" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 229.5349 940.8473)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="-2" style="white-space: pre;"> </text>
-      <text transform="matrix(1 0 0 1 231.3349 940.8473)" fill="#231F20" font-family="'Averta-Regular'" font-size="16px" letter-spacing="24" style="white-space: pre;">  </text>
     </g>
   </g>
   <g id="FOH" enable-background="new    ">
