@@ -79,7 +79,7 @@ public class SectionController extends Utility {
             throw new NonExistentException("Venue does not exist");
         } else if (ticketCategory == null) {
             throw new NonExistentException("Ticket Category does not exist");
-        } else if(sectionRepository.findById(sectionId).orElse(null)!=null){
+        } else if(sectionRepository.findById(sectionId).isPresent()){
             throw new IllegalArgumentException(String.format("Section with id %d already exists", sectionId));
         }
         Section newSection = new Section(sectionId, venue, ticketCategory, noOfRows, noOfSeatsPerRow);
