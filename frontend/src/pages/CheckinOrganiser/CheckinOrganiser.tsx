@@ -4,8 +4,8 @@ import FaceDetection from '@mediapipe/face_detection';
 import { Camera } from '@mediapipe/camera_utils';
 import { NavbarOrganiser } from '../../Navbar';
 import { Navigate } from 'react-router-dom';
-import { Box, Button, Grid, ImageList, ImageListItem } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { Alert, Box, Button, FormControl, Grid, ImageList, ImageListItem, InputLabel, MenuItem, Select, Snackbar, Typography } from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const width = 700;
 const height = 700;
@@ -25,22 +25,144 @@ export const CheckinOrganiser = (): JSX.Element => {
                 height,
             }),
     });
+    //for pop up message => error , warning , info , success
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
     const token = window.localStorage.getItem('accessToken');
     const role = window.localStorage.getItem('role');
-    const organiserId: any = window.localStorage.getItem('id');
+    const organiserId: any = window.localStorage.getItem('id')
+
+    const [fetched, setFetched]: any = React.useState(false);
+    const [eventList, setEventList]: any = React.useState([]);
+    const [eventID, setEventID]: any = useState(null);
+    //retrieve venue from DB
+    const eventFetcher = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/event-organiser/events/${organiserId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                method: 'GET'
+            });
+            if (response.status !== 200) {
+                //show alert msg
+                setOpenSnackbar(true);
+                setAlertType('error');
+                setAlertMsg("error fetching data!!!");
+            } else {
+                const data = await response.json();
+                const sortedArray = data['data'].sort((a:any, b:any) => b.eventId - a.eventId);
+                setEventList(sortedArray);
+                setEventID(sortedArray[0].eventId);
+                setFetched(true);
+            }
+        } catch (err) {
+            window.alert(err);
+        }
+    };
+
+    const handleEvent = (event: any) => {
+        setEventID(event.target.value);
+    };
+
 
     const [image, setImage]: any = useState(null);
     const capture = useCallback(() => {
         const imageSrc = webcamRef.current.getScreenshot();
         setImage(imageSrc);
+        checkFace(imageSrc);
+        setTakePicture(false);
     }, [webcamRef]);
+    //for count down and screenshot
+    const [takePicture, setTakePicture]: any = useState(false);
+    const [countdown, setCountdown] = useState(-1);
 
-    const handleCam = (event: any) => {
-        console.log(webcamRef)
-        capture();
-        console.log(image)
-
+    const [startCheckin, setStartCheckin] = useState(false);
+    const handleStartCheckin = (event: any) => {
+        setStartCheckin(!startCheckin);
+        setCountdown(-1);
     };
+    const buttonColor = startCheckin ? 'error' : 'success';
+
+    const checkFace = (image: any) => {
+        //convert from base64 to file
+        const base64DataWithoutPrefix = image.replace(/^data:image\/\w+;base64,/, '');
+        const binaryImageData = atob(base64DataWithoutPrefix);
+        // Create a Uint8Array from the binary data
+        const uint8Array = new Uint8Array(binaryImageData.length);
+        for (let i = 0; i < binaryImageData.length; i++) {
+            uint8Array[i] = binaryImageData.charCodeAt(i);
+        }
+        // Create a Blob from the Uint8Array
+        const blob = new Blob([uint8Array], { type: 'image/png' }); // Change the type accordingly
+        // Create a File object from the Blob
+        const file = new File([blob], 'image.jpg', { type: 'image/png' });
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('eventID', eventID);
+        //calling create event backend API
+        fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facialVerification`, {
+            // headers: {
+            //     'Authorization': `Bearer ${token}`,
+            // },
+            method: 'POST',
+            body: formData,
+        })
+            .then(async (response) => {
+                if (response.status == 200) {
+                    const apiResponse = await response.json();
+                    setOpenSnackbar(true);
+                    setAlertType('success');
+                    setAlertMsg(apiResponse.message);
+                    setCountdown(-1);
+                } else {
+                    const apiResponse = await response.json();
+                    setOpenSnackbar(true);
+                    setAlertType('warning');
+                    setAlertMsg(apiResponse.message);
+                    setCountdown(-1);
+                }
+            })
+            .catch((err) => {
+                //if transaction faile, enable clickable
+                window.alert(err);
+            });
+    };
+    useEffect(() => {
+        //fetch event for the organiser
+        if (!fetched) {
+            eventFetcher();
+        }
+        if (startCheckin) {
+            //take screenshot
+            if (takePicture) {
+                capture();
+            }
+            if (countdown > 0) {
+                const timer = setTimeout(() => {
+                    setCountdown(countdown - 1);
+                }, 1000); // Countdown every 1 second (1000 milliseconds)
+                return () => clearTimeout(timer);
+            }
+
+            if (countdown == 0) {
+                setTakePicture(true);
+            }
+            if (!detected) {
+                setCountdown(-1);
+            }
+            if (facesDetected == 1 && countdown == -1) {
+                setCountdown(5);
+            }
+        }
+    }, [facesDetected, takePicture, countdown, detected, startCheckin]);
 
     return (
         <Box>
@@ -49,10 +171,34 @@ export const CheckinOrganiser = (): JSX.Element => {
                     <Navigate to="/CheckinOrganiser" /> : <Navigate to="/Forbidden" />
             }
             < NavbarOrganiser />
-            {/* <p>{`Loading: ${isLoading}`}</p>
-            <p>{`Face Detected: ${detected}`}</p>
-            <p>{`Number of faces detected: ${facesDetected}`}</p> */}
-            <Button color="success" variant="contained" sx={{ mt: 5 }} onClick={handleCam}> Capture </Button>
+            <Grid container spacing={3} sx={{ mt: 3, ml: 3, }}>
+                <Grid item xs={12} sm={4}>
+                    <Box sx={{ minWidth: 120 }}>
+                        <FormControl fullWidth>
+                            <InputLabel shrink={Boolean(eventID)}>Event</InputLabel>
+                            <Select
+                                value={eventID}
+                                label="Event"
+                                onChange={handleEvent}
+                                required
+                            >
+                                {eventList.map((event: any) => (
+                                    <MenuItem key={event.eventId} value={event.eventId}>{event.eventName} ({event.eventId})</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Typography>{`Face Detected: ${detected}`}</Typography>
+                    <Typography>{`Number of faces detected: ${facesDetected}`}</Typography>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                    <Button variant="contained" color={buttonColor} onClick={handleStartCheckin} sx={{height:'55px'}}>
+                        {startCheckin ? 'Stop Checkin' : 'Start Checkin'}
+                    </Button>
+                </Grid>
+            </Grid>
+
+
             <Grid container spacing={1} sx={{ alignContent: "center", display: 'flex', justifyContent: 'center' }}>
                 <Grid item xs={12} sm={5}>
                     <Box style={{ width, height, position: 'relative' }}>
@@ -67,13 +213,26 @@ export const CheckinOrganiser = (): JSX.Element => {
                                     width: `${box.width * 100}%`,
                                     height: `${box.height * 100}%`,
                                     zIndex: 1,
-                                }}
-                            />
+                                }} />
                         ))}
+                        {countdown > 0 ?
+                            <div style={{
+                                position: 'absolute',
+                                top: '10px', // Adjust the top position as needed
+                                left: '10px', // Adjust the left position as needed
+                                fontSize: '48px', // Adjust the font size as needed
+                                fontWeight: 'bold',
+                                color: 'red',
+                                zIndex: 1,
+                            }}>
+                                <p>{countdown}</p>
+                            </div>
+                            : null}
                         <Webcam
                             ref={webcamRef}
                             audio={false}
                             forceScreenshotSourceSize
+                            screenshotFormat="image/png"
                             style={{
                                 height,
                                 width,
@@ -82,9 +241,15 @@ export const CheckinOrganiser = (): JSX.Element => {
                     </Box>
                 </Grid>
                 {image ? (
-                    <img src={image} alt="webcam" />
+                    <img src={image} alt="webcam" width="700" height="700" />
                 ) : null}
             </Grid>
+            {/* success / error feedback */}
+            <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
