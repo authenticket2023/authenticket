@@ -158,11 +158,17 @@ public class TicketServiceImpl implements TicketService {
                 //break out of outer loop if tickets for combination is found
                 break;
 
-            } catch (Exception e) {
+            } catch (NotFoundException e) {
                 // Clear ticketList and database if any ticket cannot be found
                 ticketRepository.deleteAll(ticketList);
                 ticketList.clear();
                 System.out.println(e.getMessage());
+            } catch (Exception e) {
+                // Clear ticketList and database if got any error first
+                ticketRepository.deleteAll(ticketList);
+                ticketList.clear();
+                System.out.println(e.getMessage());
+                throw e;
             }
 
         }
@@ -225,7 +231,7 @@ public class TicketServiceImpl implements TicketService {
         return currentSeatMatrix;
     }
 
-    public List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount) throws NotFoundException {
+    public List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount) throws NotFoundException, NonExistentException {
         //getting seat matrix with occupancy, 0 = empty seats, 1 = taken
         int[][] currentSeatMatrix = this.getCurrentSeatMatrix(event, section);
 
@@ -280,6 +286,9 @@ public class TicketServiceImpl implements TicketService {
             }
         }
 
+        throw new NotFoundException(String.format("Consecutive seats of size %d not found ", ticketCount));
+
+
 //            for (int j = 0; j < seatsOccupiedForRow.length - 1; j++) {
 //                //if there are n number of empty seats in between the occupied seats
 //                Integer emptySeatsInBetween = seatsOccupiedForRow[j + 1] - seatsOccupiedForRow[j] -1; //if seat 1 and 5 is occupied, 5-1=4 empty seats which is incorrect, which is why we -1 again
@@ -323,7 +332,6 @@ public class TicketServiceImpl implements TicketService {
 //            }
 //        }
 
-        throw new NotFoundException(String.format("Consecutive seats of size %d not found ", ticketCount));
     }
 
     public String[] getSeatCombinationRank(Integer ticketCount) {
