@@ -262,7 +262,7 @@ public class EventController extends Utility {
                 .collect(Collectors.toList());
 
         if (ticketPrices.size() != 5) {
-            throw new IllegalStateException("Ticket Prices should have 5 values");
+            throw new IllegalArgumentException("Ticket Prices should have 5 values");
         }
 
         eventService.addTicketCategory(1, eventId, ticketPrices.get(0));
@@ -316,7 +316,7 @@ public class EventController extends Utility {
                     .toList();
 
             if (ticketPrices.size() != 5) {
-                throw new IllegalStateException("Ticket Prices should have 5 values");
+                throw new IllegalArgumentException("Ticket Prices should have 5 values");
             }
             eventService.updateTicketPricing(1, eventId, ticketPrices.get(0));
             eventService.updateTicketPricing(2, eventId, ticketPrices.get(1));
