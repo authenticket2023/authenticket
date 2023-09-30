@@ -5,6 +5,7 @@ import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Section;
 import com.authenticket.authenticket.model.Ticket;
 
+
 import java.util.List;
 
 public interface TicketService {
@@ -12,7 +13,8 @@ public interface TicketService {
 
     TicketDisplayDto findTicketById(Integer ticketId);
 
-    //    Ticket saveTicket(Integer userId, Integer eventId, Integer categoryId) throws ApiRequestException;
+    List<TicketDisplayDto> findAllByOrderId(Integer orderId);
+//    Ticket saveTicket(Integer userId, Integer eventId, Integer categoryId) throws ApiRequestException;
 //    Ticket updateTicket(Integer ticketId, Integer userId);
 //    void deleteTicket(Integer ticketId);
 //    void removeTicket(Integer ticketId);

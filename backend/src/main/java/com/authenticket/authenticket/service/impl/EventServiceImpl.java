@@ -141,7 +141,7 @@ public class EventServiceImpl implements EventService {
         if (eventOptional.isPresent()) {
             Event existingEvent = eventOptional.get();
             eventDTOMapper.update(eventUpdateDto, existingEvent);
-
+            existingEvent.setUpdatedAt(LocalDateTime.now());
             // Send email
             String reviewStatus = eventUpdateDto.reviewStatus();
             if (reviewStatus != null) {

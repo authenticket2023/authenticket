@@ -68,7 +68,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
 
-                        .requestMatchers("/api/ticket/**").hasAuthority("USER")
+                        .requestMatchers("/api/ticket/**").hasAnyAuthority("USER", "ADMIN")
 
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserProfile").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserImage").hasAuthority("USER")

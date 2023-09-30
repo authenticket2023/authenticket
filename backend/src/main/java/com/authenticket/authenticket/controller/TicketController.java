@@ -44,6 +44,8 @@ public class TicketController extends Utility {
 
     private final EventRepository eventRepository;
 
+    private final OrderRepository orderRepository;
+
     @Autowired
     public TicketController(TicketRepository ticketRepository,
                             TicketServiceImpl ticketService,
@@ -51,7 +53,8 @@ public class TicketController extends Utility {
                             UserRepository userRepository,
                             EventRepository eventRepository,
                             TicketPricingRepository ticketPricingRepository,
-                            SectionRepository sectionRepository) {
+                            SectionRepository sectionRepository,
+                            OrderRepository orderRepository) {
         this.ticketRepository = ticketRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.userRepository = userRepository;
@@ -59,6 +62,7 @@ public class TicketController extends Utility {
         this.ticketPricingRepository = ticketPricingRepository;
         this.ticketService = ticketService;
         this.sectionRepository = sectionRepository;
+        this.orderRepository = orderRepository;
     }
 
     @GetMapping("/test")
@@ -116,13 +120,15 @@ public class TicketController extends Utility {
 //        return ResponseEntity.ok(savedTicket);
 //    }
 //
+
     @PostMapping
     public ResponseEntity<?> saveTicket(@RequestParam(value = "eventId") Integer eventId,
-                                       @RequestParam(value = "categoryId") Integer categoryId,
-                                       @RequestParam(value = "sectionId") Integer sectionId,
-                                       @RequestParam(value = "rowNo") Integer rowNo,
-                                       @RequestParam(value = "seatNo") Integer seatNo,
-                                       @RequestParam(value = "ticketHolder") String ticketHolder) {
+                                        @RequestParam(value = "categoryId") Integer categoryId,
+                                        @RequestParam(value = "sectionId") Integer sectionId,
+                                        @RequestParam(value = "rowNo") Integer rowNo,
+                                        @RequestParam(value = "seatNo") Integer seatNo,
+                                        @RequestParam(value = "ticketHolder", required = false) String ticketHolder,
+                                        @RequestParam(value = "orderId", required = false) Integer orderId) {
         Optional<Event> optionalEvent = eventRepository.findById(eventId);
         if (optionalEvent.isEmpty()) {
             throw new NonExistentException("Event", eventId);
@@ -148,7 +154,17 @@ public class TicketController extends Utility {
         }
         TicketPricing ticketPricing = optionalTicketPricing.get();
 
-        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder,null);
+
+        Order order = null;
+        if(orderId != null){
+            Optional<Order> optionalOrder = orderRepository.findById(orderId);
+            if (optionalOrder.isPresent()) {
+                order = optionalOrder.get();
+            }
+        }
+
+
+        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder, order);
 
         Ticket savedTicket = ticketService.saveTicket(ticket);
         return ResponseEntity.ok(savedTicket);

@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.repository;
 
+import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -42,4 +43,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Object[]> findAllTicketDetailsBySectionForEvent(@Param("eventId") Integer eventId);
 
     List<Ticket> findAllByTicketPricing_Event_EventId(Integer eventId);
+    List<Ticket> findAllByOrder(Order order);
 }

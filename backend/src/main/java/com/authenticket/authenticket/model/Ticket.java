@@ -3,13 +3,11 @@ package com.authenticket.authenticket.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -58,6 +56,8 @@ public class Ticket extends BaseEntity {
     @JsonIgnore
     @JoinColumn(name = "order_id")
     private Order order;
-
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(ticketId, ticketPricing, ticketHolder, order);
+    }
 }

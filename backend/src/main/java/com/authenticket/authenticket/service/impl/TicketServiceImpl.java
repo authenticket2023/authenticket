@@ -31,20 +31,24 @@ public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
 
-
+    private final OrderRepository orderRepository;
     private final TicketDisplayDtoMapper ticketDisplayDtoMapper;
 
     @Autowired
+
     public TicketServiceImpl(TicketCategoryRepository ticketCategoryRepository,
                              UserRepository userRepository,
                              EventRepository eventRepository,
                              TicketRepository ticketRepository,
                              TicketDisplayDtoMapper ticketDisplayDtoMapper,
-                             SectionRepository sectionRepository, TicketPricingRepository ticketPricingRepository) {
+                             SectionRepository sectionRepository, 
+                             TicketPricingRepository ticketPricingRepository,
+                             OrderRepository orderRepository) {
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.ticketRepository = ticketRepository;
+        this.orderRepository = orderRepository;
         this.ticketDisplayDtoMapper = ticketDisplayDtoMapper;
         this.sectionRepository = sectionRepository;
         this.ticketPricingRepository = ticketPricingRepository;
@@ -64,6 +68,18 @@ public class TicketServiceImpl implements TicketService {
         }
 
         throw new ApiRequestException("Ticket not found");
+    }
+
+    public List<TicketDisplayDto> findAllByOrderId(Integer orderId){
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            return ticketRepository.findAllByOrder(order)
+                    .stream()
+                    .map(ticketDisplayDtoMapper)
+                    .collect(Collectors.toList());
+        }
+        throw new ApiRequestException("Order not found");
     }
 
     public Ticket saveTicket(Ticket ticket) {

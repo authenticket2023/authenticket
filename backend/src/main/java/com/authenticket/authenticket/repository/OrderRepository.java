@@ -18,17 +18,20 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     Page<Order> findByUser(User user, Pageable pageable);
 
-//    @Query(nativeQuery = true,
-//            value = "SELECT " +
-//                    "T.ticket_id, " +
-//                    "T.section_id " +
-//                    "T.row_no, " +
-//                    "T.seat_no, " +
-//                    "T.ticket_holder " +
-//                    "FROM " +
-//                    "dev.Ticket AS T " +
-//                    "JOIN " +
-//                    "dev.Order AS O ON T.order_id = O.order_id " +
-//                    "WHERE O.orderId = :orderId")
-//    List<Object[]> getTicketByOrderId(@Param("orderId") Integer orderId);
+    @Query(nativeQuery = true,
+            value = "SELECT " +
+                    "T.ticket_id, " +
+                    "T.category_id, " +
+                    "T.ticket_id, " +
+                    "T.section_id, " +
+                    "T.row_no, " +
+                    "T.seat_no, " +
+                    "T.ticket_holder, " +
+                    "T.order_id " +
+                    "FROM " +
+                    "dev.Ticket AS T " +
+                    "JOIN " +
+                    "dev.Order AS O ON T.order_id = O.order_id " +
+                    "WHERE O.order_id = :orderId")
+    List<Object[]> getTicketByOrderId(@Param("orderId") Integer orderId);
 }
