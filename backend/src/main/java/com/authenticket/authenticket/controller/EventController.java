@@ -3,6 +3,8 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
@@ -10,8 +12,11 @@ import com.authenticket.authenticket.exception.NotApprovedException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
+import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
+import com.google.zxing.WriterException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +25,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,9 +46,13 @@ import java.util.stream.Collectors;
 public class EventController extends Utility {
     private final EventServiceImpl eventService;
 
+    private final PresaleService presaleService;
+
     private final AmazonS3Service amazonS3Service;
 
     private final EventRepository eventRepository;
+
+    private final UserRepository userRepository;
 
     private final EventOrganiserRepository eventOrganiserRepository;
 
@@ -61,7 +72,9 @@ public class EventController extends Utility {
                            AdminRepository adminRepository,
                            VenueRepository venueRepository,
                            EventTypeRepository eventTypeRepository,
-                           EventDtoMapper eventDtoMapper) {
+                           EventDtoMapper eventDtoMapper,
+                           PresaleService presaleService,
+                           UserRepository userRepository) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
@@ -70,6 +83,8 @@ public class EventController extends Utility {
         this.venueRepository = venueRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.eventDtoMapper = eventDtoMapper;
+        this.presaleService = presaleService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/public/event/test")
@@ -77,6 +92,32 @@ public class EventController extends Utility {
         return "test successful";
     }
 
+    private static final String QR_CODE_IMAGE_PATH = "C:\\Users\\jdgk1\\Documents\\GitHub\\authenticket\\backend\\src\\main\\resources\\static\\img\\QRCode2.png";
+
+    //QR code test
+    @GetMapping("/")
+    public void getQRCode(HttpServletResponse response){
+        String medium="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2OTUzMDA3MjAsImV4cCI6MTY5NTM4NzEyMH0.sOVLhRPpJbKXYEilwzrexxTLEpBs65pfLqEJUedQx8g";
+        String github="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2OTUzMDA3MjAsImV4cCI6MTY5NTM4NzEyMH0.sOVLhRPpJbKXYEilwzrexxTLEpBs65pfLqEJUedQx8g";
+        byte[] image = new byte[0];
+        try {
+
+            // Generate and Return Qr Code in Byte Array
+            image = getQRCodeImage(medium,250,250);
+
+            // Generate and Save Qr Code Image in static/image folder
+            generateQRCodeImage(github,250,250);
+
+            response.setContentType("image/png");
+            byte[] qrCode = getQRCodeImage(github, 500, 500);
+            OutputStream outputStream = response.getOutputStream();
+            outputStream.write(qrCode);
+        } catch (WriterException | IOException e) {
+            e.printStackTrace();
+        }
+        // Convert Byte Array into Base64 Encode String
+        String qrcode = Base64.getEncoder().encodeToString(image);
+    }
 
     @GetMapping("/public/event")
     public ResponseEntity<GeneralApiResponse<Object>> findAllPublicEvent(Pageable pageable) {
@@ -194,7 +235,9 @@ public class EventController extends Utility {
                                        //comma separated string
                                        @RequestParam("artistId") String artistIdString,
                                        //comma separated string
-                                       @RequestParam("ticketPrices") String ticketPricesString) {
+                                       @RequestParam("ticketPrices") String ticketPricesString,
+                                       @RequestParam("hasPresale") Boolean hasPresale,
+                                       @RequestParam("isEnhanced") Boolean isEnhanced) {
         String imageName;
         Event savedEvent;
         //Getting the Respective Objects for Organiser, Venue and Type and checking if it exists
@@ -213,7 +256,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-                    ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
+            ticketSaleDate, 0, 0, null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -277,7 +320,7 @@ public class EventController extends Utility {
         //setting all the fields for event
         OverallEventDto overallEventDto = eventDtoMapper.applyOverallEventDto(savedEvent);
 
-        return ResponseEntity.ok(generateApiResponse(overallEventDto, "Event created successfully."));
+        return ResponseEntity.status(201).body(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
     //without review, so basically targeted towards organiser
@@ -487,6 +530,47 @@ public class EventController extends Utility {
         List<SectionTicketDetailsDto> sectionDetailsForEvent = eventService.findSectionDetailsForEvent(event);
 
         return ResponseEntity.ok(generateApiResponse(sectionDetailsForEvent, String.format("Success returning all section ticket details for event %d", eventId)));
+    }
+
+    @PutMapping("/event/indicateInterest")
+    public ResponseEntity<GeneralApiResponse> userIndicateInterest(@RequestParam Integer userId,
+                                                                   @RequestParam Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        if (LocalDateTime.now().isAfter(event.getTicketSaleDate())) {
+            throw new ApiRequestException("The presale interest indication period for event '" + event.getEventName() + "' has ended.");
+        }
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new NonExistentException("User", userId);
+        }
+
+        presaleService.setPresaleInterest(userOptional.get(), event, false, false);
+        return ResponseEntity.status(201).body(generateApiResponse(null, "Presale interest recorded"));
+    }
+
+    @PutMapping("/event/selectUsers")
+    public ResponseEntity<GeneralApiResponse> eventSelectUsers(@RequestParam Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+        if (!event.getHasPresale()) {
+            throw new IllegalStateException("Event '" + event.getEventName() + "' does not have a presale period");
+        }
+        if (!event.getHasPresaleUsers()) {
+
+            List<User> winners = presaleService.selectPresaleUsersForEvent(eventOptional.get());
+            return ResponseEntity.ok(generateApiResponse(winners, "Users allowed in presale selected"));
+        }
+
+        return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(eventOptional.get(), true), "Already selected winners for event id " + eventId));
     }
 
 //    @PutMapping("/addTicketCategory")

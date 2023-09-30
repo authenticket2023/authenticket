@@ -148,7 +148,6 @@ public class EventServiceImpl implements EventService {
                 if(reviewStatus.equals("approved") || reviewStatus.equals("rejected")) {
                     EventOrganiser eventOrganiser = existingEvent.getOrganiser();
                     // Send email to organiser
-
                     emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildEventReviewEmail(existingEvent), "Event Review");
                 }
             }
@@ -356,11 +355,9 @@ public class EventServiceImpl implements EventService {
         Set<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
         return artistDisplayDtoList;
     }
-
+  
     public List<SectionTicketDetailsDto> findSectionDetailsForEvent(Event event){
         List<SectionTicketDetailsDto> sectionTicketDetailsDtoList = sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
         return sectionTicketDetailsDtoList;
     };
-
-
 }
