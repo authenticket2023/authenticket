@@ -7,8 +7,8 @@ import { Navigate } from 'react-router-dom';
 import { Alert, Box, Button, FormControl, Grid, ImageList, ImageListItem, InputLabel, MenuItem, Select, Snackbar, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 
-const width = 700;
-const height = 700;
+const width = 500;
+const height = 500;
 
 export const CheckinOrganiser = (): JSX.Element => {
     const { webcamRef, boundingBox, isLoading, detected, facesDetected }: any = useFaceDetection({
@@ -188,8 +188,8 @@ export const CheckinOrganiser = (): JSX.Element => {
                             </Select>
                         </FormControl>
                     </Box>
-                    <Typography>{`Face Detected: ${detected}`}</Typography>
-                    <Typography>{`Number of faces detected: ${facesDetected}`}</Typography>
+                    <Typography sx={{mb:1, mt:1}}>{`Face Detected: ${detected}`}</Typography>
+                    <Typography sx={{mb:1}}>{`Number of faces detected: ${facesDetected}`}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                     <Button variant="contained" color={buttonColor} onClick={handleStartCheckin} sx={{height:'55px'}}>
