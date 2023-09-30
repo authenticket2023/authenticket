@@ -5,7 +5,6 @@ import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
@@ -13,7 +12,6 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.service.impl.EventOrganiserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,7 +75,7 @@ public class EventOrganiserController extends Utility {
     }
 
     @GetMapping("/{organiserId}")
-    public ResponseEntity<?> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
+    public ResponseEntity<GeneralApiResponse<Object>> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
         Optional<EventOrganiserDisplayDto> organiserDisplayDtoOptional = eventOrganiserService.findOrganiserById(organiserId);
         return organiserDisplayDtoOptional.map(eventOrganiserDisplayDto ->
                 ResponseEntity.ok(generateApiResponse(eventOrganiserDisplayDto, String.format("Event organiser %d successfully returned.", organiserId))))
@@ -86,7 +84,7 @@ public class EventOrganiserController extends Utility {
     }
 
     @GetMapping("/events/{organiserId}")
-    public ResponseEntity<?> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId) {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId) {
             List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
             if (!events.isEmpty()) {
                 return ResponseEntity.ok(generateApiResponse(events, String.format("All events hosted by organiser %d retrieved successfully", organiserId)));
@@ -109,7 +107,7 @@ public class EventOrganiserController extends Utility {
 //    }
 
     @PostMapping
-    public ResponseEntity<?> saveEventOrganiser(@RequestParam("name") String name,
+    public ResponseEntity<GeneralApiResponse<Object>> saveEventOrganiser(@RequestParam("name") String name,
                                        @RequestParam("email") String email,
                                        @RequestParam("description") String description) {
 
@@ -121,7 +119,7 @@ public class EventOrganiserController extends Utility {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId,
+    public ResponseEntity<GeneralApiResponse<Object>> updateEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId,
                                                   @RequestParam(value = "name", required = false) String name,
                                                   @RequestParam(value = "description", required = false) String description,
                                                   @RequestParam(value = "password", required = false) String password) {
@@ -135,7 +133,7 @@ public class EventOrganiserController extends Utility {
     }
 
     @PutMapping("/image")
-    public ResponseEntity<?> updateOrganiserImage(@RequestParam("organiserId") Integer organiserId,
+    public ResponseEntity<GeneralApiResponse<Object>> updateOrganiserImage(@RequestParam("organiserId") Integer organiserId,
                                                 @RequestParam("file") MultipartFile file) {
         EventOrganiser eventOrganiser;
         try {
@@ -192,15 +190,6 @@ public class EventOrganiserController extends Utility {
             return ResponseEntity.ok(generateApiResponse(null, results.toString()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(generateApiResponse(null, e.getMessage()));
-        }
-    }
-
-    @DeleteMapping("/{organiserId}")
-    public ResponseEntity<?> removeEventOrganiser(@PathVariable("organiserId") Integer organiserId) {
-        try{
-        return ResponseEntity.ok(eventOrganiserService.removeEventOrganiser(organiserId));}
-        catch(DataIntegrityViolationException e){
-            return ResponseEntity.status(409).body(String.format("The organiser with ID %d cannot be deleted because it has associated events.", organiserId));
         }
     }
 }

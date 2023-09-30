@@ -12,7 +12,6 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import com.authenticket.authenticket.service.impl.VenueServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -112,7 +111,7 @@ public class VenueController extends Utility {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateVenue(@RequestParam(value = "venueId") Integer venueId,
+    public ResponseEntity<GeneralApiResponse<Object>> updateVenue(@RequestParam(value = "venueId") Integer venueId,
                                          @RequestParam(value = "venueName") String venueName,
                                          @RequestParam(value = "venueLocation") String venueLocation,
                                          @RequestParam(value = "venueImage") MultipartFile venueImageFile) {

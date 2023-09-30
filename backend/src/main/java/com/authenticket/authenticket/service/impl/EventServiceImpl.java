@@ -234,6 +234,10 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    public void removeAllArtistFromEvent(Integer eventId){
+        eventRepository.deleteAllArtistByEventId(eventId);
+        };
+
     public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
