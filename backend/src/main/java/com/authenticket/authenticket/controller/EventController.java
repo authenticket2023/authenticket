@@ -235,7 +235,9 @@ public class EventController extends Utility {
                                        //comma separated string
                                        @RequestParam("artistId") String artistIdString,
                                        //comma separated string
-                                       @RequestParam("ticketPrices") String ticketPricesString) {
+                                       @RequestParam("ticketPrices") String ticketPricesString,
+                                       @RequestParam("hasPresale") Boolean hasPresale,
+                                       @RequestParam("isEnhanced") Boolean isEnhanced) {
         String imageName;
         Event savedEvent;
         //Getting the Respective Objects for Organiser, Venue and Type and checking if it exists
@@ -254,7 +256,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-            ticketSaleDate, 0, 0, null, "pending", null, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
+            ticketSaleDate, 0, 0, null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
