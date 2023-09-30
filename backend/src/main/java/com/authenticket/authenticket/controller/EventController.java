@@ -509,13 +509,17 @@ public class EventController extends Utility {
         return ResponseEntity.status(201).body(generateApiResponse(null, "Presale interest recorded"));
     }
 
-    @GetMapping("/event/selectUsers")
+    @PutMapping("/event/selectUsers")
     public ResponseEntity<GeneralApiResponse> eventSelectUsers(@RequestParam Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
             throw new NonExistentException("Event", eventId);
         }
-        if (!eventOptional.get().getHasPresaleUsers()) {
+        Event event = eventOptional.get();
+        if (!event.getHasPresale()) {
+            throw new IllegalStateException("Event '" + event.getEventName() + "' does not have a presale period");
+        }
+        if (!event.getHasPresaleUsers()) {
 
             List<User> winners = presaleService.selectPresaleUsersForEvent(eventOptional.get());
             return ResponseEntity.ok(generateApiResponse(winners, "Users allowed in presale selected"));
