@@ -3,7 +3,6 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
-import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
@@ -469,51 +468,6 @@ public class EventController extends Utility {
 
     }
 
-    //getting artist list for one specific event
-//    @GetMapping("/event/getArtistsByEvent")
-//    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
-//        try {
-//            Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
-//            if (artistList.isEmpty()) {
-//                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty", eventId)));
-//
-//            }
-//
-//            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned", eventId)));
-//        } catch (DataIntegrityViolationException e) {
-//            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
-//        }
-//    }
-//
-//    @PutMapping("/event/addTicketCategory")
-//    public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
-//        Integer eventId = jsonFormat.getEventId();
-//        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
-//        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
-//            eventService.addTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice());
-//        }
-//        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
-//    }
-//
-//    @PutMapping("/event/updateTicketCategory")
-//    public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
-//        Integer eventId = jsonFormat.getEventId();
-//        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
-//        Optional<Event> eventOptional = eventRepository.findById(eventId);
-//        if (eventOptional.isPresent()) {
-//            Event event = eventOptional.get();
-//            //resetting value before update
-//            event.setTotalTickets(0);
-//            event.setTotalTicketsSold(0);
-//            eventRepository.save(event);
-//        } else {
-//            throw new NonExistentException("Event does not exist");
-//        }
-//        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
-//            eventService.updateTicketPricing(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice());
-//        }
-//        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
-//    }
 
     @GetMapping("/public/event/section-ticket-details/{eventId}")
     public ResponseEntity<GeneralApiResponse> findAllSectionsByEvent(
@@ -527,7 +481,7 @@ public class EventController extends Utility {
             throw new NotApprovedException("Event", eventId);
         }
 
-        List<SectionTicketDetailsDto> sectionDetailsForEvent = eventService.findSectionDetailsForEvent(event);
+        List<SectionTicketDetailsDto> sectionDetailsForEvent = eventService.findAllSectionDetailsForEvent(event);
 
         return ResponseEntity.ok(generateApiResponse(sectionDetailsForEvent, String.format("Success returning all section ticket details for event %d", eventId)));
     }
@@ -606,4 +560,51 @@ public class EventController extends Utility {
 //        Set<EventTicketCategory> eventTicketCategorySet = optionalEvent.get().getEventTicketCategorySet();
 //        return ResponseEntity.ok(generateApiResponse(eventTicketCategorySet, "Returning event ticket category set"));
 //    }
+
+    //getting artist list for one specific event
+//    @GetMapping("/event/getArtistsByEvent")
+//    public ResponseEntity<GeneralApiResponse> getArtistsForEvent(@RequestParam("eventId") Integer eventId) {
+//        try {
+//            Set<ArtistDisplayDto> artistList = eventService.findArtistForEvent(eventId);
+//            if (artistList.isEmpty()) {
+//                return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d is empty", eventId)));
+//
+//            }
+//
+//            return ResponseEntity.ok(generateApiResponse(artistList, String.format("Artist List for Event %d returned", eventId)));
+//        } catch (DataIntegrityViolationException e) {
+//            return ResponseEntity.ok(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+//        }
+//    }
+//
+//    @PutMapping("/event/addTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> addTicketCategory(@RequestBody JSONFormat jsonFormat) {
+//        Integer eventId = jsonFormat.getEventId();
+//        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
+//        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
+//            eventService.addTicketCategory(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice());
+//        }
+//        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully added to event"));
+//    }
+//
+//    @PutMapping("/event/updateTicketCategory")
+//    public ResponseEntity<GeneralApiResponse> updateTicketCategory(@RequestBody JSONFormat jsonFormat) {
+//        Integer eventId = jsonFormat.getEventId();
+//        TicketCategoryJSON[] ticketCategoryJSONS = jsonFormat.getData();
+//        Optional<Event> eventOptional = eventRepository.findById(eventId);
+//        if (eventOptional.isPresent()) {
+//            Event event = eventOptional.get();
+//            //resetting value before update
+//            event.setTotalTickets(0);
+//            event.setTotalTicketsSold(0);
+//            eventRepository.save(event);
+//        } else {
+//            throw new NonExistentException("Event does not exist");
+//        }
+//        for (TicketCategoryJSON ticketCategoryJSON : ticketCategoryJSONS) {
+//            eventService.updateTicketPricing(ticketCategoryJSON.getCatId(), eventId, ticketCategoryJSON.getPrice());
+//        }
+//        return ResponseEntity.ok(generateApiResponse(eventService.findEventById(eventId), "Ticket Category successfully updated for event"));
+//    }
+
 }

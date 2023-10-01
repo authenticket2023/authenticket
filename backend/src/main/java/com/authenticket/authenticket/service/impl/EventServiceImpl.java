@@ -356,7 +356,7 @@ public class EventServiceImpl implements EventService {
         return artistDisplayDtoList;
     }
   
-    public List<SectionTicketDetailsDto> findSectionDetailsForEvent(Event event){
+    public List<SectionTicketDetailsDto> findAllSectionDetailsForEvent(Event event){
         List<SectionTicketDetailsDto> sectionTicketDetailsDtoList = sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
         return sectionTicketDetailsDtoList;
     };

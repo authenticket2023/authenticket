@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.controller;
 
 
+import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventRepository;
@@ -88,7 +89,26 @@ public class SectionController extends Utility {
         return ResponseEntity.ok(generateApiResponse(section, "Section Created Successfully"));
     }
 
+    @PostMapping("/ticket-details")
+    public ResponseEntity<?> findSectionTicketDetails(
+            @RequestParam(value = "eventId") Integer eventId,
+            @RequestParam(value = "sectionId") Integer sectionId) {
 
+        //get section details
+        Section section = sectionRepository.findById(sectionId).orElse(null);
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        if (section == null) {
+            throw new NonExistentException("Section does not exist");
+        } else if (event ==null) {
+            throw new NonExistentException("Event does not exist");
+        } else if(!event.getVenue().getSections().contains(section)){
+            throw new IllegalArgumentException(String.format("Section %d not connnected to venue of event %d", sectionId,eventId));
+        }
+        List<SectionTicketDetailsDto> sectionTicketDetailsDto = sectionService.findSectionDetail(event,section);
+
+        return ResponseEntity.ok(generateApiResponse(sectionTicketDetailsDto, "Ticket details for section return successfully"));
+    }
 
 
     @PostMapping("/seat-matrix")

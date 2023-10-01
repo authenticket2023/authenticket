@@ -42,6 +42,26 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id ")
     List<Object[]> findAllTicketDetailsBySectionForEvent(@Param("eventId") Integer eventId);
 
+    @Query(
+            nativeQuery = true, value="SELECT e.event_id, " +
+            "s.section_id, " +
+            "s.category_id, " +
+            "(s.no_of_rows * s.no_of_seats_per_row), " +
+            "CAST(COUNT(t) AS INTEGER),  " +
+            "(s.no_of_rows * s.no_of_seats_per_row - CAST(COUNT(t) AS INTEGER)), " +
+            "CASE " +
+            "WHEN COUNT(t) = (s.no_of_rows * s.no_of_seats_per_row) THEN 'Sold Out'" +
+            "WHEN COUNT(t) >= 0.8 * (s.no_of_rows * s.no_of_seats_per_row) THEN 'Selling Fast' " +
+            "ELSE 'Available' " +
+            "END " +
+            "FROM dev.event e "+
+            "JOIN dev.venue v ON e.venue_id = v.venue_id "+
+            "JOIN dev.section s ON v.venue_id = s.venue_id "+
+            "LEFT JOIN dev.ticket t ON s.section_id = t.section_id AND e.event_id = t.event_id "+
+            "WHERE e.event_id = :eventId AND s.section_id = :sectionId "+
+            "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id ")
+    List<Object[]> findTicketDetailsForSection(@Param("eventId") Integer eventId,@Param("sectionId") Integer sectionId );
+
     Integer countAllByTicketPricingEventEventId(Integer eventId);
 
     List<Ticket> findAllByTicketPricing_Event_EventId(Integer eventId);

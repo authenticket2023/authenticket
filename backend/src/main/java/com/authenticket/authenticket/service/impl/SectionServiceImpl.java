@@ -1,5 +1,7 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.section.SectionDtoMapper;
+import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Section;
@@ -25,12 +27,16 @@ public class SectionServiceImpl implements SectionService {
 
     private final SectionRepository sectionRepository;
 
+    private final SectionDtoMapper sectionDtoMapper;
+
+
     private final TicketRepository ticketRepository;
 
     @Autowired
-    public SectionServiceImpl(SectionRepository sectionRepository, TicketRepository ticketRepository) {
+    public SectionServiceImpl(SectionRepository sectionRepository, TicketRepository ticketRepository, SectionDtoMapper sectionDtoMapper) {
         this.sectionRepository = sectionRepository;
         this.ticketRepository = ticketRepository;
+        this.sectionDtoMapper = sectionDtoMapper;
 
     }
 
@@ -67,6 +73,12 @@ public class SectionServiceImpl implements SectionService {
 
         return seatMatrix;
     }
+
+    public List<SectionTicketDetailsDto> findSectionDetail(Event event, Section section){
+        List<SectionTicketDetailsDto> sectionTicketDetailsDto = sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findTicketDetailsForSection(event.getEventId(), section.getSectionId()));
+        return sectionTicketDetailsDto;
+    };
+
 
 
 

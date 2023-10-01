@@ -5,6 +5,7 @@ import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
+import com.authenticket.authenticket.model.Section;
 import org.springframework.data.domain.Pageable;
 
 import java.util.*;
@@ -46,6 +47,6 @@ public interface EventService {
 
     EventDisplayDto removeTicketCategory(Integer catId, Integer eventId);
 
-    List<SectionTicketDetailsDto> findSectionDetailsForEvent(Event event);
+    List<SectionTicketDetailsDto> findAllSectionDetailsForEvent(Event event);
 
 }
