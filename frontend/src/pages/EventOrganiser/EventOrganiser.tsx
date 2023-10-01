@@ -81,8 +81,8 @@ export const EventOrganiser = () => {
     const [saleDate, setSaleDate] = React.useState<Dayjs>(dayjs(currentDateTime));
     const [eventDescription, setEventDescription] = useState('');
     const [otherInfo, setOtherInfo] = useState('');
-    const [facialCheckIn, setFacialCheckIn] = useState(true);
-    const [presale, setPresale] = useState(true);
+    const [facialCheckIn, setFacialCheckIn]: any = useState(true);
+    const [presale, setPresale]: any = useState(true);
 
     //to be remove
     const [ticketNumberVIP, setTicketNumberVIP] = useState(100);
@@ -162,7 +162,8 @@ export const EventOrganiser = () => {
             formData.append('artistId', artistList.toString());
             formData.append('typeId', eventType);
             formData.append('ticketPrices', `${VIPPrice},${cat1Price},${cat2Price},${cat3Price},${cat4Price}`);
-
+            formData.append('isEnhanced', facialCheckIn);
+            formData.append('hasPresale', presale);
             //TODO: add special requirement into formdata, pending BE
             console.log(`${facialCheckIn} - ${presale}`);
             //calling create event backend API
@@ -179,7 +180,7 @@ export const EventOrganiser = () => {
                         setAlertType('success');
                         if (venue == '999') {
                             setAlertMsg(`Your event has been successfully created! Kindly await our administrator's review, and they will get in touch with you shortly to provide further information about the venue.`);
-                        }else {
+                        } else {
                             setAlertMsg('Event created successfully!!! Please wait for our administrator to review!!!');
                         }
                         await delay(2000);
