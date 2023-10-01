@@ -199,7 +199,7 @@ export const Event = () => {
           if (EventsArr.length < 20) {
             if (type == 'current') {
               setHasMoreCur(false);
-            } else {
+            } else if (type == 'past') {
               setHasMorePast(false);
             }
           }
@@ -207,7 +207,7 @@ export const Event = () => {
           if (type == 'current') {
             setCurrEvents((old: any) => [...old, ...EventsArr]);
             setCurrEventPage(currEventPage + 1);
-          } else {
+          } else if (type == 'past') {
             setPastEvents((old: any) => [...old, ...EventsArr]);
             setPastEventPage(pastEventPage + 1);
           }
@@ -232,6 +232,7 @@ export const Event = () => {
     }
     //for current event section
     if (value == 0 && hasMoreCur) {
+      console.log('loading current event')
       loadMoreData('current', currEventPage);
     } else if (value == 0 && !hasMoreCur) {
       console.log('no more current event')
@@ -239,7 +240,8 @@ export const Event = () => {
 
     //for past event section
     if (value == 1 && hasMorePast) {
-      loadMoreData('past', currEventPage);
+      console.log('loading past event')
+      loadMoreData('past', pastEventPage);
     } else if (value == 1 && !hasMorePast) {
       console.log('no more past event')
     }
@@ -251,117 +253,172 @@ export const Event = () => {
   return (
     <div >
       {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
-      {/* i dont know why cannt use percentage for height, i guess we have to use fixed px */}
-      <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-        {/* Section 1 */}
-        <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5, borderColor: '#CACACA', }}>
-          <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
-            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
-            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
-          </Tabs>
-          {/* Search Bar */}
-          <Box
-            component="form"
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 15, paddingRight: 15, width: '50ch', marginTop: -6, marginBottom: 3, marginLeft: 120 }}
-            noValidate
-            autoComplete='off'
-          >
-            <TextField
-              id="input-with-icon-textfield"
-              size="small"
-              label="Search"
-              variant='outlined'
-              fullWidth
-              // onChange={handleSearch}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <IconButton aria-label="filter"
-              // aria-describedby={id}
-              // onClick={handleFilterClick} 
-              sx={{
-                border: "1px solid #8E8E8E",
-                borderRadius: '5px',
-                marginLeft: 1,
-                height: 39.5,
-                width: 39.5,
-                //   backgroundColor: open ? "#30685e" : "white",
-                //   color: open ? "white" : "#30685e",
-                ":hover": {
-                  bgcolor: "#8E8E8E",
-                  color: "white"
-                }
-              }}>
-              <TuneIcon /></IconButton>
+      {/* current events */}
+      {value == 0 ?
+        <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5, borderColor: '#CACACA', }}>
+            <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
+              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
+              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
+            </Tabs>
+            {/* Search Bar */}
+            <Box
+              component="form"
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 15, paddingRight: 15, width: '50ch', marginTop: -6, marginBottom: 3, marginLeft: 120 }}
+              noValidate
+              autoComplete='off'
+            >
+              <TextField
+                id="input-with-icon-textfield"
+                size="small"
+                label="Search"
+                variant='outlined'
+                fullWidth
+                // onChange={handleSearch}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <IconButton aria-label="filter"
+                // aria-describedby={id}
+                // onClick={handleFilterClick} 
+                sx={{
+                  border: "1px solid #8E8E8E",
+                  borderRadius: '5px',
+                  marginLeft: 1,
+                  height: 39.5,
+                  width: 39.5,
+                  //   backgroundColor: open ? "#30685e" : "white",
+                  //   color: open ? "white" : "#30685e",
+                  ":hover": {
+                    bgcolor: "#8E8E8E",
+                    color: "white"
+                  }
+                }}>
+                <TuneIcon /></IconButton>
+            </Box>
+          </Box>
+          <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
+            <CustomTabPanel value={value} index={0} >
+              <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
+                {currEvents.map((event: any, index: any) => (
+                  <React.Fragment key={index}>
+                    {/* offset sm 1*/}
+                    {/* <Grid item xs={12} sm={1} /> */}
+                    <Grid item xs={5}>
+                      <DisplayEvent event={event} />
+                    </Grid>
+                  </React.Fragment>
+                ))}
+
+              </Grid>
+              {/* show if no past events */}
+              {currEvents.length == 0 ?
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography variant='h4'>Stay alert, more exciting events are on the horizon</Typography>
+                </Box> :
+                null
+              }
+              {/* show a loading indicator */}
+              {hasMoreCur ?
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <CircularProgress />
+                </Box> :
+                null
+              }
+            </CustomTabPanel>
           </Box>
         </Box>
+        : null
+      }
 
-        {/* Section 2: current events */}
-        <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
-          <CustomTabPanel value={value} index={0} >
-            <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
-              {currEvents.map((event: any, index: any) => (
-                <React.Fragment key={index}>
-                  {/* offset sm 1*/}
-                  {/* <Grid item xs={12} sm={1} /> */}
-                  <Grid item xs={5}>
-                    <DisplayEvent event={event} />
-                  </Grid>
-                </React.Fragment>
-              ))}
+      {/* Section 2: past events */}
+      {value == 1 ?
+        <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5, borderColor: '#CACACA', }}>
+            <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
+              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
+              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
+            </Tabs>
+            {/* Search Bar */}
+            <Box
+              component="form"
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 15, paddingRight: 15, width: '50ch', marginTop: -6, marginBottom: 3, marginLeft: 120 }}
+              noValidate
+              autoComplete='off'
+            >
+              <TextField
+                id="input-with-icon-textfield"
+                size="small"
+                label="Search"
+                variant='outlined'
+                fullWidth
+                // onChange={handleSearch}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <IconButton aria-label="filter"
+                // aria-describedby={id}
+                // onClick={handleFilterClick} 
+                sx={{
+                  border: "1px solid #8E8E8E",
+                  borderRadius: '5px',
+                  marginLeft: 1,
+                  height: 39.5,
+                  width: 39.5,
+                  //   backgroundColor: open ? "#30685e" : "white",
+                  //   color: open ? "white" : "#30685e",
+                  ":hover": {
+                    bgcolor: "#8E8E8E",
+                    color: "white"
+                  }
+                }}>
+                <TuneIcon /></IconButton>
+            </Box>
+          </Box>
 
-            </Grid>
-               {/* show if no past events */}
-               {currEvents.length == 0 ?
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Typography variant='h4'>Stay alert, more exciting events are on the horizon</Typography>
-              </Box> :
-              null
-            }
-            {/* show a loading indicator */}
-            {hasMoreCur ?
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <CircularProgress />
-              </Box> :
-              null
-            }
-          </CustomTabPanel>
-          {/* Section 2: past events */}
-          <CustomTabPanel value={value} index={1}>
-            <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
-              {pastEvents.map((event: any, index: any) => (
-                <React.Fragment key={index}>
-                  {/* offset sm 1*/}
-                  {/* <Grid item xs={12} sm={1} /> */}
-                  <Grid item xs={5}>
-                    <DisplayEvent event={event} />
-                  </Grid>
-                </React.Fragment>
-              ))}
-            </Grid>
-             {/* show if no past events */}
-             {pastEvents.length == 0 ?
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Typography variant='h4'>There are no events from the past available for viewing.</Typography>
-              </Box> :
-              null
-            }
-            {/* show a loading indicator */}
-            {hasMorePast ?
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <CircularProgress />
-              </Box> :
-              null
-            }
-            
-          </CustomTabPanel>
+          <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
+            <CustomTabPanel value={value} index={1}>
+              <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
+                {pastEvents.map((event: any, index: any) => (
+                  <React.Fragment key={index}>
+                    {/* offset sm 1*/}
+                    {/* <Grid item xs={12} sm={1} /> */}
+                    <Grid item xs={5}>
+                      <DisplayEvent event={event} />
+                    </Grid>
+                  </React.Fragment>
+                ))}
+              </Grid>
+              {/* show if no past events */}
+              {pastEvents.length == 0 ?
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography variant='h4'>There are no events from the past available for viewing.</Typography>
+                </Box> :
+                null
+              }
+              {/* show a loading indicator */}
+              {hasMorePast ?
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <CircularProgress />
+                </Box> :
+                null
+              }
+
+            </CustomTabPanel>
+          </Box>
         </Box>
-      </Box>
+        : null
+      }
 
       <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
         <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
