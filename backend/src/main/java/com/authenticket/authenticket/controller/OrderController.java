@@ -7,12 +7,15 @@ import com.authenticket.authenticket.dto.order.OrderUpdateDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Order;
+import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.OrderRepository;
+import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EmailServiceImpl;
 import com.authenticket.authenticket.service.impl.OrderServiceImpl;
+import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,8 +23,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
@@ -41,18 +47,24 @@ public class OrderController extends Utility {
     private final OrderDtoMapper orderDtoMapper;
     private final UserRepository userRepository;
     private final EmailServiceImpl emailServiceImpl;
+    private final TicketServiceImpl ticketService;
+    private final TicketRepository ticketRepository;
 
     @Autowired
     public OrderController(OrderServiceImpl orderService,
                            OrderRepository orderRepository,
                            OrderDtoMapper orderDtoMapper,
                            UserRepository userRepository,
-                           EmailServiceImpl emailServiceImpl) {
+                           EmailServiceImpl emailServiceImpl,
+                           TicketServiceImpl ticketService,
+                           TicketRepository ticketRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
         this.userRepository = userRepository;
         this.emailServiceImpl = emailServiceImpl;
+        this.ticketService = ticketService;
+        this.ticketRepository = ticketRepository;
     }
 
     @GetMapping("/test")
@@ -108,17 +120,34 @@ public class OrderController extends Utility {
 
     @PostMapping
     public ResponseEntity<GeneralApiResponse> saveOrder(@RequestParam(value = "orderAmount") Double orderAmount,
-                                                        @RequestParam(value = "userId") Integer userId) {
+                                                        @RequestParam(value = "userId") Integer userId,
+                                                        @RequestParam(value = "eventId") Integer eventId,
+                                                        @RequestParam(value = "sectionId") Integer sectionId,
+                                                        @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
             User purchaser = userOptional.get();
+            List<Ticket> ticketList = ticketService.allocateSeats(eventId, sectionId, ticketsToPurchase);
+            for (Ticket ticket : ticketList) {
 
-            Order newOrder = new Order(null, orderAmount, LocalDate.now(), "Pending", purchaser, null);
+            }
+            Set<Ticket> ticketSet = new HashSet<>();
+            Order newOrder = new Order(null, orderAmount, LocalDate.now(), "Pending", purchaser, ticketSet);
 
             Order savedOrder = orderService.saveOrder(newOrder);
 
-            return ResponseEntity.ok(generateApiResponse(savedOrder, "Order successfully recorded"));
+            Set<Ticket> updatedTicketSet = ticketList.stream()
+                    .map(ticket -> {
+                        ticket.setOrder(savedOrder);
+                        return ticket;
+                    })
+                    .collect(Collectors.toSet());
+            ticketRepository.saveAll(updatedTicketSet);
+
+            OrderDisplayDto savedOrderDto = orderDtoMapper.apply(orderRepository.findById(savedOrder.getOrderId()).get());
+
+            return ResponseEntity.ok(generateApiResponse(savedOrderDto, "Order successfully recorded"));
         }
         throw new NonExistentException("User does not exist does not exist");
     }
