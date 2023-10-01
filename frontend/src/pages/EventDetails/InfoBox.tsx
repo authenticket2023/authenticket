@@ -82,6 +82,7 @@ export const InfoBox = (props: any) => {
                               width:'250px',
                               marginTop:8
                             }}
+                            href={`/TicketPurchase/${props.eventId}`}
                           >
                           Buy Tickets
                         </Button>
@@ -155,6 +156,7 @@ export const InfoBoxEnhanced = (props: any) => {
                               width:'250px',
                               marginTop:8
                             }}
+                            href={`/TicketPurchase/${props.eventId}`}
                           >
                           Buy Tickets
                         </Button>

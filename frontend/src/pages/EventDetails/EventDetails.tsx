@@ -218,6 +218,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                       <InfoBox
                         eventDate={eventDetails.eventDate}
                         venueName={eventDetails.venue.venueName}
+                        eventId={eventDetails.eventId}
                       />
 
                     </Grid>
@@ -259,6 +260,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                       <InfoBox
                         eventDate={eventDetails.eventDate}
                         venueName={eventDetails.venue.venueName}
+                        eventId={eventDetails.eventId}
                       />
                     </Grid>
                   </Grid>
@@ -303,6 +305,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                       <InfoBox
                         eventDate={eventDetails.eventDate}
                         venueName={eventDetails.venue.venueName}
+                        eventId={eventDetails.eventId}
                       />
                     </Grid>
                   </Grid>
@@ -344,6 +347,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                       <InfoBox
                         eventDate={eventDetails.eventDate}
                         venueName={eventDetails.venue.venueName}
+                        eventId={eventDetails.eventId}
                       />
                     </Grid>
                   </Grid>
