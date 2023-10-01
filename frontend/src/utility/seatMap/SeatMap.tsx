@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ReactComponent as CTSVG } from "./Capitol Theatre.svg";
-// import {ReactComponent as SgStadSVG} from "./singapore stadium.svg";
+import {ReactComponent as StarTheatre} from "./The Star Theatre.svg";
 import { ReactComponent as SgStadSVG } from "./Singapore National Stadium.svg";
 import './MySVGComponent.css';
 import { Grid } from '@mui/material';
@@ -37,6 +37,7 @@ export function SGStad() {
       <h2>Last Selected Section: {selectedSection}</h2>
       <SgStadSVG onClick={handleSectionClick}/>
       <CTSVG onClick={handleSectionClick}/>
+      <StarTheatre onClick={handleSectionClick}/>
     </Grid>
   );
 }
