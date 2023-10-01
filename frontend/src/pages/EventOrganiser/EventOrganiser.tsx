@@ -165,7 +165,6 @@ export const EventOrganiser = () => {
             formData.append('isEnhanced', facialCheckIn);
             formData.append('hasPresale', presale);
             //TODO: add special requirement into formdata, pending BE
-            console.log(`${facialCheckIn} - ${presale}`);
             //calling create event backend API
             fetch(`${process.env.REACT_APP_BACKEND_URL}/event`, {
                 headers: {
