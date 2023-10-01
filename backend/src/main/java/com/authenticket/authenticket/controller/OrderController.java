@@ -119,8 +119,7 @@ public class OrderController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<GeneralApiResponse> saveOrder(@RequestParam(value = "orderAmount") Double orderAmount,
-                                                        @RequestParam(value = "userId") Integer userId,
+    public ResponseEntity<GeneralApiResponse> saveOrder(@RequestParam(value = "userId") Integer userId,
                                                         @RequestParam(value = "eventId") Integer eventId,
                                                         @RequestParam(value = "sectionId") Integer sectionId,
                                                         @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
@@ -129,10 +128,12 @@ public class OrderController extends Utility {
         if (userOptional.isPresent()) {
             User purchaser = userOptional.get();
             List<Ticket> ticketList = ticketService.allocateSeats(eventId, sectionId, ticketsToPurchase);
+            Double orderAmount = 0.0;
             for (Ticket ticket : ticketList) {
-
+                orderAmount += ticket.getTicketPricing().getPrice();
             }
             Set<Ticket> ticketSet = new HashSet<>();
+
             Order newOrder = new Order(null, orderAmount, LocalDate.now(), "Pending", purchaser, ticketSet);
 
             Order savedOrder = orderService.saveOrder(newOrder);
