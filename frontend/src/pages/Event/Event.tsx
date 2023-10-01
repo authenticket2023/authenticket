@@ -225,11 +225,14 @@ export const Event = () => {
       });
   }
   const handleScroll = (e: any) => {
+    const { scrollHeight, scrollTop, clientHeight } = e.target;
     //use value to determine whether it is in Event or Past Event
-    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    const bottom = scrollHeight - scrollTop <= clientHeight; 
+
     if (!bottom) {
       return;
     }
+
     //for current event section
     if (value == 0 && hasMoreCur) {
       console.log('loading current event')
@@ -239,7 +242,7 @@ export const Event = () => {
     }
 
     //for past event section
-    if (value == 1 && hasMorePast) {
+    if (value  == 1 && hasMorePast) {
       console.log('loading past event')
       loadMoreData('past', pastEventPage);
     } else if (value == 1 && !hasMorePast) {
@@ -302,7 +305,7 @@ export const Event = () => {
                 <TuneIcon /></IconButton>
             </Box>
           </Box>
-          <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
+          <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% + 100)', }}>
             <CustomTabPanel value={value} index={0} >
               <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
                 {currEvents.map((event: any, index: any) => (
