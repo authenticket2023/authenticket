@@ -134,7 +134,7 @@ public class OrderController extends Utility {
             }
             Set<Ticket> ticketSet = new HashSet<>();
 
-            Order newOrder = new Order(null, orderAmount, LocalDate.now(), "Pending", purchaser, ticketSet);
+            Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser, ticketSet);
 
             Order savedOrder = orderService.saveOrder(newOrder);
 
@@ -184,5 +184,24 @@ public class OrderController extends Utility {
                                                                   @RequestParam(value = "orderId") Integer orderId) {
         return ResponseEntity.ok(generateApiResponse(orderService.removeTicketInOrder(ticketId, orderId), "Ticket added successfully"));
     }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<GeneralApiResponse> removeTicketInOrder(@PathVariable(value = "orderId")Integer orderId) {
+        if(orderRepository.findById(orderId).isEmpty()){
+            throw new NonExistentException("Order does not exist");
+        }
+        orderService.removeOrder(orderId);
+        return ResponseEntity.ok(generateApiResponse(null, "Order removed successfully"));
+    }
+
+    @PutMapping("/cancel/{orderId}")
+    public ResponseEntity<GeneralApiResponse> cancelOrder(@PathVariable(value = "orderId")Integer orderId) {
+        if(orderRepository.findById(orderId).isEmpty()){
+            throw new NonExistentException("Order does not exist");
+        }
+        orderService.cancelOrder(orderRepository.findById(orderId).get());
+        return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
+    }
+
 
 }

@@ -6,11 +6,11 @@ import com.authenticket.authenticket.dto.order.OrderUpdateDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
-import com.authenticket.authenticket.dto.user.UserDtoMapper;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.*;
+import com.authenticket.authenticket.model.Order;
+import com.authenticket.authenticket.model.Ticket;
+import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
@@ -18,14 +18,14 @@ import com.authenticket.authenticket.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,19 +38,24 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDtoMapper orderDtoMapper;
 
     private final TicketDisplayDtoMapper ticketDisplayDtoMapper;
+
     private final TicketRepository ticketRepository;
+
+    private TaskScheduler taskScheduler;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
                             OrderDtoMapper orderDtoMapper,
                             TicketDisplayDtoMapper ticketDisplayDtoMapper,
-                            TicketRepository ticketRepository) {
+                            TicketRepository ticketRepository,
+                            TaskScheduler taskScheduler) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDtoMapper = orderDtoMapper;
         this.ticketDisplayDtoMapper = ticketDisplayDtoMapper;
         this.ticketRepository = ticketRepository;
+        this.taskScheduler = taskScheduler;
     }
 
     @Override
@@ -98,7 +103,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order saveOrder(Order order) {
-        return orderRepository.save(order);
+
+        Order savedOrder = orderRepository.save(order);
+
+
+        // Set the scheduled check time for 10 minutes from now
+        LocalDateTime scheduledCheckTime = LocalDateTime.now().plusMinutes(10);
+
+        // Schedule a task to check this order after 10 minutes
+        taskScheduler.schedule(() -> checkOrderPaymentStatus(order),
+                Date.from(scheduledCheckTime.atZone(ZoneId.systemDefault()).toInstant()));
+        return savedOrder;
     }
 
     @Override
@@ -133,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
             List<Object[]> ticketList = orderRepository.getTicketByOrderId(orderId);
             List<TicketDisplayDto> tickets = ticketDisplayDtoMapper.mapTicketObjects(ticketList);
             for (TicketDisplayDto ticketIter : tickets) {
-                if(ticketIter.ticketHolder() != null && ticketIter.ticketHolder().equals(ticketHolder)){
+                if (ticketIter.ticketHolder() != null && ticketIter.ticketHolder().equals(ticketHolder)) {
                     throw new AlreadyExistsException("User already owns one of the tickets linked to order");
                 }
             }
@@ -177,5 +192,32 @@ public class OrderServiceImpl implements OrderService {
         } else {
             throw new NonExistentException("Order does not exist");
         }
+    }
+
+    public void checkOrderPaymentStatus(Order order) {
+        Order realTimeOrder = orderRepository.findById(order.getOrderId()).orElse(null);
+        if (realTimeOrder != null) {
+            // Check the payment status of the order
+            if (realTimeOrder.getOrderStatus().equals(Order.Status.PROCESSING.getStatusValue())) {
+                // Remove or mark the order as canceled, depending on your business logic
+                cancelOrder(order);
+            }
+        } else {
+            throw new NonExistentException("Order does not exist");
+        }
+    }
+
+    public void cancelOrder(Order order) {
+        //updating status to cancelled
+        order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
+        orderRepository.save(order);
+
+        //removing linked tickets
+        List<Ticket> ticketSet = ticketRepository.findAllByOrder(order);
+        ticketRepository.deleteAll(ticketSet);
+    }
+
+    public void removeOrder(Integer orderId) {
+        orderRepository.deleteOrderById(orderId);
     }
 }

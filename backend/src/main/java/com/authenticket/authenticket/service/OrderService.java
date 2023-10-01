@@ -20,4 +20,6 @@ public interface OrderService {
     UserDisplayDto findUserByOrderId(Integer orderId);
     Order saveOrder(Order order);
     Order updateOrder(OrderUpdateDto orderUpdateDto);
+    void checkOrderPaymentStatus(Order order);
+    void removeOrder(Integer orderId);
 }

@@ -5,9 +5,11 @@ import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -34,4 +36,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                     "dev.Order AS O ON T.order_id = O.order_id " +
                     "WHERE O.order_id = :orderId")
     List<Object[]> getTicketByOrderId(@Param("orderId") Integer orderId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM dev.ticket WHERE order_id = :orderId ; " +
+            "DELETE FROM dev.order WHERE order_id = :orderId", nativeQuery = true)
+    void deleteOrderById(@Param("orderId") Integer orderId);
 }

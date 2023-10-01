@@ -17,6 +17,24 @@ import java.util.*;
 @Table(name = "order")
 @EqualsAndHashCode(callSuper = true)
 public class Order extends BaseEntity{
+
+    public enum Status {
+        PROCESSING("Processing"),
+        SUCCESS("Success"),
+        CANCELLED("Cancelled");
+
+        private final String statusValue;
+
+        Status(String statusValue) {
+            this.statusValue = statusValue;
+        }
+
+        public String getStatusValue() {
+            return statusValue;
+        }
+    }
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")

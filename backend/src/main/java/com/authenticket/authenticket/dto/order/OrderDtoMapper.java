@@ -1,11 +1,8 @@
 package com.authenticket.authenticket.dto.order;
 
-import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
-import com.authenticket.authenticket.dto.event.FeaturedEventDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
-import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
