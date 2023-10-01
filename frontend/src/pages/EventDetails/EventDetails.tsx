@@ -226,6 +226,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
 
                 {/* Tab 2: Ticket Pricing */}
                 <CustomTabPanel value={value} index={1}>
+
                 <Grid container spacing={12} style={{}}>
                     <Grid item xs={8}>
                       <Typography style={{font:'Roboto', fontWeight:500, fontSize:'18px'}}>
