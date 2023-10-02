@@ -66,4 +66,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 
     List<Ticket> findAllByTicketPricing_Event_EventId(Integer eventId);
     List<Ticket> findAllByOrder(Order order);
+
+    List<Ticket> findAllByOrderIn(List<Order> order);
 }

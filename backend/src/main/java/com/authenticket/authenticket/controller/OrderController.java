@@ -243,5 +243,14 @@ public class OrderController extends Utility {
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
     }
 
+    @PutMapping("/complete/{orderId}")
+    public ResponseEntity<GeneralApiResponse> complete(@PathVariable(value = "orderId") Integer orderId) {
+        if (orderRepository.findById(orderId).isEmpty()) {
+            throw new NonExistentException("Order does not exist");
+        }
+        orderService.completeOrder(orderRepository.findById(orderId).get());
+        return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
+    }
+
 
 }

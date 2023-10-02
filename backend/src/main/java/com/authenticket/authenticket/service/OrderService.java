@@ -22,4 +22,7 @@ public interface OrderService {
     Order updateOrder(OrderUpdateDto orderUpdateDto);
     void checkOrderPaymentStatus(Order order);
     void removeOrder(Integer orderId);
+    void cancelOrder(Order order);
+    void cancelAllOrder(List<Order> orderList);
+    void completeOrder(Order order);
 }

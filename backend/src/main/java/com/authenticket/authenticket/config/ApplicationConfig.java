@@ -85,8 +85,8 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @PostConstruct
-    public void init() {
-        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Singapore"));
-    }
+//    @PostConstruct
+//    public void init() {
+//        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Singapore"));
+//    }
 }

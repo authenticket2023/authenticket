@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -204,6 +205,7 @@ public class OrderServiceImpl implements OrderService {
         if (realTimeOrder != null) {
             // Check the payment status of the order
             if (realTimeOrder.getOrderStatus().equals(Order.Status.PROCESSING.getStatusValue())) {
+                System.out.println(String.format("Order %d has been cancelled", order.getOrderId()));
                 // Remove or mark the order as canceled, depending on your business logic
                 cancelOrder(order);
             }
@@ -219,10 +221,50 @@ public class OrderServiceImpl implements OrderService {
 
         //removing linked tickets
         List<Ticket> ticketSet = ticketRepository.findAllByOrder(order);
-        ticketRepository.deleteAll(ticketSet);
+        ticketRepository.deleteAllInBatch(ticketSet);
+    }
+
+    public void cancelAllOrder(List<Order> orderList) {
+        // Updating the status of all orders to "CANCELLED"
+        for (Order order : orderList) {
+            order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
+        }
+
+        // Save the updated orders in a single batch
+        orderRepository.saveAll(orderList);
+
+        // Removing linked tickets for all orders in a single batch
+        List<Ticket> ticketsToRemove = ticketRepository.findAllByOrderIn(orderList);
+        ticketRepository.deleteAllInBatch(ticketsToRemove);
+    }
+
+    public void completeOrder(Order order) {
+        //updating status to success
+        order.setOrderStatus(Order.Status.SUCCESS.getStatusValue());
+        orderRepository.save(order);
+
+        //add here generate ticket pdf and email call
+
     }
 
     public void removeOrder(Integer orderId) {
         orderRepository.deleteOrderById(orderId);
+    }
+
+    // cancel all processing orders that have expired every 12 hours
+    @Scheduled(fixedRate = 12 * 60 * 60 * 1000) // 12 hours in milliseconds
+    public void scheduleCancelProcessingOrder() {
+        System.out.println("scheduleCancelProcessingOrder called");
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        //filter out processing orders that has passed its expiry time (10 minutes after created at time)
+        List<Order> ordersToCancel = orderRepository.findAllByOrderStatus(Order.Status.PROCESSING.getStatusValue())
+                .stream()
+                .filter(order -> order.getCreatedAt().plusMinutes(10).isBefore(currentTime))
+                .toList();
+
+        //cancel all the filtered out orders
+        cancelAllOrder(ordersToCancel);
+
     }
 }
