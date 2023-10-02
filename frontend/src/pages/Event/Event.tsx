@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
-import { Alert, Grid, IconButton, InputAdornment, Snackbar, TextField } from '@mui/material';
+import { Alert, Checkbox, FormControlLabel, Grid, IconButton, InputAdornment, List, ListItemButton, ListItemText, Popover, Radio, RadioGroup, Snackbar, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DisplayEvent from './displayEvent';
 import TuneIcon from '@mui/icons-material/Tune';
@@ -45,11 +45,7 @@ function a11yProps(index: number) {
 
 export const Event = () => {
   const token = window.localStorage.getItem('accessToken');
-  useEffect(() => {
-    loadCurrEvents();
-    loadPastEvents();
-  }, []);
-
+  const [dataLoaded, setDataLoaded] = useState(false);
   //for alert
   //error , warning , info , success
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -95,6 +91,7 @@ export const Event = () => {
             setHasMoreCur(false);
           }
           setCurrEvents(currEventsArr);
+          setDataLoaded(true);
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
@@ -140,6 +137,7 @@ export const Event = () => {
             setHasMorePast(false);
           }
           setPastEvents(pastEvents);
+          setDataLoaded(true);
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
@@ -159,21 +157,54 @@ export const Event = () => {
   };
 
   //current search 
+
   const [currentSearchInput, setCurrentSearchInput] = useState('');
   const handleCurrentSearch = (event: any) => {
     setCurrentSearchInput(event.target.value);
-    //reset the hasMore
-    if (event.target.value == '') {
-      setHasMoreCur(true);
-      return;
-    }
-    //for the loading icon
-    if (currEvents.filter((item: any) => item.eventName.toLowerCase().includes(event.target.value)).length < 20) {
-      setHasMoreCur(false);
+  };
+  //current filter
+  const [anchorElCurrent, setAnchorElCurrent] = useState(null);
+  const handleCurrentFilterButtonClick = (event: any) => {
+    setAnchorElCurrent(event.currentTarget);
+  };
+
+  //TODO: enhencement to get from DB
+  const [checkedVenues, setCheckedVenues]: any = useState(['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other']); // State to store checked venues
+  const venues = ['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other']; // Your array of venues
+
+  // Function to handle checkbox change
+  const handleVenueCheckboxChange = (item: any) => {
+    if (checkedVenues.includes(item)) {
+      // If the item is already checked, uncheck it
+      setCheckedVenues(checkedVenues.filter((checkedItem: any) => checkedItem !== item));
     } else {
-      setHasMoreCur(true);
+      // If the item is not checked, check it
+      setCheckedVenues([...checkedVenues, item]);
     }
   };
+
+  const [checkedEventTypes, setCheckedEventTypes]: any = useState(['Musical', 'Concert', 'Sports', 'Others']); // State to store checked venues
+  const eventTypes = ['Musical', 'Concert', 'Sports', 'Others']; // Your array of venues
+  // Function to handle checkbox change
+  const handleEventTypeCheckboxChange = (item: any) => {
+    if (checkedEventTypes.includes(item)) {
+      // If the item is already checked, uncheck it
+      setCheckedEventTypes(checkedEventTypes.filter((checkedItem: any) => checkedItem !== item));
+    } else {
+      // If the item is not checked, check it
+      setCheckedEventTypes([...checkedEventTypes, item]);
+    }
+
+  };
+  const filteredEvents = currEvents.filter((item: any) => {
+    const nameMatch = item.eventName.toLowerCase().includes(currentSearchInput.toLowerCase());
+    const venueMatch = checkedVenues.includes(item.eventVenue);
+    const eventTypeMatch = checkedEventTypes.includes(item.eventType);
+    return nameMatch && venueMatch && eventTypeMatch;
+  });
+
+
+
   //past search
   const [pastSearchInput, setPastSearchInput] = useState('');
   const handlePastSearch = (event: any) => {
@@ -282,7 +313,18 @@ export const Event = () => {
 
   }
 
-
+  useEffect(() => {
+    if (!dataLoaded) {
+      loadCurrEvents();
+      loadPastEvents();
+    } else {
+      if (filteredEvents.length < 20) {
+        setHasMoreCur(false);
+      } else {
+        setHasMoreCur(true);
+      }
+    }
+  }, [currentSearchInput, checkedEventTypes, checkedVenues]);
 
   return (
     <div >
@@ -318,8 +360,7 @@ export const Event = () => {
                 }}
               />
               <IconButton aria-label="filter"
-                // aria-describedby={id}
-                // onClick={handleFilterClick} 
+                onClick={handleCurrentFilterButtonClick}
                 sx={{
                   border: "1px solid #8E8E8E",
                   borderRadius: '5px',
@@ -333,22 +374,78 @@ export const Event = () => {
                     color: "white"
                   }
                 }}>
-                <TuneIcon /></IconButton>
+                <TuneIcon />
+              </IconButton>
+              {/* Current Filterr */}
+              <Popover
+                open={Boolean(anchorElCurrent)}
+                anchorEl={anchorElCurrent}
+                onClose={() => setAnchorElCurrent(null)}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+              >
+                <Box sx={{ minWidth: 150, mr: 1, ml: 1 }}>
+                  <Typography sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }} variant="body1" color="textSecondary">Venue</Typography>
+                  {venues.map((item, index) => (
+                    <Box key={index}>
+                      <Checkbox
+                        checked={checkedVenues.includes(item)}
+                        onChange={() => handleVenueCheckboxChange(item)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                      />
+                      {item}
+                    </Box>
+                  ))}
+                  <Typography sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }} variant="body1" color="textSecondary">Type</Typography>
+                  {eventTypes.map((item, index) => (
+                    <Box key={index}>
+                      <Checkbox
+                        checked={checkedEventTypes.includes(item)}
+                        onChange={() => handleEventTypeCheckboxChange(item)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                      />
+                      {item}
+                    </Box>
+                  ))}
+
+                </Box>
+              </Popover>
             </Box>
           </Box>
           <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% + 100)', }}>
             <CustomTabPanel value={value} index={0} >
               <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
-                {currEvents.filter((item: any) => item.eventName.toLowerCase().includes(currentSearchInput)).map((event: any, index: any) => (
-                  <React.Fragment key={index}>
-                    <Grid item xs={5}>
-                      <DisplayEvent event={event} />
-                    </Grid>
-                  </React.Fragment>
-                ))}
+                {currEvents.filter((item: any) => {
+                  // Check if the event name contains the search input
+                  const nameMatch = item.eventName.toLowerCase().includes(currentSearchInput.toLowerCase());
+                  // Check if the venue is included in the checkedVenues array
+                  const venueMatch = checkedVenues.includes(item.eventVenue);
+                  // Check if the venue is included in the checkedVenues array
+                  const eventTypeMatch = checkedEventTypes.includes(item.eventType);
+                  // Return true if both conditions are met
+                  return nameMatch && venueMatch && eventTypeMatch;
+                })
+                  .map((event: any, index: any) => (
+                    <React.Fragment key={index}>
+                      <Grid item xs={5}>
+                        <DisplayEvent event={event} />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
                 {/* Conditional rendering for "No Match Found" message */}
                 {currEvents.length > 0 &&
-                  currEvents.filter((item: any) => item.eventName.toLowerCase().includes(currentSearchInput)).length === 0 && (
+                  currEvents.filter((item: any) => {
+                    // Check if the event name contains the search input
+                    const nameMatch = item.eventName.toLowerCase().includes(currentSearchInput.toLowerCase());
+                    // Check if the venue is included in the checkedVenues array
+                    const venueMatch = checkedVenues.includes(item.eventVenue);
+                    // Check if the venue is included in the checkedVenues array
+                    const eventTypeMatch = checkedEventTypes.includes(item.eventType);
+                    // Return true if both conditions are met
+                    return nameMatch && venueMatch && eventTypeMatch;
+                  }).length === 0 && (
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       <Typography variant="h4" color="textSecondary">
                         No Match Found
