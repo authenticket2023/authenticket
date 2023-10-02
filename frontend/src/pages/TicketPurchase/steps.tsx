@@ -17,19 +17,20 @@ export function SelectSeats(props: any) {
     return (
         <div style={{display:'flex', justifyContent:'center', flexDirection:'column', alignItems:'center'}}>
             <SGStad id={props.eventDetails.venue.venueId} />
-            <div style={{background:'#F8F8F8', height:'90px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:-460}}>
+            <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:-460}}>
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
                     Ticket Quantity
                 </Typography>
-                <Box sx={{ minWidth: 120 }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Quantity</InputLabel>
+                <Box sx={{ minWidth: 120, marginLeft:2 }}>
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                        <InputLabel id="demo-select-small-label">Quantity</InputLabel>
                         <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
+                        labelId="demo-select-small-label"
+                        id="demo-select-small"
                         value={quantity}
                         label="Quantity"
                         onChange={handleChange}
+                        style={{fontSize:'13px'}}
                         >
                             <MenuItem value={1}>1</MenuItem>
                             <MenuItem value={2}>2</MenuItem>
@@ -39,6 +40,14 @@ export function SelectSeats(props: any) {
                         </Select>
                     </FormControl>
                 </Box>
+            </div>
+            <div style={{background:'#F8F8F8', height:'160px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:5}}>
+                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+                    Summary
+                </Typography>
+                <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
+                    Items Subtotal:
+                </Typography>
             </div>
         </div>
     )
