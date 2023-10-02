@@ -276,6 +276,7 @@ public class EventController extends Utility {
             eventService.addArtistToEvent(artistId, eventId);
         }
 
+        //adding ticket pricing for each cat
         List<Double> ticketPrices = Arrays.stream(ticketPricesString.split(","))
                 .map(Double::parseDouble)
                 .collect(Collectors.toList());
@@ -393,12 +394,6 @@ public class EventController extends Utility {
         }
     }
 
-    //response not handled yet
-//    @DeleteMapping("/event/{eventId}")
-//    public String removeEvent(@PathVariable("eventId") Integer eventId) {
-//        return eventService.removeEvent(eventId);
-//    }
-
     @PutMapping("/event/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
             @RequestParam("artistId") Integer artistId,
@@ -414,7 +409,6 @@ public class EventController extends Utility {
             return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
         }
     }
-
 
     @PostMapping("/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
@@ -447,13 +441,8 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse> findAllSectionsByEvent(
             @PathVariable("eventId") Integer eventId) {
         Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null) {
-            throw new NonExistentException("Event does not exist");
-        } else if (event.getDeletedAt() != null) {
-            throw new AlreadyDeletedException("Event", eventId);
-        } else if (!event.getReviewStatus().equals("approved")) {
-            throw new NotApprovedException("Event", eventId);
-        }
+
+        checkIfEventExistsAndIsApprovedAndNotDeleted(eventId);
 
         List<SectionTicketDetailsDto> sectionDetailsForEvent = eventService.findAllSectionDetailsForEvent(event);
 

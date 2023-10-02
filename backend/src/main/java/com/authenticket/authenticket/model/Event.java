@@ -19,6 +19,22 @@ import java.util.Objects;
 @Table(name = "event")
 @EqualsAndHashCode(callSuper = true)
 public class Event extends BaseEntity {
+
+    public enum ReviewStatus {
+        APPROVED("approved"),
+        PENDING("pending"),
+        REJECTED("rejected");
+
+        private final String reviewStatus;
+
+        ReviewStatus(String statusValue) {
+            this.reviewStatus = statusValue;
+        }
+
+        public String getStatusValue() {
+            return reviewStatus;
+        }
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -41,12 +57,6 @@ public class Event extends BaseEntity {
 
     @Column(name = "ticket_sale_date")
     private LocalDateTime ticketSaleDate;
-
-//    @Column(name = "total_tickets")
-//    private Integer totalTickets;
-
-//    @Column(name = "total_tickets_sold")
-//    private Integer totalTicketsSold;
 
     @ManyToOne
     @JsonIgnore

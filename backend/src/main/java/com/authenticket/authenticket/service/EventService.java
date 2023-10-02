@@ -31,14 +31,8 @@ public interface EventService {
     Event saveEvent (Event event);
     FeaturedEventDto saveFeaturedEvent (FeaturedEvent featuredEvent);
     Event updateEvent (EventUpdateDto eventUpdateDto);
-
     //updates deleted_at field with datetime, DOES NOT really remove the event
     String deleteEvent (Integer eventId);
-    //actually removes the event
-    String removeEvent (Integer eventId);
-    Event approveEvent (Integer eventId, Integer adminId);
-//    Event rejectEvent (Integer eventId);
-
     Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
     EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId);
     EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price);

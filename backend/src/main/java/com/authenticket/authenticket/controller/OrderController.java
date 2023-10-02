@@ -132,6 +132,8 @@ public class OrderController extends Utility {
                                                         @RequestParam(value = "ticketHolderString", required = false) String ticketHolderString) {
         Optional<User> userOptional = userRepository.findById(userId);
 
+        checkIfEventExistsAndIsApprovedAndNotDeleted(eventId);
+
 
         if (userOptional.isPresent()) {
             User purchaser = userOptional.get();

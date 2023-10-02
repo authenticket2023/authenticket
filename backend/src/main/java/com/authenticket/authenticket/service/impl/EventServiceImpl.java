@@ -72,7 +72,7 @@ public class EventServiceImpl implements EventService {
 
     //get all events for home page
     public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull(Event.ReviewStatus.APPROVED.getStatusValue(),pageable).getContent());
     }
 
 
@@ -92,7 +92,7 @@ public class EventServiceImpl implements EventService {
     }
     //find recently added events by created at date for home
     public List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved", pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(Event.ReviewStatus.APPROVED.getStatusValue(), pageable).getContent());
 
     }
 
@@ -108,17 +108,17 @@ public class EventServiceImpl implements EventService {
 
     public List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
     }
 
     public List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc("approved", currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
     }
 
     public List<EventHomeDto> findPastEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc("approved", currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
     }
 
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
@@ -145,7 +145,7 @@ public class EventServiceImpl implements EventService {
             // Send email
             String reviewStatus = eventUpdateDto.reviewStatus();
             if (reviewStatus != null) {
-                if(reviewStatus.equals("approved") || reviewStatus.equals("rejected")) {
+                if(reviewStatus.equals(Event.ReviewStatus.APPROVED.getStatusValue()) || reviewStatus.equals(Event.ReviewStatus.REJECTED.getStatusValue())) {
                     EventOrganiser eventOrganiser = existingEvent.getOrganiser();
                     // Send email to organiser
                     emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildEventReviewEmail(existingEvent), "Event Review");
@@ -173,39 +173,11 @@ public class EventServiceImpl implements EventService {
                 return String.format("Event %d is successfully deleted.", eventId);
             }
         } else {
-            return String.format("Event %d does not exist, deletion unsuccessful.", eventId);
+            throw new NonExistentException("Event", eventId);
         }
 
     }
 
-    public String removeEvent(Integer eventId) {
-
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-
-        if (eventOptional.isPresent()) {
-            Event event = eventOptional.get();
-            String imageName = event.getEventImage();
-            if (event.getEventImage() != null) {
-                amazonS3Service.deleteFile(imageName, "event_organiser_profile");
-            }
-            eventRepository.deleteById(eventId);
-            return "event removed successfully";
-        }
-        return "error: event does not exist";
-
-    }
-
-    public Event approveEvent(Integer eventId, Integer adminId) {
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-
-        if (eventOptional.isPresent()) {
-            Event event = eventOptional.get();
-//            event.setReviewedBy(adminId);
-            eventRepository.save(event);
-            return event;
-        }
-        return null;
-    }
 
     public EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
@@ -357,7 +329,6 @@ public class EventServiceImpl implements EventService {
     }
   
     public List<SectionTicketDetailsDto> findAllSectionDetailsForEvent(Event event){
-        List<SectionTicketDetailsDto> sectionTicketDetailsDtoList = sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
-        return sectionTicketDetailsDtoList;
+        return sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
     };
 }
