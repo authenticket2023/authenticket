@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
-import { Alert, Checkbox, FormControlLabel, Grid, IconButton, InputAdornment, List, ListItemButton, ListItemText, Popover, Radio, RadioGroup, Snackbar, TextField } from '@mui/material';
+import { Alert, Checkbox, Grid, IconButton, InputAdornment, Popover, Snackbar, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DisplayEvent from './displayEvent';
 import TuneIcon from '@mui/icons-material/Tune';
