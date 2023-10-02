@@ -10,7 +10,7 @@
 - Frontend (React) : Node V18 (Typescript)
 - Backend(Spring Boot) : Java JDK 17 
   - You need to add `secrets.properties` to `backend/src/main/resources/` . Please contact us to get the file.
-### Accounts for testing
+### Accounts for development
 - User
   - Account : `blzl.l.gtsj@gmail.com`
   - Password : `password`  
