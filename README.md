@@ -23,6 +23,10 @@
 ## Docker
 ### build and run both frontend & backend
 - At root directory => `docker compose up`
+### Pull image from docker hub
+- `docker pull panmingwei/authenticket-frontend`
+- `docker pull panmingwei/authenticket-backend`
+- `docker pull panmingwei/authenticket-facial`
 ### frontend
 - cd to 'authenticket/frontend'
   - Build the image : `docker build -t authenticket-frontend .`
