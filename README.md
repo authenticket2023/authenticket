@@ -10,6 +10,16 @@
 - Frontend (React) : Node V18 (Typescript)
 - Backend(Spring Boot) : Java JDK 17 
   - You need to add `secrets.properties` to `backend/src/main/resources/` . Please contact us to get the file.
+### Accounts for testing
+- User
+  - Account : `blzl.l.gtsj@gmail.com`
+  - Password : `password`  
+- Organiser
+  - Account : `authenticket2023@gmail.com`
+  - Password : `password`  
+- Admin
+  - Account : `admin@admin.com`
+  - Password : `admin`   
 ## Docker
 ### build and run both frontend & backend
 - At root directory => `docker compose up`
