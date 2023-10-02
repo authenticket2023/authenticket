@@ -158,6 +158,37 @@ export const Event = () => {
     setValue(newValue);
   };
 
+  //current search 
+  const [currentSearchInput, setCurrentSearchInput] = useState('');
+  const handleCurrentSearch = (event: any) => {
+    setCurrentSearchInput(event.target.value);
+    //reset the hasMore
+    if (event.target.value == '') {
+      setHasMoreCur(true);
+      return;
+    }
+    //for the loading icon
+    if (currEvents.filter((item: any) => item.eventName.toLowerCase().includes(event.target.value)).length < 20) {
+      setHasMoreCur(false);
+    } else {
+      setHasMoreCur(true);
+    }
+  };
+  //past search
+  const [pastSearchInput, setPastSearchInput] = useState('');
+  const handlePastSearch = (event: any) => {
+    setPastSearchInput(event.target.value);
+
+    if (event.target.value == '') {
+      setHasMorePast(true);
+      return;
+    }
+    if (pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(event.target.value)).length < 20) {
+      setHasMorePast(false);
+    } else {
+      setHasMorePast(true);
+    }
+  };
 
   //lazy load
   const [hasMoreCur, setHasMoreCur] = useState(true);
@@ -227,7 +258,7 @@ export const Event = () => {
   const handleScroll = (e: any) => {
     const { scrollHeight, scrollTop, clientHeight } = e.target;
     //use value to determine whether it is in Event or Past Event
-    const bottom = scrollHeight - scrollTop <= clientHeight; 
+    const bottom = scrollHeight - scrollTop <= clientHeight;
 
     if (!bottom) {
       return;
@@ -242,7 +273,7 @@ export const Event = () => {
     }
 
     //for past event section
-    if (value  == 1 && hasMorePast) {
+    if (value == 1 && hasMorePast) {
       console.log('loading past event')
       loadMoreData('past', pastEventPage);
     } else if (value == 1 && !hasMorePast) {
@@ -272,12 +303,12 @@ export const Event = () => {
               autoComplete='off'
             >
               <TextField
-                id="input-with-icon-textfield"
+                id="current search"
                 size="small"
                 label="Search"
                 variant='outlined'
                 fullWidth
-                // onChange={handleSearch}
+                onChange={handleCurrentSearch}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -308,16 +339,22 @@ export const Event = () => {
           <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% + 100)', }}>
             <CustomTabPanel value={value} index={0} >
               <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
-                {currEvents.map((event: any, index: any) => (
+                {currEvents.filter((item: any) => item.eventName.toLowerCase().includes(currentSearchInput)).map((event: any, index: any) => (
                   <React.Fragment key={index}>
-                    {/* offset sm 1*/}
-                    {/* <Grid item xs={12} sm={1} /> */}
                     <Grid item xs={5}>
                       <DisplayEvent event={event} />
                     </Grid>
                   </React.Fragment>
                 ))}
-
+                {/* Conditional rendering for "No Match Found" message */}
+                {currEvents.length > 0 &&
+                  currEvents.filter((item: any) => item.eventName.toLowerCase().includes(currentSearchInput)).length === 0 && (
+                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <Typography variant="h4" color="textSecondary">
+                        No Match Found
+                      </Typography>
+                    </Grid>
+                  )}
               </Grid>
               {/* show if no past events */}
               {currEvents.length == 0 ?
@@ -355,12 +392,12 @@ export const Event = () => {
               autoComplete='off'
             >
               <TextField
-                id="input-with-icon-textfield"
+                id="past search"
                 size="small"
                 label="Search"
                 variant='outlined'
                 fullWidth
-                // onChange={handleSearch}
+                onChange={handlePastSearch}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -392,15 +429,22 @@ export const Event = () => {
           <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
             <CustomTabPanel value={value} index={1}>
               <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
-                {pastEvents.map((event: any, index: any) => (
+                {pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(pastSearchInput)).map((event: any, index: any) => (
                   <React.Fragment key={index}>
-                    {/* offset sm 1*/}
-                    {/* <Grid item xs={12} sm={1} /> */}
                     <Grid item xs={5}>
                       <DisplayEvent event={event} />
                     </Grid>
                   </React.Fragment>
                 ))}
+                {/* Conditional rendering for "No Match Found" message */}
+                {pastEvents.length > 0 &&
+                  pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(pastSearchInput)).length === 0 && (
+                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <Typography variant="h4" color="textSecondary">
+                        No Match Found
+                      </Typography>
+                    </Grid>
+                  )}
               </Grid>
               {/* show if no past events */}
               {pastEvents.length == 0 ?
