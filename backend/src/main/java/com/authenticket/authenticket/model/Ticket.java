@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 @Table(name = "ticket")
-public class Ticket extends BaseEntity {
+public class Ticket extends BaseEntity implements Comparable<Ticket> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ticket_id")
@@ -59,5 +59,10 @@ public class Ticket extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(ticketId, ticketPricing, ticketHolder, order);
+    }
+
+    @Override
+    public int compareTo(Ticket t) {
+        return ticketId - t.getTicketId();
     }
 }

@@ -14,6 +14,7 @@ import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
+import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final TicketRepository ticketRepository;
 
-    private TaskScheduler taskScheduler;
+    private final TaskScheduler taskScheduler;
+
+    private final EmailService emailService;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
@@ -49,13 +52,15 @@ public class OrderServiceImpl implements OrderService {
                             OrderDtoMapper orderDtoMapper,
                             TicketDisplayDtoMapper ticketDisplayDtoMapper,
                             TicketRepository ticketRepository,
-                            TaskScheduler taskScheduler) {
+                            TaskScheduler taskScheduler,
+                            EmailService emailService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDtoMapper = orderDtoMapper;
         this.ticketDisplayDtoMapper = ticketDisplayDtoMapper;
         this.ticketRepository = ticketRepository;
         this.taskScheduler = taskScheduler;
+        this.emailService = emailService;
     }
 
     @Override

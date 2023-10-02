@@ -32,6 +32,11 @@ public class TicketPricing {
     private Double price;
 
     @Override
+    public String toString(){
+        return "Ticket Pricing: { " + cat.toString() + ", EventID: " + event.getEventId() + ", Price: " + price + " }";
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(event, cat);
     }

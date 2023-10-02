@@ -43,27 +43,4 @@ public class Utility {
                     .build();
         }
     }
-
-    public static byte[] generateQRCodeImage(String text, int width, int height)
-            throws WriterException, IOException {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", byteArrayOutputStream);
-        return byteArrayOutputStream.toByteArray();
-    }
-
-
-    public static byte[] getQRCodeImage(String text, int width, int height) throws WriterException, IOException {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-
-        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
-        MatrixToImageConfig con = new MatrixToImageConfig( 0xFF000002 , 0xFFFFC041 ) ;
-
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream,con);
-        byte[] pngData = pngOutputStream.toByteArray();
-        return pngData;
-    }
 }

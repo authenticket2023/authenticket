@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
@@ -89,33 +90,6 @@ public class EventController extends Utility {
     @GetMapping("/public/event/test")
     public String test() {
         return "test successful";
-    }
-
-    private static final String QR_CODE_IMAGE_PATH = "C:\\Users\\jdgk1\\Documents\\GitHub\\authenticket\\backend\\src\\main\\resources\\static\\img\\QRCode2.png";
-
-    //QR code test
-    @GetMapping("/")
-    public void getQRCode(HttpServletResponse response){
-        String medium="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2OTUzMDA3MjAsImV4cCI6MTY5NTM4NzEyMH0.sOVLhRPpJbKXYEilwzrexxTLEpBs65pfLqEJUedQx8g";
-        String github="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5jb20iLCJpYXQiOjE2OTUzMDA3MjAsImV4cCI6MTY5NTM4NzEyMH0.sOVLhRPpJbKXYEilwzrexxTLEpBs65pfLqEJUedQx8g";
-        byte[] image = new byte[0];
-        try {
-
-            // Generate and Return Qr Code in Byte Array
-            image = getQRCodeImage(medium,250,250);
-
-            // Generate and Save Qr Code Image in static/image folder
-            generateQRCodeImage(github,250,250);
-
-            response.setContentType("image/png");
-            byte[] qrCode = getQRCodeImage(github, 500, 500);
-            OutputStream outputStream = response.getOutputStream();
-            outputStream.write(qrCode);
-        } catch (WriterException | IOException e) {
-            e.printStackTrace();
-        }
-        // Convert Byte Array into Base64 Encode String
-        String qrcode = Base64.getEncoder().encodeToString(image);
     }
 
     @GetMapping("/public/event")

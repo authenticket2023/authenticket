@@ -4,19 +4,28 @@ import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.PresaleInterest;
 import com.authenticket.authenticket.repository.PresaleInterestRepository;
 import com.authenticket.authenticket.service.EmailService;
+import jakarta.activation.DataHandler;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+
+import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
+
+import jakarta.mail.util.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 @Service
@@ -48,11 +57,11 @@ public class EmailServiceImpl implements EmailService {
     private String smtpPassword;
 
     @Async
-    public void send(String to, String email, String subject) {
+    public void send(String to, String body, String subject) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            helper.setText(email, true);
+            helper.setText(body, true);
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setFrom(smtpUsername);
@@ -65,6 +74,33 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             LOGGER.error("failed to send email (2)", e);
             throw new IllegalStateException("failed to send email");
+        }
+    }
+
+    public void send(String to, String subject, String body, String fileName, InputStreamResource file) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body);
+            helper.setFrom(smtpUsername);
+
+            InputStream inputStream = file.getInputStream();
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(inputStream, "application/pdf");
+
+            helper.addAttachment(fileName, dataSource);
+            helper.addAttachment("power", dataSource);
+
+            mailSender.setUsername(smtpUsername);
+            mailSender.setPassword(smtpPassword);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            LOGGER.error("failed to send email (1)", e);
+            throw new IllegalStateException("failed to send email with attachment");
+        } catch (Exception e) {
+            LOGGER.error("failed to send email (2)", e);
+            throw new IllegalStateException("failed to send email with attachment");
         }
     }
 

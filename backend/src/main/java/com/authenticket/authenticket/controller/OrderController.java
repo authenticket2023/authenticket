@@ -5,6 +5,7 @@ import com.authenticket.authenticket.dto.order.OrderDisplayDto;
 import com.authenticket.authenticket.dto.order.OrderDtoMapper;
 import com.authenticket.authenticket.dto.order.OrderUpdateDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.Ticket;
@@ -12,8 +13,9 @@ import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
+import com.authenticket.authenticket.service.EmailService;
+import com.authenticket.authenticket.service.PDFGenerator;
 import com.authenticket.authenticket.service.Utility;
-import com.authenticket.authenticket.service.impl.EmailServiceImpl;
 import com.authenticket.authenticket.service.impl.OrderServiceImpl;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,9 @@ public class OrderController extends Utility {
     private final OrderRepository orderRepository;
     private final OrderDtoMapper orderDtoMapper;
     private final UserRepository userRepository;
-    private final EmailServiceImpl emailServiceImpl;
+    private final EmailService emailService;
+
+    private final PDFGenerator pdfGenerator;
     private final TicketServiceImpl ticketService;
     private final TicketRepository ticketRepository;
 
@@ -55,14 +59,15 @@ public class OrderController extends Utility {
                            OrderRepository orderRepository,
                            OrderDtoMapper orderDtoMapper,
                            UserRepository userRepository,
-                           EmailServiceImpl emailServiceImpl,
-                           TicketServiceImpl ticketService,
+                           EmailService emailService,
+                           PDFGenerator pdfGenerator, TicketServiceImpl ticketService,
                            TicketRepository ticketRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
         this.userRepository = userRepository;
-        this.emailServiceImpl = emailServiceImpl;
+        this.emailService = emailService;
+        this.pdfGenerator = pdfGenerator;
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
     }
@@ -145,7 +150,14 @@ public class OrderController extends Utility {
                     })
                     .collect(Collectors.toSet());
             ticketRepository.saveAll(updatedTicketSet);
-
+//            try{
+//
+//                System.out.println(ticketSet);
+//                newOrder.setTicketSet(updatedTicketSet);
+//                pdfGenerator.generateOrderDetails(newOrder);
+////                emailService.send("chuayikai1612@gmail.com", "Test", "Test", "test.pdf", pdfGenerator.generateOrderDetails(newOrder, updatedTicketSet) );
+//            }catch (Exception e) {throw new ApiRequestException(e.getMessage());
+//            }
             OrderDisplayDto savedOrderDto = orderDtoMapper.apply(orderRepository.findById(savedOrder.getOrderId()).get());
 
             return ResponseEntity.ok(generateApiResponse(savedOrderDto, "Order successfully recorded"));

@@ -182,6 +182,7 @@ public class TicketServiceImpl implements TicketService {
                 // Clear ticketList and database if got any error first
                 ticketRepository.deleteAll(ticketList);
                 ticketList.clear();
+                e.printStackTrace();
                 System.out.println(e.getMessage());
                 throw e;
             }
