@@ -5,11 +5,12 @@ import com.authenticket.authenticket.dto.order.OrderDisplayDto;
 import com.authenticket.authenticket.dto.order.OrderDtoMapper;
 import com.authenticket.authenticket.dto.order.OrderUpdateDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
-import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.model.User;
+import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
@@ -25,10 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -53,6 +51,7 @@ public class OrderController extends Utility {
     private final PDFGenerator pdfGenerator;
     private final TicketServiceImpl ticketService;
     private final TicketRepository ticketRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
     public OrderController(OrderServiceImpl orderService,
@@ -61,7 +60,8 @@ public class OrderController extends Utility {
                            UserRepository userRepository,
                            EmailService emailService,
                            PDFGenerator pdfGenerator, TicketServiceImpl ticketService,
-                           TicketRepository ticketRepository) {
+                           TicketRepository ticketRepository,
+                           EventRepository eventRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
@@ -70,6 +70,7 @@ public class OrderController extends Utility {
         this.pdfGenerator = pdfGenerator;
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
+        this.eventRepository = eventRepository;
     }
 
     @GetMapping("/test")
@@ -127,8 +128,10 @@ public class OrderController extends Utility {
     public ResponseEntity<GeneralApiResponse> saveOrder(@RequestParam(value = "userId") Integer userId,
                                                         @RequestParam(value = "eventId") Integer eventId,
                                                         @RequestParam(value = "sectionId") Integer sectionId,
-                                                        @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
+                                                        @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase,
+                                                        @RequestParam(value = "ticketHolderString", required = false) String ticketHolderString) {
         Optional<User> userOptional = userRepository.findById(userId);
+
 
         if (userOptional.isPresent()) {
             User purchaser = userOptional.get();
@@ -143,13 +146,38 @@ public class OrderController extends Utility {
 
             Order savedOrder = orderService.saveOrder(newOrder);
 
-            Set<Ticket> updatedTicketSet = ticketList.stream()
+            List<Ticket> updatedTicketList = ticketList.stream()
                     .map(ticket -> {
                         ticket.setOrder(savedOrder);
                         return ticket;
                     })
-                    .collect(Collectors.toSet());
-            ticketRepository.saveAll(updatedTicketSet);
+                    .collect(Collectors.toList());
+
+
+            //check if event is enhanced and if ticket holder provided is == ticketsToPurchase
+            Event event = eventRepository.findById(eventId).orElse(null);
+            if (event != null && event.getIsEnhanced()) {
+                if(ticketHolderString==null){
+                    throw new IllegalArgumentException("Ticket holder list not provided");
+                }
+
+                List<String> ticketHolderList = Arrays.stream(ticketHolderString.split(",")).toList();
+                Set<String> uniqueTicketHoldersSet = new HashSet<>(ticketHolderList);
+
+                if(ticketHolderList.size() != uniqueTicketHoldersSet.size()){
+                    throw new IllegalArgumentException("Ticket holder names must be unique!");
+                }
+                if (uniqueTicketHoldersSet.size() == ticketsToPurchase) {
+                    for (int i = 0; i < ticketHolderList.size(); i++) {
+                        String ticketHolder = ticketHolderList.get(i);
+                        Ticket ticket = updatedTicketList.get(i);
+                        ticket.setTicketHolder(ticketHolder);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Number of ticket holder provided not equal to number of tickets user wants to purchase");
+                }
+            }
+            ticketRepository.saveAll(updatedTicketList);
 //            try{
 //
 //                System.out.println(ticketSet);
@@ -198,8 +226,8 @@ public class OrderController extends Utility {
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<GeneralApiResponse> removeTicketInOrder(@PathVariable(value = "orderId")Integer orderId) {
-        if(orderRepository.findById(orderId).isEmpty()){
+    public ResponseEntity<GeneralApiResponse> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
+        if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
         orderService.removeOrder(orderId);
@@ -207,8 +235,8 @@ public class OrderController extends Utility {
     }
 
     @PutMapping("/cancel/{orderId}")
-    public ResponseEntity<GeneralApiResponse> cancelOrder(@PathVariable(value = "orderId")Integer orderId) {
-        if(orderRepository.findById(orderId).isEmpty()){
+    public ResponseEntity<GeneralApiResponse> cancelOrder(@PathVariable(value = "orderId") Integer orderId) {
+        if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
         orderService.cancelOrder(orderRepository.findById(orderId).get());
