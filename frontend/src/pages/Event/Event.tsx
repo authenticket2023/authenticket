@@ -361,7 +361,7 @@ export const Event = () => {
         setHasMorePast(true);
       }
     }
-  }, [currentSearchInput, checkedEventTypes, checkedVenues,pastSearchInput, checkedEventTypesPast, checkedVenuesPast]);
+  }, [currentSearchInput, checkedEventTypes, checkedVenues, pastSearchInput, checkedEventTypesPast, checkedVenuesPast]);
 
   return (
     <div >
@@ -369,23 +369,22 @@ export const Event = () => {
       {/* current events */}
       {value == 0 ?
         <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5, borderColor: '#CACACA', }}>
-            <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
-              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
-              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
-            </Tabs>
+          <Grid container sx={{ borderBottom: 1, borderColor: '#CACACA', mt: 4, }}>
+            <Grid item xs={12} sm={6}>
+              <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
+                <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
+                <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
+              </Tabs>
+            </Grid>
             {/* Search Bar */}
-            <Box
-              component="form"
-              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 15, paddingRight: 15, width: '50ch', marginTop: -6, marginBottom: 3, marginLeft: 120 }}
-              noValidate
-              autoComplete='off'
-            >
+
+            <Grid item xs={12} sm={1} sx={{ mr: 7 }} />
+            <Grid item xs={12} sm={3} sx={{ mb: 1 }}>
               <TextField
-                id="current search"
+                id="current-search"
                 size="small"
                 label="Search"
-                variant='outlined'
+                variant="outlined"
                 fullWidth
                 onChange={handleCurrentSearch}
                 InputProps={{
@@ -396,10 +395,13 @@ export const Event = () => {
                   ),
                 }}
               />
-              <IconButton aria-label="filter"
+            </Grid>
+            <Grid item xs={12} sm={1} sx={{ mb: 1 }}>
+              <IconButton
+                aria-label="filter"
                 onClick={handleCurrentFilterButtonClick}
                 sx={{
-                  border: "1px solid #8E8E8E",
+                  border: '1px solid #8E8E8E',
                   borderRadius: '5px',
                   marginLeft: 1,
                   height: 39.5,
@@ -408,10 +410,10 @@ export const Event = () => {
                     bgcolor: "#8E8E8E",
                     color: "white"
                   }
-                }}>
+                }}
+              >
                 <TuneIcon />
               </IconButton>
-              {/* Current Filterr */}
               <Popover
                 open={Boolean(anchorElCurrent)}
                 anchorEl={anchorElCurrent}
@@ -422,7 +424,13 @@ export const Event = () => {
                 }}
               >
                 <Box sx={{ minWidth: 150, mr: 1, ml: 1 }}>
-                  <Typography sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }} variant="body1" color="textSecondary">Venue</Typography>
+                  <Typography
+                    sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }}
+                    variant="body1"
+                    color="textSecondary"
+                  >
+                    Venue
+                  </Typography>
                   {venues.map((item, index) => (
                     <Box key={index}>
                       <Checkbox
@@ -433,7 +441,13 @@ export const Event = () => {
                       {item}
                     </Box>
                   ))}
-                  <Typography sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }} variant="body1" color="textSecondary">Type</Typography>
+                  <Typography
+                    sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }}
+                    variant="body1"
+                    color="textSecondary"
+                  >
+                    Type
+                  </Typography>
                   {eventTypes.map((item, index) => (
                     <Box key={index}>
                       <Checkbox
@@ -444,11 +458,11 @@ export const Event = () => {
                       {item}
                     </Box>
                   ))}
-
                 </Box>
               </Popover>
-            </Box>
-          </Box>
+            </Grid>
+          </Grid>
+
           <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% + 100)', }}>
             <CustomTabPanel value={value} index={0} >
               <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
@@ -504,6 +518,7 @@ export const Event = () => {
               }
             </CustomTabPanel>
           </Box>
+
         </Box>
         : null
       }
@@ -511,18 +526,18 @@ export const Event = () => {
       {/* Section 2: past events */}
       {value == 1 ?
         <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5, borderColor: '#CACACA', }}>
-            <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
-              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
-              <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
-            </Tabs>
+          <Grid container sx={{ borderBottom: 1, borderColor: '#CACACA', mt: 4, }}>
+
+            <Grid item xs={12} sm={6}>
+              <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
+                <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
+                <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
+              </Tabs>
+            </Grid>
             {/* Search Bar */}
-            <Box
-              component="form"
-              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 15, paddingRight: 15, width: '50ch', marginTop: -6, marginBottom: 3, marginLeft: 120 }}
-              noValidate
-              autoComplete='off'
-            >
+
+            <Grid item xs={12} sm={1} sx={{ mr: 7 }} />
+            <Grid item xs={12} sm={3} sx={{ mb: 1 }}>
               <TextField
                 id="past search"
                 size="small"
@@ -538,6 +553,8 @@ export const Event = () => {
                   ),
                 }}
               />
+            </Grid>
+            <Grid item xs={12} sm={1} sx={{ mb: 1 }}>
               <IconButton aria-label="filter"
                 onClick={handlePastFilterButtonClick}
                 sx={{
@@ -588,28 +605,12 @@ export const Event = () => {
 
                 </Box>
               </Popover>
-            </Box>
-          </Box>
+            </Grid>
+          </Grid>
 
           <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
             <CustomTabPanel value={value} index={1}>
               <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
-                {/* {pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(pastSearchInput)).map((event: any, index: any) => (
-                  <React.Fragment key={index}>
-                    <Grid item xs={5}>
-                      <DisplayEvent event={event} />
-                    </Grid>
-                  </React.Fragment>
-                ))} */}
-                {/* Conditional rendering for "No Match Found" message */}
-                {/* {pastEvents.length > 0 &&
-                  pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(pastSearchInput)).length === 0 && (
-                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <Typography variant="h4" color="textSecondary">
-                        No Match Found
-                      </Typography>
-                    </Grid>
-                  )} */}
                 {pastEvents.filter((item: any) => {
                   // Check if the event name contains the search input
                   const nameMatch = item.eventName.toLowerCase().includes(pastSearchInput.toLowerCase());
@@ -664,6 +665,7 @@ export const Event = () => {
 
             </CustomTabPanel>
           </Box>
+
         </Box>
         : null
       }
