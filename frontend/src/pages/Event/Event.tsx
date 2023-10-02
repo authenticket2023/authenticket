@@ -170,7 +170,7 @@ export const Event = () => {
 
   //TODO: enhencement to get from DB
   const [checkedVenues, setCheckedVenues]: any = useState(['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other']); // State to store checked venues
-  const venues = ['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other']; // Your array of venues
+  const venues = ['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other'];
 
   // Function to handle checkbox change
   const handleVenueCheckboxChange = (item: any) => {
@@ -184,7 +184,7 @@ export const Event = () => {
   };
 
   const [checkedEventTypes, setCheckedEventTypes]: any = useState(['Musical', 'Concert', 'Sports', 'Others']); // State to store checked venues
-  const eventTypes = ['Musical', 'Concert', 'Sports', 'Others']; // Your array of venues
+  const eventTypes = ['Musical', 'Concert', 'Sports', 'Others'];
   // Function to handle checkbox change
   const handleEventTypeCheckboxChange = (item: any) => {
     if (checkedEventTypes.includes(item)) {
@@ -209,17 +209,47 @@ export const Event = () => {
   const [pastSearchInput, setPastSearchInput] = useState('');
   const handlePastSearch = (event: any) => {
     setPastSearchInput(event.target.value);
+  };
 
-    if (event.target.value == '') {
-      setHasMorePast(true);
-      return;
-    }
-    if (pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(event.target.value)).length < 20) {
-      setHasMorePast(false);
+  //current filter
+  const [anchorElPast, setAnchorElPast] = useState(null);
+  const handlePastFilterButtonClick = (event: any) => {
+    setAnchorElPast(event.currentTarget);
+  };
+
+  //TODO: enhencement to get from DB
+  const [checkedVenuesPast, setCheckedVenuesPast]: any = useState(['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other']); // State to store checked venues
+  // const venues = ['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other'];
+  // Function to handle checkbox change
+  const handleVenueCheckboxChangePast = (item: any) => {
+    if (checkedVenuesPast.includes(item)) {
+      // If the item is already checked, uncheck it
+      setCheckedVenuesPast(checkedVenuesPast.filter((checkedItem: any) => checkedItem !== item));
     } else {
-      setHasMorePast(true);
+      // If the item is not checked, check it
+      setCheckedVenuesPast([...checkedVenuesPast, item]);
     }
   };
+
+  const [checkedEventTypesPast, setCheckedEventTypesPast]: any = useState(['Musical', 'Concert', 'Sports', 'Others']); // State to store checked venues
+  // const eventTypes = ['Musical', 'Concert', 'Sports', 'Others'];
+  // Function to handle checkbox change
+  const handleEventTypeCheckboxChangePast = (item: any) => {
+    if (checkedEventTypesPast.includes(item)) {
+      // If the item is already checked, uncheck it
+      setCheckedEventTypesPast(checkedEventTypesPast.filter((checkedItem: any) => checkedItem !== item));
+    } else {
+      // If the item is not checked, check it
+      setCheckedEventTypesPast([...checkedEventTypesPast, item]);
+    }
+
+  };
+  const filteredEventsPast = pastEvents.filter((item: any) => {
+    const nameMatch = item.eventName.toLowerCase().includes(pastSearchInput.toLowerCase());
+    const venueMatch = checkedVenuesPast.includes(item.eventVenue);
+    const eventTypeMatch = checkedEventTypesPast.includes(item.eventType);
+    return nameMatch && venueMatch && eventTypeMatch;
+  });
 
   //lazy load
   const [hasMoreCur, setHasMoreCur] = useState(true);
@@ -318,13 +348,20 @@ export const Event = () => {
       loadCurrEvents();
       loadPastEvents();
     } else {
+      //current event
       if (filteredEvents.length < 20) {
         setHasMoreCur(false);
       } else {
         setHasMoreCur(true);
       }
+      //past event
+      if (filteredEventsPast.length < 20) {
+        setHasMorePast(false);
+      } else {
+        setHasMorePast(true);
+      }
     }
-  }, [currentSearchInput, checkedEventTypes, checkedVenues]);
+  }, [currentSearchInput, checkedEventTypes, checkedVenues,pastSearchInput, checkedEventTypesPast, checkedVenuesPast]);
 
   return (
     <div >
@@ -367,8 +404,6 @@ export const Event = () => {
                   marginLeft: 1,
                   height: 39.5,
                   width: 39.5,
-                  //   backgroundColor: open ? "#30685e" : "white",
-                  //   color: open ? "white" : "#30685e",
                   ":hover": {
                     bgcolor: "#8E8E8E",
                     color: "white"
@@ -504,44 +539,113 @@ export const Event = () => {
                 }}
               />
               <IconButton aria-label="filter"
-                // aria-describedby={id}
-                // onClick={handleFilterClick} 
+                onClick={handlePastFilterButtonClick}
                 sx={{
                   border: "1px solid #8E8E8E",
                   borderRadius: '5px',
                   marginLeft: 1,
                   height: 39.5,
                   width: 39.5,
-                  //   backgroundColor: open ? "#30685e" : "white",
-                  //   color: open ? "white" : "#30685e",
                   ":hover": {
                     bgcolor: "#8E8E8E",
                     color: "white"
                   }
                 }}>
-                <TuneIcon /></IconButton>
+                <TuneIcon />
+              </IconButton>
+              <Popover
+                open={Boolean(anchorElPast)}
+                anchorEl={anchorElPast}
+                onClose={() => setAnchorElPast(null)}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+              >
+                <Box sx={{ minWidth: 150, mr: 1, ml: 1 }}>
+                  <Typography sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }} variant="body1" color="textSecondary">Venue</Typography>
+                  {venues.map((item, index) => (
+                    <Box key={index}>
+                      <Checkbox
+                        checked={checkedVenuesPast.includes(item)}
+                        onChange={() => handleVenueCheckboxChangePast(item)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                      />
+                      {item}
+                    </Box>
+                  ))}
+                  <Typography sx={{ borderBottom: '2px solid #000', display: 'inline-block', mb: 1, mt: 1 }} variant="body1" color="textSecondary">Type</Typography>
+                  {eventTypes.map((item, index) => (
+                    <Box key={index}>
+                      <Checkbox
+                        checked={checkedEventTypesPast.includes(item)}
+                        onChange={() => handleEventTypeCheckboxChangePast(item)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                      />
+                      {item}
+                    </Box>
+                  ))}
+
+                </Box>
+              </Popover>
             </Box>
           </Box>
 
           <Box onScroll={handleScroll} sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
             <CustomTabPanel value={value} index={1}>
               <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
-                {pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(pastSearchInput)).map((event: any, index: any) => (
+                {/* {pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(pastSearchInput)).map((event: any, index: any) => (
                   <React.Fragment key={index}>
                     <Grid item xs={5}>
                       <DisplayEvent event={event} />
                     </Grid>
                   </React.Fragment>
-                ))}
+                ))} */}
                 {/* Conditional rendering for "No Match Found" message */}
-                {pastEvents.length > 0 &&
+                {/* {pastEvents.length > 0 &&
                   pastEvents.filter((item: any) => item.eventName.toLowerCase().includes(pastSearchInput)).length === 0 && (
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                       <Typography variant="h4" color="textSecondary">
                         No Match Found
                       </Typography>
                     </Grid>
+                  )} */}
+                {pastEvents.filter((item: any) => {
+                  // Check if the event name contains the search input
+                  const nameMatch = item.eventName.toLowerCase().includes(pastSearchInput.toLowerCase());
+                  // Check if the venue is included in the checkedVenues array
+                  const venueMatch = checkedVenuesPast.includes(item.eventVenue);
+                  // Check if the venue is included in the checkedVenues array
+                  const eventTypeMatch = checkedEventTypesPast.includes(item.eventType);
+                  // Return true if both conditions are met
+                  return nameMatch && venueMatch && eventTypeMatch;
+                })
+                  .map((event: any, index: any) => (
+                    <React.Fragment key={index}>
+                      <Grid item xs={5}>
+                        <DisplayEvent event={event} />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
+                {/* Conditional rendering for "No Match Found" message */}
+                {pastEvents.length > 0 &&
+                  pastEvents.filter((item: any) => {
+                    // Check if the event name contains the search input
+                    const nameMatch = item.eventName.toLowerCase().includes(pastSearchInput.toLowerCase());
+                    // Check if the venue is included in the checkedVenues array
+                    const venueMatch = checkedVenuesPast.includes(item.eventVenue);
+                    // Check if the venue is included in the checkedVenues array
+                    const eventTypeMatch = checkedEventTypesPast.includes(item.eventType);
+                    // Return true if both conditions are met
+                    return nameMatch && venueMatch && eventTypeMatch;
+                  }).length === 0 && (
+                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <Typography variant="h4" color="textSecondary">
+                        No Match Found
+                      </Typography>
+                    </Grid>
                   )}
+
               </Grid>
               {/* show if no past events */}
               {pastEvents.length == 0 ?
