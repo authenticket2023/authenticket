@@ -14,6 +14,8 @@ import Check from '@mui/icons-material/Check';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import { StepIconProps } from '@mui/material/StepIcon';
 import { Countertops } from '@mui/icons-material';
+import { Sheet } from '@mui/joy';
+import { SelectSeats, EnterDetails, Confirmation, ConfirmationFace, Payment } from './steps';
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -88,6 +90,7 @@ export const PurchaseSteps = (props: any) => {
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
     }>({});
+    const [isClicked, setIsClicked] = useState(false);
 
     const totalSteps = () => {
         return steps.length;
@@ -135,11 +138,29 @@ export const PurchaseSteps = (props: any) => {
         setCompleted({});
     };
 
+    //for pop up message => error , warning , info , success
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
+    //handle purchase
+    const handlePurchase = () => {
+
+    }
+
     return (
         <div>
             <Stepper alternativeLabel activeStep={activeStep} connector={<QontoConnector />}>
                 {steps.map((label, index) => (
-                <Step key={label} completed={completed[index]}>
+                <Step key={label} completed={completed[index]}
+                sx={{
+                    '& .MuiStepLabel-root .Mui-active': {
+                        color: '#FF5C35', // circle color (ACTIVE)
+                      },
+                }}>
                     <StepButton onClick={handleStep(index)} >
                         {label}
                     </StepButton>
@@ -147,6 +168,66 @@ export const PurchaseSteps = (props: any) => {
                 </Step>
                 ))}
             </Stepper>
+
+            <div>
+                {allStepsCompleted() ? (
+                        <React.Fragment>
+                            <Typography sx={{ mt: 2, mb: 1 }}>
+                                All steps completed - you&apos;re finished
+                            </Typography>
+                            <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
+                                <Button onClick={handlePurchase} variant="contained" style={{textTransform: "none", fontSize: "16px" }} disabled={isClicked}>
+                                    {isClicked ? 'Processing Purchase' : 'Purchase Successful'}
+                                </Button>
+                            </Sheet>
+                        </React.Fragment>
+                    ) : (
+                        <React.Fragment>
+
+                            {activeStep == 0 ? <SelectSeats
+                                categoryDetails={props.categoryDetails}
+                                eventDetails={props.eventDetails}
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
+                                : null}
+
+                            {activeStep == 1 ? <Confirmation
+
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
+                            /> : null}
+
+                            {activeStep == 2 ? <Payment
+                                
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
+                            /> : null}
+
+                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                {/* <Button
+                                    color="inherit"
+                                    disabled={activeStep === 0}
+                                    onClick={handleBack}
+                                    sx={{ mr: 1 }}
+                                >
+                                    Back
+                                </Button>
+                                <Box sx={{ flex: '1 1 auto' }} />
+                                <Button onClick={handleNext} sx={{ mr: 1 }}>
+                                    Next
+                                </Button> */}
+                                {activeStep !== steps.length &&
+                                    (completed[activeStep] ? (
+                                        <Typography variant="caption" sx={{ display: 'inline-block' }}>
+                                            Step {activeStep + 1} already completed
+                                        </Typography>
+                                    ) : (
+                                        null
+                                    ))}
+                            </Box>
+                        </React.Fragment>
+                    )}
+            </div>
         </div>
     )
 }
