@@ -9,7 +9,7 @@ import { Grid, Typography } from '@mui/material';
 export function SGStad(props: any) {
   const [selectedSection, setSelectedSection] = useState('');
   const [pregrandParentG, setPregrandParentG]: any = useState(null);
-  console.log(props.id);
+  // console.log(props.id);
 
   const handleSectionClick = (event: React.MouseEvent<SVGElement>) => {
     //remove the previous grandParentG filter class
@@ -40,7 +40,7 @@ export function SGStad(props: any) {
       {props.id === 3 ? <CTSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 4 ? <SgStadSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : null}
       {/* <SgStadSVG onClick={handleSectionClick}/>
       <CTSVG onClick={handleSectionClick}/> */}
-      <div style={{background:'#F8F8F8', height:'90px', width:'300px', borderRadius:'8px', alignContent:'left', display:'flex', flexDirection:'column', marginTop:95, marginLeft:0}}>
+      <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', display:'flex', flexDirection:'column', marginTop:125, marginLeft:0}}>
         <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
           You have selected
         </Typography>

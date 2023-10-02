@@ -1,3 +1,4 @@
+import { BorderColor } from '@mui/icons-material';
 import {
     Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel, SelectChangeEvent
 } from '@mui/material';
@@ -6,18 +7,99 @@ import { SGStad } from '../utility/SeatMap';
 
 export function SelectSeats(props: any) {
 
+    useEffect(() => {
+        loadStatus()
+    }, []);
+
+    //set variables
     const [quantity, setQuantity] = React.useState('');
+    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
+    const [selectedSection, setSelectedSection] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
+    const loadStatus = async () => {
+        // //calling backend API
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            method: 'GET',
+          })
+            .then(async (response) => {
+              if (response.status == 200) {
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                console.log(data);
+                setSectionDetails(data);
+  
+              } else {
+                //passing to parent component
+              }
+            })
+            .catch((err) => {
+              window.alert(err);
+            });
+    }
 
     const handleChange = (event: SelectChangeEvent) => {
         setQuantity(event.target.value as string);
+
+        // Find the selected section
+        const selectedSectionData = sectionDetails.find(
+            (item) => item.sectionId === selectedSection
+        );
+
+        // Check if the selectedSectionData exists
+        if (selectedSectionData) {
+            const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
+
+            // Error message if the ticket order is bigger than the max consecutive seats
+            if (parseInt(quantity) > maxConsecutiveSeats) {
+            setOpenSnackbar(true);
+            setAlertType('warning');
+            setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
+            }
+        }
     };
+
+    const handleSeats = () => {
+
+        // Find the selected section
+        const selectedSectionData = sectionDetails.find(
+            (item) => item.sectionId === selectedSection
+        );
+
+        // Check if the selectedSectionData exists
+        if (selectedSectionData) {
+            const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
+
+            // Error message if the ticket order is bigger than the max consecutive seats
+            if (parseInt(quantity) > maxConsecutiveSeats) {
+            setOpenSnackbar(true);
+            setAlertType('warning');
+            setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
+            } else {
+                props.handleComplete();
+            }
+        }
+    }
 
     // console.log(props.eventDetails.venue.venueId)
     
     return (
         <div style={{display:'flex', justifyContent:'center', flexDirection:'column', alignItems:'center'}}>
-            <SGStad id={props.eventDetails.venue.venueId} />
-            <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:-460}}>
+            <div>
+                <SGStad id={props.eventDetails.venue.venueId} selectedSection={selectedSection} setSelectedSection={setSelectedSection}/>
+                <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:675, marginTop:-457}}>
+                Status: {sectionDetails ? (sectionDetails.find((item: { sectionId: never[]; }) => item.sectionId === selectedSection)?.status || 'Unknown') : 'Loading...'}
+                </Typography>
+            </div>
+            <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:25}}>
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
                     Ticket Quantity
                 </Typography>
@@ -41,15 +123,31 @@ export function SelectSeats(props: any) {
                     </FormControl>
                 </Box>
             </div>
-            <div style={{background:'#F8F8F8', height:'160px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:5}}>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
-                    Summary
-                </Typography>
-                <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
-                    Items Subtotal:
-                </Typography>
-            </div>
+            <Button variant="outlined" onClick={handleSeats}
+                sx={{
+                    border:'1px solid #FF5C35', 
+                    borderRadius:'8px',
+                    color:'#FF5C35',
+                    height: 39.5,
+                    width: 295,
+                    marginLeft:81.5,
+                    marginTop:1,
+                    ":hover": {
+                        bgcolor: "#FF5C35",
+                        color:'white',
+                        BorderColor:'#FF5C35'
+                    }
+                }}>
+                Confirm Seats
+            </Button>
+            
         </div>
+    )
+}
+
+export function SelectSeatsFace(props: any) {
+    return (
+        <div></div>
     )
 }
 
