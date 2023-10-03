@@ -73,7 +73,7 @@ public class EventServiceImpl implements EventService {
     //get all events for home page
     @Override
     public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull(Event.ReviewStatus.APPROVED.getStatusValue(),pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull(Event.ReviewStatus.APPROVED.getStatusValue(), pageable).getContent());
     }
 
 
@@ -93,6 +93,7 @@ public class EventServiceImpl implements EventService {
         }
         return null;
     }
+
     //find recently added events by created at date for home
     @Override
     public List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable) {
@@ -102,7 +103,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<FeaturedEventDto> findFeaturedEvents(Pageable pageable) {
-        Page<FeaturedEvent> featuredEvents = featuredEventRepository.findAllFeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now(),pageable);
+        Page<FeaturedEvent> featuredEvents = featuredEventRepository.findAllFeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(), LocalDateTime.now(), pageable);
         return eventDTOMapper.mapFeaturedEventDto(featuredEvents.getContent());
     }
 
@@ -114,19 +115,19 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate, pageable).getContent());
     }
 
     @Override
     public List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate, pageable).getContent());
     }
 
     @Override
     public List<EventHomeDto> findPastEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate, pageable).getContent());
     }
 
     @Override
@@ -134,6 +135,7 @@ public class EventServiceImpl implements EventService {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.map(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(reviewStatus));
     }
+
     public List<EventHomeDto> findEventsByVenue(String reviewStatus, Integer venueId, Pageable pageable) {
         return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(reviewStatus, venueId, pageable).getContent());
     }
@@ -160,7 +162,7 @@ public class EventServiceImpl implements EventService {
             // Send email
             String reviewStatus = eventUpdateDto.reviewStatus();
             if (reviewStatus != null) {
-                if(reviewStatus.equals(Event.ReviewStatus.APPROVED.getStatusValue()) || reviewStatus.equals(Event.ReviewStatus.REJECTED.getStatusValue())) {
+                if (reviewStatus.equals(Event.ReviewStatus.APPROVED.getStatusValue()) || reviewStatus.equals(Event.ReviewStatus.REJECTED.getStatusValue())) {
                     EventOrganiser eventOrganiser = existingEvent.getOrganiser();
                     // Send email to organiser
                     emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildEventReviewEmail(existingEvent), "Event Review");
@@ -182,7 +184,7 @@ public class EventServiceImpl implements EventService {
             Event event = eventOptional.get();
             if (event.getDeletedAt() != null) {
                 return String.format("Event %d is already deleted.", eventId);
-            } else{
+            } else {
                 event.setDeletedAt(LocalDateTime.now());
                 eventRepository.save(event);
                 return String.format("Event %d is successfully deleted.", eventId);
@@ -225,10 +227,10 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-//     public void removeAllArtistFromEvent(Integer eventId){
-//         eventRepository.deleteAllArtistByEventId(eventId);
-//         };
-  
+    public void removeAllArtistFromEvent(Integer eventId) {
+        eventRepository.deleteAllArtistByEventId(eventId);
+    }
+
     @Override
     public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
@@ -352,7 +354,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<SectionTicketDetailsDto> findAllSectionDetailsForEvent(Event event){
+    public List<SectionTicketDetailsDto> findAllSectionDetailsForEvent(Event event) {
         return sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
-    };
+    }
+
+    ;
 }

@@ -185,9 +185,10 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, "Past events successfully returned."));
 
     }
+
     @GetMapping("/public/event/by-venue/{venueId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
-        List<EventHomeDto> eventList = eventService.findEventsByVenue(Event.ReviewStatus.APPROVED.getStatusValue(),venueId,pageable);
+        List<EventHomeDto> eventList = eventService.findEventsByVenue(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
         }
@@ -213,20 +214,20 @@ public class EventController extends Utility {
 
     @PostMapping("/event")
     public ResponseEntity<GeneralApiResponse<Object>> saveEvent(@RequestParam("file") MultipartFile file,
-                                       @RequestParam("eventName") String eventName,
-                                       @RequestParam("eventDescription") String eventDescription,
-                                       @RequestParam("eventDate") LocalDateTime eventDate,
-                                       @RequestParam("otherEventInfo") String otherEventInfo,
-                                       @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
-                                       @RequestParam("organiserId") Integer organiserId,
-                                       @RequestParam("venueId") Integer venueId,
-                                       @RequestParam("typeId") Integer typeId,
-                                       //comma separated string
-                                       @RequestParam("artistId") String artistIdString,
-                                       //comma separated string
-                                       @RequestParam("ticketPrices") String ticketPricesString,
-                                       @RequestParam("hasPresale") Boolean hasPresale,
-                                       @RequestParam("isEnhanced") Boolean isEnhanced) {
+                                                                @RequestParam("eventName") String eventName,
+                                                                @RequestParam("eventDescription") String eventDescription,
+                                                                @RequestParam("eventDate") LocalDateTime eventDate,
+                                                                @RequestParam("otherEventInfo") String otherEventInfo,
+                                                                @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
+                                                                @RequestParam("organiserId") Integer organiserId,
+                                                                @RequestParam("venueId") Integer venueId,
+                                                                @RequestParam("typeId") Integer typeId,
+                                                                //comma separated string
+                                                                @RequestParam("artistId") String artistIdString,
+                                                                //comma separated string
+                                                                @RequestParam("ticketPrices") String ticketPricesString,
+                                                                @RequestParam("hasPresale") Boolean hasPresale,
+                                                                @RequestParam("isEnhanced") Boolean isEnhanced) {
         String imageName;
         Event savedEvent;
         //Getting the Respective Objects for Organiser, Venue and Type and checking if it exists
@@ -240,9 +241,9 @@ public class EventController extends Utility {
                 .collect(Collectors.toList());
         //check that all artist is valid first
         for (Integer artistId : artistIdList) {
-            if(artistRepository.findById(artistId).isEmpty()){
+            if (artistRepository.findById(artistId).isEmpty()) {
                 throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
-            };
+            }
         }
 
         if (eventOrganiser == null) {
@@ -257,7 +258,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-            ticketSaleDate,  null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
+                    ticketSaleDate, null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -325,16 +326,16 @@ public class EventController extends Utility {
     //without review, so basically targeted towards organiser
     @PutMapping("/event")
     public ResponseEntity<GeneralApiResponse<Object>> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
-                                         @RequestParam(value = "eventId") Integer eventId,
-                                         @RequestParam(value = "eventName", required = false) String eventName,
-                                         @RequestParam(value = "eventDescription", required = false) String eventDescription,
-                                         @RequestParam(value = "eventDate", required = false) LocalDateTime eventDate,
-                                         @RequestParam(value = "eventLocation", required = false) String eventLocation,
-                                         @RequestParam(value = "otherEventInfo", required = false) String otherEventInfo,
-                                         @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
-                                         @RequestParam(value = "venueId", required = false) Integer venueId,
-                                         @RequestParam(value = "typeId", required = false) Integer typeId,
-                                         @RequestParam(value = "ticketPrices", required = false) String ticketPricesString) {
+                                                                  @RequestParam(value = "eventId") Integer eventId,
+                                                                  @RequestParam(value = "eventName", required = false) String eventName,
+                                                                  @RequestParam(value = "eventDescription", required = false) String eventDescription,
+                                                                  @RequestParam(value = "eventDate", required = false) LocalDateTime eventDate,
+                                                                  @RequestParam(value = "eventLocation", required = false) String eventLocation,
+                                                                  @RequestParam(value = "otherEventInfo", required = false) String otherEventInfo,
+                                                                  @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
+                                                                  @RequestParam(value = "venueId", required = false) Integer venueId,
+                                                                  @RequestParam(value = "typeId", required = false) Integer typeId,
+                                                                  @RequestParam(value = "ticketPrices", required = false) String ticketPricesString) {
         Venue venue = null;
         if (venueId != null) {
             Optional<Venue> venueOptional = venueRepository.findById(venueId);
@@ -426,45 +427,45 @@ public class EventController extends Utility {
 //        return eventService.removeEvent(eventId);
 //    }
 
-//     @PutMapping("/event/updateEventArtist")
-//     public ResponseEntity<GeneralApiResponse> updateEventArtist(
-//             @RequestParam("artistIdString") String artistIdString,
-    
-//  @PutMapping("/event/addArtistToEvent")
+    //  @PutMapping("/event/addArtistToEvent")
 //    public ResponseEntity<GeneralApiResponse> addArtistToEvent(
 //            @RequestParam("artistId") Integer artistId,
-//            @RequestParam("eventId") Integer eventId) {
-//
-//        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
-//                .map(Integer::parseInt)
-//                .collect(Collectors.toList());
-//
-//        //check that all artist is valid first
-//        for (Integer artistId : artistIdList) {
-//            if(artistRepository.findById(artistId).isEmpty()){
-//                throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
-//            };
+    @PutMapping("/event/updateEventArtist")
+    public ResponseEntity<GeneralApiResponse> updateEventArtist(@RequestParam("artistIdString") String artistIdString,
+                                                                @RequestParam("eventId") Integer eventId) {
+
+
+        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        //check that all artist is valid first
+        for (Integer artistId : artistIdList) {
+            if (artistRepository.findById(artistId).isEmpty()) {
+                throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
+            }
+            ;
+        }
+
+        eventService.removeAllArtistFromEvent(eventId);
+
+        for (Integer artistId : artistIdList) {
+            eventService.addArtistToEvent(artistId, eventId);
+        }
+
+        return ResponseEntity.ok(generateApiResponse(eventService.findArtistForEvent(eventId), String.format("Artist successfully assigned to event %d", eventId)));
+
+//        try {
+//            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
+//            if (artist != null) {
+//                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
+//            } else {
+//                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
+//            }
+//        } catch (DataIntegrityViolationException | StackOverflowError e) {
+//            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
 //        }
-//
-//        eventService.removeAllArtistFromEvent(eventId);
-//
-//        for (Integer artistId : artistIdList) {
-//            eventService.addArtistToEvent(artistId, eventId);
-//        }
-//
-//        return ResponseEntity.ok(generateApiResponse(eventService.findArtistForEvent(eventId), String.format("Artist successfully assigned to event %d", eventId)));
-//
-////        try {
-////            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
-////            if (artist != null) {
-////                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
-////            } else {
-////                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
-////            }
-////        } catch (DataIntegrityViolationException | StackOverflowError e) {
-////            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
-////        }
-//    }
+    }
 
     @PostMapping("/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,

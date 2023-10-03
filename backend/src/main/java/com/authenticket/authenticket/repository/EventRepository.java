@@ -83,14 +83,14 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     Page<Event> findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(String reviewStatus, Integer venueId, Pageable pageable);
 
     //remove all artist for eevnt
-//     @Transactional
-//     @Modifying
-//     @Query(nativeQuery = true,
-//             value = "DELETE " +
-//                     "FROM " +
-//                     "dev.artist_event AS e " +
-//                     "WHERE e.event_id = :eventId " )
-//     void deleteAllArtistByEventId(@Param("eventId") Integer eventId);
+     @Transactional
+     @Modifying
+     @Query(nativeQuery = true,
+             value = "DELETE " +
+                     "FROM " +
+                     "dev.artist_event AS e " +
+                     "WHERE e.event_id = :eventId " )
+     void deleteAllArtistByEventId(@Param("eventId") Integer eventId);
 
 
 }
