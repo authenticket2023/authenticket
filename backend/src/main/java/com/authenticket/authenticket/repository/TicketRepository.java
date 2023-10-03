@@ -33,13 +33,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "WHEN COUNT(t) = (s.no_of_rows * s.no_of_seats_per_row) THEN 'Sold Out'" +
             "WHEN COUNT(t) >= 0.8 * (s.no_of_rows * s.no_of_seats_per_row) THEN 'Selling Fast' " +
             "ELSE 'Available' " +
-            "END " +
+            "END, tp.price " +
             "FROM dev.event e "+
-           "JOIN dev.venue v ON e.venue_id = v.venue_id "+
             "JOIN dev.section s ON v.venue_id = s.venue_id "+
+            "JOIN dev.ticket_pricing tp ON tp.event_id = e.event_id AND tp.category_id = s.category_id "+
             "LEFT JOIN dev.ticket t ON s.section_id = t.section_id AND e.event_id = t.event_id "+
             "WHERE e.event_id = :eventId "+
-            "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id ")
+            "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id,tp.price ")
     List<Object[]> findAllTicketDetailsBySectionForEvent(@Param("eventId") Integer eventId);
 
     @Query(
@@ -53,13 +53,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "WHEN COUNT(t) = (s.no_of_rows * s.no_of_seats_per_row) THEN 'Sold Out'" +
             "WHEN COUNT(t) >= 0.8 * (s.no_of_rows * s.no_of_seats_per_row) THEN 'Selling Fast' " +
             "ELSE 'Available' " +
-            "END " +
+            "END, tp.price " +
             "FROM dev.event e "+
-            "JOIN dev.venue v ON e.venue_id = v.venue_id "+
-            "JOIN dev.section s ON v.venue_id = s.venue_id "+
+            "JOIN dev.section s ON e.venue_id = s.venue_id "+
+            "JOIN dev.ticket_pricing tp ON tp.event_id = e.event_id AND tp.category_id = s.category_id "+
             "LEFT JOIN dev.ticket t ON s.section_id = t.section_id AND e.event_id = t.event_id "+
             "WHERE e.event_id = :eventId AND s.section_id = :sectionId "+
-            "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id ")
+            "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id, tp.price ")
     List<Object[]> findTicketDetailsForSection(@Param("eventId") Integer eventId,@Param("sectionId") String sectionId );
 
     Integer countAllByTicketPricingEventEventId(Integer eventId);

@@ -46,7 +46,8 @@ public class SectionDtoMapper implements Function<Section, SectionDisplayDto> {
                 (Integer) obj[4],
                 (Integer) obj[5],
                 ticketService.getMaxConsecutiveSeatsForSection((Integer)obj[0],(String) obj[1]),
-                (String) obj[6]
+                (String) obj[6],
+                (Double) obj[7]
         );
     }
 

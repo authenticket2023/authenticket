@@ -8,6 +8,7 @@ public record SectionTicketDetailsDto(
         Integer occupiedSeats,
         Integer availableSeats,
         Integer maxConsecutiveSeats,
-        String status
+        String status,
+        Double ticketPrice
         ) {
 }
