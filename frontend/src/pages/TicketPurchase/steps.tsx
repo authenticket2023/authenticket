@@ -1,20 +1,22 @@
 import { BorderColor } from '@mui/icons-material';
 import {
-    Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel, SelectChangeEvent
+    Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel, SelectChangeEvent, Snackbar, Alert
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { SGStad } from '../utility/SeatMap';
 
 export function SelectSeats(props: any) {
 
+    const [selectedSection, setSelectedSection] = useState();
+
     useEffect(() => {
-        loadStatus()
-    }, []);
+        loadStatus();
+        console.log(selectedSection);
+    }, [selectedSection]);
 
     //set variables
     const [quantity, setQuantity] = React.useState('');
     const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
-    const [selectedSection, setSelectedSection] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertType, setAlertType]: any = useState('info');
     const [alertMsg, setAlertMsg] = useState('');
@@ -90,20 +92,36 @@ export function SelectSeats(props: any) {
         //         props.handleComplete();
         //     }
         // }
-        props.onSelectedSection(selectedSection);
-        props.handleComplete();
+
+        //check if a section is chosen before proceedign to the next page
+        if (!selectedSection) {
+            // Show an error message
+            setOpenSnackbar(true);
+            setAlertType('error');
+            setAlertMsg('Please select a section before proceeding.');
+        } else if (!quantity) {
+            //check if quantity is chosen
+            // Show an error message
+            setOpenSnackbar(true);
+            setAlertType('error');
+            setAlertMsg('Please select a quantity before proceeding.');
+        } else {
+            // If a section has been selected, proceed to the next step
+            props.onSelectedSection(selectedSection);
+            props.handleComplete();
+        }
     }
 
     // console.log(props.eventDetails.venue.venueId)
     // console.log(quantity);
-    console.log(props.selectedSection);
+    // console.log(props.selectedSection);
     
     return (
         <div style={{display:'flex', justifyContent:'center', flexDirection:'column', alignItems:'center'}}>
             <div>
                 <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection}/>
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:675, marginTop:-457}}>
-                Status: {sectionDetails ? (sectionDetails.find((item: { sectionId: never[]; }) => item.sectionId === selectedSection)?.status || 'Unknown') : 'Loading...'}
+                Status: {sectionDetails ? (sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Unknown') : 'Loading...'}
                 </Typography>
             </div>
             <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:25}}>
@@ -118,6 +136,7 @@ export function SelectSeats(props: any) {
                         id="demo-select-small"
                         value={quantity}
                         label="Quantity"
+                        displayEmpty
                         onChange={handleChange}
                         style={{fontSize:'13px'}}
                         >
@@ -147,14 +166,13 @@ export function SelectSeats(props: any) {
                 }}>
                 Confirm Seats
             </Button>
-            
-        </div>
-    )
-}
 
-export function SelectSeatsFace(props: any) {
-    return (
-        <div></div>
+            <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
+        </div>
     )
 }
 
@@ -168,9 +186,14 @@ export function Confirmation(props: any) {
     // console.log(props.quantity);
     // console.log(props.eventDetails);
 
+    const handleConfirmation = () => {
+        
+        props.handleComplete();
+    }
+
     return (
         <Grid style={{display:'flex', justifyContent:'center', flexDirection:'row', marginTop:50}}>
-            <Grid item style={{background:'#F8F8F8', height:'270px', width:'450px', borderRadius:'8px', justifyContent:'center', display:'flex', alignItems:'center', marginRight:5}}>
+            <Grid item style={{background:'#F8F8F8', height:'265px', width:'450px', borderRadius:'8px', justifyContent:'center', display:'flex', alignItems:'center', marginRight:5}}>
                 <img
                     src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventDetails.eventImage}`}
                     style={{
@@ -181,14 +204,53 @@ export function Confirmation(props: any) {
                 />
             </Grid>
             <Grid item style={{background:'#F8F8F8', height:'210px', width:'300px', borderRadius:'8px', marginLeft:5}}>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>
                     Summary
                 </Typography>
                 <div>
                     <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
-                        Items Subtotal: {props.quantity} {props.selectedSection}
+                        Items Subtotal: 
                     </Typography>
                 </div>
+                <div style={{display:'flex', flexDirection:'row'}}>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, color:'#888888'}}>
+                        Section {props.selectedSection}
+                    </Typography>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:150, color:'#888888'}}>
+                        x{props.quantity}
+                    </Typography>
+                </div>
+                <div style={{marginTop:20, display:'flex', flexDirection:'row'}}>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
+                        Booking Fee: 
+                    </Typography>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:120, marginTop:0}}>
+                        $5.00
+                    </Typography>
+                </div>
+                <div style={{display:'flex', flexDirection:'row'}}>
+                    <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+                        Order Total:
+                    </Typography>
+                </div>
+                <Button variant="outlined" onClick={handleConfirmation}
+                    sx={{
+                        border:'1px solid #FF5C35', 
+                        borderRadius:'8px',
+                        color:'#FF5C35',
+                        height: 39.5,
+                        width: 300,
+                        marginLeft:0,
+                        marginTop:4.5,
+                        ":hover": {
+                            bgcolor: "#FF5C35",
+                            color:'white',
+                            BorderColor:'#FF5C35'
+                        }
+                    }}
+                >
+                    Confirm Order
+                </Button>
             </Grid>
         </Grid>
     )
