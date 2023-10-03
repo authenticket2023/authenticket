@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -429,41 +430,41 @@ public class EventController extends Utility {
 //     public ResponseEntity<GeneralApiResponse> updateEventArtist(
 //             @RequestParam("artistIdString") String artistIdString,
     
-  @PutMapping("/event/addArtistToEvent")
-    public ResponseEntity<GeneralApiResponse> addArtistToEvent(
-            @RequestParam("artistId") Integer artistId,
-            @RequestParam("eventId") Integer eventId) {
-
-        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-
-        //check that all artist is valid first
-        for (Integer artistId : artistIdList) {
-            if(artistRepository.findById(artistId).isEmpty()){
-                throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
-            };
-        }
-
-        eventService.removeAllArtistFromEvent(eventId);
-
-        for (Integer artistId : artistIdList) {
-            eventService.addArtistToEvent(artistId, eventId);
-        }
-
-        return ResponseEntity.ok(generateApiResponse(eventService.findArtistForEvent(eventId), String.format("Artist successfully assigned to event %d", eventId)));
-
-//        try {
-//            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
-//            if (artist != null) {
-//                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
-//            } else {
-//                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
-//            }
-//        } catch (DataIntegrityViolationException | StackOverflowError e) {
-//            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+//  @PutMapping("/event/addArtistToEvent")
+//    public ResponseEntity<GeneralApiResponse> addArtistToEvent(
+//            @RequestParam("artistId") Integer artistId,
+//            @RequestParam("eventId") Integer eventId) {
+//
+//        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
+//                .map(Integer::parseInt)
+//                .collect(Collectors.toList());
+//
+//        //check that all artist is valid first
+//        for (Integer artistId : artistIdList) {
+//            if(artistRepository.findById(artistId).isEmpty()){
+//                throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
+//            };
 //        }
-    }
+//
+//        eventService.removeAllArtistFromEvent(eventId);
+//
+//        for (Integer artistId : artistIdList) {
+//            eventService.addArtistToEvent(artistId, eventId);
+//        }
+//
+//        return ResponseEntity.ok(generateApiResponse(eventService.findArtistForEvent(eventId), String.format("Artist successfully assigned to event %d", eventId)));
+//
+////        try {
+////            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
+////            if (artist != null) {
+////                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
+////            } else {
+////                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
+////            }
+////        } catch (DataIntegrityViolationException | StackOverflowError e) {
+////            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+////        }
+//    }
 
     @PostMapping("/event/featured")
     public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
