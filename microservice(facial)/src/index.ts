@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import { services } from './services';
-import 'dotenv/config'
+import 'dotenv/config';
 
 const faceapi = require("@vladmandic/face-api/dist/face-api.node.js");
 const fileupload = require("express-fileupload");
