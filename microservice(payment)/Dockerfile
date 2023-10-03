@@ -1,5 +1,5 @@
 # from base image node
-FROM node:18-buster-slim
+FROM --platform=linux/arm64 node:18-buster-slim
 
 WORKDIR /usr/local/apps/myapp
 
