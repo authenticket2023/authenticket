@@ -22,7 +22,7 @@ public interface TicketService {
 
 
     //seatAllocation
-    List<Ticket> allocateSeats(Integer sectionId, Integer eventId, Integer ticketsToPurchase);
+    List<Ticket> allocateSeats( Integer eventId,String sectionId, Integer ticketsToPurchase);
     int[][] getCurrentSeatMatrix(Event event, Section section);
     int[][] getNewSeatMatrix(int[][] currentSeatMatrix, List<Ticket> newTicketsList);
     List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount);
@@ -30,6 +30,6 @@ public interface TicketService {
     List<List<Integer>> findConsecutiveGroups(int[] availableSeatsArrayForRow);
     List<Integer> getRandomSubsetOfSeats(List<List<Integer>> consecutiveGroups, int n);
     Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section);
-    Integer getMaxConsecutiveSeatsForSection(Integer eventId, Integer sectionId);
+    Integer getMaxConsecutiveSeatsForSection(Integer eventId, String sectionId);
 
 }

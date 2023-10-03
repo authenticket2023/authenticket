@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
-    List<Ticket> findAllByTicketPricingEventEventIdAndSectionSectionId(Integer eventId, Integer sectionId);
-    List<Ticket> findAllByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, Integer sectionId, Integer rowNo);
-    Integer countByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, Integer sectionId, Integer rowNo);
+    List<Ticket> findAllByTicketPricingEventEventIdAndSectionSectionId(Integer eventId, String sectionId);
+    List<Ticket> findAllByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, String sectionId, Integer rowNo);
+    Integer countByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(Integer eventId, String sectionId, Integer rowNo);
 
     @Query(
             nativeQuery = true, value="SELECT " +
@@ -21,7 +21,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "FROM dev.section s " +
             "JOIN dev.ticket t ON s.section_id = t.section_id AND t.event_id = :eventId AND t.section_id = :sectionId " +
             "GROUP BY s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id")
-    Integer findNoOfAvailableTicketsBySectionAndEvent(@Param("eventId") Integer eventId, @Param("sectionId") Integer sectionId);
+    Integer findNoOfAvailableTicketsBySectionAndEvent(@Param("eventId") Integer eventId, @Param("sectionId") String sectionId);
     @Query(
             nativeQuery = true, value="SELECT e.event_id, " +
             "s.section_id, " +
@@ -60,7 +60,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "LEFT JOIN dev.ticket t ON s.section_id = t.section_id AND e.event_id = t.event_id "+
             "WHERE e.event_id = :eventId AND s.section_id = :sectionId "+
             "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id ")
-    List<Object[]> findTicketDetailsForSection(@Param("eventId") Integer eventId,@Param("sectionId") Integer sectionId );
+    List<Object[]> findTicketDetailsForSection(@Param("eventId") Integer eventId,@Param("sectionId") String sectionId );
 
     Integer countAllByTicketPricingEventEventId(Integer eventId);
 
@@ -68,4 +68,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Ticket> findAllByOrder(Order order);
 
     List<Ticket> findAllByOrderIn(List<Order> order);
+
+    @Query(nativeQuery = true,value = "select * from dev.ticket t where t.order_id = :orderId ")
+    List<Ticket> customFindAllByOrderId(@Param("orderId") Integer orderId);
 }

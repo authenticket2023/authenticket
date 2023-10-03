@@ -2,7 +2,7 @@ package com.authenticket.authenticket.dto.section;
 
 
 public record SectionDisplayDto(
-        Integer sectionId,
+        String sectionId,
         Integer venueId,
         Integer catId,
         Integer rowNo,

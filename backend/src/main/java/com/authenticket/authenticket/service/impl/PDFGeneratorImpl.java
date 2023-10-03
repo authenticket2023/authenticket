@@ -309,7 +309,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
             PdfPCell cell2 = new PdfPCell();
             cell2.setBorder(Rectangle.NO_BORDER);
 
-            ClassPathResource res = new ClassPathResource("backend\\src\\main\\resources\\static\\img\\icon.png");
+            ClassPathResource res = new ClassPathResource("src\\main\\resources\\static\\img\\icon.png");
             Image image = Image.getInstance(res.getPath());
             image.scalePercent(25f);
             cell2.setRowspan(2);

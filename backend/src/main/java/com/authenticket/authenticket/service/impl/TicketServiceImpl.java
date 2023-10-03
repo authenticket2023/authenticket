@@ -41,7 +41,7 @@ public class TicketServiceImpl implements TicketService {
                              EventRepository eventRepository,
                              TicketRepository ticketRepository,
                              TicketDisplayDtoMapper ticketDisplayDtoMapper,
-                             SectionRepository sectionRepository, 
+                             SectionRepository sectionRepository,
                              TicketPricingRepository ticketPricingRepository,
                              OrderRepository orderRepository) {
         this.ticketCategoryRepository = ticketCategoryRepository;
@@ -70,7 +70,7 @@ public class TicketServiceImpl implements TicketService {
         throw new ApiRequestException("Ticket not found");
     }
 
-    public List<TicketDisplayDto> findAllByOrderId(Integer orderId){
+    public List<TicketDisplayDto> findAllByOrderId(Integer orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
@@ -127,18 +127,21 @@ public class TicketServiceImpl implements TicketService {
 //    }
 
 
-    public List<Ticket> allocateSeats(Integer eventId, Integer sectionId, Integer ticketsToPurchase) {
+    public List<Ticket> allocateSeats(Integer eventId, String sectionId, Integer ticketsToPurchase) {
         //seat allocate, create ticket then order and reassign order number to ticket
         List<Ticket> ticketList = new ArrayList<>();
 
-        //get section details
-        Section section = sectionRepository.findById(sectionId).orElse(null);
-        Event event = eventRepository.findById(eventId).orElse(null);
 
+        //get section details
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) {
+            throw new NonExistentException("Event does not exist");
+        }
+        Venue venue = event.getVenue();
+        VenueSectionId venueSectionId = new VenueSectionId(venue, sectionId);
+        Section section = sectionRepository.findById(venueSectionId).orElse(null);
         if (section == null) {
             throw new NonExistentException("Section does not exist");
-        } else if (event == null) {
-            throw new NonExistentException("Event does not exist");
         } else if (ticketsToPurchase < 1 || ticketsToPurchase > 5) {
             throw new IllegalArgumentException("Tickets To Purchase Must Be Between 1 to 5");
         }
@@ -237,7 +240,7 @@ public class TicketServiceImpl implements TicketService {
         }
 
         //to display for testing purpose
-        System.out.println("---" + "ASSIGNED SEATS +" +newTicketsList.size() + "---");
+        System.out.println("---" + "ASSIGNED SEATS +" + newTicketsList.size() + "---");
 
         for (int i = 0; i < currentSeatMatrix.length; i++) {
             for (int j = 0; j < currentSeatMatrix[0].length; j++) {
@@ -409,14 +412,17 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
-    public Integer getMaxConsecutiveSeatsForSection(Integer eventId, Integer sectionId) {
-        Section section = sectionRepository.findById(sectionId).orElse(null);
+    public Integer getMaxConsecutiveSeatsForSection(Integer eventId, String sectionId) {
         Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) {
+            throw new NonExistentException("Event does not exist");
+        }
+        Venue venue = event.getVenue();
+        VenueSectionId venueSectionId = new VenueSectionId(venue, sectionId);
+        Section section = sectionRepository.findById(venueSectionId).orElse(null);
 
         if (section == null) {
             throw new NonExistentException("Section does not exist");
-        } else if (event == null) {
-            throw new NonExistentException("Event does not exist");
         }
 
         int maxConsecutiveSeatsForSection = 0;

@@ -30,6 +30,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -222,21 +223,22 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    public void cancelOrder(Order order) {
+    public void cancelOrder(Order order){
         //updating status to cancelled
-        order.setTicketSet(new HashSet<>());
+//        order.setTicketSet(new HashSet<>());
         order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
         orderRepository.save(order);
 
         //removing linked tickets
-        List<Ticket> ticketSet = ticketRepository.findAllByOrder(order);
+        List<Ticket> ticketSet = ticketRepository.customFindAllByOrderId(order.getOrderId());
+        System.out.println(ticketSet);
         ticketRepository.deleteAllInBatch(ticketSet);
     }
 
     public void cancelAllOrder(List<Order> orderList) {
         // Updating the status of all orders to "CANCELLED"
         for (Order order : orderList) {
-            order.setTicketSet(new HashSet<>());
+//            order.setTicketSet(new HashSet<>());
             order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
         }
 
