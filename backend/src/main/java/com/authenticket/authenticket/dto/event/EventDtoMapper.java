@@ -189,7 +189,6 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
             eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getTicketPricingSet());
         }
         //convert admin to dto
-
         AdminDisplayDto adminDisplayDto = null;
         if(event.getReviewedBy() != null) {
             adminDisplayDto = adminDtoMapper.apply(event.getReviewedBy());
@@ -208,6 +207,9 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getReviewStatus(),
                 event.getReviewRemarks(),
                 adminDisplayDto, //reviewBy
+                event.getIsEnhanced(),
+                event.getHasPresale(),
+                event.getHasPresaleUsers(),
                 eventTicketCategorySet, //ticket category set
                 organiserDisplayDto, //organiser
                 event.getVenue(), //venue
