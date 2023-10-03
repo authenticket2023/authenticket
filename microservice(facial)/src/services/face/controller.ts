@@ -4,9 +4,9 @@ import '@tensorflow/tfjs-node';
 const canvas = require('canvas');
 const path = require("path");
 const faceapi = require("@vladmandic/face-api/dist/face-api.node.js");
+//cannot remove this, method inside had been called by faceapi
 const faceApiService = require("../../services/utils/faceapiService");
 const FaceModel = require('../../models/face');
-const baseDir = path.resolve(__dirname, "../../..");
 
 async function uploadLabeledImages(index: any, images: any, eventID: any, label: any, sectionID: any, row: any, seat: any) : Promise<boolean> {
     try {
@@ -34,7 +34,7 @@ async function uploadLabeledImages(index: any, images: any, eventID: any, label:
             sectionID: sectionID,
             row: row,
             seat: seat,
-            label: label,
+            label: `${label}(${sectionID}-${row}-${seat})`,
             descriptions: descriptions,
         });
         try {
@@ -144,7 +144,7 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
                 faces[i].descriptions[j] = new Float32Array(Object.values(faces[i].descriptions[j]));
             }
             // Turn the DB face docs to
-            faces[i] = new faceapi.LabeledFaceDescriptors(faces[i].label, faces[i].descriptions);
+            faces[i] = new faceapi.LabeledFaceDescriptors(faces[i].label, faces[i].descriptions,faces[i].row);
         }
 
         // Load face matcher to find the matching face
@@ -167,6 +167,7 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
         }
 
         const resizedDetections = faceapi.resizeResults(detections, displaySize);
+    
         const results = resizedDetections.map((d: any) => faceMatcher.findBestMatch(d.descriptor));
         console.log(`For Event ID : ${eventID}`);
         results.map((item: any) => {
@@ -188,7 +189,8 @@ export const facialVerification = async (req: any, res: any, next: NextFunction)
         let result = await getDescriptorsFromDB(image.data, eventID);
 
         return res.status(200).json({
-            message: `Facial information found : ${result[0]._label}`
+            message: `Facial information found : ${result[0]._label}`,
+            label: result[0]._label,
         });
 
     } catch (error: any) {
