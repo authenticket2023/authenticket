@@ -58,7 +58,7 @@ public class Ticket extends BaseEntity implements Comparable<Ticket> {
     private Order order;
     @Override
     public int hashCode() {
-        return Objects.hash(ticketId, ticketPricing, ticketHolder, order);
+        return Objects.hash(ticketId);
     }
 
     @Override

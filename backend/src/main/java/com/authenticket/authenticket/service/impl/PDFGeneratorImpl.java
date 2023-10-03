@@ -1,52 +1,35 @@
 package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.model.*;
+import com.authenticket.authenticket.service.JwtService;
 import com.authenticket.authenticket.service.PDFGenerator;
+import com.authenticket.authenticket.service.QRCodeGenerator;
+import com.google.zxing.WriterException;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.text.NumberFormat;
-import java.util.Set;
 import java.util.TreeSet;
 
 @Service
 public class PDFGeneratorImpl implements PDFGenerator {
 
-    public InputStreamResource InputStreamResource(byte[] pngData)
-            throws DocumentException,
-            MalformedURLException, IOException {
+    private final QRCodeGenerator qrCodeGenerator;
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private final JwtService jwtService;
 
-        Document document = new Document();
-        PdfWriter.getInstance(document, out);
-        document.open();
-
-        Font font = FontFactory
-                .getFont(FontFactory.COURIER,
-                        14, BaseColor.BLACK);
-        Paragraph para = new Paragraph("Scan QR Code", font);
-        para.setAlignment(Element.ALIGN_CENTER);
-        document.add(para);
-        document.add(Chunk.NEWLINE);
-
-        Image image = Image.getInstance(pngData);
-        image.scaleAbsolute(170f, 170f);
-        image.setAlignment(Element.ALIGN_CENTER);
-
-        document.add(image);
-        document.close();
-        ByteArrayInputStream bis = new ByteArrayInputStream
-                (out.toByteArray());
-        return new InputStreamResource(bis);
+    public PDFGeneratorImpl(QRCodeGenerator qrCodeGenerator, JwtService jwtService) {
+        this.qrCodeGenerator = qrCodeGenerator;
+        this.jwtService = jwtService;
     }
 
-    public InputStreamResource  generateOrderDetails(Order order) throws DocumentException, FileNotFoundException {
+    public InputStreamResource  generateOrderDetails(Order order) {
         try {
             int ticketCount = 0;
             Event event = null;
@@ -56,12 +39,15 @@ public class PDFGeneratorImpl implements PDFGenerator {
                 ticketPricing = t.getTicketPricing();
                 event = t.getTicketPricing().getEvent();
             }
+            if (event == null) {
+                throw new IllegalArgumentException("Event cannot be null");
+            } else if (ticketPricing == null) {
+                throw new IllegalArgumentException("TicketPricing cannot be null");
+            }
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            FileOutputStream fos = new FileOutputStream(".\\Folder");
             Document document = new Document(PageSize.A4);
-//            PdfWriter.getInstance(document, out);
-            PdfWriter.getInstance(document, fos);
+            PdfWriter.getInstance(document, out);
             document.open();
 
             Font fontTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
@@ -70,29 +56,36 @@ public class PDFGeneratorImpl implements PDFGenerator {
             Paragraph title = new Paragraph("Order Details", fontTitle);
             title.setAlignment(Paragraph.ALIGN_LEFT);
             document.add(title);
-            document.add(Chunk.NEWLINE);
 
             PdfPTable table = new PdfPTable(2); // Create 2 columns in table.
             // Set table Width as 100%
             table.setWidthPercentage(100f);
             // Space before and after table
-            table.setSpacingBefore(5f);
-            table.setSpacingAfter(20f);
+            table.setSpacingBefore(15f);
+            table.setSpacingAfter(15f);
             // Set Column widths of table
             float[] columnWidths = { 1f, 1f }; // Second column will be
             // twice as first and third
             table.setWidths(columnWidths);
 
             Font pFontBold =  FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+            pFontBold.setColor(BaseColor.BLACK);
             pFontBold.setSize(14);
+            Font hFontBold = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+            hFontBold.setColor(BaseColor.LIGHT_GRAY);
+            hFontBold.setSize(16);
+
             Font pFont =  FontFactory.getFont(FontFactory.HELVETICA);
             pFont.setSize(14);
-            PdfPCell cell1 = new PdfPCell();
+            PdfPCell cell1 = new PdfPCell(new Paragraph("Purchased By", hFontBold));
             cell1.setBorder(Rectangle.NO_BORDER);
-            PdfPCell cell2 = new PdfPCell();
+            table.addCell(cell1);
+            PdfPCell cell2 = new PdfPCell(new Paragraph("Event Details", hFontBold));
             cell2.setBorder(Rectangle.NO_BORDER);
+            table.addCell(cell2);
 
-            cell1.addElement(new Paragraph("Purchased By", pFontBold));
+            cell1 = new PdfPCell();
+            cell1.setBorder(Rectangle.NO_BORDER);
             Paragraph p = new Paragraph();
             p.add(new Phrase("Buyer Name: ", pFontBold));
             p.add(new Phrase(order.getUser().getName(), pFont));
@@ -114,11 +107,10 @@ public class PDFGeneratorImpl implements PDFGenerator {
             p.add(new Phrase(order.getOrderStatus(), pFont));
             cell1.addElement(p);
 
-            order.getOrderAmount();
-            cell2.addElement(new Paragraph("Event Details", pFontBold));
             p = new Paragraph();
             p.add(new Phrase("Event Name: ", pFontBold));
             p.add(new Phrase(event.getEventName(), pFont));
+            p.setPaddingTop(30f);
             cell2.addElement(p);
             p = new Paragraph();
             p.add(new Phrase("Event Location: ", pFontBold));
@@ -132,9 +124,6 @@ public class PDFGeneratorImpl implements PDFGenerator {
             p.add(new Phrase("Event Type: ", pFontBold));
             p.add(new Phrase(event.getEventType().getEventTypeName(), pFont));
             cell2.addElement(p);
-
-//            Paragraph p2 = new Paragraph("This is a para", fontParagraph);
-//            p2.setAlignment(Paragraph.ALIGN_LEFT);
 
             table.addCell(cell1);
             table.addCell(cell2);
@@ -208,7 +197,8 @@ public class PDFGeneratorImpl implements PDFGenerator {
             p = new Paragraph();
             p.setAlignment(Element.ALIGN_RIGHT);
             p.add(new Phrase("Order Total: ", pFontBold));
-            p.add(new Phrase(priceFormat.format(ticketPricing.getPrice() * ticketCount), pFont));
+            p.add(new Phrase(priceFormat.format(order.getOrderAmount()), pFont));
+            p.setIndentationRight(9f);
             cell1.addElement(p);
             table.addCell(cell1);
             document.add(table);
@@ -274,7 +264,86 @@ public class PDFGeneratorImpl implements PDFGenerator {
             document.add(table);
 
             document.close();
-            fos.close();
+            out.close();
+            ByteArrayInputStream bis = new ByteArrayInputStream
+                    (out.toByteArray());
+            return new InputStreamResource(bis);
+        } catch (DocumentException ex) {
+            System.out.println("Error occurred: " + ex);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public InputStreamResource generateTicketQRCode(Ticket ticket) throws DocumentException, FileNotFoundException {
+        try {
+            TicketPricing ticketPricing = ticket.getTicketPricing();
+            Event event = ticketPricing.getEvent();
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Document document = new Document(PageSize.A5);
+            PdfWriter.getInstance(document, out);
+            document.open();
+
+            PdfPTable table = new PdfPTable(2); // Create 2 columns in table.
+            // Set table Width as 100%
+            table.setWidthPercentage(100f);
+            // Space before and after table
+            table.setSpacingBefore(5f);
+            table.setSpacingAfter(35f);
+            // Set Column widths of table
+            float[] columnWidths = { 1f, 1.5f }; // Second column will be
+            // twice as first and third
+            table.setWidths(columnWidths);
+
+            Font pFontBold =  FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+            pFontBold.setSize(20);
+            Font pFont =  FontFactory.getFont(FontFactory.HELVETICA);
+            pFont.setSize(20);
+            PdfPCell cell1 = new PdfPCell();
+            cell1.setBorder(Rectangle.NO_BORDER);
+            cell1.setMinimumHeight(50f);
+            cell1.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            PdfPCell cell2 = new PdfPCell();
+            cell2.setBorder(Rectangle.NO_BORDER);
+
+            ClassPathResource res = new ClassPathResource("backend\\src\\main\\resources\\static\\img\\icon.png");
+            Image image = Image.getInstance(res.getPath());
+            image.scalePercent(25f);
+            cell2.setRowspan(2);
+            cell2.addElement(image);
+            table.addCell(cell2);
+
+            Paragraph p = new Paragraph();
+            p.add(new Phrase("Ticket ID: ", pFontBold));
+            p.add(new Phrase(String.valueOf(ticket.getTicketId()), pFont));
+            p.setAlignment(Element.ALIGN_BASELINE);
+            cell1.addElement(p);
+            table.addCell(cell1);
+
+
+            cell1 = new PdfPCell();
+            cell1.setBorder(Rectangle.NO_BORDER);
+            cell1.setMinimumHeight(50f);
+            p = new Paragraph("Ticket Holder: ", pFontBold);
+            cell1.addElement(p);
+            p = new Paragraph(ticket.getTicketHolder(), pFont);
+            cell1.addElement(p);
+            table.addCell(cell1);
+            document.add(table);
+
+            p = new Paragraph("Section " + ticket.getSection().getSectionId() + ", Row " + ticket.getRowNo() + ", Seat " + ticket.getSeatNo());
+            p.setSpacingAfter(-25f);
+            p.setIndentationLeft(30f);
+            document.add(p);
+
+            image = Image.getInstance(qrCodeGenerator.getQRCode(jwtService.generateToken(ticket),350, 300));
+            image.scaleAbsolute(300, 300);
+            image.setAlignment(Element.ALIGN_CENTER);
+            document.add(image);
+            document.close();
             out.close();
             ByteArrayInputStream bis = new ByteArrayInputStream
                     (out.toByteArray());
@@ -284,6 +353,8 @@ public class PDFGeneratorImpl implements PDFGenerator {
             System.out.println("Error occurred: " + ex);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (WriterException e) {
+            e.printStackTrace();
         }
         return null;
     }

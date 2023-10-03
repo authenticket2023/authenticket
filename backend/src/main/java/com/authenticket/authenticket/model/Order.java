@@ -88,4 +88,9 @@ public class Order extends BaseEntity{
             }
         }
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(orderId);
+    }
 }

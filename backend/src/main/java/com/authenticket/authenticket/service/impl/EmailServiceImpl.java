@@ -1,10 +1,10 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.FileNameRecord;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.PresaleInterest;
 import com.authenticket.authenticket.repository.PresaleInterestRepository;
 import com.authenticket.authenticket.service.EmailService;
-import jakarta.activation.DataHandler;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -16,17 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.util.List;
+import java.util.TreeMap;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -77,7 +75,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    public void send(String to, String subject, String body, String fileName, InputStreamResource file) {
+    public void send(String to, String subject, String body, List<FileNameRecord> pdfList) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -86,11 +84,12 @@ public class EmailServiceImpl implements EmailService {
             helper.setText(body);
             helper.setFrom(smtpUsername);
 
-            InputStream inputStream = file.getInputStream();
-            ByteArrayDataSource dataSource = new ByteArrayDataSource(inputStream, "application/pdf");
+            for (FileNameRecord record : pdfList) {
+                InputStream inputStream = record.file().getInputStream();
+                ByteArrayDataSource dataSource = new ByteArrayDataSource(inputStream, "application/pdf");
 
-            helper.addAttachment(fileName, dataSource);
-            helper.addAttachment("power", dataSource);
+                helper.addAttachment(record.name(), dataSource);
+            }
 
             mailSender.setUsername(smtpUsername);
             mailSender.setPassword(smtpPassword);

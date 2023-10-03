@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.dto.FileNameRecord;
 import com.authenticket.authenticket.dto.order.OrderDisplayDto;
 import com.authenticket.authenticket.dto.order.OrderDtoMapper;
 import com.authenticket.authenticket.dto.order.OrderUpdateDto;
@@ -7,6 +8,7 @@ import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.Ticket;
@@ -16,18 +18,21 @@ import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.OrderService;
+import com.authenticket.authenticket.service.PDFGenerator;
+import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +52,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final EmailService emailService;
 
+    private final PDFGenerator pdfGenerator;
+
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
@@ -54,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
                             TicketDisplayDtoMapper ticketDisplayDtoMapper,
                             TicketRepository ticketRepository,
                             TaskScheduler taskScheduler,
-                            EmailService emailService) {
+                            EmailService emailService, PDFGenerator pdfGenerator) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDtoMapper = orderDtoMapper;
@@ -62,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
         this.ticketRepository = ticketRepository;
         this.taskScheduler = taskScheduler;
         this.emailService = emailService;
+        this.pdfGenerator = pdfGenerator;
     }
 
     @Override
@@ -216,6 +224,7 @@ public class OrderServiceImpl implements OrderService {
 
     public void cancelOrder(Order order) {
         //updating status to cancelled
+        order.setTicketSet(new HashSet<>());
         order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
         orderRepository.save(order);
 
@@ -227,6 +236,7 @@ public class OrderServiceImpl implements OrderService {
     public void cancelAllOrder(List<Order> orderList) {
         // Updating the status of all orders to "CANCELLED"
         for (Order order : orderList) {
+            order.setTicketSet(new HashSet<>());
             order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
         }
 
@@ -238,13 +248,36 @@ public class OrderServiceImpl implements OrderService {
         ticketRepository.deleteAllInBatch(ticketsToRemove);
     }
 
+    public InputStreamResource test() throws FileNotFoundException, DocumentException {
+        Order order = orderRepository.findById(1).orElse(null);
+        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0]);
+    }
+
+    public InputStreamResource test2()  throws FileNotFoundException, DocumentException {
+        Order order = orderRepository.findById(1).orElse(null);
+        return pdfGenerator.generateOrderDetails(order);
+    }
+
     public void completeOrder(Order order) {
         //updating status to success
         order.setOrderStatus(Order.Status.SUCCESS.getStatusValue());
         orderRepository.save(order);
 
         //add here generate ticket pdf and email call
-
+        User user = order.getUser();
+        ArrayList<FileNameRecord> pdfList = new ArrayList<>();
+        try{
+            FileNameRecord orderPdf = new FileNameRecord("Order_" + order.getOrderId() + ".pdf", pdfGenerator.generateOrderDetails(order));
+            pdfList.add(orderPdf);
+            for (Ticket t : order.getTicketSet()){
+                FileNameRecord ticketPdf = new FileNameRecord("Ticket_" + t.getTicketId() + ".pdf", pdfGenerator.generateTicketQRCode(t));
+                pdfList.add(ticketPdf);
+            }
+            emailService.send(user.getEmail(), "Order Completed", "Dear " + user.getName() + ", \nThank you for your order, please refer to the documents attached for the event.", pdfList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiRequestException(e.getMessage());
+        }
     }
 
     public void removeOrder(Integer orderId) {

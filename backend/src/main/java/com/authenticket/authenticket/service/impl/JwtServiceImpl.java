@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -31,6 +32,10 @@ public class JwtServiceImpl implements JwtService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
+    public String generateToken(Ticket ticket) {
+        return generateToken(new HashMap<>(), ticket);
+    }
+
     public String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
@@ -41,6 +46,16 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
                 .setExpiration(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis() + 1000 * 60 * 60 * 24))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(Map<String, Object> extraClaims, Ticket ticket) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(ticket.getTicketHolder())
+                .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

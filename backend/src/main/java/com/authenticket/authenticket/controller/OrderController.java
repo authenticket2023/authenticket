@@ -14,17 +14,21 @@ import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
-import com.authenticket.authenticket.service.EmailService;
-import com.authenticket.authenticket.service.PDFGenerator;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.OrderServiceImpl;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
+import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,9 +50,6 @@ public class OrderController extends Utility {
     private final OrderRepository orderRepository;
     private final OrderDtoMapper orderDtoMapper;
     private final UserRepository userRepository;
-    private final EmailService emailService;
-
-    private final PDFGenerator pdfGenerator;
     private final TicketServiceImpl ticketService;
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
@@ -58,16 +59,13 @@ public class OrderController extends Utility {
                            OrderRepository orderRepository,
                            OrderDtoMapper orderDtoMapper,
                            UserRepository userRepository,
-                           EmailService emailService,
-                           PDFGenerator pdfGenerator, TicketServiceImpl ticketService,
+                           TicketServiceImpl ticketService,
                            TicketRepository ticketRepository,
                            EventRepository eventRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
         this.userRepository = userRepository;
-        this.emailService = emailService;
-        this.pdfGenerator = pdfGenerator;
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
         this.eventRepository = eventRepository;
@@ -77,6 +75,55 @@ public class OrderController extends Utility {
     public String test() {
         return "test successful";
     }
+
+    @GetMapping("/testPDF")
+    public ResponseEntity<?> testPDF() {
+        // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
+        try{
+
+        byte[] contents = orderService.test().getContentAsByteArray();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        // Here you have to set the actual filename of your pdf
+        String filename = "output.pdf";
+        headers.setContentDispositionFormData(filename, filename);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
+        return response;
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/testPDF2")
+    public ResponseEntity<?> testPDF2() {
+        // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
+        try{
+
+            byte[] contents = orderService.test2().getContentAsByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            // Here you have to set the actual filename of your pdf
+            String filename = "output.pdf";
+            headers.setContentDispositionFormData(filename, filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
+            return response;
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @GetMapping("/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> findById(@PathVariable(value = "orderId") Integer orderId) {
@@ -142,7 +189,7 @@ public class OrderController extends Utility {
             for (Ticket ticket : ticketList) {
                 orderAmount += ticket.getTicketPricing().getPrice();
             }
-            Set<Ticket> ticketSet = new HashSet<>();
+            Set<Ticket> ticketSet = new HashSet<>(ticketList);
 
             Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser, ticketSet);
 
@@ -180,14 +227,6 @@ public class OrderController extends Utility {
                 }
             }
             ticketRepository.saveAll(updatedTicketList);
-//            try{
-//
-//                System.out.println(ticketSet);
-//                newOrder.setTicketSet(updatedTicketSet);
-//                pdfGenerator.generateOrderDetails(newOrder);
-////                emailService.send("chuayikai1612@gmail.com", "Test", "Test", "test.pdf", pdfGenerator.generateOrderDetails(newOrder, updatedTicketSet) );
-//            }catch (Exception e) {throw new ApiRequestException(e.getMessage());
-//            }
             OrderDisplayDto savedOrderDto = orderDtoMapper.apply(orderRepository.findById(savedOrder.getOrderId()).get());
 
             return ResponseEntity.ok(generateApiResponse(savedOrderDto, "Order successfully recorded"));
@@ -253,6 +292,4 @@ public class OrderController extends Utility {
         orderService.completeOrder(orderRepository.findById(orderId).get());
         return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
     }
-
-
 }
