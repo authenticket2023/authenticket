@@ -254,8 +254,190 @@ export const PurchaseSteps = (props: any) => {
 // process with facial recognition
 export const PurchaseStepsFace = (props: any) => {
 
+    const [activeStep, setActiveStep] = React.useState(0);
+    const [completed, setCompleted] = React.useState<{
+        [k: number]: boolean;
+    }>({});
+    const [isClicked, setIsClicked] = useState(false);
+    const [quantity, setQuantity] = useState(''); // State variable for quantity
+    const [selectedSection, setSelectedSection] = useState('');
+    const [selectedFiles, setSelectedFiles]: any = useState(null);
+    const [enteredData, setEnteredData] = useState<{ images: File[], names: string[] }>({
+        images: [], // Store uploaded images here
+        names: [],  // Store entered names here
+    });
+
+    const handleQuantityChange = (newQuantity: string) => {
+        setQuantity(newQuantity);
+    };
+
+    const handleSelectedSection = (section: string) => {
+        setSelectedSection(section);
+    };
+
+    const totalSteps = () => {
+        return stepsFace.length;
+    };
+
+    const completedSteps = () => {
+        return Object.keys(completed).length;
+    };
+
+    const isLastStep = () => {
+        return activeStep === totalSteps() - 1;
+    };
+
+    const allStepsCompleted = () => {
+        return completedSteps() === totalSteps();
+    };
+
+    const handleNext = () => {
+        const newActiveStep =
+            isLastStep() && !allStepsCompleted()
+                ? // It's the last step, but not all steps have been completed,
+                // find the first step that has been completed
+                stepsFace.findIndex((step, i) => !(i in completed))
+                : activeStep + 1;
+        setActiveStep(newActiveStep);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
+    const handleStep = (step: number) => () => {
+        setActiveStep(step);
+    };
+
+    const handleComplete = () => {
+        const newCompleted = completed;
+        newCompleted[activeStep] = true;
+        setCompleted(newCompleted);
+        handleNext();
+    };
+
+    const handleReset = () => {
+        setActiveStep(0);
+        setCompleted({});
+    };
+
+    //for pop up message => error , warning , info , success
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
+    //handle purchase
+    const handlePurchase = () => {
+
+    }
+
+    // Function to update the enteredData state
+    const updateEnteredData = (images: File[], names: string[]) => {
+        setEnteredData({ images, names });
+    };
 
     return (
-        <div></div>
+        <div>
+            <Stepper alternativeLabel activeStep={activeStep} connector={<QontoConnector />}>
+                {stepsFace.map((label, index) => (
+                <Step key={label} completed={completed[index]}
+                sx={{
+                    '& .MuiStepLabel-root .Mui-active': {
+                        color: '#FF5C35', // circle color (ACTIVE)
+                      },
+                      '& .MuiStepLabel-root .Mui-completed': {
+                        color: '#FF5C35', // circle color (COMPLETED)
+                      },
+                }}>
+                    <StepButton onClick={handleStep(index)} >
+                        {label}
+                    </StepButton>
+                    {/* <StepLabel StepIconComponent={QontoStepIcon}>{label}</StepLabel> */}
+                </Step>
+                ))}
+            </Stepper>
+
+            <div>
+                {allStepsCompleted() ? (
+                        <React.Fragment>
+                            <Typography sx={{ mt: 2, mb: 1 }}>
+                                All steps completed - you&apos;re finished
+                            </Typography>
+                            <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
+                                <Button onClick={handlePurchase} variant="contained" style={{textTransform: "none", fontSize: "16px" }} disabled={isClicked}>
+                                    {isClicked ? 'Processing Purchase' : 'Purchase Successful'}
+                                </Button>
+                            </Sheet>
+                        </React.Fragment>
+                    ) : (
+                        <React.Fragment>
+
+                            {activeStep == 0 ? <SelectSeats
+                                categoryDetails={props.categoryDetails}
+                                eventDetails={props.eventDetails}
+                                onQuantityChange={handleQuantityChange}
+                                selectedSection={selectedSection}
+                                onSelectedSection={handleSelectedSection}
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
+                                : null}
+
+                            {activeStep == 1 ? <EnterDetails
+                                categoryDetails={props.categoryDetails}
+                                eventDetails={props.eventDetails}
+                                quantity={quantity}
+                                selectedSection={selectedSection}
+                                selectedFiles={selectedFiles}
+                                setSelectedFiles={setSelectedFiles}
+                                updateEnteredData={updateEnteredData} // Pass the function to EnterDetails
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
+                            /> : null}
+                            
+                            {activeStep == 2 ? <ConfirmationFace
+                                categoryDetails={props.categoryDetails}
+                                eventDetails={props.eventDetails}
+                                quantity={quantity}
+                                selectedSection={selectedSection}
+                                enteredData={enteredData} // Pass the images and names to ConfirmationFace
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
+                            /> : null}
+
+                            {activeStep == 3 ? <Payment
+                                
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
+                            /> : null}
+
+                            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                                {/* <Button
+                                    color="inherit"
+                                    disabled={activeStep === 0}
+                                    onClick={handleBack}
+                                    sx={{ mr: 1 }}
+                                >
+                                    Back
+                                </Button>
+                                <Box sx={{ flex: '1 1 auto' }} />
+                                <Button onClick={handleNext} sx={{ mr: 1 }}>
+                                    Next
+                                </Button> */}
+                                {activeStep !== steps.length &&
+                                    (completed[activeStep] ? (
+                                        <Typography variant="caption" sx={{ display: 'inline-block' }}>
+                                            Step {activeStep + 1} already completed
+                                        </Typography>
+                                    ) : (
+                                        null
+                                    ))}
+                            </Box>
+                        </React.Fragment>
+                    )}
+            </div>
+        </div>
     )
 }

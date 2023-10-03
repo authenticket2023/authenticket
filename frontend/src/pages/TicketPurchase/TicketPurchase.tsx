@@ -80,7 +80,7 @@ export const TicketPurcase: React.FC = (): JSX.Element => {
                         </div>
                     </div>
                     <div style={{marginTop:30}}>                   
-                        <PurchaseSteps
+                        <PurchaseStepsFace
                             eventDetails={eventDetails}
                             categoryDetails={categoryDetails}
                         />
