@@ -15,6 +15,8 @@ import { CardActionArea } from '@mui/material';
 import DisplayEvent from './displayEvent';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TuneIcon from '@mui/icons-material/Tune';
+import QRCode from "react-qr-code";
+import { generatePayNowCode } from 'sg-paynow-code';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -151,6 +153,17 @@ export const Event = () => {
     setValue(newValue);
   };
 
+//Create a PaynowQR object
+const  payNowOptions: any  = {
+  paymentAmount: 1,
+  recipientIdentifierType: 'MOBILE',
+  recipientIdentifier: "+6598774455",
+  description: 'Payment reference 98774455',
+  editable: false,
+  expiryDate: '20231015',
+};
+
+const payNowCode = generatePayNowCode(payNowOptions);
   return (
     <div>
       {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
@@ -219,6 +232,17 @@ export const Event = () => {
               ))}
             </Grid>
           </CustomTabPanel>
+          {/* <CustomTabPanel index={1} value={value}>
+            <div style={{ height: "auto", margin: "0 auto", maxWidth: 64, width: "100%" }}>
+              <QRCode
+                size={512}
+                style={{height: "100%", maxWidth: "100%", width: "100%"}}
+                value={payNowCode}
+                viewBox={`0 0 512 512`}
+                />
+            </div> 
+          </CustomTabPanel> */}
+
           {/* Section 2: past events */}
           <CustomTabPanel value={value} index={1}>
             <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
