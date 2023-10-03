@@ -1,8 +1,8 @@
 import cors from 'cors';
 import express from 'express';
 import { services } from './services';
-import 'dotenv/config'
-const bodyParser = require('body-parser')
+import 'dotenv/config';
+const bodyParser = require('body-parser');
 
 //to access the variable in .env file as : process.env.{variableName}
 const app = express();
