@@ -150,6 +150,7 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
+                //.tickets(null)
                 .build();
 
         User existingUser = User.builder()
@@ -160,6 +161,7 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
+                //.tickets(null)
                 .build();
 
         ArgumentCaptor<User> userArgumentCaptor =
@@ -205,7 +207,7 @@ class UserServiceImplTest {
         Integer userId = 99;
         User user = User.builder()
                 .userId(userId)
-                .name("Georgia")
+                .name("Georgia"
                 .email("test@example.com")
                 .password("password")
                 .dateOfBirth(LocalDate.now())

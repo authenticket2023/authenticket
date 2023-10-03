@@ -17,24 +17,40 @@ public interface EventService {
 
     //get all events for admin
     List<EventAdminDisplayDto> findAllEvent();
+  
     OverallEventDto findEventById(Integer eventId);
 
     //get methods
     List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable);
+  
     List<FeaturedEventDto> findFeaturedEvents(Pageable pageable);
+  
     List<EventHomeDto> findBestSellerEvents();
+  
     List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable); //based on ticket sale dates
+  
     List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable); //event date not past the current date
+  
     List<EventHomeDto> findPastEventsByEventDate(Pageable pageable);//event date past the current date
+  
     List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus);
+  
     Event saveEvent (Event event);
+  
     FeaturedEventDto saveFeaturedEvent (FeaturedEvent featuredEvent);
+  
     Event updateEvent (EventUpdateDto eventUpdateDto);
+  
     //updates deleted_at field with datetime, DOES NOT really remove the event
     String deleteEvent (Integer eventId);
+  
     Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
+  
     EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId);
+  
     EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price);
+
+    //void removeAllArtistFromEvent(Integer eventId);
 
     void updateTicketPricing(Integer catId, Integer eventId, Double price);
 

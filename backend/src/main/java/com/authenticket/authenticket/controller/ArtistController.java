@@ -64,7 +64,7 @@ public class ArtistController extends Utility {
     }
 
     @GetMapping("/{artistId}")
-    public ResponseEntity<GeneralApiResponse> findArtistById(@PathVariable("artistId") Integer artistId) {
+    public ResponseEntity<GeneralApiResponse<Object>> findArtistById(@PathVariable("artistId") Integer artistId) {
         Optional<ArtistDisplayDto> artistDisplayDto = artistService.findByArtistId(artistId);
         if(artistDisplayDto.isPresent()){
             return ResponseEntity.status(200).body(generateApiResponse(artistDisplayDto.get(), "User found"));
@@ -73,14 +73,14 @@ public class ArtistController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<GeneralApiResponse> saveArtist(@RequestParam("name") String name) {
+    public ResponseEntity<GeneralApiResponse<Object>> saveArtist(@RequestParam("name") String name) {
         Artist newArtist = new Artist(null, name, null, null);
         Artist saveArtist = artistService.saveArtist(newArtist);
         return ResponseEntity.ok(generateApiResponse(saveArtist,"Artist created successfully"));
     }
 
     @PutMapping("/{artistId}")
-    public ResponseEntity<GeneralApiResponse> deleteUser(@PathVariable("artistId") Integer artistId) {
+    public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("artistId") Integer artistId) {
         artistService.deleteArtist(artistId);
         return ResponseEntity.ok(generateApiResponse(null, String.format("Artist %d Deleted Successfully", artistId)));
 
@@ -110,7 +110,4 @@ public class ArtistController extends Utility {
             }
         }
     }
-
-
-
 }

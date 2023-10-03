@@ -2,10 +2,13 @@ import {
     Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import BasicDatePicker from './dateElement';
+import BasicDatePicker from '../../utility/dateElement';
 import { Sheet } from '@mui/joy';
 import dayjs, { Dayjs } from 'dayjs';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { ReactComponent as CTSVG } from '../../utility/seatMap/Capitol Theatre.svg'
+import { ReactComponent as SNSSVG } from '../../utility/seatMap/Singapore National Stadium.svg'
+import { ReactComponent as TSTSVG } from '../../utility/seatMap/The Star Theatre.svg'
 
 export function EventDetails(props: any) {
     useEffect(() => {
@@ -21,7 +24,6 @@ export function EventDetails(props: any) {
 
     const handleEventDescription = (event: any) => {
         props.setEventDescription(event.target.value);
-
     };
 
     const handleEventDate = (newDate: Dayjs | null) => {
@@ -73,7 +75,6 @@ export function EventDetails(props: any) {
                 props.setAlertMsg("error fetching data!!!");
             } else {
                 const data = await response.json();
-                console.log(data);
                 setEventTypeList(data['data']);
             }
         } catch (err) {
@@ -113,7 +114,7 @@ export function EventDetails(props: any) {
         <form onSubmit={(handleConfirm)}>
             <Box sx={{ mt: 2 }}>
                 <Sheet>
-                      {/* Section 1 */}
+                    {/* Section 1 */}
                     <Typography variant="h6" gutterBottom sx={{ mb: 1 }}>
                         Basic Information
                     </Typography>
@@ -161,7 +162,7 @@ export function EventDetails(props: any) {
                         Special Requirement
                     </Typography>
                     <Grid item xs={12} sm={3}>
-                        <FormControlLabel control={<Switch checked={props.facialCheckIn} onChange={handleFacialCheckin} />} sx={{mr:5}} label="Facial Verification(Prevent ticket scalpers)" />
+                        <FormControlLabel control={<Switch checked={props.facialCheckIn} onChange={handleFacialCheckin} />} sx={{ mr: 5 }} label="Facial Verification(Prevent ticket scalpers)" />
                         <FormControlLabel control={<Switch checked={props.presale} onChange={handlePresale} />} label="Offer presale (*Hot event)" />
                     </Grid>
                     {/* Section 3 */}
@@ -258,8 +259,10 @@ export function VenueArtist(props: any) {
                 props.setAlertType('error');
                 props.setAlertMsg("error fetching data!!!");
             } else {
-                const data = await response.json();
-                setVenueList(data['data']);
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                const sortedData = data.sort((a: any, b: any) => a.venueId - b.venueId);
+                setVenueList(sortedData);
             }
         } catch (err) {
             window.alert(err);
@@ -351,7 +354,9 @@ export function VenueArtist(props: any) {
                     </Grid>
 
                     <Grid container>
-                        <Typography> Here will show 3D</Typography>
+                        { props.venue == '2' ? <TSTSVG/> : null}
+                        { props.venue == '3' ? <CTSVG/> : null}
+                        { props.venue == '4' ? <SNSSVG/> : null}
                     </Grid>
                     {/* Ticket Price */}
                     <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
@@ -463,7 +468,6 @@ export function VenueArtist(props: any) {
                         </Grid>
 
                     </Grid>
-
                 </Sheet>
             </Box>
             <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>

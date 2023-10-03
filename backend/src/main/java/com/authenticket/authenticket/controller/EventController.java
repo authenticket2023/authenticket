@@ -28,7 +28,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,7 +40,7 @@ import java.util.stream.Collectors;
                 "${authenticket.frontend-dev-url}",
                 "${authenticket.loadbalancer-url}"
         },
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE},
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT},
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
@@ -58,6 +60,8 @@ public class EventController extends Utility {
 
     private final AdminRepository adminRepository;
 
+    private final ArtistRepository artistRepository;
+
     private final VenueRepository venueRepository;
 
     private final EventTypeRepository eventTypeRepository;
@@ -70,6 +74,7 @@ public class EventController extends Utility {
                            EventRepository eventRepository,
                            EventOrganiserRepository eventOrganiserRepository,
                            AdminRepository adminRepository,
+                           ArtistRepository artistRepository,
                            VenueRepository venueRepository,
                            EventTypeRepository eventTypeRepository,
                            EventDtoMapper eventDtoMapper,
@@ -80,6 +85,7 @@ public class EventController extends Utility {
         this.eventRepository = eventRepository;
         this.eventOrganiserRepository = eventOrganiserRepository;
         this.adminRepository = adminRepository;
+        this.artistRepository = artistRepository;
         this.venueRepository = venueRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.eventDtoMapper = eventDtoMapper;
@@ -205,7 +211,7 @@ public class EventController extends Utility {
 
 
     @PostMapping("/event")
-    public ResponseEntity<?> saveEvent(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<GeneralApiResponse<Object>> saveEvent(@RequestParam("file") MultipartFile file,
                                        @RequestParam("eventName") String eventName,
                                        @RequestParam("eventDescription") String eventDescription,
                                        @RequestParam("eventDate") LocalDateTime eventDate,
@@ -226,6 +232,18 @@ public class EventController extends Utility {
         EventOrganiser eventOrganiser = eventOrganiserRepository.findById(organiserId).orElse(null);
         Venue venue = venueRepository.findById(venueId).orElse(null);
         EventType eventType = eventTypeRepository.findById(typeId).orElse(null);
+
+        //artistIdString to artistId List
+        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        //check that all artist is valid first
+        for (Integer artistId : artistIdList) {
+            if(artistRepository.findById(artistId).isEmpty()){
+                throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
+            };
+        }
+
         if (eventOrganiser == null) {
             throw new NonExistentException("Event Organiser does not exist");
         } else if (venue == null) {
@@ -276,10 +294,7 @@ public class EventController extends Utility {
         }
 
         Integer eventId = savedEvent.getEventId();
-        //adding artist to event
-        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
+
 
         for (Integer artistId : artistIdList) {
             eventService.addArtistToEvent(artistId, eventId);
@@ -308,7 +323,7 @@ public class EventController extends Utility {
 
     //without review, so basically targeted towards organiser
     @PutMapping("/event")
-    public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
+    public ResponseEntity<GeneralApiResponse<Object>> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam(value = "eventId") Integer eventId,
                                          @RequestParam(value = "eventName", required = false) String eventName,
                                          @RequestParam(value = "eventDescription", required = false) String eventDescription,
@@ -403,20 +418,51 @@ public class EventController extends Utility {
         }
     }
 
-    @PutMapping("/event/addArtistToEvent")
+
+    //response not handled yet
+//    @DeleteMapping("/event/{eventId}")
+//    public String removeEvent(@PathVariable("eventId") Integer eventId) {
+//        return eventService.removeEvent(eventId);
+//    }
+
+//     @PutMapping("/event/updateEventArtist")
+//     public ResponseEntity<GeneralApiResponse> updateEventArtist(
+//             @RequestParam("artistIdString") String artistIdString,
+    
+  @PutMapping("/event/addArtistToEvent")
     public ResponseEntity<GeneralApiResponse> addArtistToEvent(
             @RequestParam("artistId") Integer artistId,
             @RequestParam("eventId") Integer eventId) {
-        try {
-            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
-            if (artist != null) {
-                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
-            } else {
-                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
-            }
-        } catch (DataIntegrityViolationException | StackOverflowError e) {
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+
+        List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+
+        //check that all artist is valid first
+        for (Integer artistId : artistIdList) {
+            if(artistRepository.findById(artistId).isEmpty()){
+                throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
+            };
         }
+
+        eventService.removeAllArtistFromEvent(eventId);
+
+        for (Integer artistId : artistIdList) {
+            eventService.addArtistToEvent(artistId, eventId);
+        }
+
+        return ResponseEntity.ok(generateApiResponse(eventService.findArtistForEvent(eventId), String.format("Artist successfully assigned to event %d", eventId)));
+
+//        try {
+//            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
+//            if (artist != null) {
+//                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
+//            } else {
+//                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
+//            }
+//        } catch (DataIntegrityViolationException | StackOverflowError e) {
+//            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
+//        }
     }
 
     @PostMapping("/event/featured")
