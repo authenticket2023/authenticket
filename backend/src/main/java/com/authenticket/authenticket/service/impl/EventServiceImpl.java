@@ -125,6 +125,9 @@ public class EventServiceImpl implements EventService {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.map(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(reviewStatus));
     }
+    public List<EventHomeDto> findEventsByVenue(String reviewStatus, Integer venueId, Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(reviewStatus, venueId, pageable).getContent());
+    }
 
     public Event saveEvent(Event event) {
         return eventRepository.save(event);

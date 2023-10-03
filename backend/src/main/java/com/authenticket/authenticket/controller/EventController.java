@@ -178,6 +178,15 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(eventList, "Past events successfully returned."));
 
     }
+    @GetMapping("/public/event/by-venue/{venueId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
+        List<EventHomeDto> eventList = eventService.findEventsByVenue(Event.ReviewStatus.APPROVED.getStatusValue(),venueId,pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Events for venue successfully returned."));
+
+    }
 
     //get method for admin
     @GetMapping("/event")
