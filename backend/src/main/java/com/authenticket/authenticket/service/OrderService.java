@@ -20,9 +20,12 @@ public interface OrderService {
     UserDisplayDto findUserByOrderId(Integer orderId);
     Order saveOrder(Order order);
     Order updateOrder(OrderUpdateDto orderUpdateDto);
+    OrderDisplayDto addTicketToOrder(Integer ticketId, Integer orderId);
+    OrderDisplayDto removeTicketInOrder(Integer ticketId, Integer orderId);
     void checkOrderPaymentStatus(Order order);
     void removeOrder(Integer orderId);
     void cancelOrder(Order order);
     void cancelAllOrder(List<Order> orderList);
     void completeOrder(Order order);
+    void scheduleCancelProcessingOrder();
 }

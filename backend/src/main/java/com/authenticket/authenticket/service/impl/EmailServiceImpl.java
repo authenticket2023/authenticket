@@ -55,6 +55,7 @@ public class EmailServiceImpl implements EmailService {
     private String smtpPassword;
 
     @Async
+    @Override
     public void send(String to, String body, String subject) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -75,6 +76,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
     public void send(String to, String subject, String body, List<FileNameRecord> pdfList) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
@@ -104,6 +106,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Scheduled(fixedRate = 1000 * SECONDS_PER_INTERVAL)
+    @Override
     public void sendScheduledEmails() {
         emailList = presaleInterestRepository.findAllByIsSelectedTrueAndEmailedFalse();
 

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface TicketService {
     List<TicketDisplayDto> findAllTicket();
-
+    Ticket saveTicket(Ticket ticket);
     TicketDisplayDto findTicketById(Integer ticketId);
 
     List<TicketDisplayDto> findAllByOrderId(Integer orderId);

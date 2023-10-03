@@ -28,10 +28,12 @@ public class VenueServiceImpl implements VenueService {
         this.venueDtoMapper = venueDtoMapper;
     }
 
+    @Override
     public Optional<VenueDisplayDto> findById(Integer venueId) {
         return venueRepository.findById(venueId).map(venueDtoMapper);
     }
 
+    @Override
     public List<VenueDisplayDto> findAllVenue() {
         return venueRepository.findAll()
                 .stream()
@@ -39,10 +41,12 @@ public class VenueServiceImpl implements VenueService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Venue saveVenue(Venue venue) {
         return venueRepository.save(venue);
     }
 
+    @Override
     public Venue updateVenue(Integer venueId, String venueName, String venueLocation) {
         Optional<Venue> optionalOldVenue = venueRepository.findById(venueId);
         if (optionalOldVenue.isEmpty()) {
@@ -72,6 +76,7 @@ public class VenueServiceImpl implements VenueService {
         return venueRepository.save(oldVenue);
     }
 
+    @Override
     public void removeVenue(Integer venueId){
         Optional<Venue> venueOptional = venueRepository.findById(venueId);
 

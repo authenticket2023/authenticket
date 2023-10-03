@@ -48,7 +48,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return convertFile;
     }
 
-
+    @Override
     public String uploadFile(MultipartFile file, String imageName, String fileType) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
             throw new NonExistentException("Bucket does not exist");
@@ -78,6 +78,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return "File upload: " + fileName;
     }
 
+    @Override
     public String deleteFile(String imageName, String fileType) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
             throw new NonExistentException("Bucket does not exist");
@@ -104,6 +105,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return "File deleted: " + fileName;
     }
 
+    @Override
     public String displayFile(String imageName, String fileType) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
             throw new NonExistentException("Bucket does not exist");

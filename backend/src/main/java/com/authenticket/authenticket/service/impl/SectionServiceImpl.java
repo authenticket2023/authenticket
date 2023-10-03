@@ -41,10 +41,12 @@ public class SectionServiceImpl implements SectionService {
     }
 
 
+    @Override
     public Section saveSection(Section section) {
         return sectionRepository.save(section);
     }
 
+    @Override
     public int[][] getCurrentSeatMatrix(Event event, Section section) {
         //getting dimensions of section
         Integer rowNo = section.getNoOfRows();
@@ -74,12 +76,9 @@ public class SectionServiceImpl implements SectionService {
         return seatMatrix;
     }
 
+    @Override
     public List<SectionTicketDetailsDto> findSectionDetail(Event event, Section section){
         List<SectionTicketDetailsDto> sectionTicketDetailsDto = sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findTicketDetailsForSection(event.getEventId(), section.getSectionId()));
         return sectionTicketDetailsDto;
     };
-
-
-
-
 }

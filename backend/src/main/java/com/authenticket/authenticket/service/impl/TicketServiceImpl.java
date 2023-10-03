@@ -54,6 +54,7 @@ public class TicketServiceImpl implements TicketService {
         this.ticketPricingRepository = ticketPricingRepository;
     }
 
+    @Override
     public List<TicketDisplayDto> findAllTicket() {
         return ticketRepository.findAll()
                 .stream()
@@ -61,6 +62,7 @@ public class TicketServiceImpl implements TicketService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public TicketDisplayDto findTicketById(Integer ticketId) {
         Optional<TicketDisplayDto> ticketDisplayDtoOptional = ticketRepository.findById(ticketId).map(ticketDisplayDtoMapper);
         if (ticketDisplayDtoOptional.isPresent()) {
@@ -70,6 +72,7 @@ public class TicketServiceImpl implements TicketService {
         throw new ApiRequestException("Ticket not found");
     }
 
+    @Override
     public List<TicketDisplayDto> findAllByOrderId(Integer orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         if (orderOptional.isPresent()) {
@@ -82,6 +85,7 @@ public class TicketServiceImpl implements TicketService {
         throw new ApiRequestException("Order not found");
     }
 
+    @Override
     public Ticket saveTicket(Ticket ticket) {
         return ticketRepository.save(ticket);
     }
@@ -126,7 +130,7 @@ public class TicketServiceImpl implements TicketService {
 //        }
 //    }
 
-
+    @Override
     public List<Ticket> allocateSeats(Integer eventId, String sectionId, Integer ticketsToPurchase) {
         //seat allocate, create ticket then order and reassign order number to ticket
         List<Ticket> ticketList = new ArrayList<>();
@@ -180,13 +184,11 @@ public class TicketServiceImpl implements TicketService {
                 // Clear ticketList and database if any ticket cannot be found
                 ticketRepository.deleteAll(ticketList);
                 ticketList.clear();
-                System.out.println(e.getMessage());
             } catch (Exception e) {
                 // Clear ticketList and database if got any error first
                 ticketRepository.deleteAll(ticketList);
                 ticketList.clear();
                 e.printStackTrace();
-                System.out.println(e.getMessage());
                 throw e;
             }
 
@@ -200,6 +202,7 @@ public class TicketServiceImpl implements TicketService {
         return ticketList;
     }
 
+    @Override
     public int[][] getCurrentSeatMatrix(Event event, Section section) {
         //getting dimensions of section
         Integer rowNo = section.getNoOfRows();
@@ -229,6 +232,7 @@ public class TicketServiceImpl implements TicketService {
         return seatMatrix;
     }
 
+    @Override
     public int[][] getNewSeatMatrix(int[][] currentSeatMatrix, List<Ticket> newTicketsList) {
 
         //empty seats = 0, occupied seats = 1, newly occupied seats = 2
@@ -254,6 +258,7 @@ public class TicketServiceImpl implements TicketService {
         return currentSeatMatrix;
     }
 
+    @Override
     public List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount) throws NotFoundException, NonExistentException {
         //getting dimensions of section
         Integer rowNo = section.getNoOfRows();
@@ -310,6 +315,7 @@ public class TicketServiceImpl implements TicketService {
 
     }
 
+    @Override
     public String[] getSeatCombinationRank(Integer ticketCount) {
         String[] seatCombiRank = null;
         if (ticketCount < 1 || ticketCount > 5) {
@@ -330,6 +336,7 @@ public class TicketServiceImpl implements TicketService {
         return seatCombiRank;
     }
 
+    @Override
     public List<List<Integer>> findConsecutiveGroups(int[] availableSeatsArrayForRow) {
         List<List<Integer>> consecutiveGroups = new ArrayList<>();
         if (availableSeatsArrayForRow.length == 0) {
@@ -357,6 +364,7 @@ public class TicketServiceImpl implements TicketService {
         return consecutiveGroups;
     }
 
+    @Override
     public List<Integer> getRandomSubsetOfSeats(List<List<Integer>> consecutiveGroupsOfSeats, int n) {
         List<List<Integer>> validGroups = new ArrayList<>();
 
@@ -384,6 +392,7 @@ public class TicketServiceImpl implements TicketService {
         return selectedSubset;
     }
 
+    @Override
     public Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section) {
         if (ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(event.getEventId(), section.getSectionId()) == null) {
             return section.getNoOfRows() * section.getNoOfSeatsPerRow();
@@ -392,6 +401,7 @@ public class TicketServiceImpl implements TicketService {
 
     }
 
+    @Override
     public void removeAllTickets(List<Integer> ticketIdList) {
         List<Ticket> ticketList = ticketRepository.findAllById(ticketIdList);
         ;
@@ -412,6 +422,7 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
+    @Override
     public Integer getMaxConsecutiveSeatsForSection(Integer eventId, String sectionId) {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null) {
@@ -462,6 +473,4 @@ public class TicketServiceImpl implements TicketService {
 
         return maxConsecutiveSeatsForSection;
     }
-
-    ;
 }

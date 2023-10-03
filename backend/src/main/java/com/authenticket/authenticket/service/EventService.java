@@ -26,8 +26,7 @@ public interface EventService {
     List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable); //based on ticket sale dates
     List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable); //event date not past the current date
     List<EventHomeDto> findPastEventsByEventDate(Pageable pageable);//event date past the current date
-
-
+    List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus);
     Event saveEvent (Event event);
     FeaturedEventDto saveFeaturedEvent (FeaturedEvent featuredEvent);
     Event updateEvent (EventUpdateDto eventUpdateDto);

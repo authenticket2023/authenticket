@@ -71,16 +71,19 @@ public class EventServiceImpl implements EventService {
     }
 
     //get all events for home page
+    @Override
     public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
         return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull(Event.ReviewStatus.APPROVED.getStatusValue(),pageable).getContent());
     }
 
 
     //find all events for admin
+    @Override
     public List<EventAdminDisplayDto> findAllEvent() {
         return eventDTOMapper.mapEventAdminDisplayDto(eventRepository.findAllByOrderByEventIdAsc());
     }
 
+    @Override
     public OverallEventDto findEventById(Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isPresent()) {
@@ -91,50 +94,59 @@ public class EventServiceImpl implements EventService {
         return null;
     }
     //find recently added events by created at date for home
+    @Override
     public List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable) {
         return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(Event.ReviewStatus.APPROVED.getStatusValue(), pageable).getContent());
 
     }
 
+    @Override
     public List<FeaturedEventDto> findFeaturedEvents(Pageable pageable) {
         Page<FeaturedEvent> featuredEvents = featuredEventRepository.findAllFeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now(),pageable);
         return eventDTOMapper.mapFeaturedEventDto(featuredEvents.getContent());
     }
 
+    @Override
     public List<EventHomeDto> findBestSellerEvents(Pageable pageable) {
         return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents(pageable).getContent());
     }
 
-
+    @Override
     public List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
     }
 
+    @Override
     public List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
     }
 
+    @Override
     public List<EventHomeDto> findPastEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate,pageable).getContent());
     }
 
+    @Override
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.map(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(reviewStatus));
     }
 
+    @Override
     public Event saveEvent(Event event) {
         return eventRepository.save(event);
     }
 
+    @Override
     public FeaturedEventDto saveFeaturedEvent(FeaturedEvent featuredEvent) {
 
         return eventDTOMapper.applyFeaturedEventDto(featuredEventRepository.save(featuredEvent));
     }
 
+    @Override
     public Event updateEvent(EventUpdateDto eventUpdateDto) {
         Optional<Event> eventOptional = eventRepository.findById(eventUpdateDto.eventId());
 
@@ -159,7 +171,7 @@ public class EventServiceImpl implements EventService {
         throw new NonExistentException("Event", eventUpdateDto.eventId());
     }
 
-
+    @Override
     public String deleteEvent(Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
 
@@ -178,7 +190,7 @@ public class EventServiceImpl implements EventService {
 
     }
 
-
+    @Override
     public EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<Artist> artistOptional = artistRepository.findById(artistId);
@@ -210,6 +222,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
     public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
@@ -259,6 +272,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
     public void updateTicketPricing(Integer catId, Integer eventId, Double price) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
@@ -293,6 +307,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
     public EventDisplayDto removeTicketCategory(Integer catId, Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
@@ -317,6 +332,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
     //return artist for a specific event
     public Set<ArtistDisplayDto> findArtistForEvent(Integer eventId) throws NonExistentException {
 
@@ -327,7 +343,8 @@ public class EventServiceImpl implements EventService {
         Set<ArtistDisplayDto> artistDisplayDtoList = artistDtoMapper.mapArtistDisplayDto(artistObject);
         return artistDisplayDtoList;
     }
-  
+
+    @Override
     public List<SectionTicketDetailsDto> findAllSectionDetailsForEvent(Event event){
         return sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
     };

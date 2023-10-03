@@ -9,11 +9,8 @@ import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.webjars.NotFoundException;
 
 import java.util.*;
-import javax.swing.text.html.Option;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 
@@ -39,9 +36,6 @@ public class TicketController extends Utility {
     private final TicketPricingRepository ticketPricingRepository;
 
     private final SectionRepository sectionRepository;
-
-    private final UserRepository userRepository;
-
     private final EventRepository eventRepository;
 
     private final OrderRepository orderRepository;
@@ -50,14 +44,12 @@ public class TicketController extends Utility {
     public TicketController(TicketRepository ticketRepository,
                             TicketServiceImpl ticketService,
                             TicketCategoryRepository ticketCategoryRepository,
-                            UserRepository userRepository,
                             EventRepository eventRepository,
                             TicketPricingRepository ticketPricingRepository,
                             SectionRepository sectionRepository,
                             OrderRepository orderRepository) {
         this.ticketRepository = ticketRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
-        this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.ticketPricingRepository = ticketPricingRepository;
         this.ticketService = ticketService;

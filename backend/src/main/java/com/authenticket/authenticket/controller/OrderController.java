@@ -26,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -90,11 +89,7 @@ public class OrderController extends Utility {
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
             ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
             return response;
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -114,11 +109,7 @@ public class OrderController extends Utility {
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
             ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
             return response;
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -171,7 +162,7 @@ public class OrderController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<GeneralApiResponse> saveOrder(@RequestParam(value = "userId") Integer userId,
+    public ResponseEntity<GeneralApiResponse<Object>> saveOrder(@RequestParam(value = "userId") Integer userId,
                                                         @RequestParam(value = "eventId") Integer eventId,
                                                         @RequestParam(value = "sectionId") String sectionId,
                                                         @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase,
@@ -182,10 +173,9 @@ public class OrderController extends Utility {
 
         Event event = eventRepository.findById(eventId).orElse(null);
 
-
         //check that ticket holder list is correct first
         List<String> ticketHolderList = new ArrayList<>();
-        Set<String> uniqueTicketHoldersSet = new HashSet<>();
+        Set<String> uniqueTicketHoldersSet;
         if (event != null && event.getIsEnhanced()) {
             if (ticketHolderString == null) {
                 throw new IllegalArgumentException("Ticket holder list not provided");
@@ -218,10 +208,7 @@ public class OrderController extends Utility {
             Order savedOrder = orderService.saveOrder(newOrder);
 
             List<Ticket> updatedTicketList = ticketList.stream()
-                    .map(ticket -> {
-                        ticket.setOrder(savedOrder);
-                        return ticket;
-                    })
+                    .peek(ticket -> ticket.setOrder(savedOrder))
                     .collect(Collectors.toList());
 
 
@@ -244,7 +231,7 @@ public class OrderController extends Utility {
     }
 
     @PutMapping
-    public ResponseEntity<GeneralApiResponse> updateOrder(@RequestParam(value = "orderId") Integer orderId,
+    public ResponseEntity<GeneralApiResponse<Object>> updateOrder(@RequestParam(value = "orderId") Integer orderId,
                                                           @RequestParam(value = "orderAmount") Double orderAmount,
                                                           @RequestParam(value = "orderStatus") String orderStatus,
                                                           @RequestParam(value = "userId") Integer userId) {
@@ -264,19 +251,19 @@ public class OrderController extends Utility {
     }
 
     @PutMapping("/add-ticket")
-    public ResponseEntity<GeneralApiResponse> addTicketToOrder(@RequestParam(value = "ticketId") Integer ticketId,
+    public ResponseEntity<GeneralApiResponse<Object>> addTicketToOrder(@RequestParam(value = "ticketId") Integer ticketId,
                                                                @RequestParam(value = "orderId") Integer orderId) {
         return ResponseEntity.ok(generateApiResponse(orderService.addTicketToOrder(ticketId, orderId), "Ticket added successfully"));
     }
 
     @PutMapping("/remove-ticket")
-    public ResponseEntity<GeneralApiResponse> removeTicketInOrder(@RequestParam(value = "ticketId") Integer ticketId,
+    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@RequestParam(value = "ticketId") Integer ticketId,
                                                                   @RequestParam(value = "orderId") Integer orderId) {
         return ResponseEntity.ok(generateApiResponse(orderService.removeTicketInOrder(ticketId, orderId), "Ticket added successfully"));
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<GeneralApiResponse> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
@@ -285,7 +272,7 @@ public class OrderController extends Utility {
     }
 
     @PutMapping("/cancel/{orderId}")
-    public ResponseEntity<GeneralApiResponse> cancelOrder(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> cancelOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
@@ -295,7 +282,7 @@ public class OrderController extends Utility {
     }
 
     @PutMapping("/complete/{orderId}")
-    public ResponseEntity<GeneralApiResponse> complete(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> complete(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }

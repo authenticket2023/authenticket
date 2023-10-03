@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.service.impl;
 
+import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.service.JwtService;
 import com.authenticket.authenticket.service.PDFGenerator;
@@ -8,12 +9,12 @@ import com.google.zxing.WriterException;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.text.NumberFormat;
 import java.util.TreeSet;
 
@@ -24,11 +25,13 @@ public class PDFGeneratorImpl implements PDFGenerator {
 
     private final JwtService jwtService;
 
+    @Autowired
     public PDFGeneratorImpl(QRCodeGenerator qrCodeGenerator, JwtService jwtService) {
         this.qrCodeGenerator = qrCodeGenerator;
         this.jwtService = jwtService;
     }
 
+    @Override
     public InputStreamResource  generateOrderDetails(Order order) {
         try {
             int ticketCount = 0;
@@ -240,7 +243,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
             p.setAlignment(Element.ALIGN_CENTER);
             cell5.addElement(p);
 
-            TreeSet<Ticket> treeSet = new TreeSet(order.getTicketSet());
+            TreeSet<Ticket> treeSet = new TreeSet<>(order.getTicketSet());
             for (Ticket ticket : treeSet) {
                 cell1.addElement(new Paragraph(ticket.getTicketHolder(), pFont));
                 p = new Paragraph(String.valueOf(ticket.getTicketId()), pFont);
@@ -269,18 +272,16 @@ public class PDFGeneratorImpl implements PDFGenerator {
                     (out.toByteArray());
             return new InputStreamResource(bis);
         } catch (DocumentException ex) {
-            System.out.println("Error occurred: " + ex);
+            throw new ApiRequestException("Documentation error occurred: " + ex);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return null;
+//        return null;
     }
 
     @Override
-    public InputStreamResource generateTicketQRCode(Ticket ticket) throws DocumentException, FileNotFoundException {
+    public InputStreamResource generateTicketQRCode(Ticket ticket) {
         try {
-            TicketPricing ticketPricing = ticket.getTicketPricing();
-            Event event = ticketPricing.getEvent();
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             Document document = new Document(PageSize.A5);
@@ -349,8 +350,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
                     (out.toByteArray());
             return new InputStreamResource(bis);
         } catch (DocumentException ex) {
-
-            System.out.println("Error occurred: " + ex);
+            throw new ApiRequestException("Documentation error occurred: " + ex);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (WriterException e) {
