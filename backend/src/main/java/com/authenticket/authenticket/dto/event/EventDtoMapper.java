@@ -15,6 +15,8 @@ import com.authenticket.authenticket.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +88,19 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getVenue().getVenueName());
     }
 
+    public EventHomeDto applyEventHomeDtoForObj(Object[] queryObj) {
+        return new EventHomeDto(
+                (Integer) queryObj[0],
+                (String) queryObj[1],
+                (String)queryObj[2],
+                (String)queryObj[3],
+                (String)queryObj[4],
+                ((Timestamp)queryObj[5]).toLocalDateTime(),
+                venueRepository.findNoOfSeatsByVenue((Integer)queryObj[6]),
+                (String)queryObj[7]);
+    }
+
+
     public FeaturedEventDto applyFeaturedEventDto(FeaturedEvent featuredEvent) {
         return new FeaturedEventDto(
                 featuredEvent.getFeaturedId(),
@@ -131,6 +146,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     public List<EventHomeDto> mapEventHomeDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyEventHomeDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventHomeDto> mapEventHomeDtoForObj(List<Object[]> objList) {
+        return objList.stream()
+                .map(this::applyEventHomeDtoForObj)
                 .collect(Collectors.toList());
     }
 

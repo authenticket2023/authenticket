@@ -231,6 +231,7 @@ public class OrderServiceImpl implements OrderService {
         //updating status to cancelled
         order.setTicketSet(new HashSet<>());
         order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
+        order.setDeletedAt(LocalDateTime.now());
         orderRepository.save(order);
 
         //removing linked tickets
@@ -245,6 +246,7 @@ public class OrderServiceImpl implements OrderService {
         for (Order order : orderList) {
 //            order.setTicketSet(new HashSet<>());
             order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
+            order.setDeletedAt(LocalDateTime.now());
         }
 
         // Save the updated orders in a single batch

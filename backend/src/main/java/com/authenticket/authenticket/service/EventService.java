@@ -22,7 +22,7 @@ public interface EventService {
     //get methods
     List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable);
     List<FeaturedEventDto> findFeaturedEvents(Pageable pageable);
-    List<EventHomeDto> findBestSellerEvents(Pageable pageable);
+    List<EventHomeDto> findBestSellerEvents();
     List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable); //based on ticket sale dates
     List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable); //event date not past the current date
     List<EventHomeDto> findPastEventsByEventDate(Pageable pageable);//event date past the current date

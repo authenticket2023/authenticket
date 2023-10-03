@@ -107,8 +107,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventHomeDto> findBestSellerEvents(Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents(pageable).getContent());
+    public List<EventHomeDto> findBestSellerEvents() {
+        return eventDTOMapper.mapEventHomeDtoForObj(eventRepository.findBestSellerEvents());
     }
 
     @Override

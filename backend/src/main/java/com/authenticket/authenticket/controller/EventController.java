@@ -139,8 +139,8 @@ public class EventController extends Utility {
 
 
     @GetMapping("/public/event/bestseller")
-    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents(Pageable pageable) {
-        List<EventHomeDto> eventList = eventService.findBestSellerEvents(pageable);
+    public ResponseEntity<GeneralApiResponse<Object>> findBestSellerEvents() {
+        List<EventHomeDto> eventList = eventService.findBestSellerEvents();
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No bestseller events found"));
 

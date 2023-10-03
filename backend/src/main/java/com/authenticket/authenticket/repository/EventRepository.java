@@ -44,19 +44,29 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     //bestseller (order by ticket sales percentage)
     @Query(nativeQuery = true,
-            value = "SELECT *" +
-                    "FROM " +
-                    "dev.Event AS E " +
-                    "WHERE E.review_status = 'approved' " +
-                    "AND E.deleted_at IS NULL " +
-                    "AND E.total_tickets > 0 " +
-                    "ORDER BY (CAST(E.total_tickets_sold AS DECIMAL) / E.total_tickets) DESC," +
-                    "E.total_tickets DESC ",
-            countQuery = "SELECT count(*) FROM dev.Event AS E " +
-                    "WHERE E.review_status = 'approved' " +
-                    "AND E.deleted_at IS NULL " +
-                    "AND E.total_tickets > 0 ")
-    Page<Event> findBestSellerEvents(Pageable pageable);
+            value = "SELECT E.event_id, e.event_name, e.event_description, e.event_image, et.type_name, e.event_date,\n" +
+                    "       v.venue_id, v.venue_name,\n" +
+                    "       (subquery.total_tickets_sold / subquery.total_tickets) AS tickets_sold_ratio \n" +
+                    "FROM (\n" +
+                    "  SELECT E.event_id,\n" +
+                    "         (\n" +
+                    "           SELECT SUM(CAST((s2.no_of_rows * s2.no_of_seats_per_row) AS DECIMAL))\n" +
+                    "           FROM dev.section s2\n" +
+                    "           WHERE s2.venue_id = E.venue_id\n" +
+                    "         ) AS total_tickets,\n" +
+                    "         COUNT(t.event_id) AS total_tickets_sold\n" +
+                    "  FROM dev.Event AS E\n" +
+                    "  LEFT JOIN dev.ticket t ON E.event_id = t.event_id\n" +
+                    "  RIGHT JOIN dev.section s ON E.venue_id = s.venue_id AND t.section_id = s.section_id\n" +
+                    "  WHERE E.review_status = 'approved'\n" +
+                    "    AND E.deleted_at IS NULL\n" +
+                    "  GROUP BY E.event_id\n" +
+                    ") AS subquery\n" +
+                    "JOIN dev.Event AS E ON subquery.event_id = E.event_id \n" +
+                    "JOIN dev.venue v ON E.venue_id = v.venue_id \n" +
+                    "JOIN dev.event_type et ON e.type_id = et.type_id\n" +
+                    "ORDER BY tickets_sold_ratio DESC, subquery.total_tickets DESC LIMIT 7")
+    List<Object[]> findBestSellerEvents();
 
     //upcoming ticket sales
     Page<Event> findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(String reviewStatus, LocalDateTime currentDate, Pageable pageable);

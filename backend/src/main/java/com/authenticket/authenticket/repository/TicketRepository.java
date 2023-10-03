@@ -19,7 +19,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             nativeQuery = true, value="SELECT " +
             "(s.no_of_rows * s.no_of_seats_per_row - CAST(COUNT(t) AS INTEGER)) " +
             "FROM dev.section s " +
-            "JOIN dev.ticket t ON s.section_id = t.section_id AND t.event_id = :eventId AND t.section_id = :sectionId " +
+            "JOIN dev.ticket t ON s.section_id = t.section_id AND t.event_id = :eventId AND t.section_id = :sectionId AND t.venue_id = s.venue_id " +
             "GROUP BY s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id")
     Integer findNoOfAvailableTicketsBySectionAndEvent(@Param("eventId") Integer eventId, @Param("sectionId") String sectionId);
     @Query(
