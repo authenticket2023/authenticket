@@ -1,6 +1,6 @@
 version: '3.4'
 services:
-  myapp:
+  facial-dev:
     container_name: AuthenTicket-facial
     restart: always
     build:
