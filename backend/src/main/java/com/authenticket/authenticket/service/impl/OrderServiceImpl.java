@@ -225,12 +225,12 @@ public class OrderServiceImpl implements OrderService {
 
     public void cancelOrder(Order order){
         //updating status to cancelled
-//        order.setTicketSet(new HashSet<>());
+        order.setTicketSet(new HashSet<>());
         order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
         orderRepository.save(order);
 
         //removing linked tickets
-        List<Ticket> ticketSet = ticketRepository.customFindAllByOrderId(order.getOrderId());
+        List<Ticket> ticketSet = ticketRepository.findAllByOrder(order);
         System.out.println(ticketSet);
         ticketRepository.deleteAllInBatch(ticketSet);
     }

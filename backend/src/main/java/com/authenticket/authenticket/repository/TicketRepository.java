@@ -69,6 +69,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 
     List<Ticket> findAllByOrderIn(List<Order> order);
 
-    @Query(nativeQuery = true,value = "select * from dev.ticket t where t.order_id = :orderId ")
-    List<Ticket> customFindAllByOrderId(@Param("orderId") Integer orderId);
+    List<Ticket> findAllByOrder_OrderId(Integer orderId);
 }

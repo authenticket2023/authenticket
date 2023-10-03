@@ -4,14 +4,12 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class VenueSectionId implements Serializable {
-    private Venue venue;  private String sectionId;
+    private Venue venue;
 
-
+    private String sectionId;
 
     @Override
     public String toString(){

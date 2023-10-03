@@ -36,5 +36,10 @@ public class Venue extends BaseEntity {
     @OneToMany( mappedBy = "venue")
     @JsonIgnore
     private List<Section> sections = new ArrayList<>();
+
+    @Override
+    public String toString(){
+        return "Venue Name: " + venueName;
+    }
 }
 

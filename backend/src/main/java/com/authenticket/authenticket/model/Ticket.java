@@ -73,4 +73,9 @@ public class Ticket extends BaseEntity implements Comparable<Ticket> {
     public int compareTo(Ticket t) {
         return ticketId - t.getTicketId();
     }
+
+    @Override
+    public String toString() {
+        return "Ticket ID: " + ticketId + ", TicketHolder: " + ticketHolder;
+    }
 }

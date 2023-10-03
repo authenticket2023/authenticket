@@ -82,6 +82,10 @@ public class User extends BaseEntity implements UserDetails{
     @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return name;
+    }
 //    @OneToMany(mappedBy = "user")
 //    private List<Ticket> tickets = new ArrayList<>();
 }
