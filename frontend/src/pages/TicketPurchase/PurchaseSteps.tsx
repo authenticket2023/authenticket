@@ -91,6 +91,16 @@ export const PurchaseSteps = (props: any) => {
         [k: number]: boolean;
     }>({});
     const [isClicked, setIsClicked] = useState(false);
+    const [quantity, setQuantity] = useState(''); // State variable for quantity
+    const [selectedSection, setSelectedSection] = useState('');
+
+    const handleQuantityChange = (newQuantity: string) => {
+        setQuantity(newQuantity);
+    };
+
+    const handleSelectedSection = (section: string) => {
+        setSelectedSection(section);
+    };
 
     const totalSteps = () => {
         return steps.length;
@@ -160,6 +170,9 @@ export const PurchaseSteps = (props: any) => {
                     '& .MuiStepLabel-root .Mui-active': {
                         color: '#FF5C35', // circle color (ACTIVE)
                       },
+                      '& .MuiStepLabel-root .Mui-completed': {
+                        color: '#FF5C35', // circle color (COMPLETED)
+                      },
                 }}>
                     <StepButton onClick={handleStep(index)} >
                         {label}
@@ -187,12 +200,18 @@ export const PurchaseSteps = (props: any) => {
                             {activeStep == 0 ? <SelectSeats
                                 categoryDetails={props.categoryDetails}
                                 eventDetails={props.eventDetails}
+                                onQuantityChange={handleQuantityChange}
+                                selectedSection={selectedSection}
+                                onSelectedSection={handleSelectedSection}
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
                                 : null}
 
                             {activeStep == 1 ? <Confirmation
-
+                                categoryDetails={props.categoryDetails}
+                                eventDetails={props.eventDetails}
+                                quantity={quantity}
+                                selectedSection={selectedSection}
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
                             /> : null}

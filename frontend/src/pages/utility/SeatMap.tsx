@@ -26,6 +26,7 @@ export function SGStad(props: any) {
         const sectionId = grandparentG.getAttribute('id');
         if (sectionId != null) {
           setSelectedSection(sectionId.substring(6));
+          props.setSelectedSection(sectionId.substring(6));
           //cannot use fill, must use filter to high the selected section : go to "https://isotropic.co/tool/hex-color-to-css-filter/" if want change filter color
           grandparentG.style.filter='opacity(60%) brightness(20%) contrast(20%)';
           
@@ -37,7 +38,7 @@ export function SGStad(props: any) {
   return (
     <Grid style={{ display:'flex', flexDirection:'row'}}>
       {/* <h2>Last Selected Section: {selectedSection}</h2> */}
-      {props.id === 3 ? <CTSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 4 ? <SgStadSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : null}
+      {props.id === 2 ? <CTSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 3 ? <SgStadSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : null}
       {/* <SgStadSVG onClick={handleSectionClick}/>
       <CTSVG onClick={handleSectionClick}/> */}
       <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', display:'flex', flexDirection:'column', marginTop:125, marginLeft:0}}>

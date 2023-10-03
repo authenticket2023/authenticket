@@ -47,7 +47,10 @@ export function SelectSeats(props: any) {
     }
 
     const handleChange = (event: SelectChangeEvent) => {
-        setQuantity(event.target.value as string);
+        const newQuantity = event.target.value as string;
+        setQuantity(newQuantity);
+        props.onQuantityChange(newQuantity);
+        // props.onSelectedSection(selectedSection);
 
         // Find the selected section
         const selectedSectionData = sectionDetails.find(
@@ -69,32 +72,36 @@ export function SelectSeats(props: any) {
 
     const handleSeats = () => {
 
-        // Find the selected section
-        const selectedSectionData = sectionDetails.find(
-            (item) => item.sectionId === selectedSection
-        );
+        // // Find the selected section
+        // const selectedSectionData = sectionDetails.find(
+        //     (item) => item.sectionId === selectedSection
+        // );
 
-        // Check if the selectedSectionData exists
-        if (selectedSectionData) {
-            const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
+        // // Check if the selectedSectionData exists
+        // if (selectedSectionData) {
+        //     const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
 
-            // Error message if the ticket order is bigger than the max consecutive seats
-            if (parseInt(quantity) > maxConsecutiveSeats) {
-            setOpenSnackbar(true);
-            setAlertType('warning');
-            setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
-            } else {
-                props.handleComplete();
-            }
-        }
+        //     // Error message if the ticket order is bigger than the max consecutive seats
+        //     if (parseInt(quantity) > maxConsecutiveSeats) {
+        //     setOpenSnackbar(true);
+        //     setAlertType('warning');
+        //     setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
+        //     } else {
+        //         props.handleComplete();
+        //     }
+        // }
+        props.onSelectedSection(selectedSection);
+        props.handleComplete();
     }
 
     // console.log(props.eventDetails.venue.venueId)
+    // console.log(quantity);
+    console.log(props.selectedSection);
     
     return (
         <div style={{display:'flex', justifyContent:'center', flexDirection:'column', alignItems:'center'}}>
             <div>
-                <SGStad id={props.eventDetails.venue.venueId} selectedSection={selectedSection} setSelectedSection={setSelectedSection}/>
+                <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection}/>
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:675, marginTop:-457}}>
                 Status: {sectionDetails ? (sectionDetails.find((item: { sectionId: never[]; }) => item.sectionId === selectedSection)?.status || 'Unknown') : 'Loading...'}
                 </Typography>
@@ -158,8 +165,32 @@ export function EnterDetails(props: any) {
 }
 
 export function Confirmation(props: any) {
+    // console.log(props.quantity);
+    // console.log(props.eventDetails);
+
     return (
-        <div></div>
+        <Grid style={{display:'flex', justifyContent:'center', flexDirection:'row', marginTop:50}}>
+            <Grid item style={{background:'#F8F8F8', height:'270px', width:'450px', borderRadius:'8px', justifyContent:'center', display:'flex', alignItems:'center', marginRight:5}}>
+                <img
+                    src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventDetails.eventImage}`}
+                    style={{
+                        maxHeight: '150px',
+                        borderRadius:'8px'
+                    }}
+                    alt="Event Image"
+                />
+            </Grid>
+            <Grid item style={{background:'#F8F8F8', height:'210px', width:'300px', borderRadius:'8px', marginLeft:5}}>
+                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+                    Summary
+                </Typography>
+                <div>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
+                        Items Subtotal: {props.quantity} {props.selectedSection}
+                    </Typography>
+                </div>
+            </Grid>
+        </Grid>
     )
 }
 
