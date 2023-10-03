@@ -27,6 +27,7 @@
 - `docker pull panmingwei/authenticket-frontend`
 - `docker pull panmingwei/authenticket-backend`
 - `docker pull panmingwei/authenticket-facial`
+- `docker pull liseon/authenticket-facial`
 ### frontend
 - cd to 'authenticket/frontend'
   - Build the image : `docker build -t authenticket-frontend .`
