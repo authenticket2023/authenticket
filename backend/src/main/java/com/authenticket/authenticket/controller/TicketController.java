@@ -9,11 +9,8 @@ import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.webjars.NotFoundException;
 
 import java.util.*;
-import javax.swing.text.html.Option;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 
@@ -39,9 +36,6 @@ public class TicketController extends Utility {
     private final TicketPricingRepository ticketPricingRepository;
 
     private final SectionRepository sectionRepository;
-
-    private final UserRepository userRepository;
-
     private final EventRepository eventRepository;
 
     private final OrderRepository orderRepository;
@@ -50,14 +44,12 @@ public class TicketController extends Utility {
     public TicketController(TicketRepository ticketRepository,
                             TicketServiceImpl ticketService,
                             TicketCategoryRepository ticketCategoryRepository,
-                            UserRepository userRepository,
                             EventRepository eventRepository,
                             TicketPricingRepository ticketPricingRepository,
                             SectionRepository sectionRepository,
                             OrderRepository orderRepository) {
         this.ticketRepository = ticketRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
-        this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.ticketPricingRepository = ticketPricingRepository;
         this.ticketService = ticketService;
@@ -72,7 +64,7 @@ public class TicketController extends Utility {
 
     @PostMapping("/test-post")
     public String testPost(@RequestParam(value = "eventId") Integer eventId,
-                           @RequestParam(value = "sectionId") Integer sectionId) {
+                           @RequestParam(value = "sectionId") String sectionId) {
         return ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(eventId,sectionId).toString();
     }
 
@@ -88,7 +80,7 @@ public class TicketController extends Utility {
 
     @PostMapping("/allocate-seats")
     public ResponseEntity<?> allocateSeats(@RequestParam(value = "eventId") Integer eventId,
-                                           @RequestParam(value = "sectionId") Integer sectionId,
+                                           @RequestParam(value = "sectionId") String sectionId,
                                            @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
         List<Ticket> ticketList;
         try{
@@ -124,7 +116,7 @@ public class TicketController extends Utility {
     @PostMapping
     public ResponseEntity<?> saveTicket(@RequestParam(value = "eventId") Integer eventId,
                                         @RequestParam(value = "categoryId") Integer categoryId,
-                                        @RequestParam(value = "sectionId") Integer sectionId,
+                                        @RequestParam(value = "sectionId") String sectionId,
                                         @RequestParam(value = "rowNo") Integer rowNo,
                                         @RequestParam(value = "seatNo") Integer seatNo,
                                         @RequestParam(value = "ticketHolder", required = false) String ticketHolder,
@@ -134,6 +126,7 @@ public class TicketController extends Utility {
             throw new NonExistentException("Event", eventId);
         }
         Event event = optionalEvent.get();
+        Venue venue = event.getVenue();
 
         Optional<TicketCategory> optionalTicketCategory = ticketCategoryRepository.findById(categoryId);
         if (optionalTicketCategory.isEmpty()) {
@@ -141,7 +134,9 @@ public class TicketController extends Utility {
         }
         TicketCategory ticketCategory = optionalTicketCategory.get();
 
-        Optional<Section> optionalSection = sectionRepository.findById(sectionId);
+        VenueSectionId venueSectionId = new VenueSectionId(venue,sectionId);
+
+        Optional<Section> optionalSection = sectionRepository.findById(venueSectionId);
         if (optionalSection.isEmpty()) {
             throw new NonExistentException("Section", sectionId);
         }
@@ -162,7 +157,6 @@ public class TicketController extends Utility {
                 order = optionalOrder.get();
             }
         }
-
 
         Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder, order);
 

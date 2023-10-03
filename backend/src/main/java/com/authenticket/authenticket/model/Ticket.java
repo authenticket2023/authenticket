@@ -1,12 +1,12 @@
 package com.authenticket.authenticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Data
@@ -25,15 +25,22 @@ public class Ticket extends BaseEntity implements Comparable<Ticket> {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name="event_id", referencedColumnName="event_id", nullable = false),
-            @JoinColumn(name="category_id", referencedColumnName="category_id", nullable = false)
+            @JoinColumn(name = "event_id", referencedColumnName = "event_id", nullable = false),
+            @JoinColumn(name = "category_id", referencedColumnName = "category_id", nullable = false)
     })
     private TicketPricing ticketPricing;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id", nullable = false)
+    //    @JsonIgnore
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "section_id", nullable = false)
+//    private Section section;
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "venue_id", referencedColumnName = "venue_id", nullable = false),
+            @JoinColumn(name = "section_id", referencedColumnName = "section_id", nullable = false)
+    })
     private Section section;
+
 
     @Column(name = "row_no")
     private Integer rowNo;
@@ -56,6 +63,7 @@ public class Ticket extends BaseEntity implements Comparable<Ticket> {
     @JsonIgnore
     @JoinColumn(name = "order_id")
     private Order order;
+
     @Override
     public int hashCode() {
         return Objects.hash(ticketId);
@@ -64,5 +72,10 @@ public class Ticket extends BaseEntity implements Comparable<Ticket> {
     @Override
     public int compareTo(Ticket t) {
         return ticketId - t.getTicketId();
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket ID: " + ticketId + ", TicketHolder: " + ticketHolder;
     }
 }

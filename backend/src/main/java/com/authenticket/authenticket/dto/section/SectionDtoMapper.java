@@ -8,6 +8,7 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Artist;
 import com.authenticket.authenticket.model.Section;
+import com.authenticket.authenticket.model.Venue;
 import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.EventTypeRepository;
@@ -37,13 +38,14 @@ public class SectionDtoMapper implements Function<Section, SectionDisplayDto> {
     }
 
     public SectionTicketDetailsDto applySectionTicketDetailsDto(Object[] obj){
+
         return new SectionTicketDetailsDto(
-                (Integer) obj[1],
+                (String) obj[1],
                 (Integer) obj[2],
                 (Integer) obj[3],
                 (Integer) obj[4],
                 (Integer) obj[5],
-                ticketService.getMaxConsecutiveSeatsForSection((Integer)obj[0],(Integer) obj[1]),
+                ticketService.getMaxConsecutiveSeatsForSection((Integer)obj[0],(String) obj[1]),
                 (String) obj[6]
         );
     }

@@ -26,9 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,23 +77,19 @@ public class OrderController extends Utility {
     @GetMapping("/testPDF")
     public ResponseEntity<?> testPDF() {
         // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
-        try{
+        try {
 
-        byte[] contents = orderService.test().getContentAsByteArray();
+            byte[] contents = orderService.test().getContentAsByteArray();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        // Here you have to set the actual filename of your pdf
-        String filename = "output.pdf";
-        headers.setContentDispositionFormData(filename, filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
-        return response;
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            // Here you have to set the actual filename of your pdf
+            String filename = "output.pdf";
+            headers.setContentDispositionFormData(filename, filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
+            return response;
+        } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -103,7 +97,7 @@ public class OrderController extends Utility {
     @GetMapping("/testPDF2")
     public ResponseEntity<?> testPDF2() {
         // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
-        try{
+        try {
 
             byte[] contents = orderService.test2().getContentAsByteArray();
 
@@ -115,11 +109,7 @@ public class OrderController extends Utility {
             headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
             ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
             return response;
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -172,14 +162,36 @@ public class OrderController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<GeneralApiResponse> saveOrder(@RequestParam(value = "userId") Integer userId,
+    public ResponseEntity<GeneralApiResponse<Object>> saveOrder(@RequestParam(value = "userId") Integer userId,
                                                         @RequestParam(value = "eventId") Integer eventId,
-                                                        @RequestParam(value = "sectionId") Integer sectionId,
+                                                        @RequestParam(value = "sectionId") String sectionId,
                                                         @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase,
                                                         @RequestParam(value = "ticketHolderString", required = false) String ticketHolderString) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         checkIfEventExistsAndIsApprovedAndNotDeleted(eventId);
+
+        Event event = eventRepository.findById(eventId).orElse(null);
+
+        //check that ticket holder list is correct first
+        List<String> ticketHolderList = new ArrayList<>();
+        Set<String> uniqueTicketHoldersSet;
+        if (event != null && event.getIsEnhanced()) {
+            if (ticketHolderString == null) {
+                throw new IllegalArgumentException("Ticket holder list not provided");
+            }
+
+            ticketHolderList = Arrays.stream(ticketHolderString.split(",")).toList();
+            uniqueTicketHoldersSet = new HashSet<>(ticketHolderList);
+
+            if (ticketHolderList.size() != uniqueTicketHoldersSet.size()) {
+                throw new IllegalArgumentException("Ticket holder names must be unique!");
+            }
+
+            if (uniqueTicketHoldersSet.size() != ticketsToPurchase) {
+                throw new IllegalArgumentException("Number of ticket holder provided not equal to number of tickets user wants to purchase");
+            }
+        }
 
 
         if (userOptional.isPresent()) {
@@ -196,34 +208,18 @@ public class OrderController extends Utility {
             Order savedOrder = orderService.saveOrder(newOrder);
 
             List<Ticket> updatedTicketList = ticketList.stream()
-                    .map(ticket -> {
-                        ticket.setOrder(savedOrder);
-                        return ticket;
-                    })
+                    .peek(ticket -> ticket.setOrder(savedOrder))
                     .collect(Collectors.toList());
 
 
             //check if event is enhanced and if ticket holder provided is == ticketsToPurchase
-            Event event = eventRepository.findById(eventId).orElse(null);
             if (event != null && event.getIsEnhanced()) {
-                if(ticketHolderString==null){
-                    throw new IllegalArgumentException("Ticket holder list not provided");
-                }
 
-                List<String> ticketHolderList = Arrays.stream(ticketHolderString.split(",")).toList();
-                Set<String> uniqueTicketHoldersSet = new HashSet<>(ticketHolderList);
+                for (int i = 0; i < ticketHolderList.size(); i++) {
+                    String ticketHolder = ticketHolderList.get(i);
+                    Ticket ticket = updatedTicketList.get(i);
+                    ticket.setTicketHolder(ticketHolder);
 
-                if(ticketHolderList.size() != uniqueTicketHoldersSet.size()){
-                    throw new IllegalArgumentException("Ticket holder names must be unique!");
-                }
-                if (uniqueTicketHoldersSet.size() == ticketsToPurchase) {
-                    for (int i = 0; i < ticketHolderList.size(); i++) {
-                        String ticketHolder = ticketHolderList.get(i);
-                        Ticket ticket = updatedTicketList.get(i);
-                        ticket.setTicketHolder(ticketHolder);
-                    }
-                } else {
-                    throw new IllegalArgumentException("Number of ticket holder provided not equal to number of tickets user wants to purchase");
                 }
             }
             ticketRepository.saveAll(updatedTicketList);
@@ -235,7 +231,7 @@ public class OrderController extends Utility {
     }
 
     @PutMapping
-    public ResponseEntity<GeneralApiResponse> updateOrder(@RequestParam(value = "orderId") Integer orderId,
+    public ResponseEntity<GeneralApiResponse<Object>> updateOrder(@RequestParam(value = "orderId") Integer orderId,
                                                           @RequestParam(value = "orderAmount") Double orderAmount,
                                                           @RequestParam(value = "orderStatus") String orderStatus,
                                                           @RequestParam(value = "userId") Integer userId) {
@@ -255,19 +251,19 @@ public class OrderController extends Utility {
     }
 
     @PutMapping("/add-ticket")
-    public ResponseEntity<GeneralApiResponse> addTicketToOrder(@RequestParam(value = "ticketId") Integer ticketId,
+    public ResponseEntity<GeneralApiResponse<Object>> addTicketToOrder(@RequestParam(value = "ticketId") Integer ticketId,
                                                                @RequestParam(value = "orderId") Integer orderId) {
         return ResponseEntity.ok(generateApiResponse(orderService.addTicketToOrder(ticketId, orderId), "Ticket added successfully"));
     }
 
     @PutMapping("/remove-ticket")
-    public ResponseEntity<GeneralApiResponse> removeTicketInOrder(@RequestParam(value = "ticketId") Integer ticketId,
+    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@RequestParam(value = "ticketId") Integer ticketId,
                                                                   @RequestParam(value = "orderId") Integer orderId) {
         return ResponseEntity.ok(generateApiResponse(orderService.removeTicketInOrder(ticketId, orderId), "Ticket added successfully"));
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<GeneralApiResponse> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
@@ -276,16 +272,17 @@ public class OrderController extends Utility {
     }
 
     @PutMapping("/cancel/{orderId}")
-    public ResponseEntity<GeneralApiResponse> cancelOrder(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> cancelOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
+
         orderService.cancelOrder(orderRepository.findById(orderId).get());
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
     }
 
     @PutMapping("/complete/{orderId}")
-    public ResponseEntity<GeneralApiResponse> complete(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> complete(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }

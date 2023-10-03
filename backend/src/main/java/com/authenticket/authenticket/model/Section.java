@@ -13,14 +13,14 @@ import lombok.*;
 @Entity
 @Table(name = "section")
 @EqualsAndHashCode(callSuper = true)
-@JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
-
+@JsonIgnoreProperties(value = {"createdAt", "deletedAt", "updatedAt"})
+@IdClass(VenueSectionId.class)
 public class Section extends BaseEntity {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "section_id")
-    private Integer sectionId;
+    private String sectionId;
 
+    @Id
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false)

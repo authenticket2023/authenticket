@@ -33,20 +33,24 @@ public class AdminServiceImpl implements AdminService, UserDetailsService {
         this.adminDtoMapper = adminDtoMapper;
     }
 
-
-
+    @Override
     public List<AdminDisplayDto> findAllAdmin(){
         return adminRepository.findAll()
                 .stream()
                 .map(adminDtoMapper)
                 .collect(Collectors.toList());
     }
+    @Override
     public Optional<AdminDisplayDto> findAdminById(Integer adminId) {
         return adminRepository.findById(adminId).map(adminDtoMapper);
     }
+
+    @Override
     public Admin saveAdmin(Admin admin){
         return adminRepository.save(admin);
     }
+
+    @Override
     public AdminDisplayDto updateAdmin(Admin newAdmin){
         Optional<Admin> adminOptional = adminRepository.findByEmail(newAdmin.getEmail());
 
@@ -60,6 +64,7 @@ public class AdminServiceImpl implements AdminService, UserDetailsService {
         return null;
     }
 
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(

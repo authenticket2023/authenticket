@@ -93,4 +93,9 @@ public class Order extends BaseEntity{
     public int hashCode() {
         return Objects.hash(orderId);
     }
+
+    @Override
+    public String toString() {
+        return "Order: " + orderId + ", Status: " + orderStatus;
+    }
 }

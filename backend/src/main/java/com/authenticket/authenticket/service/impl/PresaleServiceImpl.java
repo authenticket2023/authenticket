@@ -43,14 +43,17 @@ public class PresaleServiceImpl implements PresaleService {
         this.venueRepository = venueRepository;
     }
 
+    @Override
     public List<User> findUsersInterestedByEvent(Event event) {
         return presaleInterestRepository.findAllByEvent(event).stream().map(PresaleInterest::getUser).toList();
     }
 
+    @Override
     public List<User> findUsersSelectedForEvent(Event event, Boolean selected) {
         return presaleInterestRepository.findAllByEventAndIsSelected(event, selected).stream().map(PresaleInterest::getUser).toList();
     }
 
+    @Override
     public void setPresaleInterest(User user, Event event, Boolean selected, Boolean emailed){
         EventUserId eventUserId = new EventUserId(user, event);
         Optional<PresaleInterest> presaleInterestOptional = presaleInterestRepository.findById(eventUserId);
@@ -61,6 +64,7 @@ public class PresaleServiceImpl implements PresaleService {
         presaleInterestRepository.save(new PresaleInterest(user, event, selected, emailed));
     }
 
+    @Override
     public List<User> selectPresaleUsersForEvent(Event event) {
         List<User> users = findUsersInterestedByEvent(event);
         int totalTickets = venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId());

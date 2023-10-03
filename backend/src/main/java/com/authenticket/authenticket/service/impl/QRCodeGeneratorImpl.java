@@ -15,6 +15,7 @@ import java.io.IOException;
 @Service
 public class QRCodeGeneratorImpl implements QRCodeGenerator {
 
+    @Override
     public byte[] getQRCode(String text, int width, int height) throws WriterException, IOException {
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();

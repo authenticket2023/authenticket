@@ -2,6 +2,7 @@ package com.authenticket.authenticket.controller;
 
 
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
+import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventRepository;
@@ -66,7 +67,7 @@ public class SectionController extends Utility {
 
     @PostMapping
     public ResponseEntity<?> saveSection(@RequestParam(value = "svgFile", required = false) MultipartFile svgFile,
-                                         @RequestParam(value = "sectionId") Integer sectionId,
+                                         @RequestParam(value = "sectionId") String sectionId,
                                          @RequestParam(value = "venueId") Integer venueId,
                                          @RequestParam(value = "catId") Integer catId,
                                          @RequestParam(value = "noOfRows") Integer noOfRows,
@@ -80,10 +81,13 @@ public class SectionController extends Utility {
             throw new NonExistentException("Venue does not exist");
         } else if (ticketCategory == null) {
             throw new NonExistentException("Ticket Category does not exist");
-        } else if(sectionRepository.findById(sectionId).isPresent()){
-            throw new IllegalArgumentException(String.format("Section with id %d already exists", sectionId));
         }
-        Section newSection = new Section(sectionId, venue, ticketCategory, noOfRows, noOfSeatsPerRow);
+        VenueSectionId venueSectionId = new VenueSectionId(venue,sectionId);
+        if(sectionRepository.findById(venueSectionId).isPresent()){
+            throw new AlreadyExistsException(String.format("Section %s already exists in venue %d", sectionId,venueId));
+        }
+
+        Section newSection = new Section(sectionId,venue, ticketCategory, noOfRows, noOfSeatsPerRow);
         Section section = sectionService.saveSection(newSection);
 
         return ResponseEntity.ok(generateApiResponse(section, "Section Created Successfully"));
@@ -92,18 +96,19 @@ public class SectionController extends Utility {
     @PostMapping("/ticket-details")
     public ResponseEntity<?> findSectionTicketDetails(
             @RequestParam(value = "eventId") Integer eventId,
-            @RequestParam(value = "sectionId") Integer sectionId) {
+            @RequestParam(value = "sectionId") String sectionId) {
 
         //get section details
-        Section section = sectionRepository.findById(sectionId).orElse(null);
         Event event = eventRepository.findById(eventId).orElse(null);
+        if (event ==null) {
+            throw new NonExistentException("Event",eventId);
+        }
+        Venue venue = event.getVenue();
+        VenueSectionId venueSectionId = new VenueSectionId(venue,sectionId);
+        Section section = sectionRepository.findById(venueSectionId).orElse(null);
 
         if (section == null) {
-            throw new NonExistentException("Section does not exist");
-        } else if (event ==null) {
-            throw new NonExistentException("Event does not exist");
-        } else if(!event.getVenue().getSections().contains(section)){
-            throw new IllegalArgumentException(String.format("Section %d not connnected to venue of event %d", sectionId,eventId));
+            throw new NonExistentException(String.format("Section ID:%s does not exist in venue ID:%d",sectionId,venue.getVenueId()));
         }
         List<SectionTicketDetailsDto> sectionTicketDetailsDto = sectionService.findSectionDetail(event,section);
 
@@ -114,16 +119,19 @@ public class SectionController extends Utility {
     @PostMapping("/seat-matrix")
     public ResponseEntity<?> seatMatrix(
             @RequestParam(value = "eventId") Integer eventId,
-                                            @RequestParam(value = "sectionId") Integer sectionId) {
+                                            @RequestParam(value = "sectionId") String sectionId) {
 
         //get section details
-        Section section = sectionRepository.findById(sectionId).orElse(null);
         Event event = eventRepository.findById(eventId).orElse(null);
+        if (event ==null) {
+            throw new NonExistentException("Event does not exist");
+        }
+        Venue venue = event.getVenue();
+        VenueSectionId venueSectionId  =new VenueSectionId(venue,sectionId);
+        Section section = sectionRepository.findById(venueSectionId).orElse(null);
 
         if (section == null) {
-            throw new NonExistentException("Section does not exist");
-        } else if (event ==null) {
-            throw new NonExistentException("Event does not exist");
+            throw new NonExistentException(String.format("Section %s does not exist in venue %d",sectionId,venue.getVenueId()));
         }
         sectionService.getCurrentSeatMatrix(event,section);
         return ResponseEntity.ok(generateApiResponse(null, "seat matrix method called"));

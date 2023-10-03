@@ -46,7 +46,7 @@ public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto
                 (Integer) obj[0],
                 (Integer) obj[1],
                 (Integer) obj[2],
-                (Integer) obj[3],
+                (String) obj[3],
                 (Integer) obj[4],
                 (Integer) obj[5],
                 (String) obj[6],

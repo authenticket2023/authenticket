@@ -30,6 +30,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -144,6 +145,7 @@ public class OrderServiceImpl implements OrderService {
         throw new NonExistentException("Order", orderUpdateDto.orderId());
     }
 
+    @Override
     public OrderDisplayDto addTicketToOrder(Integer ticketId, Integer orderId) {
         Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -184,6 +186,7 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
     public OrderDisplayDto removeTicketInOrder(Integer ticketId, Integer orderId) {
         Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -208,12 +211,13 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
     public void checkOrderPaymentStatus(Order order) {
         Order realTimeOrder = orderRepository.findById(order.getOrderId()).orElse(null);
         if (realTimeOrder != null) {
             // Check the payment status of the order
             if (realTimeOrder.getOrderStatus().equals(Order.Status.PROCESSING.getStatusValue())) {
-                System.out.println(String.format("Order %d has been cancelled", order.getOrderId()));
+
                 // Remove or mark the order as canceled, depending on your business logic
                 cancelOrder(order);
             }
@@ -222,7 +226,8 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    public void cancelOrder(Order order) {
+    @Override
+    public void cancelOrder(Order order){
         //updating status to cancelled
         order.setTicketSet(new HashSet<>());
         order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
@@ -230,13 +235,15 @@ public class OrderServiceImpl implements OrderService {
 
         //removing linked tickets
         List<Ticket> ticketSet = ticketRepository.findAllByOrder(order);
+
         ticketRepository.deleteAllInBatch(ticketSet);
     }
 
+    @Override
     public void cancelAllOrder(List<Order> orderList) {
         // Updating the status of all orders to "CANCELLED"
         for (Order order : orderList) {
-            order.setTicketSet(new HashSet<>());
+//            order.setTicketSet(new HashSet<>());
             order.setOrderStatus(Order.Status.CANCELLED.getStatusValue());
         }
 
@@ -258,6 +265,7 @@ public class OrderServiceImpl implements OrderService {
         return pdfGenerator.generateOrderDetails(order);
     }
 
+    @Override
     public void completeOrder(Order order) {
         //updating status to success
         order.setOrderStatus(Order.Status.SUCCESS.getStatusValue());
@@ -280,14 +288,15 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
     public void removeOrder(Integer orderId) {
         orderRepository.deleteOrderById(orderId);
     }
 
+    @Override
     // cancel all processing orders that have expired every 12 hours
     @Scheduled(fixedRate = 12 * 60 * 60 * 1000) // 12 hours in milliseconds
     public void scheduleCancelProcessingOrder() {
-        System.out.println("scheduleCancelProcessingOrder called");
         LocalDateTime currentTime = LocalDateTime.now();
 
         //filter out processing orders that has passed its expiry time (10 minutes after created at time)
