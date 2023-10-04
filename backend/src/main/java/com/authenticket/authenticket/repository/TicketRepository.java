@@ -35,7 +35,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "ELSE 'Available' " +
             "END, tp.price " +
             "FROM dev.event e "+
-            "JOIN dev.section s ON v.venue_id = s.venue_id "+
+            "JOIN dev.section s ON e.venue_id = s.venue_id "+
             "JOIN dev.ticket_pricing tp ON tp.event_id = e.event_id AND tp.category_id = s.category_id "+
             "LEFT JOIN dev.ticket t ON s.section_id = t.section_id AND e.event_id = t.event_id "+
             "WHERE e.event_id = :eventId "+
