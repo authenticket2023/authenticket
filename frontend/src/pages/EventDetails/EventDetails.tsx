@@ -14,6 +14,9 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { format } from 'date-fns';
+import { ReactComponent as CTSVG } from '../../utility/seatMap/Capitol Theatre.svg'
+import { ReactComponent as SNSSVG } from '../../utility/seatMap/Singapore National Stadium.svg'
+import { ReactComponent as TSTSVG } from '../../utility/seatMap/The Star Theatre.svg'
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -100,7 +103,6 @@ export const EventDetails: React.FC = (): JSX.Element => {
             if (response.status == 200) {
               const apiResponse = await response.json();
               const data = apiResponse.data;
-              // console.log(data);
               setEventDetails(data);
             //   const artistDetails = data.artists.map((artist: any) => ({
             //     artistId: artist.artistId,
@@ -232,14 +234,11 @@ export const EventDetails: React.FC = (): JSX.Element => {
                       <Typography style={{font:'Roboto', fontWeight:500, fontSize:'18px'}}>
                           Ticket Pricing
                       </Typography>
-                      <img 
-                        src={`${process.env.REACT_APP_S3_URL}/venue_image/${eventDetails.venue.venueImage}`}
-                        style={{
-                            maxHeight: '800px',
-                            marginLeft:250, marginBottom:0
-                        }}
-                        alt="Seatmap Image"
-                      />
+                      <Grid container>
+                        { eventDetails.venue.venueId == '1' ? <TSTSVG/> : null}
+                        { eventDetails.venue.venueId == '2' ? <CTSVG/> : null}
+                        { eventDetails.venue.venueId == '3' ? <SNSSVG/> : null}
+                    </Grid>
                       <div style={{height:'50px', width:'350px', marginTop:-500, marginLeft:300}}>
                       <Grid container spacing={2}>
                         {categoryDetails.map((cat: any) => (
