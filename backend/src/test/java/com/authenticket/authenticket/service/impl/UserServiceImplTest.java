@@ -207,7 +207,7 @@ class UserServiceImplTest {
         Integer userId = 99;
         User user = User.builder()
                 .userId(userId)
-                .name("Georgia"
+                .name("Georgia")
                 .email("test@example.com")
                 .password("password")
                 .dateOfBirth(LocalDate.now())
