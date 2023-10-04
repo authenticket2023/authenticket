@@ -19,7 +19,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import { CardActionArea } from "@mui/material";
-import DisplayEvent from "./displayEvent";
+import DisplayVenue from "./displayVenue";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import TuneIcon from "@mui/icons-material/Tune";
 
@@ -60,7 +60,6 @@ export const Venue = () => {
   const token = window.localStorage.getItem("accessToken");
   useEffect(() => {
     loadCurrEvents();
-    loadPastEvents();
   }, []);
 
   //for alert
@@ -74,13 +73,13 @@ export const Venue = () => {
 
   //variables
   const [value, setValue] = useState(0);
-  const [currEvents, setCurrEvents] = useState([]);
+  const [currVenues, setCurrVenues] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
 
   const loadCurrEvents = async () => {
     //call backend API
     fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/public/event/current?page=0&size=20`,
+      `${process.env.REACT_APP_BACKEND_URL}/venue`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -93,18 +92,14 @@ export const Venue = () => {
           const apiResponse = await response.json();
           const data = apiResponse.data;
           console.log(data);
-          const currEventsArr = data.map((event: any) => ({
-            eventId: event.eventId,
-            eventName: event.eventName,
-            eventDescription: event.eventDescription,
-            eventImage: event.eventImage,
-            eventType: event.eventType,
-            eventDate: event.eventDate,
-            totalTickets: event.totalTickets,
-            eventVenue: event.eventVenue,
+          const currVenuesArr = data.map((venue: any) => ({
+            venueId: venue.venueId,
+            venueName: venue.venueName,
+            venueLocation: venue.venueLocation,
+            venueImage: venue.venueImage,
           }));
 
-          setCurrEvents(currEventsArr);
+          setCurrVenues(currVenuesArr);
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
@@ -121,52 +116,52 @@ export const Venue = () => {
       });
   };
 
-  const loadPastEvents = async () => {
-    //call backend API
-    fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/public/event/past?page=0&size=20`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "GET",
-      }
-    )
-      .then(async (response) => {
-        if (response.status == 200) {
-          const apiResponse = await response.json();
-          const data = apiResponse.data;
-          const pastEvents = data.map((event: any) => ({
-            eventId: event.eventId,
-            eventName: event.eventName,
-            eventDescription: event.eventDescription,
-            eventImage: event.eventImage,
-            eventType: event.eventType,
-            eventDate: event.eventDate,
-            totalTickets: event.totalTickets,
-            eventVenue: event.eventVenue,
-          }));
+  // const loadPastEvents = async () => {
+  //   //call backend API
+  //   fetch(
+  //     `${process.env.REACT_APP_BACKEND_URL}/public/event/past?page=0&size=20`,
+  //     {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       method: "GET",
+  //     }
+  //   )
+  //     .then(async (response) => {
+  //       if (response.status == 200) {
+  //         const apiResponse = await response.json();
+  //         const data = apiResponse.data;
+  //         const pastEvents = data.map((event: any) => ({
+  //           eventId: event.eventId,
+  //           eventName: event.eventName,
+  //           eventDescription: event.eventDescription,
+  //           eventImage: event.eventImage,
+  //           eventType: event.eventType,
+  //           eventDate: event.eventDate,
+  //           totalTickets: event.totalTickets,
+  //           eventVenue: event.eventVenue,
+  //         }));
 
-          setPastEvents(pastEvents);
-        } else {
-          //display alert, for fetch fail
-          setOpenSnackbar(true);
-          setAlertType("error");
-          setAlertMsg(
-            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
-          );
-        }
-      })
-      .catch((err) => {
-        setOpenSnackbar(true);
-        setAlertType("error");
-        setAlertMsg(`Oops something went wrong! Error : ${err}`);
-      });
-  };
+  //         setPastEvents(pastEvents);
+  //       } else {
+  //         //display alert, for fetch fail
+  //         setOpenSnackbar(true);
+  //         setAlertType("error");
+  //         setAlertMsg(
+  //           `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
+  //         );
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       setOpenSnackbar(true);
+  //       setAlertType("error");
+  //       setAlertMsg(`Oops something went wrong! Error : ${err}`);
+  //     });
+  // };
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+  // const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  //   setValue(newValue);
+  // };
 
   return (
     <div>
@@ -272,41 +267,20 @@ export const Venue = () => {
               alignItems="center"
               justifyContent="center"
             >
-              {currEvents.map((event: any, index) => (
+              {currVenues.map((venue: any, index) => (
                 <React.Fragment key={index}>
                   {/* offset sm 1*/}
                   {/* <Grid item xs={12} sm={1} /> */}
-                  <Grid item xs={5}>
-                    <DisplayEvent event={event} />
+                  <Grid item xs={11}>
+                    <DisplayVenue venue={venue} />
                   </Grid>
                 </React.Fragment>
               ))}
             </Grid>
           </CustomTabPanel>
           {/* Section 2: past events */}
-          <CustomTabPanel value={value} index={1}>
-            <Grid
-              container
-              rowSpacing={2}
-              columnSpacing={7}
-              sx={{ mb: 10 }}
-              alignItems="center"
-              justifyContent="center"
-            >
-              {pastEvents.map((event: any, index) => (
-                <React.Fragment key={index}>
-                  {/* offset sm 1*/}
-                  {/* <Grid item xs={12} sm={1} /> */}
-                  <Grid item xs={5}>
-                    <DisplayEvent event={event} />
-                  </Grid>
-                </React.Fragment>
-              ))}
-            </Grid>
-          </CustomTabPanel>
         </Box>
       </Box>
-
       <Snackbar
         open={openSnackbar}
         autoHideDuration={4000}
