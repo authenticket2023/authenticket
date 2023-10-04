@@ -132,7 +132,7 @@ export default function UpdateEvent(props: any) {
                 props.setAlertMsg("error fetching data!!!");
             } else {
                 const data = await response.json();
-                setEventTypeList(data['data']);
+                setEventTypeList(data['data'].sort((a:any, b:any) => a.eventTypeId - b.eventTypeId));
             }
         } catch (err) {
             window.alert(err);
@@ -163,7 +163,8 @@ export default function UpdateEvent(props: any) {
                 props.setAlertMsg("error fetching data!!!");
             } else {
                 const data = await response.json();
-                setArtistList(data['data']);
+                console.log(data)
+                setArtistList(data['data'].sort((a:any, b:any) => a.artistId - b.artistId));
             }
         } catch (err) {
             window.alert(err);

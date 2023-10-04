@@ -354,9 +354,9 @@ export function VenueArtist(props: any) {
                     </Grid>
 
                     <Grid container>
-                        { props.venue == '2' ? <TSTSVG/> : null}
-                        { props.venue == '3' ? <CTSVG/> : null}
-                        { props.venue == '4' ? <SNSSVG/> : null}
+                        { props.venue == '1' ? <TSTSVG/> : null}
+                        { props.venue == '2' ? <CTSVG/> : null}
+                        { props.venue == '3' ? <SNSSVG/> : null}
                     </Grid>
                     {/* Ticket Price */}
                     <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>

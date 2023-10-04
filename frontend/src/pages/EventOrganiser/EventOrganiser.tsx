@@ -174,7 +174,7 @@ export const EventOrganiser = () => {
                 body: formData
             })
                 .then(async (response) => {
-                    if (response.status == 200) {
+                    if (response.status == 200 || response.status == 201) {
                         setOpenSnackbar(true);
                         setAlertType('success');
                         if (venue == '999') {
