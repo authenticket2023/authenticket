@@ -97,6 +97,7 @@ export const Venue = () => {
             venueName: venue.venueName,
             venueLocation: venue.venueLocation,
             venueImage: venue.venueImage,
+            venueDescription: venue.venueDescription,
           }));
 
           setCurrVenues(currVenuesArr);
