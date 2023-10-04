@@ -106,6 +106,10 @@ public class Event extends BaseEntity {
 //    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
     Set<TicketPricing> ticketPricingSet = new HashSet<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Order> orderSet = new HashSet<>();
+
 //    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
 ////    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
 //    Set<Ticket> ticketSet = new HashSet<>();

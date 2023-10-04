@@ -258,7 +258,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-                    ticketSaleDate, null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>());
+                    ticketSaleDate, null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>(),new HashSet<Order>());
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension

@@ -54,6 +54,10 @@ public class Order extends BaseEntity{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
     @OneToMany(mappedBy = "order")
     @JsonIgnore
     private Set<Ticket> ticketSet = new HashSet<>();

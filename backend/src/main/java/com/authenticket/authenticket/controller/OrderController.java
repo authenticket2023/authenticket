@@ -203,7 +203,7 @@ public class OrderController extends Utility {
             }
             Set<Ticket> ticketSet = new HashSet<>(ticketList);
 
-            Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser, ticketSet);
+            Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser,event,ticketSet);
 
             Order savedOrder = orderService.saveOrder(newOrder);
 
@@ -286,7 +286,7 @@ public class OrderController extends Utility {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-        orderService.completeOrder(orderRepository.findById(orderId).get());
-        return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
+        Order completedOrder = orderService.completeOrder(orderRepository.findById(orderId).get());
+        return ResponseEntity.ok(generateApiResponse(completedOrder, "Order completed successfully"));
     }
 }

@@ -22,7 +22,6 @@ import com.authenticket.authenticket.service.PDFGenerator;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.TaskScheduler;
@@ -30,7 +29,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -268,10 +266,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void completeOrder(Order order) {
+    public Order completeOrder(Order order) {
         //updating status to success
         order.setOrderStatus(Order.Status.SUCCESS.getStatusValue());
-        orderRepository.save(order);
+        Order updatedOrder = orderRepository.save(order);
 
         //add here generate ticket pdf and email call
         User user = order.getUser();
@@ -288,6 +286,7 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
             throw new ApiRequestException(e.getMessage());
         }
+        return updatedOrder;
     }
 
     @Override
