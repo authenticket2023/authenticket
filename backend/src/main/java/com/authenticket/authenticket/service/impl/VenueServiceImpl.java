@@ -29,16 +29,13 @@ public class VenueServiceImpl implements VenueService {
     }
 
     @Override
-    public Optional<VenueDisplayDto> findById(Integer venueId) {
-        return venueRepository.findById(venueId).map(venueDtoMapper);
+    public Optional<Venue> findById(Integer venueId) {
+        return venueRepository.findById(venueId);
     }
 
     @Override
-    public List<VenueDisplayDto> findAllVenue() {
-        return venueRepository.findAll()
-                .stream()
-                .map(venueDtoMapper)
-                .collect(Collectors.toList());
+    public List<Venue> findAllVenue() {
+        return venueRepository.findAll();
     }
 
     @Override

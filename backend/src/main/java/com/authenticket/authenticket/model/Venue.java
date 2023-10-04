@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
+@JsonIgnoreProperties(value = {"createdAt", "deletedAt", "updatedAt"})
 @Table(name = "venue")
 @EqualsAndHashCode(callSuper = true)
 public class Venue extends BaseEntity {
@@ -30,15 +29,18 @@ public class Venue extends BaseEntity {
     @Column(name = "venue_location")
     private String venueLocation;
 
+    @Column(name = "venue_description",length = 3000)
+    private String venueDescription;
+
     @Column(name = "venue_image")
     private String venueImage;
 
-    @OneToMany( mappedBy = "venue")
+    @OneToMany(mappedBy = "venue")
     @JsonIgnore
     private List<Section> sections = new ArrayList<>();
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Venue Name: " + venueName;
     }
 }

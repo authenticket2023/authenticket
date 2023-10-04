@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VenueService {
-    Optional<VenueDisplayDto> findById(Integer venueId);
-    List<VenueDisplayDto> findAllVenue();
+    Optional<Venue> findById(Integer venueId);
+    List<Venue> findAllVenue();
     Venue saveVenue(Venue venue);
     Venue updateVenue(Integer venueId, String venueName, String venueLocation);
     void removeVenue(Integer venueId);

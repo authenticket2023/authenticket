@@ -79,7 +79,7 @@ class VenueServiceImplTest {
         when(venueRepository.findAll()).thenReturn(mockVenueList);
 
         // Act
-        List<VenueDisplayDto> result = underTest.findAllVenue();
+        List<Venue> result = underTest.findAllVenue();
 
         // Assert
         verify(venueRepository).findAll();

@@ -54,7 +54,7 @@ public class VenueController extends Utility {
 
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllVenue() {
-        List<VenueDisplayDto> venueList = venueService.findAllVenue();
+        List<Venue> venueList = venueService.findAllVenue();
         if (venueList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(venueList, "No venue found."));
         } else {
@@ -63,13 +63,14 @@ public class VenueController extends Utility {
     }
 
     @GetMapping("/{venue_id}")
-    public Optional<VenueDisplayDto> findVenueById(@PathVariable("venue_id") Integer venueId) {
+    public Optional<Venue> findVenueById(@PathVariable("venue_id") Integer venueId) {
         return venueService.findById(venueId);
     }
 
     @PostMapping
     public ResponseEntity<?> saveVenue(@RequestParam(value = "venueName") String venueName,
                                         @RequestParam(value = "venueLocation") String venueLocation,
+                                       @RequestParam(value = "venueDescription") String venueDescription,
                                         @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
         Optional<Venue> venueOptional = venueRepository.findByVenueName(venueName);
         if (venueOptional.isPresent()) {
@@ -80,7 +81,7 @@ public class VenueController extends Utility {
             throw new NonExistentException("Venue Image File is null");
         }
 
-        Venue savedVenue = venueService.saveVenue(new Venue(null, venueName, venueLocation, null,null));
+        Venue savedVenue = venueService.saveVenue(new Venue(null, venueName, venueLocation,venueDescription, null,null));
         //generating the file name with the extension
         String fileExtension = getFileExtension(venueImageFile.getContentType());
         String imageName = savedVenue.getVenueId() + fileExtension;
