@@ -1,20 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
-import { Alert, Grid, IconButton, InputAdornment, Snackbar, TextField } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import Divider from '@mui/material/Divider';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import { CardActionArea } from '@mui/material';
-import DisplayEvent from './displayEvent';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import TuneIcon from '@mui/icons-material/Tune';
+import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { NavbarNotLoggedIn, NavbarLoggedIn } from "../../Navbar";
+import {
+  Alert,
+  Grid,
+  IconButton,
+  InputAdornment,
+  Snackbar,
+  TextField,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import Divider from "@mui/material/Divider";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import { CardActionArea } from "@mui/material";
+import DisplayEvent from "./displayEvent";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import TuneIcon from "@mui/icons-material/Tune";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -45,12 +52,12 @@ function CustomTabPanel(props: TabPanelProps) {
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
 export const Event = () => {
-  const token = window.localStorage.getItem('accessToken');
+  const token = window.localStorage.getItem("accessToken");
   useEffect(() => {
     loadCurrEvents();
     loadPastEvents();
@@ -59,8 +66,8 @@ export const Event = () => {
   //for alert
   //error , warning , info , success
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [alertType, setAlertType]: any = useState('info');
-  const [alertMsg, setAlertMsg] = useState('');
+  const [alertType, setAlertType]: any = useState("info");
+  const [alertMsg, setAlertMsg] = useState("");
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
@@ -72,17 +79,20 @@ export const Event = () => {
 
   const loadCurrEvents = async () => {
     //call backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/current?page=0&size=20`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'GET',
-    })
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/current?page=0&size=20`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      }
+    )
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          console.log(data)
+          console.log(data);
           const currEventsArr = data.map((event: any) => ({
             eventId: event.eventId,
             eventName: event.eventName,
@@ -98,25 +108,30 @@ export const Event = () => {
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
-          setAlertType('error');
-          setAlertMsg(`Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`);
+          setAlertType("error");
+          setAlertMsg(
+            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
+          );
         }
       })
       .catch((err) => {
         setOpenSnackbar(true);
-        setAlertType('error');
+        setAlertType("error");
         setAlertMsg(`Oops something went wrong! Error : ${err}`);
       });
-  }
+  };
 
   const loadPastEvents = async () => {
     //call backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/past?page=0&size=20`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'GET',
-    })
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/past?page=0&size=20`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      }
+    )
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
@@ -136,16 +151,18 @@ export const Event = () => {
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
-          setAlertType('error');
-          setAlertMsg(`Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`);
+          setAlertType("error");
+          setAlertMsg(
+            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
+          );
         }
       })
       .catch((err) => {
         setOpenSnackbar(true);
-        setAlertType('error');
+        setAlertType("error");
         setAlertMsg(`Oops something went wrong! Error : ${err}`);
       });
-  }
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -155,59 +172,131 @@ export const Event = () => {
     <div>
       {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
       {/* i dont know why cannt use percentage for height, i guess we have to use fixed px */}
-      <Box sx={{ height: '850px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+      <Box
+        sx={{
+          height: "850px",
+          overflow: "hidden",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {/* Section 1 */}
-        <Box sx={{ width: '100%', position: 'sticky', borderBottom: 1, mt: 5 , borderColor:'#CACACA', }}>
-          <Tabs value={value} onChange={handleChange} textColor="inherit" TabIndicatorProps={{ style: { display: 'none' } }} sx={{ marginTop: -3, marginLeft: 19 }}>
-            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Events</Typography>)} {...a11yProps(0)} />
-            <Tab label={(<Typography variant='h3' sx={{ textTransform: 'none', font: 'Roboto', fontSize: '26px', fontWeight: 600 }} >Past Events</Typography>)} {...a11yProps(1)} />
+        <Box
+          sx={{
+            width: "100%",
+            position: "sticky",
+            borderBottom: 1,
+            mt: 5,
+            borderColor: "#CACACA",
+          }}
+        >
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            textColor="inherit"
+            TabIndicatorProps={{ style: { display: "none" } }}
+            sx={{ marginTop: -3, marginLeft: 19 }}
+          >
+            <Tab
+              label={
+                <Typography
+                  variant="h3"
+                  sx={{
+                    textTransform: "none",
+                    font: "Roboto",
+                    fontSize: "26px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Events
+                </Typography>
+              }
+              {...a11yProps(0)}
+            />
+            <Tab
+              label={
+                <Typography
+                  variant="h3"
+                  sx={{
+                    textTransform: "none",
+                    font: "Roboto",
+                    fontSize: "26px",
+                    fontWeight: 600,
+                  }}
+                >
+                  Past Events
+                </Typography>
+              }
+              {...a11yProps(1)}
+            />
           </Tabs>
           {/* Search Bar */}
           <Box
             component="form"
-            sx={{  display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 15, paddingRight: 15 , width:'50ch', marginTop:-6, marginBottom:3, marginLeft:120}}
-            noValidate
-            autoComplete='off'
-        >
-            <TextField
-            id="input-with-icon-textfield"
-            size="small"
-            label="Search"
-            variant='outlined'
-            fullWidth
-            // onChange={handleSearch}
-            InputProps={{
-                startAdornment: (
-                <InputAdornment position="start">
-                    <SearchIcon />
-                </InputAdornment>
-                ),
-            }}
-            />
-            <IconButton aria-label="filter"
-            // aria-describedby={id}
-            // onClick={handleFilterClick} 
             sx={{
-              border: "1px solid #8E8E8E",
-              borderRadius: '5px',
-              marginLeft:1,
-              height:39.5,
-              width:39.5,
-            //   backgroundColor: open ? "#30685e" : "white",
-            //   color: open ? "white" : "#30685e",
-              ":hover": {
-                bgcolor: "#8E8E8E",
-                color: "white"
-              }
-            }}>
-            <TuneIcon /></IconButton>
-        </Box>
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingLeft: 15,
+              paddingRight: 15,
+              width: "50ch",
+              marginTop: -6,
+              marginBottom: 3,
+              marginLeft: 120,
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              id="input-with-icon-textfield"
+              size="small"
+              label="Search"
+              variant="outlined"
+              fullWidth
+              // onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <IconButton
+              aria-label="filter"
+              // aria-describedby={id}
+              // onClick={handleFilterClick}
+              sx={{
+                border: "1px solid #8E8E8E",
+                borderRadius: "5px",
+                marginLeft: 1,
+                height: 39.5,
+                width: 39.5,
+                //   backgroundColor: open ? "#30685e" : "white",
+                //   color: open ? "white" : "#30685e",
+                ":hover": {
+                  bgcolor: "#8E8E8E",
+                  color: "white",
+                },
+              }}
+            >
+              <TuneIcon />
+            </IconButton>
+          </Box>
         </Box>
 
         {/* Section 2: current events */}
-        <Box sx={{ overflowY: 'auto', height: 'calc(100% - 80px)', }}>
-          <CustomTabPanel value={value} index={0} >
-            <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10 }} alignItems="center" justifyContent="center">
+        <Box sx={{ overflowY: "auto", height: "calc(100% - 80px)" }}>
+          <CustomTabPanel value={value} index={0}>
+            <Grid
+              container
+              rowSpacing={2}
+              columnSpacing={7}
+              sx={{ mb: 10 }}
+              alignItems="center"
+              justifyContent="center"
+            >
               {currEvents.map((event: any, index) => (
                 <React.Fragment key={index}>
                   {/* offset sm 1*/}
@@ -221,7 +310,14 @@ export const Event = () => {
           </CustomTabPanel>
           {/* Section 2: past events */}
           <CustomTabPanel value={value} index={1}>
-            <Grid container rowSpacing={2} columnSpacing={7} sx={{ mb: 10, }} alignItems="center" justifyContent="center">
+            <Grid
+              container
+              rowSpacing={2}
+              columnSpacing={7}
+              sx={{ mb: 10 }}
+              alignItems="center"
+              justifyContent="center"
+            >
               {pastEvents.map((event: any, index) => (
                 <React.Fragment key={index}>
                   {/* offset sm 1*/}
@@ -236,12 +332,19 @@ export const Event = () => {
         </Box>
       </Box>
 
-      <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={alertType}
+          sx={{ width: "100%" }}
+        >
           {alertMsg}
         </Alert>
       </Snackbar>
     </div>
-
-  )
-}
+  );
+};
