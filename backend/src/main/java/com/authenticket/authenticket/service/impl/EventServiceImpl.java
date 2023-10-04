@@ -136,6 +136,7 @@ public class EventServiceImpl implements EventService {
         return eventDTOMapper.map(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(reviewStatus));
     }
 
+    @Override
     public List<EventHomeDto> findEventsByVenue(String reviewStatus, Integer venueId, Pageable pageable) {
         return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(reviewStatus, venueId, pageable).getContent());
     }
@@ -227,6 +228,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
     public void removeAllArtistFromEvent(Integer eventId) {
         eventRepository.deleteAllArtistByEventId(eventId);
     }

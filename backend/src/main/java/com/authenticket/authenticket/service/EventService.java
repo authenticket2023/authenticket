@@ -34,7 +34,9 @@ public interface EventService {
     List<EventHomeDto> findPastEventsByEventDate(Pageable pageable);//event date past the current date
   
     List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus);
-  
+
+    List<EventHomeDto> findEventsByVenue(String reviewStatus, Integer venueId, Pageable pageable);
+
     Event saveEvent (Event event);
   
     FeaturedEventDto saveFeaturedEvent (FeaturedEvent featuredEvent);
@@ -47,7 +49,9 @@ public interface EventService {
     Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
   
     EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId);
-  
+
+    void removeAllArtistFromEvent(Integer eventId);
+
     EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price);
 
     //void removeAllArtistFromEvent(Integer eventId);
