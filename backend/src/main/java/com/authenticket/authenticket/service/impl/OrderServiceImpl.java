@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.authenticket.authenticket.dto.FileNameRecord;
+import com.authenticket.authenticket.dto.file.FileNameRecord;
 import com.authenticket.authenticket.dto.order.OrderDisplayDto;
 import com.authenticket.authenticket.dto.order.OrderDtoMapper;
 import com.authenticket.authenticket.dto.order.OrderUpdateDto;

@@ -1,4 +1,4 @@
-package com.authenticket.authenticket.dto;
+package com.authenticket.authenticket.dto.file;
 
 import org.springframework.core.io.InputStreamResource;
 
