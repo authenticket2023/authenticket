@@ -50,11 +50,11 @@ class VenueServiceImplTest {
         when(venueRepository.findById(venueId)).thenReturn(Optional.of(venue));
 
         // Act
-        Optional<VenueDisplayDto> venueDisplayDto = underTest.findById(venueId);
+        Optional<Venue> venueDisplay = underTest.findById(venueId);
 
         // Assert
-        assertTrue(venueDisplayDto.isPresent());
-        assertEquals(venueId, venueDisplayDto.get().venueId());
+        assertTrue(venueDisplay.isPresent());
+        assertEquals(venueId, venueDisplay.get().getVenueId());
     }
 
     @Test
@@ -66,10 +66,10 @@ class VenueServiceImplTest {
         when(venueRepository.findById(venueId)).thenReturn(Optional.empty());
 
         // Act
-        Optional<VenueDisplayDto> venueDtoOptional = underTest.findById(venueId);
+        Optional<Venue> venueOptional = underTest.findById(venueId);
 
         // Assert
-        assertFalse(venueDtoOptional.isPresent());
+        assertFalse(venueOptional.isPresent());
     }
 
     @Test
@@ -79,7 +79,7 @@ class VenueServiceImplTest {
         when(venueRepository.findAll()).thenReturn(mockVenueList);
 
         // Act
-        List<VenueDisplayDto> result = underTest.findAllVenue();
+        List<Venue> result = underTest.findAllVenue();
 
         // Assert
         verify(venueRepository).findAll();

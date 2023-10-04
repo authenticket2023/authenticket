@@ -3,6 +3,8 @@ package com.authenticket.authenticket.service.impl;
 import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
 import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.dto.section.SectionDtoMapper;
+import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
@@ -10,17 +12,13 @@ import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.EventService;
-import org.hibernate.sql.ast.tree.expression.Over;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -33,13 +31,17 @@ public class EventServiceImpl implements EventService {
 
     private final TicketCategoryRepository ticketCategoryRepository;
 
-    private final EventTicketCategoryRepository eventTicketCategoryRepository;
+    private final TicketPricingRepository ticketPricingRepository;
 
     private final EventDtoMapper eventDTOMapper;
+
+    private final SectionDtoMapper sectionDtoMapper;
 
     private final ArtistDtoMapper artistDtoMapper;
 
     private final AmazonS3Service amazonS3Service;
+
+    private final TicketRepository ticketRepository;
 
     private final EmailService emailService;
 
@@ -48,33 +50,40 @@ public class EventServiceImpl implements EventService {
                             ArtistRepository artistRepository,
                             FeaturedEventRepository featuredEventRepository,
                             TicketCategoryRepository ticketCategoryRepository,
-                            EventTicketCategoryRepository eventTicketCategoryRepository,
+                            TicketPricingRepository ticketPricingRepository,
                             EventDtoMapper eventDTOMapper,
                             ArtistDtoMapper artistDtoMapper,
                             AmazonS3Service amazonS3Service,
-                            EmailService emailService) {
+                            EmailService emailService,
+                            TicketRepository ticketRepository,
+                            SectionDtoMapper sectionDtoMapper) {
         this.eventRepository = eventRepository;
         this.artistRepository = artistRepository;
         this.featuredEventRepository = featuredEventRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
-        this.eventTicketCategoryRepository = eventTicketCategoryRepository;
+        this.ticketPricingRepository = ticketPricingRepository;
         this.eventDTOMapper = eventDTOMapper;
         this.artistDtoMapper = artistDtoMapper;
         this.amazonS3Service = amazonS3Service;
         this.emailService = emailService;
+        this.ticketRepository = ticketRepository;
+        this.sectionDtoMapper = sectionDtoMapper;
     }
 
     //get all events for home page
+    @Override
     public List<EventHomeDto> findAllPublicEvent(Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull("approved",pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNull(Event.ReviewStatus.APPROVED.getStatusValue(), pageable).getContent());
     }
 
 
     //find all events for admin
+    @Override
     public List<EventAdminDisplayDto> findAllEvent() {
         return eventDTOMapper.mapEventAdminDisplayDto(eventRepository.findAllByOrderByEventIdAsc());
     }
 
+    @Override
     public OverallEventDto findEventById(Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isPresent()) {
@@ -84,67 +93,90 @@ public class EventServiceImpl implements EventService {
         }
         return null;
     }
+
     //find recently added events by created at date for home
+    @Override
     public List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc("approved", pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtDesc(Event.ReviewStatus.APPROVED.getStatusValue(), pageable).getContent());
 
     }
 
+    @Override
     public List<FeaturedEventDto> findFeaturedEvents(Pageable pageable) {
-        Page<FeaturedEvent> featuredEvents = featuredEventRepository.findAllFeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(),LocalDateTime.now(),pageable);
+        Page<FeaturedEvent> featuredEvents = featuredEventRepository.findAllFeaturedEventsByStartDateBeforeAndEndDateAfter(LocalDateTime.now(), LocalDateTime.now(), pageable);
         return eventDTOMapper.mapFeaturedEventDto(featuredEvents.getContent());
     }
 
-    public List<EventHomeDto> findBestSellerEvents(Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findBestSellerEvents(pageable).getContent());
+    @Override
+    public List<EventHomeDto> findBestSellerEvents() {
+        return eventDTOMapper.mapEventHomeDtoForObj(eventRepository.findBestSellerEvents());
     }
 
-
+    @Override
     public List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc("approved", currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndTicketSaleDateAfterAndDeletedAtIsNullOrderByTicketSaleDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate, pageable).getContent());
     }
 
+    @Override
     public List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc("approved", currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullOrderByEventDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate, pageable).getContent());
     }
 
+    @Override
     public List<EventHomeDto> findPastEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc("approved", currentDate,pageable).getContent());
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateBeforeAndDeletedAtIsNullOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), currentDate, pageable).getContent());
     }
 
+    @Override
     public List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus) {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper.map(eventRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(reviewStatus));
     }
 
+    @Override
+    public List<EventHomeDto> findEventsByVenue(Integer venueId, Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable).getContent());
+    }
+
+    @Override
+    public List<EventHomeDto> findPastEventsByVenue(Integer venueId, Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullAndEventDateBeforeOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable, LocalDateTime.now()).getContent());
+    }
+
+    @Override
+    public List<EventHomeDto> findUpcomingEventsByVenue(Integer venueId, Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullAndEventDateAfterOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable, LocalDateTime.now()).getContent());
+    }
+
+    @Override
     public Event saveEvent(Event event) {
         return eventRepository.save(event);
     }
 
+    @Override
     public FeaturedEventDto saveFeaturedEvent(FeaturedEvent featuredEvent) {
 
         return eventDTOMapper.applyFeaturedEventDto(featuredEventRepository.save(featuredEvent));
     }
 
+    @Override
     public Event updateEvent(EventUpdateDto eventUpdateDto) {
         Optional<Event> eventOptional = eventRepository.findById(eventUpdateDto.eventId());
 
         if (eventOptional.isPresent()) {
             Event existingEvent = eventOptional.get();
             eventDTOMapper.update(eventUpdateDto, existingEvent);
-
+            existingEvent.setUpdatedAt(LocalDateTime.now());
             // Send email
             String reviewStatus = eventUpdateDto.reviewStatus();
             if (reviewStatus != null) {
-                if(reviewStatus.equals("approved") || reviewStatus.equals("rejected")) {
+                if (reviewStatus.equals(Event.ReviewStatus.APPROVED.getStatusValue()) || reviewStatus.equals(Event.ReviewStatus.REJECTED.getStatusValue())) {
                     EventOrganiser eventOrganiser = existingEvent.getOrganiser();
                     // Send email to organiser
-                    System.out.println("Testing now");
                     emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildEventReviewEmail(existingEvent), "Event Review");
-                    System.out.println("Done now");
                 }
             }
 
@@ -155,7 +187,7 @@ public class EventServiceImpl implements EventService {
         throw new NonExistentException("Event", eventUpdateDto.eventId());
     }
 
-
+    @Override
     public String deleteEvent(Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
 
@@ -163,46 +195,18 @@ public class EventServiceImpl implements EventService {
             Event event = eventOptional.get();
             if (event.getDeletedAt() != null) {
                 return String.format("Event %d is already deleted.", eventId);
-            } else{
+            } else {
                 event.setDeletedAt(LocalDateTime.now());
                 eventRepository.save(event);
                 return String.format("Event %d is successfully deleted.", eventId);
             }
         } else {
-            return String.format("Event %d does not exist, deletion unsuccessful.", eventId);
+            throw new NonExistentException("Event", eventId);
         }
 
     }
 
-    public String removeEvent(Integer eventId) {
-
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-
-        if (eventOptional.isPresent()) {
-            Event event = eventOptional.get();
-            String imageName = event.getEventImage();
-            if (event.getEventImage() != null) {
-                amazonS3Service.deleteFile(imageName, "event_organiser_profile");
-            }
-            eventRepository.deleteById(eventId);
-            return "event removed successfully";
-        }
-        return "error: event does not exist";
-
-    }
-
-    public Event approveEvent(Integer eventId, Integer adminId) {
-        Optional<Event> eventOptional = eventRepository.findById(eventId);
-
-        if (eventOptional.isPresent()) {
-            Event event = eventOptional.get();
-//            event.setReviewedBy(adminId);
-            eventRepository.save(event);
-            return event;
-        }
-        return null;
-    }
-
+    @Override
     public EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<Artist> artistOptional = artistRepository.findById(artistId);
@@ -234,32 +238,34 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public void removeAllArtistFromEvent(Integer eventId){
+    @Override
+    public void removeAllArtistFromEvent(Integer eventId) {
         eventRepository.deleteAllArtistByEventId(eventId);
-        };
+    }
 
-    public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+    @Override
+    public EventDisplayDto addTicketCategory(Integer catId, Integer eventId, Double price) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
         if (categoryOptional.isPresent() && eventOptional.isPresent()) {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Optional<TicketPricing> eventTicketCategoryOptional = ticketPricingRepository.findById(new EventTicketCategoryId(ticketCategory, event));
             if (eventTicketCategoryOptional.isPresent()) {
                 throw new AlreadyExistsException("Ticket Category already linked to stated event");
             }
 
-            event.addTicketCategory(ticketCategory, price, availableTickets, totalTicketsPerCat);
+            event.addTicketPricing(ticketCategory, price);
             //adding to total tickets
-            Integer currentTotalTickets = event.getTotalTickets();
-            currentTotalTickets += totalTicketsPerCat;
-            event.setTotalTickets(currentTotalTickets);
+//            Integer currentTotalTickets = event.getTotalTickets();
+//            currentTotalTickets += totalTicketsPerCat;
+//            event.setTotalTickets(currentTotalTickets);
 
             //adding to total tickets sold
-            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
-            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
-            event.setTotalTicketsSold(currentTotalTicketsSold);
+//            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
+//            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
+//            event.setTotalTicketsSold(currentTotalTicketsSold);
 
             eventRepository.save(event);
             return eventDTOMapper.apply(event);
@@ -287,32 +293,31 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public void updateTicketCategory(Integer catId, Integer eventId, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
+    @Override
+    public void updateTicketPricing(Integer catId, Integer eventId, Double price) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
         if (categoryOptional.isPresent() && eventOptional.isPresent()) {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
-            if (eventTicketCategoryOptional.isEmpty()) {
+            Optional<TicketPricing> ticketPricingOptional = ticketPricingRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            if (ticketPricingOptional.isEmpty()) {
                 throw new NonExistentException("Ticket Category " + ticketCategory.getCategoryName() + " is not linked to Event '" + event.getEventName() + "'");
             }
-            EventTicketCategory eventTicketCategory = eventTicketCategoryOptional.get();
+            TicketPricing ticketPricing = ticketPricingOptional.get();
 
             //adding to total tickets
-            Integer currentTotalTickets = event.getTotalTickets();
-            currentTotalTickets += totalTicketsPerCat;
-            event.setTotalTickets(currentTotalTickets);
+//            Integer currentTotalTickets = event.getTotalTickets();
+//            currentTotalTickets += totalTicketsPerCat;
+//            event.setTotalTickets(currentTotalTickets);
 
             //adding to total tickets sold
-            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
-            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
-            event.setTotalTicketsSold(currentTotalTicketsSold);
+//            Integer currentTotalTicketsSold = event.getTotalTicketsSold();
+//            currentTotalTicketsSold += (totalTicketsPerCat - availableTickets);
+//            event.setTotalTicketsSold(currentTotalTicketsSold);
 
-            if (!event.updateTicketCategory(eventTicketCategory, price, availableTickets, totalTicketsPerCat)) {
-                throw new NonExistentException("Event " + event.getEventName() + " is not linked to " + ticketCategory.getCategoryName());
-            }
+            event.updateTicketPricing(ticketPricing, price);
             eventRepository.save(event);
         } else {
             if (categoryOptional.isEmpty()) {
@@ -323,6 +328,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
     public EventDisplayDto removeTicketCategory(Integer catId, Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         Optional<TicketCategory> categoryOptional = ticketCategoryRepository.findById(catId);
@@ -330,7 +336,7 @@ public class EventServiceImpl implements EventService {
             TicketCategory ticketCategory = categoryOptional.get();
             Event event = eventOptional.get();
 
-            Optional<EventTicketCategory> eventTicketCategoryOptional = eventTicketCategoryRepository.findById(new EventTicketCategoryId(ticketCategory, event));
+            Optional<TicketPricing> eventTicketCategoryOptional = ticketPricingRepository.findById(new EventTicketCategoryId(ticketCategory, event));
             if (eventTicketCategoryOptional.isEmpty()) {
                 throw new NonExistentException("Ticket Category not linked to stated event");
             }
@@ -347,6 +353,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Override
     //return artist for a specific event
     public Set<ArtistDisplayDto> findArtistForEvent(Integer eventId) throws NonExistentException {
 
@@ -358,5 +365,10 @@ public class EventServiceImpl implements EventService {
         return artistDisplayDtoList;
     }
 
+    @Override
+    public List<SectionTicketDetailsDto> findAllSectionDetailsForEvent(Event event) {
+        return sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
+    }
 
+    ;
 }

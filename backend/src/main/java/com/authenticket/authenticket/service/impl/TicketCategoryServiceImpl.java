@@ -31,6 +31,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         this.ticketCategoryDisplayDtoMapper = ticketCategoryDisplayDtoMapper;
     }
 
+    @Override
     public List<TicketCategoryDisplayDto> findAllTicketCategory() {
         return ticketCategoryRepository.findAll()
                 .stream()
@@ -38,10 +39,12 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Optional<TicketCategoryDisplayDto> findTicketCategoryById(Integer categoryId) {
         return ticketCategoryRepository.findById(categoryId).map(ticketCategoryDisplayDtoMapper);
     }
 
+    @Override
     public TicketCategory saveTicketCategory(String name) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findByCategoryName(name);
         if (ticketCategoryOptional.isPresent()) {
@@ -51,6 +54,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         return ticketCategoryRepository.save(ticketCategory);
     }
 
+    @Override
     public TicketCategory updateTicketCategory(Integer categoryId, String name) {
         TicketCategoryUpdateDto ticketCategoryUpdateDto = new TicketCategoryUpdateDto(categoryId, name);
 
@@ -70,7 +74,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         throw new NonExistentException("Ticket Category not found");
     }
 
-
+    @Override
     public void deleteTicket(Integer categoryId) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);
 
@@ -87,6 +91,7 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         }
     }
 
+    @Override
     public void removeTicketCategory(Integer categoryId) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);
 

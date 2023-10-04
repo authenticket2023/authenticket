@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { NavbarLoggedIn, NavbarNotLoggedIn } from '../../Navbar';
-import { SGStad } from '../utility/SeatMap'
+import { SGStad } from '../../utility/seatMap/SeatMap'
 
 
 export const Venue = () => {

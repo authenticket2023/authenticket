@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ReactComponent as CTSVG } from "./Capitol Theatre.svg";
-// import {ReactComponent as SgStadSVG} from "./singapore stadium.svg";
+import {ReactComponent as StarTheatre} from "./The Star Theatre.svg";
 import { ReactComponent as SgStadSVG } from "./Singapore National Stadium.svg";
 import './MySVGComponent.css';
 import { Grid, Typography } from '@mui/material';
@@ -38,7 +38,7 @@ export function SGStad(props: any) {
   return (
     <Grid style={{ display:'flex', flexDirection:'row'}}>
       {/* <h2>Last Selected Section: {selectedSection}</h2> */}
-      {props.id === 2 ? <CTSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 3 ? <SgStadSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : null}
+      {props.id === 1 ?<StarTheatre onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 2 ? <CTSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 3 ? <SgStadSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : null}
       {/* <SgStadSVG onClick={handleSectionClick}/>
       <CTSVG onClick={handleSectionClick}/> */}
       <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', display:'flex', flexDirection:'column', marginTop:125, marginLeft:0}}>

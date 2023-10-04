@@ -10,15 +10,13 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.FeaturedEvent;
-import com.authenticket.authenticket.repository.AdminRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
+import com.authenticket.authenticket.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,35 +30,37 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     private final EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper;
 
-    private final VenueDtoMapper venueDtoMapper;
-
     private final ArtistDtoMapper artistDtoMapper;
 
     private final AdminDtoMapper adminDtoMapper;
 
     private final EventRepository eventRepository;
 
-    private final AdminRepository adminRepository;
+    private final VenueRepository venueRepository;
 
-    private final EventTypeRepository eventTypeRepository;
+    private final TicketRepository ticketRepository;
+
 
     @Autowired
-    public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper, EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper, VenueDtoMapper venueDtoMapper, ArtistDtoMapper artistDtoMapper, AdminDtoMapper adminDtoMapper, EventRepository eventRepository, AdminRepository adminRepository, EventTypeRepository eventTypeRepository) {
+    public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper,
+                          EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper,
+                          VenueDtoMapper venueDtoMapper, ArtistDtoMapper artistDtoMapper,
+                          AdminDtoMapper adminDtoMapper, EventRepository eventRepository,
+                          VenueRepository venueRepository, TicketRepository ticketRepository) {
         this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
         this.eventTicketCategoryDisplayDtoMapper = eventTicketCategoryDisplayDtoMapper;
-        this.venueDtoMapper = venueDtoMapper;
         this.artistDtoMapper = artistDtoMapper;
         this.adminDtoMapper = adminDtoMapper;
         this.eventRepository = eventRepository;
-        this.adminRepository = adminRepository;
-        this.eventTypeRepository = eventTypeRepository;
+        this.venueRepository = venueRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     public EventDisplayDto apply(Event event) {
 
         Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
-        if(event.getEventTicketCategorySet() != null){
-            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+        if(event.getTicketPricingSet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getTicketPricingSet());
 
         }
         return new EventDisplayDto(
@@ -84,9 +84,22 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventImage(),
                 event.getEventType().getEventTypeName(),
                 event.getEventDate(),
-                event.getTotalTickets(),
+                venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId()),
                 event.getVenue().getVenueName());
     }
+
+    public EventHomeDto applyEventHomeDtoForObj(Object[] queryObj) {
+        return new EventHomeDto(
+                (Integer) queryObj[0],
+                (String) queryObj[1],
+                (String)queryObj[2],
+                (String)queryObj[3],
+                (String)queryObj[4],
+                ((Timestamp)queryObj[5]).toLocalDateTime(),
+                venueRepository.findNoOfSeatsByVenue((Integer)queryObj[6]),
+                (String)queryObj[7]);
+    }
+
 
     public FeaturedEventDto applyFeaturedEventDto(FeaturedEvent featuredEvent) {
         return new FeaturedEventDto(
@@ -133,6 +146,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     public List<EventHomeDto> mapEventHomeDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyEventHomeDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EventHomeDto> mapEventHomeDtoForObj(List<Object[]> objList) {
+        return objList.stream()
+                .map(this::applyEventHomeDtoForObj)
                 .collect(Collectors.toList());
     }
 
@@ -187,11 +206,10 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         }
         //map event ticket cat to dto
         Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
-        if(event.getEventTicketCategorySet() != null){
-            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+        if(event.getTicketPricingSet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getTicketPricingSet());
         }
         //convert admin to dto
-
         AdminDisplayDto adminDisplayDto = null;
         if(event.getReviewedBy() != null) {
             adminDisplayDto = adminDtoMapper.apply(event.getReviewedBy());
@@ -204,12 +222,15 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventDate(),
                 event.getOtherEventInfo(),
                 event.getEventImage(),
-                event.getTotalTickets(),
-                event.getTotalTicketsSold(),
+                venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId()),
+                ticketRepository.countAllByTicketPricingEventEventId(eventId),
                 event.getTicketSaleDate(),
                 event.getReviewStatus(),
                 event.getReviewRemarks(),
                 adminDisplayDto, //reviewBy
+                event.getIsEnhanced(),
+                event.getHasPresale(),
+                event.getHasPresaleUsers(),
                 eventTicketCategorySet, //ticket category set
                 organiserDisplayDto, //organiser
                 event.getVenue(), //venue
