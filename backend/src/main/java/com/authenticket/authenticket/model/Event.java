@@ -19,6 +19,22 @@ import java.util.Objects;
 @Table(name = "event")
 @EqualsAndHashCode(callSuper = true)
 public class Event extends BaseEntity {
+
+    public enum ReviewStatus {
+        APPROVED("approved"),
+        PENDING("pending"),
+        REJECTED("rejected");
+
+        private final String reviewStatus;
+
+        ReviewStatus(String statusValue) {
+            this.reviewStatus = statusValue;
+        }
+
+        public String getStatusValue() {
+            return reviewStatus;
+        }
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
@@ -42,12 +58,6 @@ public class Event extends BaseEntity {
     @Column(name = "ticket_sale_date")
     private LocalDateTime ticketSaleDate;
 
-    @Column(name = "total_tickets")
-    private Integer totalTickets;
-
-    @Column(name = "total_tickets_sold")
-    private Integer totalTicketsSold;
-
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name="reviewed_by", referencedColumnName="admin_id")
@@ -58,6 +68,15 @@ public class Event extends BaseEntity {
 
     @Column(name = "review_remarks")
     private String reviewRemarks;
+
+    @Column(name = "is_enhanced")
+    private Boolean isEnhanced;
+
+    @Column(name = "has_presale")
+    private Boolean hasPresale;
+
+    @Column(name = "has_presale_users")
+    private Boolean hasPresaleUsers;
 
     @ManyToOne
     @JsonIgnore
@@ -85,7 +104,15 @@ public class Event extends BaseEntity {
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
-    Set<EventTicketCategory> eventTicketCategorySet = new HashSet<>();
+    Set<TicketPricing> ticketPricingSet = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Order> orderSet = new HashSet<>();
+
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+////    @JoinColumn(name = "event_id", referencedColumnName = "event_id")
+//    Set<Ticket> ticketSet = new HashSet<>();
 
     @JsonIgnore
     public Set<Artist> getArtists(){
@@ -93,23 +120,19 @@ public class Event extends BaseEntity {
     }
 
     @JsonIgnore
-    public Set<EventTicketCategory> getEventTicketCategorySet(){
-        return eventTicketCategorySet;
+    public Set<TicketPricing> getTicketPricingSet(){
+        return ticketPricingSet;
     }
 
-    public void addTicketCategory(TicketCategory ticketCategory, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
-        EventTicketCategory eventTicketCategory = new EventTicketCategory(ticketCategory, this, price, availableTickets, totalTicketsPerCat);
-        eventTicketCategorySet.add(eventTicketCategory);
-//        ticketCategory.getEventTicketCategorySet().add(eventTicketCategory);
+    public void addTicketPricing(TicketCategory ticketCategory, Double price) {
+        TicketPricing ticketPricing = new TicketPricing(ticketCategory, this, price);
+        ticketPricingSet.add(ticketPricing);
     }
 
-    public boolean updateTicketCategory(EventTicketCategory eventTicketCategory, Double price, Integer availableTickets, Integer totalTicketsPerCat) {
-//        EventTicketCategoryUpdateDto eventTicketCategoryUpdateDto = new EventTicketCategoryUpdateDto(eventTicketCategory.getCat().getCategoryId(), eventId, price, availableTickets, totalTicketsPerCat);
-        for (EventTicketCategory eventTicketCategoryIter : eventTicketCategorySet) {
-            if (eventTicketCategoryIter.equals(eventTicketCategory)) {
-                eventTicketCategoryIter.setPrice(price);
-                eventTicketCategoryIter.setAvailableTickets(availableTickets);
-                eventTicketCategoryIter.setTotalTicketsPerCat(totalTicketsPerCat);
+    public boolean updateTicketPricing(TicketPricing ticketPricing, Double price) {
+        for (TicketPricing ticketPricingIter : ticketPricingSet) {
+            if (ticketPricingIter.equals(ticketPricing)) {
+                ticketPricingIter.setPrice(price);
                 return true;
             }
         }
@@ -117,19 +140,21 @@ public class Event extends BaseEntity {
     }
 
     public void removeTicketCategory(TicketCategory ticketCategory) {
-        for (Iterator<EventTicketCategory> iterator = eventTicketCategorySet.iterator();
+        for (Iterator<TicketPricing> iterator = ticketPricingSet.iterator();
              iterator.hasNext(); ) {
-            EventTicketCategory eventTicketCategory = iterator.next();
+            TicketPricing ticketPricing = iterator.next();
 
-            if (eventTicketCategory.getEvent().equals(this) &&
-                    eventTicketCategory.getCat().equals(ticketCategory)) {
+            if (ticketPricing.getEvent().equals(this) &&
+                    ticketPricing.getCat().equals(ticketCategory)) {
                 iterator.remove();
 //                eventTicketCategory.getCat_id().getEventTicketCategorySet().remove(eventTicketCategory);
-                eventTicketCategory.setEvent(null);
-                eventTicketCategory.setCat(null);
+                ticketPricing.setEvent(null);
+                ticketPricing.setCat(null);
             }
         }
     }
+
+
 
 
     @Override

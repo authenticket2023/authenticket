@@ -84,6 +84,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
     }
 
     //user
+    @Override
     public void userRegister(User request) {
         var existingUser = userRepository.findByEmail(request.getEmail());
         var existingAdmin = adminRepository.findByEmail(request.getEmail());
@@ -103,6 +104,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         emailServiceImpl.send(request.getEmail(), EmailServiceImpl.buildActivationEmail(request.getName(), link), "Confirm your email");
     }
 
+    @Override
     public AuthenticationUserResponse userAuthenticate(String email, String password){
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -121,6 +123,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
                 .build();
     }
 
+    @Override
     public AuthenticationUserResponse confirmUserToken(String token) {
         if (jwtServiceImpl.isTokenExpired(token)) {
                 throw new AwaitingVerificationException("Token expired");
@@ -143,6 +146,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
                 .build();
     }
 
+    @Override
     public void orgRegister (EventOrganiser request){
 
         var existingOrg = organiserRepository.findByEmail(request.getEmail());
@@ -159,6 +163,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         organiserRepository.save(request);
     }
 
+    @Override
     public AuthenticationOrgResponse orgAuthenticate(String email, String password){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -177,6 +182,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
                 .build();
     }
 
+    @Override
     public void adminRegister (Admin request){
 
         var existingAdmin = adminRepository.findByEmail(request.getEmail());
@@ -189,6 +195,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         adminRepository.save(request);
     }
 
+    @Override
     public AuthenticationAdminResponse adminAuthenticate(String email, String password){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

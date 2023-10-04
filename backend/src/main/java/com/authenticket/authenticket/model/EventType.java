@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +11,9 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "event_type")
+@JsonIgnoreProperties(value = { "createdAt", "deletedAt", "updatedAt" })
 @EqualsAndHashCode(callSuper = true)
+
 public class EventType extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

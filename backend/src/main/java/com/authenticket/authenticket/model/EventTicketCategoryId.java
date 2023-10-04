@@ -9,6 +9,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class EventTicketCategoryId implements Serializable {
     private TicketCategory cat;
-
     private Event event;
+
+    @Override
+    public String toString(){
+        return "{ Event ID: " + event.getEventId() + ", Category ID: " + cat.getCategoryId() + " }";
+    }
 }

@@ -52,6 +52,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public List<EventOrganiserDisplayDto> findAllEventOrganisers() {
         return eventOrganiserRepository.findAll()
                 .stream()
@@ -59,6 +60,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<Event> findAllEventsByOrganiser(Integer organiserId) {
         EventOrganiser organiser = eventOrganiserRepository.findById(organiserId).orElse(null);
 
@@ -69,18 +71,22 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         return new ArrayList<>();
     }
 
+    @Override
     public List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status) {
         return eventOrganiserDtoMapper.map(eventOrganiserRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(status));
     }
 
+    @Override
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {
         return eventOrganiserRepository.findById(organiserId).map(eventOrganiserDtoMapper);
     }
 
+    @Override
     public EventOrganiser saveEventOrganiser(EventOrganiser eventOrganiser) {
         return eventOrganiserRepository.save(eventOrganiser);
     }
 
+    @Override
     public EventOrganiser updateEventOrganiser(EventOrganiserUpdateDto eventOrganiserUpdateDto) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(eventOrganiserUpdateDto.organiserId());
 
@@ -126,6 +132,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
 
     }
 
+    @Override
     public String deleteEventOrganiser(Integer organiserId) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
 

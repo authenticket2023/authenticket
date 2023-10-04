@@ -53,19 +53,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/event/updateTicketCategory").hasAuthority(  "ORGANISER")
                         .requestMatchers(HttpMethod.PUT, "/api/event/addTicketCategory").hasAuthority(  "ORGANISER")
                         .requestMatchers(HttpMethod.PUT, "/api/event/addArtistToEvent").hasAuthority(  "ORGANISER")
+                        .requestMatchers(HttpMethod.PUT, "/api/event/indicateInterest").permitAll()
 
                         .requestMatchers(HttpMethod.GET,"/api/event-organiser").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser").hasAuthority("ORGANISER")
                         .requestMatchers(HttpMethod.GET,"/api/event-organiser/{organiserId}").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser/delete").hasAnyAuthority("ADMIN","ORGANISER")//waiting for yikai
+                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser/delete").hasAnyAuthority("ADMIN","ORGANISER")
                         .requestMatchers(HttpMethod.DELETE,"/api/event-organiser/{organiserId}").hasAnyAuthority("ADMIN","ORGANISER")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser/image").hasAuthority("ORGANISER")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser/events/{organiserId}").hasAuthority("ORGANISER")
 
                         .requestMatchers("/api/event-type/**").hasAnyAuthority("ADMIN", "ORGANISER")
 
+                        .requestMatchers("/api/order/**").hasAuthority("USER")
+
                         .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/ticket/**").hasAuthority("ADMIN")
+
+                        .requestMatchers("/api/ticket/**").hasAnyAuthority("USER", "ADMIN")
 
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserProfile").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/user/updateUserImage").hasAuthority("USER")
