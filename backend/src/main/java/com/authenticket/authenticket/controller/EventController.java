@@ -188,11 +188,27 @@ public class EventController extends Utility {
 
     @GetMapping("/public/event/by-venue/{venueId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
-        List<EventHomeDto> eventList = eventService.findEventsByVenue(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable);
+        List<EventHomeDto> eventList = eventService.findEventsByVenue( venueId, pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Events for venue successfully returned."));
+
+    }    @GetMapping("/public/event/by-venue/past/{venueId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findPastEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
+        List<EventHomeDto> eventList = eventService.findPastEventsByVenue( venueId, pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Past events for venue successfully returned."));
+
+    }    @GetMapping("/public/event/by-venue/upcoming/{venueId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
+        List<EventHomeDto> eventList = eventService.findEventsByVenue( venueId, pageable);
+        if (eventList == null || eventList.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
+        }
+        return ResponseEntity.ok(generateApiResponse(eventList, "Upcoming events for venue successfully returned."));
 
     }
 

@@ -82,6 +82,12 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     //find all events by venue
     Page<Event> findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(String reviewStatus, Integer venueId, Pageable pageable);
 
+    //find all past events by venue
+    Page<Event> findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullAndEventDateBeforeOrderByEventDateDesc(String reviewStatus, Integer venueId, Pageable pageable, LocalDateTime currentDate);
+
+    //find all upcoming events by venue
+    Page<Event> findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullAndEventDateAfterOrderByEventDateDesc(String reviewStatus, Integer venueId, Pageable pageable, LocalDateTime currentDate);
+
     //remove all artist for eevnt
      @Transactional
      @Modifying

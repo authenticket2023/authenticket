@@ -17,37 +17,41 @@ public interface EventService {
 
     //get all events for admin
     List<EventAdminDisplayDto> findAllEvent();
-  
+
     OverallEventDto findEventById(Integer eventId);
 
     //get methods
     List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable);
-  
+
     List<FeaturedEventDto> findFeaturedEvents(Pageable pageable);
-  
+
     List<EventHomeDto> findBestSellerEvents();
-  
+
     List<EventHomeDto> findUpcomingEventsByTicketSalesDate(Pageable pageable); //based on ticket sale dates
-  
+
     List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable); //event date not past the current date
-  
+
     List<EventHomeDto> findPastEventsByEventDate(Pageable pageable);//event date past the current date
-  
+
     List<EventDisplayDto> findEventsByReviewStatus(String reviewStatus);
 
-    List<EventHomeDto> findEventsByVenue(String reviewStatus, Integer venueId, Pageable pageable);
+    List<EventHomeDto> findEventsByVenue(Integer venueId, Pageable pageable);
 
-    Event saveEvent (Event event);
-  
-    FeaturedEventDto saveFeaturedEvent (FeaturedEvent featuredEvent);
-  
-    Event updateEvent (EventUpdateDto eventUpdateDto);
-  
+    List<EventHomeDto> findPastEventsByVenue(Integer venueId, Pageable pageable);
+
+    List<EventHomeDto> findUpcomingEventsByVenue(Integer venueId, Pageable pageable);
+
+    Event saveEvent(Event event);
+
+    FeaturedEventDto saveFeaturedEvent(FeaturedEvent featuredEvent);
+
+    Event updateEvent(EventUpdateDto eventUpdateDto);
+
     //updates deleted_at field with datetime, DOES NOT really remove the event
-    String deleteEvent (Integer eventId);
-  
+    String deleteEvent(Integer eventId);
+
     Set<ArtistDisplayDto> findArtistForEvent(Integer eventId);
-  
+
     EventDisplayDto addArtistToEvent(Integer artistId, Integer eventId);
 
     void removeAllArtistFromEvent(Integer eventId);

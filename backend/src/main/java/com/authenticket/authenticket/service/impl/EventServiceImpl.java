@@ -137,8 +137,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventHomeDto> findEventsByVenue(String reviewStatus, Integer venueId, Pageable pageable) {
-        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(reviewStatus, venueId, pageable).getContent());
+    public List<EventHomeDto> findEventsByVenue(Integer venueId, Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable).getContent());
+    }
+
+    @Override
+    public List<EventHomeDto> findPastEventsByVenue(Integer venueId, Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullAndEventDateBeforeOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable, LocalDateTime.now()).getContent());
+    }
+
+    @Override
+    public List<EventHomeDto> findUpcomingEventsByVenue(Integer venueId, Pageable pageable) {
+        return eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullAndEventDateAfterOrderByEventDateDesc(Event.ReviewStatus.APPROVED.getStatusValue(), venueId, pageable, LocalDateTime.now()).getContent());
     }
 
     @Override
