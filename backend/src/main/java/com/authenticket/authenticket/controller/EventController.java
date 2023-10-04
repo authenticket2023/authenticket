@@ -5,33 +5,25 @@ import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
-import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.exception.NotApprovedException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
-import com.google.zxing.WriterException;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -69,6 +61,10 @@ public class EventController extends Utility {
 
     private final EventDtoMapper eventDtoMapper;
 
+    private final TaskScheduler taskScheduler;
+
+    private static final int PRESALE_HOURS = 24;
+
     @Autowired
     public EventController(EventServiceImpl eventService,
                            AmazonS3Service amazonS3Service,
@@ -80,7 +76,8 @@ public class EventController extends Utility {
                            EventTypeRepository eventTypeRepository,
                            EventDtoMapper eventDtoMapper,
                            PresaleService presaleService,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           TaskScheduler taskScheduler) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
@@ -92,6 +89,7 @@ public class EventController extends Utility {
         this.eventDtoMapper = eventDtoMapper;
         this.presaleService = presaleService;
         this.userRepository = userRepository;
+        this.taskScheduler = taskScheduler;
     }
 
     @GetMapping("/public/event/test")
@@ -336,6 +334,13 @@ public class EventController extends Utility {
         //setting all the fields for event
         OverallEventDto overallEventDto = eventDtoMapper.applyOverallEventDto(savedEvent);
 
+        // Set presale to run 1 day before ticket sale date
+        if (hasPresale) {
+            LocalDateTime scheduledCheckTime = ticketSaleDate.minusHours(PRESALE_HOURS);
+            taskScheduler.schedule(() -> presaleService.selectPresaleUsersForEvent(savedEvent),
+                    Date.from(scheduledCheckTime.atZone(ZoneId.systemDefault()).toInstant()));
+        }
+
         return ResponseEntity.status(201).body(generateApiResponse(overallEventDto, "Event created successfully."));
     }
 
@@ -523,15 +528,15 @@ public class EventController extends Utility {
     }
 
     @PutMapping("/event/indicateInterest")
-    public ResponseEntity<GeneralApiResponse> userIndicateInterest(@RequestParam Integer userId,
-                                                                   @RequestParam Integer eventId) {
+    public ResponseEntity<GeneralApiResponse> userIndicateInterest(@RequestParam("userId") Integer userId,
+                                                                   @RequestParam("eventId") Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
             throw new NonExistentException("Event", eventId);
         }
         Event event = eventOptional.get();
 
-        if (LocalDateTime.now().isAfter(event.getTicketSaleDate())) {
+        if (LocalDateTime.now().isAfter(event.getTicketSaleDate().minusHours(PRESALE_HOURS))) {
             throw new ApiRequestException("The presale interest indication period for event '" + event.getEventName() + "' has ended.");
         }
 
@@ -544,24 +549,41 @@ public class EventController extends Utility {
         return ResponseEntity.status(201).body(generateApiResponse(null, "Presale interest recorded"));
     }
 
-    @PutMapping("/event/selectUsers")
-    public ResponseEntity<GeneralApiResponse> eventSelectUsers(@RequestParam Integer eventId) {
+    @GetMapping("/event/selectedUsers")
+    public ResponseEntity<GeneralApiResponse> getEventSelectedUsers(@RequestParam("eventId") Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
             throw new NonExistentException("Event", eventId);
         }
         Event event = eventOptional.get();
         if (!event.getHasPresale()) {
-            throw new IllegalStateException("Event '" + event.getEventName() + "' does not have a presale period");
+            throw new IllegalArgumentException("Event '" + event.getEventName() + "' does not have a presale period");
         }
         if (!event.getHasPresaleUsers()) {
-
-            List<User> winners = presaleService.selectPresaleUsersForEvent(eventOptional.get());
-            return ResponseEntity.ok(generateApiResponse(winners, "Users allowed in presale selected"));
+            throw new IllegalStateException("Users have yet to be selected");
         }
 
-        return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(eventOptional.get(), true), "Already selected winners for event id " + eventId));
+        return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true), "Returned list of users allowed in presale"));
     }
+
+//    @PutMapping("/event/selectUsers")
+//    public ResponseEntity<GeneralApiResponse> eventSelectUsers(@RequestParam("eventId") Integer eventId) {
+//        Optional<Event> eventOptional = eventRepository.findById(eventId);
+//        if (eventOptional.isEmpty()) {
+//            throw new NonExistentException("Event", eventId);
+//        }
+//        Event event = eventOptional.get();
+//        if (!event.getHasPresale()) {
+//            throw new IllegalStateException("Event '" + event.getEventName() + "' does not have a presale period");
+//        }
+//        if (!event.getHasPresaleUsers()) {
+//
+//            List<User> winners = presaleService.selectPresaleUsersForEvent(eventOptional.get());
+//            return ResponseEntity.ok(generateApiResponse(winners, "Users allowed in presale selected"));
+//        }
+//
+//        return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(eventOptional.get(), true), "Already selected presale users for event id " + eventId));
+//    }
 
 //    @PutMapping("/addTicketCategory")
 //    public ResponseEntity<GeneralApiResponse> addTicketCategory(

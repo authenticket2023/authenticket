@@ -25,6 +25,8 @@ public class PDFGeneratorImpl implements PDFGenerator {
 
     private final JwtService jwtService;
 
+    private final String iconPath = new ClassPathResource("src\\main\\resources\\static\\img\\icon.png").getPath();
+
     @Autowired
     public PDFGeneratorImpl(QRCodeGenerator qrCodeGenerator, JwtService jwtService) {
         this.qrCodeGenerator = qrCodeGenerator;
@@ -53,21 +55,42 @@ public class PDFGeneratorImpl implements PDFGenerator {
             PdfWriter.getInstance(document, out);
             document.open();
 
+            PdfPTable table = new PdfPTable(2); // Create 2 columns in table.
+            // Set table Width as 100%
+            table.setWidthPercentage(100f);
+            float[] columnWidths = { 1f, 1f }; // Second column will be
+            // twice as first and third
+            table.setWidths(columnWidths);
+            Image image = Image.getInstance(iconPath);
+            image.scalePercent(15f);
+            PdfPCell cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.addElement(image);
+            table.addCell(cell);
+
             Font fontTitle = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
             fontTitle.setSize(24);
             fontTitle.setColor(BaseColor.GRAY);
             Paragraph title = new Paragraph("Order Details", fontTitle);
-            title.setAlignment(Paragraph.ALIGN_LEFT);
-            document.add(title);
+            title.setAlignment(Element.ALIGN_RIGHT);
+            title.setIndentationRight(15f);
+            cell = new PdfPCell();
+            cell.setPaddingTop(10f);
+            cell.setBorder(Rectangle.NO_BORDER);
+            cell.addElement(title);
+            table.addCell(cell);
+            document.add(table);
 
-            PdfPTable table = new PdfPTable(2); // Create 2 columns in table.
+
+
+            table = new PdfPTable(2); // Create 2 columns in table.
             // Set table Width as 100%
             table.setWidthPercentage(100f);
             // Space before and after table
             table.setSpacingBefore(15f);
             table.setSpacingAfter(15f);
             // Set Column widths of table
-            float[] columnWidths = { 1f, 1f }; // Second column will be
+            columnWidths[1] = 1;
             // twice as first and third
             table.setWidths(columnWidths);
 
@@ -88,6 +111,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
             table.addCell(cell2);
 
             cell1 = new PdfPCell();
+            cell1.setPaddingRight(15f);
             cell1.setBorder(Rectangle.NO_BORDER);
             Paragraph p = new Paragraph();
             p.add(new Phrase("Buyer Name: ", pFontBold));
@@ -310,8 +334,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
             PdfPCell cell2 = new PdfPCell();
             cell2.setBorder(Rectangle.NO_BORDER);
 
-            ClassPathResource res = new ClassPathResource("src\\main\\resources\\static\\img\\icon.png");
-            Image image = Image.getInstance(res.getPath());
+            Image image = Image.getInstance(iconPath);
             image.scalePercent(25f);
             cell2.setRowspan(2);
             cell2.addElement(image);
