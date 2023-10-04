@@ -32,7 +32,7 @@ export default function displayVenue(props: venueInfo) {
 
     return (
         <Card sx={{ minHeight: 200, mt: 3, maxHeight: 200, backgroundColor: '#ffffff', borderRadius: '5px', backgroundImage: `url('${process.env.REACT_APP_S3_URL}/venue_image/${props.venue.venueImage}')`, backgroundSize: '480px', backgroundRepeat: 'no-repeat', backgroundPositionY: 'center' }} >
-            <CardActionArea href={`/EventDetails/${props.venue.venueId}`}>
+            <CardActionArea href={`/VenueDetails/${props.venue.venueId}`}>
                 <Grid container>
                     <Grid item xs={4} height={200}>
                         <Box style={{ backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,1)', minHeight: 200 }}>
