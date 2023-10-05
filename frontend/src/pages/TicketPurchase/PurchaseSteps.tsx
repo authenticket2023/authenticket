@@ -261,11 +261,17 @@ export const PurchaseStepsFace = (props: any) => {
     const [isClicked, setIsClicked] = useState(false);
     const [quantity, setQuantity] = useState(''); // State variable for quantity
     const [selectedSection, setSelectedSection] = useState('');
+    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
     const [selectedFiles, setSelectedFiles]: any = useState(null);
     const [enteredData, setEnteredData] = useState<{ images: File[], names: string[] }>({
         images: [], // Store uploaded images here
         names: [],  // Store entered names here
     });
+
+
+    const handleSectionDetails = (details: string[]) => {
+        setSectionDetails(details);
+    }
 
     const handleQuantityChange = (newQuantity: string) => {
         setQuantity(newQuantity);
@@ -381,6 +387,7 @@ export const PurchaseStepsFace = (props: any) => {
                                 onQuantityChange={handleQuantityChange}
                                 selectedSection={selectedSection}
                                 onSelectedSection={handleSelectedSection}
+                                onSectionDetails={handleSectionDetails}
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
                                 : null}
@@ -402,7 +409,9 @@ export const PurchaseStepsFace = (props: any) => {
                                 eventDetails={props.eventDetails}
                                 quantity={quantity}
                                 selectedSection={selectedSection}
+                                sectionDetails={sectionDetails}
                                 enteredData={enteredData} // Pass the images and names to ConfirmationFace
+
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
                             /> : null}

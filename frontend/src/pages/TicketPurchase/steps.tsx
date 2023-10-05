@@ -3,7 +3,7 @@ import {
     Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel, SelectChangeEvent, Snackbar, Alert
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { SGStad } from '../utility/SeatMap';
+import { SGStad } from '../../utility/seatMap/SeatMap';
 
 export function SelectSeats(props: any) {
 
@@ -188,6 +188,12 @@ export function EnterDetails(props: any) {
     const handleSnackbarClose = () => {
         setOpenSnackbar(false);
     };
+
+    const token = window.localStorage.getItem('accessToken');
+    const userId = window.localStorage.getItem('userId');
+    const delay = (ms: number) => new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
   
     useEffect(() => {
       // Initialize sectionImages and fileUploaded arrays based on props.quantity
@@ -204,20 +210,53 @@ export function EnterDetails(props: any) {
     }, [props.quantity]);
   
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, sectionIndex: number) => {
-      const files = event.target.files;
-      if (files) {
-        const updatedImages = [...sectionImages];
-        updatedImages[sectionIndex] = Array.from(files);
-        setSectionImages(updatedImages);
-  
-        // Mark the section as having uploaded files
-        const updatedFileUploaded = [...fileUploaded];
-        updatedFileUploaded[sectionIndex] = true;
-        setFileUploaded(updatedFileUploaded);
-      }
+        const files = event.target.files;
+        //call method to check if a valid image has been given
+        if(files && files.length > 0){
+            const formData = new FormData();
+            const file = files[0];
+            formData.append('image', file);
+
+            fetch(`http://13.228.86.148:8000/api/face/checkImage`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                method: 'POST',
+                body: formData
+            })
+                .then(async (response) => {
+                    if (response.status == 200 ) {
+                        const eventResponse = await response.json();
+                        setOpenSnackbar(true);
+                        setAlertType('success');
+                        setAlertMsg(eventResponse.message);
+                        await delay(2000);
+                        if (files) {
+                            const updatedImages = [...sectionImages];
+                            updatedImages[sectionIndex] = Array.from(files);
+                            setSectionImages(updatedImages);
+                    
+                            // Mark the section as having uploaded files
+                            const updatedFileUploaded = [...fileUploaded];
+                            updatedFileUploaded[sectionIndex] = true;
+                            setFileUploaded(updatedFileUploaded);
+                        }
+                
+                    } else {
+                        const eventResponse = await response.json();
+                        setOpenSnackbar(true);
+                        setAlertType('warning');
+                        setAlertMsg(eventResponse.message);
+                    }
+                })
+                .catch((err) => {
+                    window.alert(err);
+                });
+        }
     };
 
     const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, sectionIndex: number) => {
+
         const updatedTextFieldValues = [...textFieldValues];
         updatedTextFieldValues[sectionIndex] = event.target.value;
         setTextFieldValues(updatedTextFieldValues);
@@ -354,8 +393,47 @@ export function Confirmation(props: any) {
     // console.log(props.quantity);
     // console.log(props.eventDetails);
 
+    useEffect(() => {
+        loadStatus();
+    }, []);
+
+    const { images, names } = props.enteredData;
+    // const catPrice = props.categoryDetails.ticketPrice;
+    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
+    // console.log(props.sectionDetails);
+
+    const loadStatus = async () => {
+        // //calling backend API
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            method: 'GET',
+          })
+            .then(async (response) => {
+              if (response.status == 200) {
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                console.log(data);
+                setSectionDetails(data);
+  
+              } else {
+                //passing to parent component
+              }
+            })
+            .catch((err) => {
+              window.alert(err);
+            });
+    }
+
+    const catPrice = sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
+    const itemSubtotal = catPrice * props.quantity;
+    console.log(props.quantity);
+    const orderTotal = itemSubtotal + 5;
+
     const handleConfirmation = () => {
-        
+        //
+
         props.handleComplete();
     }
 
@@ -375,16 +453,19 @@ export function Confirmation(props: any) {
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>
                     Summary
                 </Typography>
-                <div>
+                <div style={{display:'flex', flexDirection:'row'}}>
                     <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
-                        Items Subtotal: 
+                        Items Subtotal:
+                    </Typography>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:120, marginTop:0}}>
+                        ${itemSubtotal}
                     </Typography>
                 </div>
                 <div style={{display:'flex', flexDirection:'row'}}>
                     <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, color:'#888888'}}>
                         Section {props.selectedSection}
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:150, color:'#888888'}}>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:165, color:'#888888'}}>
                         x{props.quantity}
                     </Typography>
                 </div>
@@ -399,6 +480,9 @@ export function Confirmation(props: any) {
                 <div style={{display:'flex', flexDirection:'row'}}>
                     <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
                         Order Total:
+                    </Typography>
+                    <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:120, marginTop:18}}>
+                        ${orderTotal}
                     </Typography>
                 </div>
                 <Button variant="outlined" onClick={handleConfirmation}
@@ -426,12 +510,110 @@ export function Confirmation(props: any) {
 
 export function ConfirmationFace(props: any) {
 
+    useEffect(() => {
+        loadStatus();
+    }, []);
+
+    //for pop up message => error , warning , info , success
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
     // Access images and names from the prop
     const { images, names } = props.enteredData;
+    // const catPrice = props.categoryDetails.ticketPrice;
+    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
+    // console.log(props.sectionDetails);
+    const [isClicked, setIsClicked] = useState(false);
+
+    const loadStatus = async () => {
+        // //calling backend API
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            method: 'GET',
+          })
+            .then(async (response) => {
+              if (response.status == 200) {
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                // console.log(data);
+                setSectionDetails(data);
+  
+              } else {
+                //passing to parent component
+              }
+            })
+            .catch((err) => {
+              window.alert(err);
+            });
+    }
+
+    const catPrice = sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
+    const itemSubtotal = catPrice * props.quantity;
+    // console.log(props.quantity);
+    const orderTotal = itemSubtotal + 5;
+
+    const userId = window.localStorage.getItem('userId');
+    const token = window.localStorage.getItem('token');
+
+    const delay = (ms: number) => new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
 
     const handleConfirmation = () => {
         
-        props.handleComplete();
+        //create order
+        if(!isClicked){
+            //Disable further clicks
+            setIsClicked(true);
+            console.log("hello");
+
+            //call backend to create order
+            const formData = new FormData();
+            if (userId !== null) {
+                formData.append('userId', userId);
+                formData.append('eventId', props.eventDetails.eventId);
+                formData.append('sectionId', props.selectedSection);
+                formData.append('ticketsToPurchase', props.quantity);
+                const concatenatedNames = names.filter((name: null | undefined) => name !== null && name !== undefined).join(', ');
+                formData.append('ticketHolderString', concatenatedNames);
+
+                fetch(`${process.env.REACT_APP_BACKEND_URL}/order`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(async (response) => {
+                        if (response.status == 200 || response.status == 201) {
+                            setOpenSnackbar(true);
+                            setAlertType('success');
+                            setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
+                            await delay(3000);
+                            props.handleComplete();
+                           
+                        } else {
+                            const eventResponse = await response.json();
+                            setOpenSnackbar(true);
+                            setAlertType('warning');
+                            setAlertMsg('Order did not go through, please try again.');
+                            //if transaction faile, enable clickable
+                            setIsClicked(false);
+                        }
+                    })
+                    .catch((err) => {
+                        //if transaction faile, enable clickable
+                        setIsClicked(false);
+                        window.alert(err);
+                    });
+            }
+        }
     }
 
     return (
@@ -456,16 +638,19 @@ export function ConfirmationFace(props: any) {
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>
                     Summary
                 </Typography>
-                <div>
+                <div style={{display:'flex', flexDirection:'row'}}>
                     <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
-                        Items Subtotal: 
+                        Items Subtotal:
+                    </Typography>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:120, marginTop:0}}>
+                        ${itemSubtotal}
                     </Typography>
                 </div>
                 <div style={{display:'flex', flexDirection:'row'}}>
                     <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, color:'#888888'}}>
                         Section {props.selectedSection}
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:150, color:'#888888'}}>
+                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:165, color:'#888888'}}>
                         x{props.quantity}
                     </Typography>
                 </div>
@@ -480,6 +665,9 @@ export function ConfirmationFace(props: any) {
                 <div style={{display:'flex', flexDirection:'row'}}>
                     <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
                         Order Total:
+                    </Typography>
+                    <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:120, marginTop:18}}>
+                        ${orderTotal}
                     </Typography>
                 </div>
                 <Button variant="outlined" onClick={handleConfirmation}
@@ -501,6 +689,11 @@ export function ConfirmationFace(props: any) {
                     Confirm Order
                 </Button>
             </Grid>
+            <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+            <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                {alertMsg}
+            </Alert>
+        </Snackbar>
         </Grid>
     )
 }
