@@ -4,8 +4,11 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.dto.user.UserFullDisplayDto;
+import com.authenticket.authenticket.exception.NonExistentException;
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
+import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import com.authenticket.authenticket.service.impl.UserServiceImpl;
@@ -37,11 +40,14 @@ public class UserController extends Utility {
 
     private final AmazonS3ServiceImpl amazonS3Service;
 
+    private final PresaleService presaleService;
+
     @Autowired
-    public UserController(UserRepository userRepository, UserServiceImpl userService, AmazonS3ServiceImpl amazonS3Service) {
+    public UserController(UserRepository userRepository, UserServiceImpl userService, AmazonS3ServiceImpl amazonS3Service, PresaleService presaleService) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.amazonS3Service = amazonS3Service;
+        this.presaleService = presaleService;
     }
 
     @GetMapping("/test")
@@ -59,6 +65,16 @@ public class UserController extends Utility {
             return ResponseEntity.ok(generateApiResponse(userList, "User successfully returned."));
 
         }
+    }
+
+    @GetMapping("/interestedEvents")
+    public ResponseEntity<GeneralApiResponse<Object>> findEventsOfInterestToUser(@RequestParam("userId") Integer userId) {
+        Optional<User> userOptional = userService.findUserById(userId);
+        if (userOptional.isEmpty()) {
+            throw new NonExistentException("User", userId);
+        }
+        List<Event> events = presaleService.findEventsByUser(userOptional.get());
+        return ResponseEntity.ok(generateApiResponse(events, "User has indicated interest for " + events.size() + " events."));
     }
 
     @GetMapping("/{userId}")

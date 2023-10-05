@@ -11,9 +11,13 @@ public interface PresaleService {
 
     public List<User> findUsersInterestedByEvent(Event event);
 
+    public List<Event> findEventsByUser(User user);
+
+    public Boolean exists(Event event, User user);
+
     public List<User> findUsersSelectedForEvent(Event event, Boolean selected);
 
-    public List<User> selectPresaleUsersForEvent(Event event);
+    public void selectPresaleUsersForEvent(Event event);
 
     void setPresaleInterest(User user, Event event, Boolean selected, Boolean emailed);
 

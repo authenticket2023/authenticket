@@ -60,23 +60,30 @@ public class PresaleServiceImpl implements PresaleService {
     }
 
     @Override
+    public List<Event> findEventsByUser(User user) {
+        return presaleInterestRepository.findAllByUser(user).stream().map(PresaleInterest::getEvent).toList();
+    }
+
+    @Override
+    public Boolean exists(Event event, User user) {
+        return presaleInterestRepository.existsPresaleInterestByEventAndUser(event, user);
+    }
+
+    @Override
     public List<User> findUsersSelectedForEvent(Event event, Boolean selected) {
         return presaleInterestRepository.findAllByEventAndIsSelected(event, selected).stream().map(PresaleInterest::getUser).toList();
     }
 
     @Override
     public void setPresaleInterest(User user, Event event, Boolean selected, Boolean emailed){
-        EventUserId eventUserId = new EventUserId(user, event);
-        Optional<PresaleInterest> presaleInterestOptional = presaleInterestRepository.findById(eventUserId);
-
-        if (!selected && presaleInterestOptional.isPresent()) {
+        if (!selected && exists(event, user)) {
           throw new AlreadyExistsException("User with ID " + user.getUserId() + " already expressed interest for event '" + event.getEventName() + "'");
         }
         presaleInterestRepository.save(new PresaleInterest(user, event, selected, emailed));
     }
 
     @Override
-    public List<User> selectPresaleUsersForEvent(Event event) {
+    public void selectPresaleUsersForEvent(Event event) {
         System.out.println("Presale users selected");
         List<User> users = findUsersInterestedByEvent(event);
         int totalTickets = venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId());
@@ -88,7 +95,7 @@ public class PresaleServiceImpl implements PresaleService {
 
         Random rand = new Random();
 
-        List<User> winners = new ArrayList<>();
+//        List<User> winners = new ArrayList<>();
         ArrayList<User> duplicate = new ArrayList(users);
         for (int i = 0; i < presaleWinnersCount; i++) {
 
@@ -97,7 +104,7 @@ public class PresaleServiceImpl implements PresaleService {
             int randomIndex = rand.nextInt(duplicate.size());
 
             // add element in temporary list
-            winners.add(duplicate.get(randomIndex));
+//            winners.add(duplicate.get(randomIndex));
             setPresaleInterest(duplicate.get(randomIndex), event, true, false);
 
             //Trigger Email sending interval
@@ -108,7 +115,6 @@ public class PresaleServiceImpl implements PresaleService {
         }
         event.setHasPresaleUsers(true);
         eventRepository.save(event);
-        return winners;
     }
 
     private static final int SECONDS_PER_INTERVAL = 60;

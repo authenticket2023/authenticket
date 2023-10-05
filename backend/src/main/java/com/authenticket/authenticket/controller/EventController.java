@@ -549,6 +549,27 @@ public class EventController extends Utility {
         return ResponseEntity.status(201).body(generateApiResponse(null, "Presale interest recorded"));
     }
 
+    @GetMapping("/event/checkPresaleStatus")
+    public ResponseEntity<GeneralApiResponse> checkPresaleStatus(@RequestParam("eventId") Integer eventId,
+                                                                 @RequestParam("userId") Integer userId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+        if (!event.getHasPresale()) {
+            throw new IllegalArgumentException("Event '" + event.getEventName() + "' does not have a presale period");
+        }
+
+        Optional<User> userOptional = userRepository.findUserByUserId(userId);
+        if (userOptional.isEmpty()) {
+            throw new NonExistentException("User", userId);
+        }
+        User user = userOptional.get();
+
+        return ResponseEntity.ok(generateApiResponse(presaleService.exists(event, user), "Returned presale status for event id " + eventId + ", user id " + userId));
+    }
+
     @GetMapping("/event/selectedUsers")
     public ResponseEntity<GeneralApiResponse> getEventSelectedUsers(@RequestParam("eventId") Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
