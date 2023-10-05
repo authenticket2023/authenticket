@@ -104,6 +104,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
+          console.log(data);
           setEventDetails(data);
           //   const artistDetails = data.artists.map((artist: any) => ({
           //     artistId: artist.artistId,
@@ -249,7 +250,9 @@ export const EventDetails: React.FC = (): JSX.Element => {
                   {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
                   <Grid item xs={4}>
                     <InfoBox
+                      eventId={eventDetails.eventId}
                       eventDate={eventDetails.eventDate}
+                      ticketSaleDate={eventDetails.ticketSaleDate}
                       venueName={eventDetails.venue.venueName}
                       setValue={setValue}
                     />
@@ -290,7 +293,9 @@ export const EventDetails: React.FC = (): JSX.Element => {
                   {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
                   <Grid item xs={4}>
                     <InfoBox
+                      eventId={eventDetails.eventId}
                       eventDate={eventDetails.eventDate}
+                      ticketSaleDate={eventDetails.ticketSaleDate}
                       venueName={eventDetails.venue.venueName}
                       setValue={setValue}
                     />
@@ -306,7 +311,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                       Ticket Sales
                     </Typography>
                     <Typography style={{ marginTop: 5, font: 'Roboto', fontWeight: 300, fontSize: '15px', marginBottom: 30 }}>
-                      starts on <strong style={{ fontWeight: 500 }}>{formatDate(eventDetails.ticketSaleDate)}</strong>
+                      starts on <strong style={{ fontWeight: 500 }}>{formatDate(eventDetails.ticketSaleDate)} @ {formatTime(eventDetails.ticketSaleDate)}</strong>
                     </Typography>
                     <Typography style={{ font: 'Roboto', fontWeight: 500, fontSize: '18px' }}>
                       Notes
@@ -335,7 +340,9 @@ export const EventDetails: React.FC = (): JSX.Element => {
                   {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
                   <Grid item xs={4}>
                     <InfoBox
+                      eventId={eventDetails.eventId}
                       eventDate={eventDetails.eventDate}
+                      ticketSaleDate={eventDetails.ticketSaleDate}
                       venueName={eventDetails.venue.venueName}
                       setValue={setValue}
                     />
@@ -377,7 +384,9 @@ export const EventDetails: React.FC = (): JSX.Element => {
                   {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
                   <Grid item xs={4}>
                     <InfoBox
+                      eventId={eventDetails.eventId}
                       eventDate={eventDetails.eventDate}
+                      ticketSaleDate={eventDetails.ticketSaleDate}
                       venueName={eventDetails.venue.venueName}
                       setValue={setValue}
                     />
