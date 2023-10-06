@@ -4,6 +4,8 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { SGStad } from '../../utility/seatMap/SeatMap';
+import {Elements} from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
 
 export function SelectSeats(props: any) {
 
@@ -553,8 +555,44 @@ export function Confirmation(props: any) {
         resolve => setTimeout(resolve, ms)
     );
 
+    const makeRequest = async () => {
+        // process.env.STRIPE_PUBLISHABLE_KEY
+        const stripe = await loadStripe("pk_test_51NvbWcEeFzrUZxTR9mH1Bma9Qlr1jY5j2al13GJ7OooMhKXeBv9qnNOAtBP0OsRrTIbAc7iIuQJudYaywasSzHyO004Iy2P7Aw");
+        const body = {
+            products: [
+               {
+                    id: 1,
+                    name: `Section ${props.selectedSection}`,
+                    price: catPrice,
+                    quantity: props.quantity
+                },
+                {
+                    id: 2,
+                    name: "Booking Fee",
+                    price: 5,
+                    quantity: 1
+                },
+            ]
+        }
+        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+            method: "Post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+        const session = await response.json();
+        const result = stripe?.redirectToCheckout({
+            sessionId: session.id
+        })
+        console.log("result", result)
+        const error = await (await result)?.error
+        if (error) {
+            console.log("error", error)
+        }
+    }
 
-    const handleConfirmation = () => {
+    const handleConfirmation = async () => {
          //create order
          if(!isClicked){
             //Disable further clicks
@@ -571,38 +609,37 @@ export function Confirmation(props: any) {
                 const concatenatedNames = names.filter((name: null | undefined) => name !== null && name !== undefined).join(', ');
                 formData.append('ticketHolderString', concatenatedNames);
 
-                fetch(`${process.env.REACT_APP_BACKEND_URL}/order`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(async (response) => {
-                        if (response.status == 200 || response.status == 201) {
-                            setOpenSnackbar(true);
-                            setAlertType('success');
-                            setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
-                            await delay(3000);
-                            props.handleComplete();
-                           
-                        } else {
-                            const eventResponse = await response.json();
-                            setOpenSnackbar(true);
-                            setAlertType('warning');
-                            setAlertMsg('Order did not go through, please try again.');
-                            //if transaction faile, enable clickable
-                            setIsClicked(false);
-                        }
-                    })
-                    .catch((err) => {
-                        //if transaction faile, enable clickable
-                        window.alert(err);
-                    })
-                    .finally(() => {
-                        // Set isClicked back to false after the order creation process is complete
-                        setIsClicked(false);
-                    })
+                try {
+                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/order`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        method: 'POST',
+                        body: formData,
+                    });
+            
+                    if (response.status === 200 || response.status === 201) {
+                        setOpenSnackbar(true);
+                        setAlertType('success');
+                        setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
+                        await delay(3000);
+                        props.handleComplete();
+            
+                        // Call makeRequest after successful order creation
+                        await makeRequest();
+                    } else {
+                        const eventResponse = await response.json();
+                        setOpenSnackbar(true);
+                        setAlertType('warning');
+                        setAlertMsg('Order did not go through, please try again.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    // Handle error, if needed
+                } finally {
+                    // Set isClicked back to false after the order creation process is complete
+                    setIsClicked(false);
+                }
             }
         }
     }
@@ -883,7 +920,49 @@ export function ConfirmationFace(props: any) {
 }
 
 export function Payment(props: any) {
+    const makeRequest = async () => {
+        // process.env.STRIPE_PUBLISHABLE_KEY
+        const stripe = await loadStripe("pk_test_51NvbWcEeFzrUZxTR9mH1Bma9Qlr1jY5j2al13GJ7OooMhKXeBv9qnNOAtBP0OsRrTIbAc7iIuQJudYaywasSzHyO004Iy2P7Aw");
+        const body = {
+            products: [
+               {
+                    id: 1,
+                    name: "Product 1",
+                    price: 100,
+                    quantity: 2
+                },
+                {
+                    id: 2,
+                    name: "Product 2",
+                    price: 200,
+                    quantity: 1
+                },
+                {
+                    id: 3,
+                    name: "Product 2",
+                    price: 800,
+                    quantity: 4
+                }
+            ]
+        }
+        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+            method: "Post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+        const session = await response.json();
+        const result = stripe?.redirectToCheckout({
+            sessionId: session.id
+        })
+        console.log("result", result)
+        const error = await (await result)?.error
+        if (error) {
+            console.log("error", error)
+        }
+    }
     return (
         <div></div>
-    )
+    ) 
 }

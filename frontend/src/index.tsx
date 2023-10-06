@@ -19,7 +19,9 @@ import { Signup } from './pages/Signup';
 import { Support } from './pages/Support';
 import { Venue } from './pages/Venue';
 import { EventDetails } from './pages/EventDetails';
-import { TicketPurcase } from './pages/TicketPurchase';
+import { TicketPurchase } from './pages/TicketPurchase';
+import { SuccessPage } from './pages/TicketPurchase/SuccessPage';
+import { CancelPage } from './pages/TicketPurchase/CancelPage';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
@@ -60,7 +62,9 @@ root.render(
 			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
 			<Route path="/AdminLogin" element={<AdminLogin />} />
 			<Route path="/EventDetails/:eventId" element={<EventDetails />} />
-			<Route path="/TicketPurchase/:eventId" element={<TicketPurcase />} />
+			<Route path="/TicketPurchase/:eventId" element={<TicketPurchase />} />
+			<Route path="/SuccessPage/:orderId" element={<SuccessPage />} />
+			<Route path="/CancelPage/:orderId" element={<CancelPage />} />
 		</Routes>
 	</BrowserRouter>);
 

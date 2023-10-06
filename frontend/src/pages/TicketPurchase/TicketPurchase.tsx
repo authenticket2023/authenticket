@@ -7,7 +7,7 @@ import { Grid, List, ListItem, Typography } from '@mui/material';
 import { Button } from 'react-bootstrap';
 import { PurchaseSteps, PurchaseStepsFace } from './PurchaseSteps';
 
-export const TicketPurcase: React.FC = (): JSX.Element => {
+export const TicketPurchase: React.FC = (): JSX.Element => {
     useEffect(() => {
         loadEventDetails();
     }, []);
