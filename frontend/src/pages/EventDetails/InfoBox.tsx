@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/system';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Grid, Snackbar, Typography, Alert, Button } from '@mui/material';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -27,14 +27,13 @@ const formatTime = (timeString: string): string => {
   return `${hours}.${formattedMinutes}${modifier}`;
 };
 
-
 export const InfoBox = (props: any) => {
-
+  let navigate = useNavigate();
   const token = window.localStorage.getItem('accessToken');
   const userID: any = window.localStorage.getItem('id');
   const [preSaleStatus, setPreSaleStatus] = useState(false);
   const [isSelectedForPreSale, setIsSelectedForPreSale] = useState(false);
-  const [availableTicket, setAvailableTicket] = useState(false);
+  const [availableTicket, setAvailableTicket] = useState(true);
 
   // Get today's date and time
   // Create a Date object for the eventDate
@@ -119,7 +118,7 @@ export const InfoBox = (props: any) => {
         window.alert(err);
       });
   }
-  
+
   const handleIndicateInterest = () => {
     if (token === null || userID === null) {
       setOpenSnackbar(true);
@@ -158,7 +157,6 @@ export const InfoBox = (props: any) => {
 
   //*** TODO ***
   const handleBuyPresaleTicket = () => {
-    console.log('handleIndicateInterest');
     //check if logged in
     if (token === null && userID === null) {
       setOpenSnackbar(true);
@@ -168,16 +166,19 @@ export const InfoBox = (props: any) => {
     }
     //TODO
     console.log('redirect to purchasing pre sale ticket page');
+    navigate('');
   };
 
   //*** TODO ***
   const handleBuyTicket = () => {
     console.log('redirect to buy ticket page, need check whether logged in or not')
+    navigate('');
   };
 
   //*** TODO ***
   const handleViewVenue = () => {
     console.log('redirect to view venue page')
+    navigate('');
   };
 
   const handleSeatMap = () => {
@@ -316,78 +317,5 @@ export const InfoBox = (props: any) => {
         </Alert>
       </Snackbar>
     </Grid>
-  )
-}
-
-export const InfoBoxEnhanced = (props: any) => {
-
-  return (
-    <Box style={{ background: '#F0F0F0', height: '400px', width: '300px', borderRadius: '8px', display: 'flex', justifyContent: 'left', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', flexDirection: 'row', marginTop: 35, marginLeft: 40 }}>
-        <CalendarMonthIcon style={{ fontSize: '30px' }} />
-        <Typography style={{ marginTop: 4, marginLeft: 8 }}>
-          {formatDate(props.eventDate)}
-        </Typography>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'row', marginLeft: 40, marginTop: 11 }}>
-        <AccessTimeIcon style={{ fontSize: '30px' }} />
-        <Typography style={{ marginTop: 2.5, marginLeft: 8 }}>
-          {formatTime(props.eventDate)}
-        </Typography>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'row', marginLeft: 40, marginTop: 11 }}>
-        <LocationOnIcon style={{ fontSize: '30px' }} />
-        <Typography style={{ marginTop: 3.5, marginLeft: 8 }}>
-          {props.venueName}
-        </Typography>
-      </div>
-      <div style={{ display: 'flex', marginTop: 27, flexDirection: 'column', alignItems: 'center' }}>
-        <Button
-          variant="outlined"
-          style={{
-            backgroundColor: '#F0F0F0',
-            color: '#FF5C35', // Text color
-            border: '2px solid #FF5C35', // Add a border
-            width: '250px'
-          }}
-        >
-          View Seatmap
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            backgroundColor: '#F0F0F0',
-            color: '#FF5C35', // Text color
-            border: '2px solid #FF5C35', // Add a border
-            width: '250px',
-            marginTop: 8
-          }}
-        >
-          View Venue
-        </Button>
-        <Button
-          variant="contained"
-          style={{
-            backgroundColor: '#FF5C35',
-            color: 'white', // Text color
-            width: '250px',
-            marginTop: 8
-          }}
-        >
-          Indicate Interest
-        </Button>
-        <Button
-          variant="contained"
-          style={{
-            backgroundColor: '#FF5C35',
-            color: 'white', // Text color
-            width: '250px',
-            marginTop: 8
-          }}
-        >
-          Buy Tickets
-        </Button>
-      </div>
-    </Box>
   )
 }

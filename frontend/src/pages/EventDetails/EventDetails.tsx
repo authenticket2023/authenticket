@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
 import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
 import { useParams } from 'react-router-dom';
 import { Box } from '@mui/system';
@@ -8,10 +7,7 @@ import { Button } from 'react-bootstrap';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Avatar from '@mui/material/Avatar';
-import { InfoBox, InfoBoxEnhanced } from './InfoBox';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { InfoBox } from './InfoBox';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { format } from 'date-fns';
 import { ReactComponent as CTSVG } from '../../utility/seatMap/Capitol Theatre.svg'
@@ -124,8 +120,22 @@ export const EventDetails: React.FC = (): JSX.Element => {
     setValue(newValue);
   };
 
+  function EventInfoBox() {
+    return (
+      <Grid item xs={4}>
+        <InfoBox
+          eventId={eventDetails.eventId}
+          eventDate={eventDetails.eventDate}
+          ticketSaleDate={eventDetails.ticketSaleDate}
+          venueName={eventDetails.venue.venueName}
+          setValue={setValue}
+        />
+      </Grid>
+    );
+  }
+
   return (
-    <div>
+    <Box>
       {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
 
       <Box>
@@ -202,7 +212,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
 
               {/* Tab 1: general Info */}
               <CustomTabPanel value={value} index={0}>
-                <Grid container spacing={12} style={{}}>
+                <Grid container spacing={12}>
                   <Grid item xs={8}>
                     <Typography style={{ font: 'Roboto', fontWeight: 500, fontSize: '18px' }}>
                       Event Description
@@ -235,24 +245,13 @@ export const EventDetails: React.FC = (): JSX.Element => {
                     </Grid>
                   </Grid>
 
-                  {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
-                  <Grid item xs={4}>
-                    <InfoBox
-                      eventId={eventDetails.eventId}
-                      eventDate={eventDetails.eventDate}
-                      ticketSaleDate={eventDetails.ticketSaleDate}
-                      venueName={eventDetails.venue.venueName}
-                      setValue={setValue}
-                    />
-
-                  </Grid>
+                  <EventInfoBox/>
                 </Grid>
               </CustomTabPanel>
 
               {/* Tab 2: Ticket Pricing */}
               <CustomTabPanel value={value} index={1}>
-
-                <Grid container spacing={12} style={{}}>
+                <Grid container spacing={12}>
                   <Grid item xs={8}>
 
                     <Grid container spacing={2}>
@@ -278,22 +277,13 @@ export const EventDetails: React.FC = (): JSX.Element => {
 
                   </Grid>
 
-                  {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
-                  <Grid item xs={4}>
-                    <InfoBox
-                      eventId={eventDetails.eventId}
-                      eventDate={eventDetails.eventDate}
-                      ticketSaleDate={eventDetails.ticketSaleDate}
-                      venueName={eventDetails.venue.venueName}
-                      setValue={setValue}
-                    />
-                  </Grid>
+                  <EventInfoBox/>
                 </Grid>
               </CustomTabPanel>
 
               {/* Tab 3: Ticket Sales */}
               <CustomTabPanel value={value} index={2}>
-                <Grid container spacing={12} style={{}}>
+                <Grid container spacing={12}>
                   <Grid item xs={8}>
                     <Typography style={{ font: 'Roboto', fontWeight: 500, fontSize: '18px' }}>
                       Ticket Sales
@@ -325,22 +315,13 @@ export const EventDetails: React.FC = (): JSX.Element => {
                     </Typography>
                   </Grid>
 
-                  {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
-                  <Grid item xs={4}>
-                    <InfoBox
-                      eventId={eventDetails.eventId}
-                      eventDate={eventDetails.eventDate}
-                      ticketSaleDate={eventDetails.ticketSaleDate}
-                      venueName={eventDetails.venue.venueName}
-                      setValue={setValue}
-                    />
-                  </Grid>
+                    <EventInfoBox/>
                 </Grid>
               </CustomTabPanel>
 
               {/* Tab 4: Organiser Info */}
               <CustomTabPanel value={value} index={3}>
-                <Grid container spacing={12} style={{}}>
+                <Grid container spacing={12}>
                   <Grid item xs={8}>
                     <Typography style={{ font: 'Roboto', fontWeight: 500, fontSize: '18px' }}>
                       About the Organiser
@@ -369,16 +350,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                     </div>
                   </Grid>
 
-                  {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
-                  <Grid item xs={4}>
-                    <InfoBox
-                      eventId={eventDetails.eventId}
-                      eventDate={eventDetails.eventDate}
-                      ticketSaleDate={eventDetails.ticketSaleDate}
-                      venueName={eventDetails.venue.venueName}
-                      setValue={setValue}
-                    />
-                  </Grid>
+                  <EventInfoBox/>
                 </Grid>
               </CustomTabPanel>
             </Box>
@@ -387,8 +359,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
       </Box>
 
 
-      {/* <p>Event ID: {eventId}</p> */}
-    </div>
+    </Box>
 
   )
 }
