@@ -31,6 +31,7 @@ export const InfoBox = (props: any) => {
   let navigate = useNavigate();
   const token = window.localStorage.getItem('accessToken');
   const userID: any = window.localStorage.getItem('id');
+  const [isPresaleEvent, setIsPresaleEvent] = useState(true);
   const [preSaleStatus, setPreSaleStatus] = useState(false);
   const [isSelectedForPreSale, setIsSelectedForPreSale] = useState(false);
   const [availableTicket, setAvailableTicket] = useState(true);
@@ -50,6 +51,29 @@ export const InfoBox = (props: any) => {
   const isOneDayBeforeSaleDate = timeDifference <= oneDayInMilliseconds;
   // Check if today is after the ticketSaleDateTime
   const isTodayAfterSaleDate = today > ticketSaleDateTime;
+
+  // dont need logged in
+  //check if the current event was presale event, 
+  // => True , means will allow user to indicate interest etc
+  // => False, only allow buy ticket after sale date start
+  const loadIsPresaleEvent = async () => {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/isPresaleEvent?eventId=${props.eventId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'GET',
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          setIsPresaleEvent(apiResponse.data);
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
 
   // if user logged in
   // check if current user had sign up for presale
@@ -194,10 +218,19 @@ export const InfoBox = (props: any) => {
   };
 
   useEffect(() => {
-    if (token != null) {
-      //load only if user logged in
+    //check if the event is presale event
+    loadIsPresaleEvent();
+
+    // Means is after sale date
+    if (isTodayAfterSaleDate) {
+      loadAvailableTicket();
+    }
+
+    //only need load infomation if the event is presale event
+    if (token != null && isPresaleEvent) {
       //if isOneDayBeforeSaleDate == false, means current date is before D-1 day, show presale button
       if (!isOneDayBeforeSaleDate) {
+        console.log('loading presale status')
         loadPreSaleStatus();
       }
       //this means the current date is btw D-1 to D day
@@ -205,11 +238,6 @@ export const InfoBox = (props: any) => {
         loadIsSelectedForPreSale();
       }
     }
-    // Means is after sale date
-    if (isTodayAfterSaleDate) {
-      loadAvailableTicket();
-    }
-
   }, []);
 
   return (
@@ -258,8 +286,8 @@ export const InfoBox = (props: any) => {
         >
           View Venue
         </Button>
-        {/* check which button to show */}
-        {!isOneDayBeforeSaleDate && (
+        {/* check which button to show for presale event only */}
+        {(isPresaleEvent && !isOneDayBeforeSaleDate) && (
           <Button
             variant="contained"
             style={{
@@ -274,7 +302,7 @@ export const InfoBox = (props: any) => {
             {preSaleStatus ? 'Interest Expressed' : 'Indicate Interest'}
           </Button>
         )}
-        {(isOneDayBeforeSaleDate && !isTodayAfterSaleDate) && (
+        {(isPresaleEvent && isOneDayBeforeSaleDate && !isTodayAfterSaleDate) && (
           <Button
             variant="contained"
             style={{
@@ -294,7 +322,7 @@ export const InfoBox = (props: any) => {
             }
           </Button>
         )}
-        {(isOneDayBeforeSaleDate && isTodayAfterSaleDate) && (
+        {(isPresaleEvent && isOneDayBeforeSaleDate && isTodayAfterSaleDate) && (
           <Button
             variant="contained"
             style={{
@@ -309,6 +337,39 @@ export const InfoBox = (props: any) => {
             {availableTicket ? 'Buy Tickets' : 'Sold out'}
           </Button>
         )}
+
+        {/* show button for not presale event*/}
+        {(!isPresaleEvent && !isTodayAfterSaleDate) && (
+          <Button
+            variant="contained"
+            style={{
+              backgroundColor: 'grey',
+              color: 'white', // Text color
+              width: '250px',
+              marginTop: 8
+            }}
+            onClick={handleBuyTicket}
+            disabled={!availableTicket}
+          >
+            Stay tuned
+          </Button>
+        )}
+        {(!isPresaleEvent && isTodayAfterSaleDate) && (
+          <Button
+            variant="contained"
+            style={{
+              backgroundColor: !availableTicket ? 'grey' : '#FF5C35',
+              color: 'white', // Text color
+              width: '250px',
+              marginTop: 8
+            }}
+            onClick={handleBuyTicket}
+            disabled={!availableTicket}
+          >
+            {availableTicket ? 'Buy Tickets' : 'Sold out'}
+          </Button>
+        )}
+
       </Grid>
       {/* error feedback */}
       <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
