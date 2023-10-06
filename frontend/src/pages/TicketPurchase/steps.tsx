@@ -231,7 +231,7 @@ export function EnterDetails(props: any) {
           </Typography>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {Array.from({ length: props.quantity }).map((_, sectionIndex) => (
-              <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection:'row' }}>
+              <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection:'row', height:'90px' }}>
                 <TextField
                     label="Name"
                     id="outlined-size-small"
@@ -609,15 +609,19 @@ export function Confirmation(props: any) {
 
     return (
         <Grid style={{display:'flex', justifyContent:'center', flexDirection:'row', marginTop:50}}>
-            <Grid item style={{background:'#F8F8F8', height:'265px', width:'450px', borderRadius:'8px', justifyContent:'center', display:'flex', alignItems:'center', marginRight:5}}>
-                <img
-                    src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventDetails.eventImage}`}
-                    style={{
-                        maxHeight: '150px',
-                        borderRadius:'8px'
-                    }}
-                    alt="Event Image"
-                />
+            <Grid item style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 5, flexDirection:'column' }}>
+                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>
+                    Attendees
+                </Typography>
+                {names.map((name: string | null | undefined, index: number) => ( // Use index as a number
+                    <Grid item key={index} style={{ background: '#F8F8F8', height: '50px', width: '450px', borderRadius: '8px', display: 'flex', alignItems: 'center', marginRight: 5 }}>
+                        {name !== null && name !== undefined && (
+                            <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
+                                {name}
+                            </Typography>
+                        )}
+                    </Grid>
+                ))}
             </Grid>
             <Grid item style={{background:'#F8F8F8', height:'210px', width:'300px', borderRadius:'8px', marginLeft:5}}>
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>

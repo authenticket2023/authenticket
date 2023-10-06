@@ -79,11 +79,18 @@ export const TicketPurcase: React.FC = (): JSX.Element => {
                             </Typography>
                         </div>
                     </div>
-                    <div style={{marginTop:30}}>                   
+                    <div style={{marginTop:30}}>
+                    {eventDetails.isEnhanced ? (
                         <PurchaseStepsFace
                             eventDetails={eventDetails}
                             categoryDetails={categoryDetails}
                         />
+                    ) : (
+                        <PurchaseSteps
+                            eventDetails={eventDetails}
+                            categoryDetails={categoryDetails}
+                        />
+                    )}
                     </div>
                 </Box>
             )}
