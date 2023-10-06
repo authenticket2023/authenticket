@@ -37,19 +37,34 @@ public class ApiExceptionHandler extends Utility {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
 
+        ex.printStackTrace();
         ApiException apiException = new ApiException(
                 "Access denied"
         );
         // Customize the response for access denied (e.g., unauthorized access to a resource)
         return new ResponseEntity<>(apiException, status);
     }
-    @ExceptionHandler({InsufficientAuthenticationException.class, ExpiredJwtException.class})
+
+    @ExceptionHandler({InsufficientAuthenticationException.class})
+    public ResponseEntity<Object> handleInsufficientAuthentication(Exception ex) {
+        //Create payload to send inside response entity containing exception details
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        ex.printStackTrace();
+        ApiException apiException = new ApiException(
+                "Access denied! Insufficient authentication to access this resource."
+        );
+
+        return new ResponseEntity<>(apiException, status);
+    }
+
+    @ExceptionHandler({ExpiredJwtException.class})
     public ResponseEntity<Object> handleExpiredJwtException(Exception ex) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
 
+        ex.printStackTrace();
         ApiException apiException = new ApiException(
-                "Access denied! User not allowed to access"
+                "Token expired. Please log in again."
         );
 
         return new ResponseEntity<>(apiException, status);
