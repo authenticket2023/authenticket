@@ -71,7 +71,21 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/event-type/**").hasAnyAuthority("ADMIN", "ORGANISER")
 
-                        .requestMatchers("/api/order/**").hasAuthority("USER")
+
+
+                        .requestMatchers(HttpMethod.GET,"/api/order/complete/{orderId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/order/cancel/{orderId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/order/testPDF").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/order/testPDF2").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/order/{orderId}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/order/user/{userId}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/order").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/order/find-user").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/order").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/order").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/order/add-ticket").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/order/{orderId}").hasAuthority("USER")
+
 
                         .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
 
