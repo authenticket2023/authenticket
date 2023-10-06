@@ -177,6 +177,110 @@ export function SelectSeats(props: any) {
 }
 
 export function EnterDetails(props: any) {
+
+    const [textFieldValues, setTextFieldValues] = useState<string[]>(Array.from({ length: props.quantity }, () => ''));
+
+    //error display variables
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
+    const token = window.localStorage.getItem('accessToken');
+    const delay = (ms: number) => new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
+  
+    useEffect(() => {
+    }, []);
+
+    const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, sectionIndex: number) => {
+
+        const updatedTextFieldValues = [...textFieldValues];
+        updatedTextFieldValues[sectionIndex] = event.target.value;
+        setTextFieldValues(updatedTextFieldValues);
+      };
+      
+    const handleConfirm = (event: React.FormEvent) => {
+        event.preventDefault();
+
+        // Collect images and names
+        const names = textFieldValues.filter((name) => name.trim() !== '');
+
+        // Call the parent's function to update the state
+        props.updateEnteredData(names);
+    
+        // Check if any TextField is empty
+        if (textFieldValues.some((value) => value.trim() === '')) {
+          // Show an alert message if any TextField is empty
+          setOpenSnackbar(true);
+          setAlertType('error');
+          setAlertMsg('Please fill in all the name fields!');
+        } else {
+          props.handleComplete();
+        }
+      };
+  
+    return (
+      <form onSubmit={handleConfirm}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 0, marginTop: 35, marginRight: 420, marginBottom: 3 }}>
+            Attendee Details
+          </Typography>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {Array.from({ length: props.quantity }).map((_, sectionIndex) => (
+              <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection:'row' }}>
+                <TextField
+                    label="Name"
+                    id="outlined-size-small"
+                    defaultValue=""
+                    size="small"
+                    style={{
+                        width:'160px', 
+                        height:'20px', 
+                        fontSize:'14px',
+                        marginLeft:45, 
+                        marginBottom:15
+                    }}
+                    value={textFieldValues[sectionIndex]} // Set the value of the TextField
+                    onChange={(e) => handleTextFieldChange(e, sectionIndex)} // Handle changes
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+        <Button variant='outlined' onClick={handleConfirm}
+            sx={{
+                border:'1px solid #FF5C35', 
+                borderRadius:'8px',
+                color:'#FF5C35',
+                height: 34,
+                width: 200,
+                marginLeft:107,
+                marginTop:1,
+                ":hover": {
+                    bgcolor: "#FF5C35",
+                    color:'white',
+                    BorderColor:'#FF5C35'
+                }
+            }}
+        >
+            Confirm Details
+        </Button>
+
+        <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+            <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                {alertMsg}
+            </Alert>
+        </Snackbar>
+      </form>
+    )
+  }
+
+
+export function EnterDetailsFace(props: any) {
     const [sectionImages, setSectionImages] = useState<Array<Array<File | null>>>([]);
     const [fileUploaded, setFileUploaded] = useState<boolean[]>([]);
     const [textFieldValues, setTextFieldValues] = useState<string[]>(Array.from({ length: props.quantity }, () => ''));
@@ -190,7 +294,6 @@ export function EnterDetails(props: any) {
     };
 
     const token = window.localStorage.getItem('accessToken');
-    const userId = window.localStorage.getItem('userId');
     const delay = (ms: number) => new Promise(
         resolve => setTimeout(resolve, ms)
     );
@@ -393,14 +496,29 @@ export function Confirmation(props: any) {
     // console.log(props.quantity);
     // console.log(props.eventDetails);
 
+    const userId = window.localStorage.getItem('id');
+    const token = window.localStorage.getItem('accessToken');
+
+    // Access images and names from the prop
+    const { names } = props.enteredData;
+
     useEffect(() => {
         loadStatus();
     }, []);
 
-    const { images, names } = props.enteredData;
+    //for pop up message => error , warning , info , success
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [alertType, setAlertType]: any = useState('info');
+    const [alertMsg, setAlertMsg] = useState('');
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
     // const catPrice = props.categoryDetails.ticketPrice;
     const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
     // console.log(props.sectionDetails);
+
+    const [isClicked, setIsClicked] = useState(false);
 
     const loadStatus = async () => {
         // //calling backend API
@@ -428,13 +546,65 @@ export function Confirmation(props: any) {
 
     const catPrice = sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
     const itemSubtotal = catPrice * props.quantity;
-    console.log(props.quantity);
+    // console.log(props.quantity);
     const orderTotal = itemSubtotal + 5;
 
-    const handleConfirmation = () => {
-        //
+    const delay = (ms: number) => new Promise(
+        resolve => setTimeout(resolve, ms)
+    );
 
-        props.handleComplete();
+
+    const handleConfirmation = () => {
+         //create order
+         if(!isClicked){
+            //Disable further clicks
+            setIsClicked(true);
+            console.log("hello");
+
+            //call backend to create order
+            const formData = new FormData();
+            if (userId !== null) {
+                formData.append('userId', userId);
+                formData.append('eventId', props.eventDetails.eventId);
+                formData.append('sectionId', props.selectedSection);
+                formData.append('ticketsToPurchase', props.quantity);
+                const concatenatedNames = names.filter((name: null | undefined) => name !== null && name !== undefined).join(', ');
+                formData.append('ticketHolderString', concatenatedNames);
+
+                fetch(`${process.env.REACT_APP_BACKEND_URL}/order`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(async (response) => {
+                        if (response.status == 200 || response.status == 201) {
+                            setOpenSnackbar(true);
+                            setAlertType('success');
+                            setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
+                            await delay(3000);
+                            props.handleComplete();
+                           
+                        } else {
+                            const eventResponse = await response.json();
+                            setOpenSnackbar(true);
+                            setAlertType('warning');
+                            setAlertMsg('Order did not go through, please try again.');
+                            //if transaction faile, enable clickable
+                            setIsClicked(false);
+                        }
+                    })
+                    .catch((err) => {
+                        //if transaction faile, enable clickable
+                        window.alert(err);
+                    })
+                    .finally(() => {
+                        // Set isClicked back to false after the order creation process is complete
+                        setIsClicked(false);
+                    })
+            }
+        }
     }
 
     return (
@@ -504,11 +674,21 @@ export function Confirmation(props: any) {
                     Confirm Order
                 </Button>
             </Grid>
+            <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
         </Grid>
     )
 }
 
 export function ConfirmationFace(props: any) {
+
+    const userId = window.localStorage.getItem('id');
+    const token = window.localStorage.getItem('accessToken');
+    // console.log(userId);
+    // console.log(token);
 
     useEffect(() => {
         loadStatus();
@@ -558,9 +738,6 @@ export function ConfirmationFace(props: any) {
     // console.log(props.quantity);
     const orderTotal = itemSubtotal + 5;
 
-    const userId = window.localStorage.getItem('userId');
-    const token = window.localStorage.getItem('token');
-
     const delay = (ms: number) => new Promise(
         resolve => setTimeout(resolve, ms)
     );
@@ -609,9 +786,12 @@ export function ConfirmationFace(props: any) {
                     })
                     .catch((err) => {
                         //if transaction faile, enable clickable
-                        setIsClicked(false);
                         window.alert(err);
-                    });
+                    })
+                    .finally(() => {
+                        // Set isClicked back to false after the order creation process is complete
+                        setIsClicked(false);
+                    })
             }
         }
     }
@@ -690,10 +870,10 @@ export function ConfirmationFace(props: any) {
                 </Button>
             </Grid>
             <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-            <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
-                {alertMsg}
-            </Alert>
-        </Snackbar>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
         </Grid>
     )
 }

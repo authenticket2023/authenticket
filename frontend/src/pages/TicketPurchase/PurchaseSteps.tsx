@@ -15,7 +15,7 @@ import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector
 import { StepIconProps } from '@mui/material/StepIcon';
 import { Countertops } from '@mui/icons-material';
 import { Sheet } from '@mui/joy';
-import { SelectSeats, EnterDetails, Confirmation, ConfirmationFace, Payment } from './steps';
+import { SelectSeats, EnterDetailsFace, EnterDetails, Confirmation, ConfirmationFace, Payment } from './steps';
 
 const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -78,7 +78,7 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
   }
 
 //   steps for normal process
-  const steps = ['Select Seats', 'Confirmation', 'Payment'];
+  const steps = ['Select Seats', 'Enter Details', 'Confirmation', 'Payment'];
 //   steps for process with facial recognition
   const stepsFace = ['Select Seats', 'Enter Details', 'Confirmation', 'Payment'];
 
@@ -93,6 +93,11 @@ export const PurchaseSteps = (props: any) => {
     const [isClicked, setIsClicked] = useState(false);
     const [quantity, setQuantity] = useState(''); // State variable for quantity
     const [selectedSection, setSelectedSection] = useState('');
+    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
+    const [selectedFiles, setSelectedFiles]: any = useState(null);
+    const [enteredData, setEnteredData] = useState<{ names: string[] }>({
+        names: [],  // Store entered names here
+    });
 
     const handleQuantityChange = (newQuantity: string) => {
         setQuantity(newQuantity);
@@ -161,6 +166,15 @@ export const PurchaseSteps = (props: any) => {
 
     }
 
+    const handleSectionDetails = (details: string[]) => {
+        setSectionDetails(details);
+    }
+
+    // Function to update the enteredData state
+    const updateEnteredData = ( names: string[]) => {
+        setEnteredData({ names });
+    };
+
     return (
         <div>
             <Stepper alternativeLabel activeStep={activeStep} connector={<QontoConnector />}>
@@ -203,20 +217,35 @@ export const PurchaseSteps = (props: any) => {
                                 onQuantityChange={handleQuantityChange}
                                 selectedSection={selectedSection}
                                 onSelectedSection={handleSelectedSection}
+                                onSectionDetails={handleSectionDetails}
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
                                 : null}
 
-                            {activeStep == 1 ? <Confirmation
+                            {activeStep == 1 ? <EnterDetails
                                 categoryDetails={props.categoryDetails}
                                 eventDetails={props.eventDetails}
                                 quantity={quantity}
                                 selectedSection={selectedSection}
+                                selectedFiles={selectedFiles}
+                                setSelectedFiles={setSelectedFiles}
+                                updateEnteredData={updateEnteredData} // Pass the function to EnterDetails
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
                             /> : null}
 
-                            {activeStep == 2 ? <Payment
+                            {activeStep == 2 ? <Confirmation
+                                categoryDetails={props.categoryDetails}
+                                eventDetails={props.eventDetails}
+                                quantity={quantity}
+                                selectedSection={selectedSection}
+                                enteredData={enteredData} // Pass the names to Confirmation
+                                sectionDetails={sectionDetails}
+                                handleComplete={handleComplete}
+                                setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
+                            /> : null}
+
+                            {activeStep == 3 ? <Payment
                                 
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
@@ -392,7 +421,7 @@ export const PurchaseStepsFace = (props: any) => {
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
                                 : null}
 
-                            {activeStep == 1 ? <EnterDetails
+                            {activeStep == 1 ? <EnterDetailsFace
                                 categoryDetails={props.categoryDetails}
                                 eventDetails={props.eventDetails}
                                 quantity={quantity}
