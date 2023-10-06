@@ -339,7 +339,7 @@ export const InfoBox = (props: any) => {
         )}
 
         {/* show button for not presale event*/}
-        {(!isPresaleEvent && !isTodayAfterSaleDate) && (
+        {(!isPresaleEvent && !isTodayAfterSaleDate) ?
           <Button
             variant="contained"
             style={{
@@ -348,13 +348,11 @@ export const InfoBox = (props: any) => {
               width: '250px',
               marginTop: 8
             }}
-            onClick={handleBuyTicket}
-            disabled={!availableTicket}
+            disabled={true}
           >
             Stay tuned
           </Button>
-        )}
-        {(!isPresaleEvent && isTodayAfterSaleDate) && (
+          :
           <Button
             variant="contained"
             style={{
@@ -368,7 +366,7 @@ export const InfoBox = (props: any) => {
           >
             {availableTicket ? 'Buy Tickets' : 'Sold out'}
           </Button>
-        )}
+        }
 
       </Grid>
       {/* error feedback */}
