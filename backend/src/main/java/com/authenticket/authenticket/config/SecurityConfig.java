@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/event/featured").hasAuthority( "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/event").hasAuthority(  "ORGANISER")
                         .requestMatchers(HttpMethod.POST, "/api/event").hasAuthority( "ORGANISER")
-                        .requestMatchers(HttpMethod.PUT, "/api/event/{eventId}").hasAnyAuthority(  "ADMIN","ORGANISER")
+                        .requestMatchers(HttpMethod.PUT, "/api/event/delete").hasAnyAuthority(  "ADMIN","ORGANISER")
                         .requestMatchers(HttpMethod.PUT, "/api/event/updateTicketCategory").hasAuthority(  "ORGANISER")
                         .requestMatchers(HttpMethod.PUT, "/api/event/addTicketCategory").hasAuthority(  "ORGANISER")
                         .requestMatchers(HttpMethod.PUT, "/api/event/addArtistToEvent").hasAuthority(  "ORGANISER")

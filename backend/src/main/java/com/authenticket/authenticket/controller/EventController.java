@@ -415,7 +415,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
     }
 
-    @PutMapping("/event/{eventId}")
+    @PutMapping("/event/delete")
     public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@RequestParam("eventId") String eventIdString) {
         try {
             List<Integer> eventIdList = Arrays.stream(eventIdString.split(","))
