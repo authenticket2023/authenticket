@@ -52,7 +52,8 @@ export const InfoBox = (props: any) => {
   // Check if today is after the ticketSaleDateTime
   const isTodayAfterSaleDate = today > ticketSaleDateTime;
 
-  // need login
+  // if user logged in
+  // check if current user had sign up for presale
   const loadPreSaleStatus = async () => {
     if (token === null || userID === null) {
       return;
@@ -75,13 +76,13 @@ export const InfoBox = (props: any) => {
       });
   }
 
-  // need login
-  // Not done
+  // if user logged in
+  //check if the current user is selcted for the presale 
   const loadIsSelectedForPreSale = async () => {
     if (token === null || userID === null) {
       return;
     }
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/checkPresaleStatus?eventId=${props.eventId}&userId=${userID}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/checkIfUserSelected?eventId=${props.eventId}&userId=${userID}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -90,7 +91,6 @@ export const InfoBox = (props: any) => {
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
-          console.log(apiResponse)
           setIsSelectedForPreSale(apiResponse.data);
         }
       })
@@ -99,19 +99,19 @@ export const InfoBox = (props: any) => {
       });
   }
 
-  // dont need login
-  // Not done
-  const loadAvailableTicket= async () => {
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/checkPresaleStatus?eventId=${props.eventId}`, {
+  // dont need logged in
+  //check if the current event still have tickets
+  const loadAvailableTicket = async () => {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/hasTickets?eventId=${props.eventId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       method: 'GET',
     })
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
-          console.log(apiResponse)
           setAvailableTicket(apiResponse.data);
         }
       })
@@ -119,20 +119,7 @@ export const InfoBox = (props: any) => {
         window.alert(err);
       });
   }
-
-  const handleBuyPresaleTicket = () => {
-    console.log('handleIndicateInterest');
-    //check if logged in
-    if (token === null && userID === null) {
-      setOpenSnackbar(true);
-      setAlertType('warning');
-      setAlertMsg('Please log in before indicate interest!');
-      return;
-    }
-    //TODO
-    console.log('redirect to purchasing pre sale ticket page');
-  };
-
+  
   const handleIndicateInterest = () => {
     if (token === null || userID === null) {
       setOpenSnackbar(true);
@@ -169,13 +156,27 @@ export const InfoBox = (props: any) => {
       });
   };
 
-  const handleBuyTicket = () => {
+  //*** TODO ***
+  const handleBuyPresaleTicket = () => {
+    console.log('handleIndicateInterest');
+    //check if logged in
+    if (token === null && userID === null) {
+      setOpenSnackbar(true);
+      setAlertType('warning');
+      setAlertMsg('Please log in before indicate interest!');
+      return;
+    }
     //TODO
+    console.log('redirect to purchasing pre sale ticket page');
+  };
+
+  //*** TODO ***
+  const handleBuyTicket = () => {
     console.log('redirect to buy ticket page, need check whether logged in or not')
   };
 
+  //*** TODO ***
   const handleViewVenue = () => {
-    //TODO
     console.log('redirect to view venue page')
   };
 
@@ -192,13 +193,22 @@ export const InfoBox = (props: any) => {
   };
 
   useEffect(() => {
-    if(token != null) {
+    if (token != null) {
       //load only if user logged in
-      loadPreSaleStatus();
-      loadIsSelectedForPreSale();
-    } else {
+      //if isOneDayBeforeSaleDate == false, means current date is before D-1 day, show presale button
+      if (!isOneDayBeforeSaleDate) {
+        loadPreSaleStatus();
+      }
+      //this means the current date is btw D-1 to D day
+      if (isOneDayBeforeSaleDate && !isTodayAfterSaleDate) {
+        loadIsSelectedForPreSale();
+      }
+    }
+    // Means is after sale date
+    if (isTodayAfterSaleDate) {
       loadAvailableTicket();
     }
+
   }, []);
 
   return (

@@ -104,27 +104,15 @@ export const EventDetails: React.FC = (): JSX.Element => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          console.log(data);
           setEventDetails(data);
-          //   const artistDetails = data.artists.map((artist: any) => ({
-          //     artistId: artist.artistId,
-          //     artistName: artist.artistName,
-          //     artistImage: artist.artistImage
-          //   }))
           const artistArray = data.artists;
-          // console.log(array[0].artistId);
           setArtistDetails(artistArray);
-          //   console.log(data);
-          // console.log(artistDetails[0].artistName);
-          // {artistDetails.map((artist: any) => {
-          //   console.log(artist);
-          // })}
-
           const arr = data.ticketCategory
           const categoryArray = arr.sort((a: { categoryId: number; }, b: { categoryId: number; }) => a.categoryId - b.categoryId);
           setCategoryDetails(categoryArray);
         } else {
-          //passing to parent component
+          const apiResponse = await response.json();
+          window.alert(apiResponse.message);
         }
       })
       .catch((err) => {
