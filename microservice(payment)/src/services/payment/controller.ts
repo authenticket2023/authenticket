@@ -6,7 +6,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
 
 export const createCheckOutSession = async (req: any, res: any) => {
   try {
-    const { products } = req.body;
+    const { orderId, products } = req.body;
 
     if (!products || products.length === 0) {
       return res.status(400).json({ error: "Invalid products data" });
@@ -27,8 +27,8 @@ export const createCheckOutSession = async (req: any, res: any) => {
       line_items: finalProducts,
       payment_method_types: ["card", "paynow", "alipay", "grabpay"],
       mode: "payment",
-      success_url: `${process.env.DEV_FRONTEND_HOST}/success`,
-      cancel_url: `${process.env.DEV_FRONTEND_HOST}/cancel`,
+      success_url: `${process.env.DEV_BACKEND_HOST}/api/order/complete/${orderId}`,
+      cancel_url: `${process.env.DEV_BACKEND_HOST}/api/order/cancel/${orderId},
     });
 
     return res.status(200).json({ id: session.id });

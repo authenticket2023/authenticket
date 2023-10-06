@@ -276,9 +276,11 @@ public class OrderController extends Utility {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-
         orderService.cancelOrder(orderRepository.findById(orderId).get());
-        return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "http://localhost:3000/cancel/"+orderId);
+        return ResponseEntity.status(200).headers(headers).body(generateApiResponse(null, "Order cancelled successfully"));
     }
 
     @PutMapping("/complete/{orderId}")
@@ -287,6 +289,9 @@ public class OrderController extends Utility {
             throw new NonExistentException("Order does not exist");
         }
         orderService.completeOrder(orderRepository.findById(orderId).get());
-        return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "http://localhost:3000/success/"+orderId);
+        return ResponseEntity.status(200).headers(headers).body(generateApiResponse(null, "Order completed successfully"));
     }
 }

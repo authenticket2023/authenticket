@@ -66,6 +66,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/event-type/**").hasAnyAuthority("ADMIN", "ORGANISER")
 
                         .requestMatchers("/api/order/**").hasAuthority("USER")
+                        .requestMatchers("/api/order/complete/*").permitAll()
+                        .requestMatchers("/api/order/cancel/*").permitAll()
 
                         .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
 
