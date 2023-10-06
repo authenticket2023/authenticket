@@ -562,6 +562,17 @@ public class EventController extends Utility {
         return ResponseEntity.status(201).body(generateApiResponse(null, "Presale interest recorded"));
     }
 
+    @GetMapping("/event/isPresaleEvent")
+    public ResponseEntity<GeneralApiResponse<Object>> isPresaleEvent(@RequestParam("eventId") Integer eventId) {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+
+        return ResponseEntity.ok(generateApiResponse(eventOptional.get().getHasPresale(), "Returned presale status for event " + eventId));
+    }
+
+
     @GetMapping("/event/checkPresaleStatus")
     public ResponseEntity<GeneralApiResponse<Object>> checkPresaleStatus(@RequestParam("eventId") Integer eventId,
                                                                          @RequestParam("userId") Integer userId) {
