@@ -63,8 +63,8 @@ root.render(
 			<Route path="/AdminLogin" element={<AdminLogin />} />
 			<Route path="/EventDetails/:eventId" element={<EventDetails />} />
 			<Route path="/TicketPurchase/:eventId" element={<TicketPurchase />} />
-			<Route path="/SuccessPage/:orderId" element={<SuccessPage />} />
-			<Route path="/CancelPage/:orderId" element={<CancelPage />} />
+			<Route path="/success/:orderId" element={<SuccessPage />} />
+			<Route path="/cancel/:orderId" element={<CancelPage />} />
 		</Routes>
 	</BrowserRouter>);
 

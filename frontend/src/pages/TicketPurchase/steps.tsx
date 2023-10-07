@@ -628,7 +628,7 @@ export function Confirmation(props: any) {
                         // Call makeRequest after successful order creation
                         await makeRequest();
                     } else {
-                        const eventResponse = await response.json();
+                        // const eventResponse = await response.json();
                         setOpenSnackbar(true);
                         setAlertType('warning');
                         setAlertMsg('Order did not go through, please try again.');
@@ -774,6 +774,49 @@ export function ConfirmationFace(props: any) {
             });
     }
 
+    const makeRequest = async () => {
+        // process.env.STRIPE_PUBLISHABLE_KEY
+        const stripe = await loadStripe("pk_test_51NvbWcEeFzrUZxTR9mH1Bma9Qlr1jY5j2al13GJ7OooMhKXeBv9qnNOAtBP0OsRrTIbAc7iIuQJudYaywasSzHyO004Iy2P7Aw");
+        const body = {
+            products: [
+               {
+                    id: 1,
+                    name: "Product 1",
+                    price: 100,
+                    quantity: 2
+                },
+                {
+                    id: 2,
+                    name: "Product 2",
+                    price: 200,
+                    quantity: 1
+                },
+                {
+                    id: 3,
+                    name: "Product 2",
+                    price: 800,
+                    quantity: 4
+                }
+            ]
+        }
+        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+            method: "Post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+        const session = await response.json();
+        const result = stripe?.redirectToCheckout({
+            sessionId: session.id
+        })
+        console.log("result", result)
+        const error = await (await result)?.error
+        if (error) {
+            console.log("error", error)
+        }
+    }
+
     const catPrice = sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
     const itemSubtotal = catPrice * props.quantity;
     // console.log(props.quantity);
@@ -815,6 +858,9 @@ export function ConfirmationFace(props: any) {
                             setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
                             await delay(3000);
                             props.handleComplete();
+
+                            // Call makeRequest after successful order creation
+                            await makeRequest();
                            
                         } else {
                             const eventResponse = await response.json();
@@ -920,48 +966,6 @@ export function ConfirmationFace(props: any) {
 }
 
 export function Payment(props: any) {
-    const makeRequest = async () => {
-        // process.env.STRIPE_PUBLISHABLE_KEY
-        const stripe = await loadStripe("pk_test_51NvbWcEeFzrUZxTR9mH1Bma9Qlr1jY5j2al13GJ7OooMhKXeBv9qnNOAtBP0OsRrTIbAc7iIuQJudYaywasSzHyO004Iy2P7Aw");
-        const body = {
-            products: [
-               {
-                    id: 1,
-                    name: "Product 1",
-                    price: 100,
-                    quantity: 2
-                },
-                {
-                    id: 2,
-                    name: "Product 2",
-                    price: 200,
-                    quantity: 1
-                },
-                {
-                    id: 3,
-                    name: "Product 2",
-                    price: 800,
-                    quantity: 4
-                }
-            ]
-        }
-        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
-            method: "Post",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(body)
-        })
-        const session = await response.json();
-        const result = stripe?.redirectToCheckout({
-            sessionId: session.id
-        })
-        console.log("result", result)
-        const error = await (await result)?.error
-        if (error) {
-            console.log("error", error)
-        }
-    }
     return (
         <div></div>
     ) 
