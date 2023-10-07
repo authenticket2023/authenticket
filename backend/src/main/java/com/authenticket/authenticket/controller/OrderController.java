@@ -271,22 +271,23 @@ public class OrderController extends Utility {
         return ResponseEntity.ok(generateApiResponse(null, "Order removed successfully"));
     }
 
-    @PutMapping("/cancel/{orderId}")
+    @GetMapping("/cancel/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> cancelOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-
         orderService.cancelOrder(orderRepository.findById(orderId).get());
+        
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
     }
 
-    @PutMapping("/complete/{orderId}")
+    @GetMapping("/complete/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> complete(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-        Order completedOrder = orderService.completeOrder(orderRepository.findById(orderId).get());
-        return ResponseEntity.ok(generateApiResponse(completedOrder, "Order completed successfully"));
+        orderService.completeOrder(orderRepository.findById(orderId).get());
+
+        return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
     }
 }
