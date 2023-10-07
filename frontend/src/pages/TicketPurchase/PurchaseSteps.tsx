@@ -86,18 +86,53 @@ const QontoConnector = styled(StepConnector)(({ theme }) => ({
 // Process without facial recognition
 export const PurchaseSteps = (props: any) => {
 
+    useEffect(() => {
+        loadSectionDetails();
+    }, []);
+
     const [activeStep, setActiveStep] = React.useState(0);
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
     }>({});
     const [isClicked, setIsClicked] = useState(false);
-    const [quantity, setQuantity] = useState(''); // State variable for quantity
+
+    //first step
+    const [quantity, setQuantity] = useState(''); 
     const [selectedSection, setSelectedSection] = useState('');
     const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
+
+    //second step
     const [selectedFiles, setSelectedFiles]: any = useState(null);
     const [enteredData, setEnteredData] = useState<{ names: string[] }>({
         names: [],  // Store entered names here
     });
+
+    //third step
+
+    //fetch section details
+    const loadSectionDetails = async () => {
+        // //calling backend API
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            method: 'GET',
+          })
+            .then(async (response) => {
+              if (response.status == 200) {
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                console.log(data);
+                setSectionDetails(data);
+  
+              } else {
+                //passing to parent component
+              }
+            })
+            .catch((err) => {
+              window.alert(err);
+            });
+    }
 
     const handleQuantityChange = (newQuantity: string) => {
         setQuantity(newQuantity);
@@ -214,6 +249,7 @@ export const PurchaseSteps = (props: any) => {
                             {activeStep == 0 ? <SelectSeats
                                 categoryDetails={props.categoryDetails}
                                 eventDetails={props.eventDetails}
+                                sectionDetails={sectionDetails}
                                 onQuantityChange={handleQuantityChange}
                                 selectedSection={selectedSection}
                                 onSelectedSection={handleSelectedSection}
@@ -288,9 +324,13 @@ export const PurchaseStepsFace = (props: any) => {
         [k: number]: boolean;
     }>({});
     const [isClicked, setIsClicked] = useState(false);
+
+    //first step
     const [quantity, setQuantity] = useState(''); // State variable for quantity
     const [selectedSection, setSelectedSection] = useState('');
     const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
+
+    //second step
     const [selectedFiles, setSelectedFiles]: any = useState(null);
     const [enteredData, setEnteredData] = useState<{ images: File[], names: string[] }>({
         images: [], // Store uploaded images here

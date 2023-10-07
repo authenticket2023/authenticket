@@ -12,43 +12,16 @@ export function SelectSeats(props: any) {
     const [selectedSection, setSelectedSection] = useState();
 
     useEffect(() => {
-        loadStatus();
-        console.log(selectedSection);
-    }, [selectedSection]);
+    }, []);
 
     //set variables
     const [quantity, setQuantity] = React.useState('');
-    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertType, setAlertType]: any = useState('info');
     const [alertMsg, setAlertMsg] = useState('');
     const handleSnackbarClose = () => {
         setOpenSnackbar(false);
     };
-
-    const loadStatus = async () => {
-        // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            method: 'GET',
-          })
-            .then(async (response) => {
-              if (response.status == 200) {
-                const apiResponse = await response.json();
-                const data = apiResponse.data;
-                console.log(data);
-                setSectionDetails(data);
-  
-              } else {
-                //passing to parent component
-              }
-            })
-            .catch((err) => {
-              window.alert(err);
-            });
-    }
 
     const handleChange = (event: SelectChangeEvent) => {
         const newQuantity = event.target.value as string;
@@ -57,8 +30,8 @@ export function SelectSeats(props: any) {
         // props.onSelectedSection(selectedSection);
 
         // Find the selected section
-        const selectedSectionData = sectionDetails.find(
-            (item) => item.sectionId === selectedSection
+        const selectedSectionData = props.sectionDetails.find(
+            (item: { sectionId: undefined; }) => item.sectionId === selectedSection
         );
 
         // Check if the selectedSectionData exists
@@ -123,7 +96,7 @@ export function SelectSeats(props: any) {
             <div>
                 <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection}/>
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:675, marginTop:-457}}>
-                Status: {sectionDetails ? (sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Unknown') : 'Loading...'}
+                Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Unknown') : 'Loading...'}
                 </Typography>
             </div>
             <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:25}}>
@@ -505,7 +478,6 @@ export function Confirmation(props: any) {
     const { names } = props.enteredData;
 
     useEffect(() => {
-        loadStatus();
     }, []);
 
     //for pop up message => error , warning , info , success
@@ -516,37 +488,9 @@ export function Confirmation(props: any) {
         setOpenSnackbar(false);
     };
 
-    // const catPrice = props.categoryDetails.ticketPrice;
-    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
-    // console.log(props.sectionDetails);
-
     const [isClicked, setIsClicked] = useState(false);
 
-    const loadStatus = async () => {
-        // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            method: 'GET',
-          })
-            .then(async (response) => {
-              if (response.status == 200) {
-                const apiResponse = await response.json();
-                const data = apiResponse.data;
-                console.log(data);
-                setSectionDetails(data);
-  
-              } else {
-                //passing to parent component
-              }
-            })
-            .catch((err) => {
-              window.alert(err);
-            });
-    }
-
-    const catPrice = sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
+    const catPrice = props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
     const itemSubtotal = catPrice * props.quantity;
     // console.log(props.quantity);
     const orderTotal = itemSubtotal + 5;
@@ -738,7 +682,6 @@ export function ConfirmationFace(props: any) {
     // console.log(token);
 
     useEffect(() => {
-        loadStatus();
     }, []);
 
     //for pop up message => error , warning , info , success
@@ -751,34 +694,7 @@ export function ConfirmationFace(props: any) {
 
     // Access images and names from the prop
     const { images, names } = props.enteredData;
-    // const catPrice = props.categoryDetails.ticketPrice;
-    const [sectionDetails, setSectionDetails] = React.useState<any[]>([]);
-    // console.log(props.sectionDetails);
     const [isClicked, setIsClicked] = useState(false);
-
-    const loadStatus = async () => {
-        // //calling backend API
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            method: 'GET',
-          })
-            .then(async (response) => {
-              if (response.status == 200) {
-                const apiResponse = await response.json();
-                const data = apiResponse.data;
-                // console.log(data);
-                setSectionDetails(data);
-  
-              } else {
-                //passing to parent component
-              }
-            })
-            .catch((err) => {
-              window.alert(err);
-            });
-    }
 
     const makeRequest = async (orderId: any) => {
         // process.env.STRIPE_PUBLISHABLE_KEY
@@ -818,7 +734,7 @@ export function ConfirmationFace(props: any) {
         }
     }
 
-    const catPrice = sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
+    const catPrice = props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
     const itemSubtotal = catPrice * props.quantity;
     // console.log(props.quantity);
     const orderTotal = itemSubtotal + 5;

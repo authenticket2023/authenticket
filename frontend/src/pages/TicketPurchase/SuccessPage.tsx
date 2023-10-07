@@ -50,8 +50,9 @@ export const SuccessPage: React.FC = (): JSX.Element => {
         fetch(`${process.env.REACT_APP_BACKEND_URL}/order/complete/${orderId}`, {
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
             },
-            method: 'GET',
+            method: 'PUT',
           })
             .then(async (response) => {
               if (response.status == 200) {                
@@ -72,6 +73,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
         fetch(`${process.env.REACT_APP_BACKEND_URL}/order/${orderId}`, {
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
             },
             method: 'GET',
           })
