@@ -73,8 +73,8 @@ public class SecurityConfig {
 
 
 
-                        .requestMatchers(HttpMethod.GET,"/api/order/complete/{orderId}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/order/cancel/{orderId}").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/api/order/complete/{orderId}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/order/cancel/{orderId}").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, "/api/order/testPDF").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, "/api/order/testPDF2").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, "/api/order/{orderId}").hasAuthority("USER")
