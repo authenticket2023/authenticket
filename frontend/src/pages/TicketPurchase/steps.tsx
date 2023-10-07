@@ -555,24 +555,25 @@ export function Confirmation(props: any) {
         resolve => setTimeout(resolve, ms)
     );
 
-    const makeRequest = async () => {
+    const makeRequest = async (orderId: any) => {
         // process.env.STRIPE_PUBLISHABLE_KEY
         const stripe = await loadStripe("pk_test_51NvbWcEeFzrUZxTR9mH1Bma9Qlr1jY5j2al13GJ7OooMhKXeBv9qnNOAtBP0OsRrTIbAc7iIuQJudYaywasSzHyO004Iy2P7Aw");
         const body = {
+            orderId: orderId, // Add orderId to the body
             products: [
-               {
-                    id: 1,
-                    name: `Section ${props.selectedSection}`,
-                    price: catPrice,
-                    quantity: props.quantity
-                },
                 {
-                    id: 2,
-                    name: "Booking Fee",
-                    price: 5,
-                    quantity: 1
-                },
-            ]
+                     id: 1,
+                     name: `Section ${props.selectedSection}`,
+                     price: catPrice,
+                     quantity:  props.quantity
+                 },
+                 {
+                     id: 2,
+                     name: "Booking Fee",
+                     price: 5,
+                     quantity: 1
+                 },
+             ]
         }
         const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
             method: "Post",
@@ -619,14 +620,19 @@ export function Confirmation(props: any) {
                     });
             
                     if (response.status === 200 || response.status === 201) {
+                        // Parse the JSON response
+                        const responseData = await response.json();
+                        // Access the orderId from the response data
+                        const orderId = responseData.data.orderId;
+
                         setOpenSnackbar(true);
                         setAlertType('success');
                         setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
                         await delay(3000);
                         props.handleComplete();
-            
+
                         // Call makeRequest after successful order creation
-                        await makeRequest();
+                        await makeRequest(orderId);
                     } else {
                         // const eventResponse = await response.json();
                         setOpenSnackbar(true);
@@ -774,29 +780,24 @@ export function ConfirmationFace(props: any) {
             });
     }
 
-    const makeRequest = async () => {
+    const makeRequest = async (orderId: any) => {
         // process.env.STRIPE_PUBLISHABLE_KEY
         const stripe = await loadStripe("pk_test_51NvbWcEeFzrUZxTR9mH1Bma9Qlr1jY5j2al13GJ7OooMhKXeBv9qnNOAtBP0OsRrTIbAc7iIuQJudYaywasSzHyO004Iy2P7Aw");
         const body = {
+            orderId: orderId, // Add orderId to the body
             products: [
                {
                     id: 1,
-                    name: "Product 1",
-                    price: 100,
-                    quantity: 2
+                    name: `Section ${props.selectedSection}`,
+                    price: catPrice,
+                    quantity:  props.quantity
                 },
                 {
                     id: 2,
-                    name: "Product 2",
-                    price: 200,
+                    name: "Booking Fee",
+                    price: 5,
                     quantity: 1
                 },
-                {
-                    id: 3,
-                    name: "Product 2",
-                    price: 800,
-                    quantity: 4
-                }
             ]
         }
         const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
@@ -853,6 +854,11 @@ export function ConfirmationFace(props: any) {
                 })
                     .then(async (response) => {
                         if (response.status == 200 || response.status == 201) {
+                            // Parse the JSON response
+                            const responseData = await response.json();
+                            // Access the orderId from the response data
+                            const orderId = responseData.data.orderId;
+
                             setOpenSnackbar(true);
                             setAlertType('success');
                             setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
@@ -860,7 +866,7 @@ export function ConfirmationFace(props: any) {
                             props.handleComplete();
 
                             // Call makeRequest after successful order creation
-                            await makeRequest();
+                            await makeRequest(orderId);
                            
                         } else {
                             const eventResponse = await response.json();
