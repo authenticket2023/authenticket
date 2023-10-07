@@ -32,10 +32,9 @@ export const InfoBox = (props: any) => {
   const token = window.localStorage.getItem('accessToken');
   const userID: any = window.localStorage.getItem('id');
   const [isPresaleEvent, setIsPresaleEvent] = useState(true);
-  const [preSaleStatus, setPreSaleStatus] = useState(false);
-  const [isSelectedForPreSale, setIsSelectedForPreSale] = useState(false);
+  const [preSaleStatus, setPreSaleStatus] = useState(true);
+  const [isSelectedForPreSale, setIsSelectedForPreSale] = useState(true);
   const [availableTicket, setAvailableTicket] = useState(true);
-
   // Get today's date and time
   // Create a Date object for the eventDate
   const ticketSaleDateTime: any = new Date(props.ticketSaleDate);
@@ -339,7 +338,7 @@ export const InfoBox = (props: any) => {
         )}
 
         {/* show button for not presale event*/}
-        {(!isPresaleEvent && !isTodayAfterSaleDate) ?
+        {(!isPresaleEvent && !isTodayAfterSaleDate) && (
           <Button
             variant="contained"
             style={{
@@ -352,7 +351,8 @@ export const InfoBox = (props: any) => {
           >
             Stay tuned
           </Button>
-          :
+        )}
+        {(!isPresaleEvent && isTodayAfterSaleDate) && (
           <Button
             variant="contained"
             style={{
@@ -366,7 +366,7 @@ export const InfoBox = (props: any) => {
           >
             {availableTicket ? 'Buy Tickets' : 'Sold out'}
           </Button>
-        }
+        )}
 
       </Grid>
       {/* error feedback */}
