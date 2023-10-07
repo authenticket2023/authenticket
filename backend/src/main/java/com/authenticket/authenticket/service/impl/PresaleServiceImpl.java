@@ -89,7 +89,7 @@ public class PresaleServiceImpl implements PresaleService {
 
         Random rand = new Random();
 
-        ArrayList<User> duplicate = new ArrayList(users);
+        ArrayList<User> duplicate = new ArrayList<>(users);
         for (int i = 0; i < presaleWinnersCount; i++) {
 
             // take a random index between 0 to size
