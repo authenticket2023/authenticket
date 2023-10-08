@@ -319,6 +319,10 @@ export const PurchaseSteps = (props: any) => {
 // process with facial recognition
 export const PurchaseStepsFace = (props: any) => {
 
+    useEffect(() => {
+        loadSectionDetails();
+    }, []);
+
     const [activeStep, setActiveStep] = React.useState(0);
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
@@ -337,6 +341,30 @@ export const PurchaseStepsFace = (props: any) => {
         names: [],  // Store entered names here
     });
 
+    //fetch section details
+    const loadSectionDetails = async () => {
+        // //calling backend API
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/section-ticket-details/${props.eventDetails.eventId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            method: 'GET',
+          })
+            .then(async (response) => {
+              if (response.status == 200) {
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                console.log(data);
+                setSectionDetails(data);
+  
+              } else {
+                //passing to parent component
+              }
+            })
+            .catch((err) => {
+              window.alert(err);
+            });
+    }
 
     const handleSectionDetails = (details: string[]) => {
         setSectionDetails(details);
@@ -457,6 +485,7 @@ export const PurchaseStepsFace = (props: any) => {
                                 selectedSection={selectedSection}
                                 onSelectedSection={handleSelectedSection}
                                 onSectionDetails={handleSectionDetails}
+                                sectionDetails={sectionDetails}
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
                                 : null}

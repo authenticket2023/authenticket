@@ -98,7 +98,11 @@ export const SuccessPage: React.FC = (): JSX.Element => {
           const apiResponse = await response.json();
           const data = apiResponse.data;
           setCompletedOrder(data.event);
-          submitFace();
+
+          //only do submitFace if event is enhanced
+          if(completedOrder?.isEnhanced){
+            submitFace();
+          }
         } else {
           // Handle error or pass to parent component
         }
@@ -156,6 +160,31 @@ const submitFace = async () => {
           const info = `${names[index]},${sectionId},${rowNo},${seatNo}`;
           formData.append(`info${index + 1}`, info);
         }
+
+        //call backend
+        fetch(`${process.env.FACIAL_URL}/face/createFacialInfo`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'POST',
+            body: formData
+        })
+            .then(async (response) => {
+                if (response.status == 200 || response.status == 201) {
+                    // Parse the JSON response
+                    const responseData = await response.json();
+                    // Access the orderId from the response data
+                    const orderId = responseData.data.orderId;
+
+                } else {
+
+                }
+            })
+            .catch((err) => {
+                //if transaction faile, enable clickable
+                window.alert(err);
+            })
+
       });
     }
 
