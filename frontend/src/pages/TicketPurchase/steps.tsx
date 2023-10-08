@@ -701,6 +701,7 @@ export function ConfirmationFace(props: any) {
         const stripe = await loadStripe("pk_test_51NvbWcEeFzrUZxTR9mH1Bma9Qlr1jY5j2al13GJ7OooMhKXeBv9qnNOAtBP0OsRrTIbAc7iIuQJudYaywasSzHyO004Iy2P7Aw");
         const body = {
             orderId: orderId, // Add orderId to the body
+            enteredData: props.enteredData,
             products: [
                {
                     id: 1,
