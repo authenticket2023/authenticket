@@ -192,6 +192,7 @@ export const InfoBox = (props: any) => {
     navigate('');
   };
 
+
   //*** TODO ***
   const handleBuyTicket = () => {
     console.log('redirect to buy ticket page, need check whether logged in or not')

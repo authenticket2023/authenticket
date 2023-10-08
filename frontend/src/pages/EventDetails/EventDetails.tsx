@@ -210,6 +210,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                 </Tabs>
               </Box>
 
+
               {/* Tab 1: general Info */}
               <CustomTabPanel value={value} index={0}>
                 <Grid container spacing={12}>
@@ -273,6 +274,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                           </Typography>
                         </Grid>
                       ))}
+
                     </Grid>
 
                   </Grid>
@@ -313,6 +315,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
                         </ListItem>
                       </List>
                     </Typography>
+
                   </Grid>
 
                     <EventInfoBox/>
