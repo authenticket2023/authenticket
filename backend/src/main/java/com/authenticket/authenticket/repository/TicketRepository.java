@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.repository;
 
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,12 +36,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
             "ELSE 'Available' " +
             "END, tp.price " +
             "FROM dev.event e "+
-            "JOIN dev.section s ON v.venue_id = s.venue_id "+
+            "JOIN dev.section s ON e.venue_id = s.venue_id "+
             "JOIN dev.ticket_pricing tp ON tp.event_id = e.event_id AND tp.category_id = s.category_id "+
             "LEFT JOIN dev.ticket t ON s.section_id = t.section_id AND e.event_id = t.event_id "+
             "WHERE e.event_id = :eventId "+
             "GROUP BY e.event_id, s.section_id, s.no_of_rows, s.no_of_seats_per_row, s.category_id,tp.price ")
     List<Object[]> findAllTicketDetailsBySectionForEvent(@Param("eventId") Integer eventId);
+    Integer countTicketsByOrder_Event(Event event);
 
     @Query(
             nativeQuery = true, value="SELECT e.event_id, " +

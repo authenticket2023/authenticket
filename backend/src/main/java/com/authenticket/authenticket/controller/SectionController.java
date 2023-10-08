@@ -37,9 +37,6 @@ public class SectionController extends Utility {
 
     private final SectionServiceImpl sectionService;
     private final SectionRepository sectionRepository;
-
-    private final TicketServiceImpl ticketService;
-
     private final VenueRepository venueRepository;
     private final TicketCategoryRepository ticketCategoryRepository;
     private final EventRepository eventRepository;
@@ -57,7 +54,6 @@ public class SectionController extends Utility {
         this.venueRepository = venueRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.eventRepository = eventRepository;
-        this.ticketService =ticketService;
     }
 
     @GetMapping("/test")
@@ -114,7 +110,6 @@ public class SectionController extends Utility {
 
         return ResponseEntity.ok(generateApiResponse(sectionTicketDetailsDto, "Ticket details for section return successfully"));
     }
-
 
     @PostMapping("/seat-matrix")
     public ResponseEntity<?> seatMatrix(

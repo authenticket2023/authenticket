@@ -31,5 +31,5 @@ public interface TicketService {
     List<Integer> getRandomSubsetOfSeats(List<List<Integer>> consecutiveGroups, int n);
     Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section);
     Integer getMaxConsecutiveSeatsForSection(Integer eventId, String sectionId);
-
+    Boolean getEventHasTickets(Event event);
 }

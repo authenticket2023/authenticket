@@ -33,6 +33,7 @@ public class TicketServiceImpl implements TicketService {
 
     private final OrderRepository orderRepository;
     private final TicketDisplayDtoMapper ticketDisplayDtoMapper;
+    private final VenueRepository venueRepository;
 
     @Autowired
 
@@ -43,7 +44,8 @@ public class TicketServiceImpl implements TicketService {
                              TicketDisplayDtoMapper ticketDisplayDtoMapper,
                              SectionRepository sectionRepository,
                              TicketPricingRepository ticketPricingRepository,
-                             OrderRepository orderRepository) {
+                             OrderRepository orderRepository,
+                             VenueRepository venueRepository) {
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
@@ -52,6 +54,7 @@ public class TicketServiceImpl implements TicketService {
         this.ticketDisplayDtoMapper = ticketDisplayDtoMapper;
         this.sectionRepository = sectionRepository;
         this.ticketPricingRepository = ticketPricingRepository;
+        this.venueRepository = venueRepository;
     }
 
     @Override
@@ -472,5 +475,13 @@ public class TicketServiceImpl implements TicketService {
         }
 
         return maxConsecutiveSeatsForSection;
+    }
+
+    @Override
+    public Boolean getEventHasTickets(Event event) {
+        int totalSeats = venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId());
+        int sold = ticketRepository.countTicketsByOrder_Event(event);
+
+        return sold < totalSeats;
     }
 }

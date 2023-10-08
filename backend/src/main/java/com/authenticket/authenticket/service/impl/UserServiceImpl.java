@@ -53,6 +53,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public Optional<UserFullDisplayDto> findById(Integer userId) {
         return userRepository.findById(userId).map(userDtoMapper::fullApply);
     }
+
+    @Override
+    public Optional<User> findUserById(Integer userId) {
+        return userRepository.findUserByUserId(userId);
+    }
 //    public Optional<User> findById(Integer userId){
 //        return userRepository.findById(userId);
 //    }
