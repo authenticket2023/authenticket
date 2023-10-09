@@ -68,7 +68,6 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
                 .build();
 
         // Mock the userRepository behavior
@@ -108,7 +107,6 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
                 .build();
 
 
@@ -152,7 +150,7 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
+                //.tickets(null)
                 .build();
 
         User existingUser = User.builder()
@@ -163,7 +161,7 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
+                //.tickets(null)
                 .build();
 
         ArgumentCaptor<User> userArgumentCaptor =
@@ -194,7 +192,6 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
                 .build();
 
         // Act
@@ -216,7 +213,6 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
                 .build();
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -240,7 +236,6 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
                 .build();
         user.setDeletedAt(LocalDateTime.now());
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -272,7 +267,6 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(filename)
                 .enabled(false)
-                .tickets(null)
                 .build();
 
         User existingUser = User.builder()
@@ -283,7 +277,6 @@ class UserServiceImplTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
                 .build();
 
         ArgumentCaptor<User> userArgumentCaptor =

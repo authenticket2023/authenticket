@@ -25,7 +25,7 @@ public class TicketCategory extends BaseEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(categoryName);
+        return Objects.hash(categoryId);
     }
 //    @OneToMany
 //    @JoinColumn(name = "category_id", referencedColumnName = "category_id")

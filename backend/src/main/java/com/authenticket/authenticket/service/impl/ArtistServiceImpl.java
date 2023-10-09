@@ -30,6 +30,7 @@ public class ArtistServiceImpl implements ArtistService {
         this.artistDtoMapper = artistDtoMapper;
     }
 
+    @Override
     public List<ArtistDisplayDto> findAllArtists() {
         return artistRepository.findAll()
                 .stream()
@@ -37,14 +38,17 @@ public class ArtistServiceImpl implements ArtistService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Optional<ArtistDisplayDto> findByArtistId(Integer artistId) {
         return artistRepository.findById(artistId).map(artistDtoMapper);
     }
 
+    @Override
     public Artist saveArtist(Artist artist){
         return artistRepository.save(artist);
     }
 
+    @Override
     public ArtistDisplayDto updateVenue(Artist artist){
         Optional<Artist> artistOptional = artistRepository.findById(artist.getArtistId());
 
@@ -58,6 +62,7 @@ public class ArtistServiceImpl implements ArtistService {
         return null;
     }
 
+    @Override
     public void deleteArtist(Integer artistId){
         Optional<Artist> artistOptional = artistRepository.findById(artistId);
 
@@ -75,6 +80,7 @@ public class ArtistServiceImpl implements ArtistService {
         }
     }
 
+    @Override
     public ArtistDisplayDto updateArtistImage(String filename, Integer artistId){
         Optional<Artist> artistOptional = artistRepository.findById(artistId);
 
@@ -86,6 +92,4 @@ public class ArtistServiceImpl implements ArtistService {
         }
         return null;
     }
-
-
 }

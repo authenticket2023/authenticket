@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException{
         return userRepository.findByEmail(email)
@@ -48,13 +49,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                         String.format(USER_NOT_FOUND_MSG, email)));
     }
 
+    @Override
     public Optional<UserFullDisplayDto> findById(Integer userId) {
         return userRepository.findById(userId).map(userDtoMapper::fullApply);
+    }
+
+    @Override
+    public Optional<User> findUserById(Integer userId) {
+        return userRepository.findUserByUserId(userId);
     }
 //    public Optional<User> findById(Integer userId){
 //        return userRepository.findById(userId);
 //    }
 
+    @Override
     public UserDisplayDto updateUser(User newUser){
         Optional<User> userOptional = userRepository.findByEmail(newUser.getEmail());
 
@@ -84,6 +92,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
+    @Override
     public UserDisplayDto updateProfileImage(String filename, Integer userId){
         Optional<User> userOptional = userRepository.findById(userId);
 

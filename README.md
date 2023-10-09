@@ -10,9 +10,24 @@
 - Frontend (React) : Node V18 (Typescript)
 - Backend(Spring Boot) : Java JDK 17 
   - You need to add `secrets.properties` to `backend/src/main/resources/` . Please contact us to get the file.
+### Accounts for development
+- User
+  - Account : `blzl.l.gtsj@gmail.com`
+  - Password : `password`  
+- Organiser
+  - Account : `authenticket2023@gmail.com`
+  - Password : `password`  
+- Admin
+  - Account : `admin@admin.com`
+  - Password : `admin`   
 ## Docker
 ### build and run both frontend & backend
 - At root directory => `docker compose up`
+### Pull image from docker hub
+- `docker pull panmingwei/authenticket-frontend`
+- `docker pull panmingwei/authenticket-backend`
+- `docker pull panmingwei/authenticket-facial`
+- `docker pull liseon/authenticket-facial`
 ### frontend
 - cd to 'authenticket/frontend'
   - Build the image : `docker build -t authenticket-frontend .`

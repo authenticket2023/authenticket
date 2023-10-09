@@ -81,8 +81,8 @@ export const EventOrganiser = () => {
     const [saleDate, setSaleDate] = React.useState<Dayjs>(dayjs(currentDateTime));
     const [eventDescription, setEventDescription] = useState('');
     const [otherInfo, setOtherInfo] = useState('');
-    const [facialCheckIn, setFacialCheckIn] = useState(true);
-    const [presale, setPresale] = useState(true);
+    const [facialCheckIn, setFacialCheckIn]: any = useState(true);
+    const [presale, setPresale]: any = useState(true);
 
     //to be remove
     const [ticketNumberVIP, setTicketNumberVIP] = useState(100);
@@ -135,70 +135,6 @@ export const EventOrganiser = () => {
     const token = window.localStorage.getItem('accessToken');
     const role = window.localStorage.getItem('role');
     const organiserId: any = window.localStorage.getItem('id');
-    const [redirectNow, setRedirectNow] = useState(false);
-
-    //adding ticket details
-    const addTicketCategory = async (eventId: any) => {
-        try {
-            const token = window.localStorage.getItem('accessToken');
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/event/addTicketCategory`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                method: 'PUT',
-                body: JSON.stringify({
-                    "eventId": eventId,
-                    "data": [
-                        {
-                            "catId": "1",
-                            "price": VIPPrice,
-                            "availableTickets": ticketNumberVIP,
-                            "totalTicketsPerCat": ticketNumberVIP
-                        },
-                        {
-                            "catId": "2",
-                            "price": cat1Price,
-                            "availableTickets": ticketNumberCat1,
-                            "totalTicketsPerCat": ticketNumberCat1
-                        },
-                        {
-                            "catId": "3",
-                            "price": cat2Price,
-                            "availableTickets": ticketNumberCat2,
-                            "totalTicketsPerCat": ticketNumberCat2
-                        },
-                        {
-                            "catId": "4",
-                            "price": cat3Price,
-                            "availableTickets": ticketNumberCat3,
-                            "totalTicketsPerCat": ticketNumberCat3
-                        },
-                        {
-                            "catId": "5",
-                            "price": cat4Price,
-                            "availableTickets": ticketNumberCat4,
-                            "totalTicketsPerCat": ticketNumberCat4
-                        },
-                    ]
-                })
-            });
-            if (response.status !== 200) {
-                //show alert msg
-                setOpenSnackbar(true);
-                setAlertType('error');
-                setAlertMsg("error on adding ticket category data!!!");
-            } else {
-                setOpenSnackbar(true);
-                setAlertType('success');
-                setAlertMsg('Event created successfully!!! Please wait for our administrator to review!!!');
-                await delay(2000);
-                navigate('/HomeOrganiser');
-            }
-        } catch (err) {
-            window.alert(err);
-        }
-    };
 
     const [isClicked, setIsClicked] = useState(false);
 
@@ -224,7 +160,10 @@ export const EventOrganiser = () => {
             }
             formData.append('artistId', artistList.toString());
             formData.append('typeId', eventType);
-
+            formData.append('ticketPrices', `${VIPPrice},${cat1Price},${cat2Price},${cat3Price},${cat4Price}`);
+            formData.append('isEnhanced', facialCheckIn);
+            formData.append('hasPresale', presale);
+            //TODO: add special requirement into formdata, pending BE
             //calling create event backend API
             fetch(`${process.env.REACT_APP_BACKEND_URL}/event`, {
                 headers: {
@@ -234,10 +173,16 @@ export const EventOrganiser = () => {
                 body: formData
             })
                 .then(async (response) => {
-                    if (response.status == 200) {
-                        const eventResponse = await response.json();
-                        //if ok, call addTicketCategory
-                        addTicketCategory(eventResponse['data']['eventId']);
+                    if (response.status == 200 || response.status == 201) {
+                        setOpenSnackbar(true);
+                        setAlertType('success');
+                        if (venue == '999') {
+                            setAlertMsg(`Your event has been successfully created! Kindly await our administrator's review, and they will get in touch with you shortly to provide further information about the venue.`);
+                        } else {
+                            setAlertMsg('Event created successfully!!! Please wait for our administrator to review!!!');
+                        }
+                        await delay(2000);
+                        navigate('/HomeOrganiser');
                     } else {
                         const eventResponse = await response.json();
                         setOpenSnackbar(true);

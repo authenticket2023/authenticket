@@ -2,7 +2,6 @@ package com.authenticket.authenticket.dto.event;
 
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
 import com.authenticket.authenticket.model.Artist;
-import com.authenticket.authenticket.model.EventTicketCategory;
 
 import java.time.LocalDateTime;
 import java.util.Set;
