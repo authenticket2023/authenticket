@@ -105,7 +105,6 @@ export const EventOrganiser = () => {
     //for EventPoster
     const [selectedFiles, setSelectedFiles]: any = useState(null);
 
-    //for testing
     useEffect(() => {
     }, []);
 

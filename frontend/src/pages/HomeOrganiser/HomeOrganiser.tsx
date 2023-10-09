@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { NavbarOrganiser } from '../../Navbar';
 import { AllEvent } from './allEvent'
 import { Box } from '@mui/material';
@@ -7,6 +7,7 @@ import { Box } from '@mui/material';
 export const HomeOrganiser = () => {
     const token = window.localStorage.getItem('accessToken');
     const role = window.localStorage.getItem('role');
+    const [refresh, setRefresh]: any = useState(true);
 
     useEffect(() => {
     }, []);
