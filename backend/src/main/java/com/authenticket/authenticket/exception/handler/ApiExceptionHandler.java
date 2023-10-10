@@ -20,8 +20,8 @@ import java.time.ZonedDateTime;
 @ControllerAdvice
 public class ApiExceptionHandler extends Utility {
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex) {
+    @ExceptionHandler({BadCredentialsException.class , UsernameNotFoundException.class})
+    public ResponseEntity<Object> handleBadCredentialsException(Exception ex) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 

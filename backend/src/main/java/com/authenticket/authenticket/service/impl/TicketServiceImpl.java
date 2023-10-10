@@ -413,11 +413,11 @@ public class TicketServiceImpl implements TicketService {
             // Now you can check if there are any missing IDs
             List<Integer> foundTicketIds = ticketList.stream()
                     .map(Ticket::getTicketId)
-                    .collect(Collectors.toList());
+                    .toList();
 
             List<Integer> missingTicketIds = ticketIdList.stream()
                     .filter(id -> !foundTicketIds.contains(id))
-                    .collect(Collectors.toList());
+                    .toList();
 
             throw new IllegalArgumentException(String.format("Error deleting tickets, invalid ticket ids: %s", missingTicketIds.toString()));
         } else {
