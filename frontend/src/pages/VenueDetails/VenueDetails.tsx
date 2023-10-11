@@ -13,6 +13,9 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { format } from "date-fns";
+import { SGStad } from '../../utility/seatMap/SeatMap';
+import { InitMap } from './VenueMap';
+import CapitolMap from './CapitolMap.png';  
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -182,53 +185,22 @@ export const VenueDetails: React.FC = (): JSX.Element => {
 
               {/* Tab 2: Ticket Pricing */}
               <CustomTabPanel value={value} index={1}>
-                <img>
-                </img>
+                <Grid container>
+                  <Grid item xs = {12} justifyContent={'center'} alignItems={'center'} marginLeft={20}>
+                <Box alignItems={'center'} justifyItems={'center'}>
+                <SGStad id={venueDetails.venueId} setSelectedSection={loadVenueDetails}/>
+                </Box>
+                  </Grid>
+                </Grid>
               </CustomTabPanel>
 
               {/* Tab 3: Ticket Sales */}
-              {/* <CustomTabPanel value={value} index={2}>
-                <Grid container spacing={12} style={{}}>
-                    <Grid item xs={8}>
-                      <Typography style={{font:'Roboto', fontWeight:500, fontSize:'18px'}}>
-                          Ticket Sales
-                      </Typography>
-                      <Typography style={{marginTop:5, font:'Roboto', fontWeight:300, fontSize:'15px', marginBottom:30 }}>
-                        starts on <strong style={{fontWeight:500}}>{formatDate(venueDetails.ticketSaleDate)}</strong>
-                      </Typography>
-                      <Typography style={{font:'Roboto', fontWeight:500, fontSize:'18px'}}>
-                          Notes
-                      </Typography>
-                      <Typography>
-                        <List sx={{
-                            listStyleType: 'disc',
-                            listStylePosition: 'inside'
-                          }}>
-                          <ListItem sx={{ display: 'list-item', marginTop:-2, font:'Roboto', fontWeight:300, fontSize:'15px' }}>
-                            Each account can purchase a maximum of 5 tickets
-                          </ListItem>
-                          <ListItem sx={{ display: 'list-item', marginTop:-2, font:'Roboto', fontWeight:300, fontSize:'15px' }}>
-                            If the event has a presale, please indicate your interest to be considered for the presale
-                          </ListItem>
-                          <ListItem sx={{ display: 'list-item', marginTop:-2, font:'Roboto', fontWeight:300, fontSize:'15px' }}>
-                            Presale takes place 1 day before the actual sales
-                          </ListItem>
-                          <ListItem sx={{ display: 'list-item', marginTop:-2, font:'Roboto', fontWeight:300, fontSize:'15px' }}>
-                            No refunds or exchanging of tickets will be allowed
-                          </ListItem>
-                        </List>
-                      </Typography>
-                    </Grid> */}
-
-              {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
-              {/* <Grid item xs={4}>
-                      <InfoBox
-                        eventDate={venueDetails.eventDate}
-                        venueName={venueDetails.venue.venueName}
-                      />
-                    </Grid>
-                  </Grid>
-                </CustomTabPanel> */}
+              <CustomTabPanel value={value} index={2}>
+                {/* <InitMap venueId = {venueId}></InitMap> */}
+                <Box sx={{backgroundImage: `./CapitolMap.png`, width: 400, height: 400} }>
+                </Box>
+                <img src='./CapitolMap.png'></img>
+                </CustomTabPanel>
 
               {/* Tab 4: Organiser Info */}
               {/* <CustomTabPanel value={value} index={3}>

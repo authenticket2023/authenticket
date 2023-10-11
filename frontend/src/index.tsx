@@ -20,11 +20,15 @@ import { Support } from './pages/Support';
 import { Venue } from './pages/Venue';
 import { VenueDetails } from './pages/VenueDetails'
 import { EventDetails } from './pages/EventDetails';
+import { TicketPurchase } from './pages/TicketPurchase';
+import { SuccessPage } from './pages/TicketPurchase/SuccessPage';
+import { CancelPage } from './pages/TicketPurchase/CancelPage';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
 import { OrganiserSignup } from './pages/OrganiserSignup';
 import { OrganiserLogin } from './pages/OrganiserLogin';
+import { CheckinOrganiser } from './pages/CheckinOrganiser';
 //for admin user
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
@@ -35,8 +39,8 @@ import { AdminLogin } from './pages/AdminLogin';
 const container: any = document.getElementById('root');
 const root = createRoot(container);
 root.render(
-	<BrowserRouter>
-		<Routes>
+	<BrowserRouter >
+		<Routes >
 			<Route path="/Home" element={<Home />} />
 			<Route path="/" element={<Navigate to="/Home" />} />
 			<Route path="/About" element={<About />} />
@@ -52,6 +56,7 @@ root.render(
 			<Route path="/*" element={<Page404 />} />
 			<Route path="/HomeOrganiser" element={<HomeOrganiser />} />
 			<Route path="/EventOrganiser" element={<EventOrganiser />} />
+			<Route path="/CheckinOrganiser" element={<CheckinOrganiser />} />
 			<Route path="/HomeAdmin" element={<HomeAdmin />} />
 			<Route path="/EventAdmin" element={<EventAdmin />} />
 			<Route path="/VenueAdmin" element={<VenueAdmin />} />
@@ -61,6 +66,9 @@ root.render(
 			<Route path="/AdminLogin" element={<AdminLogin />} />
 			<Route path="/EventDetails/:eventId" element={<EventDetails />} />
 			<Route path="/VenueDetails/:venueId" element={<VenueDetails />} />
+			<Route path="/TicketPurchase/:eventId" element={<TicketPurchase />} />
+			<Route path="/success/:orderId" element={<SuccessPage />} />
+			<Route path="/cancel/:orderId" element={<CancelPage />} />
 		</Routes>
 	</BrowserRouter>);
 

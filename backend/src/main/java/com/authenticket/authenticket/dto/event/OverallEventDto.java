@@ -25,6 +25,9 @@ public record OverallEventDto(
         String reviewStatus,
         String reviewRemarks,
         AdminDisplayDto reviewedBy,
+        Boolean isEnhanced,
+        Boolean hasPresale,
+        Boolean hasPresaleUsers,
         Set<EventTicketCategoryDisplayDto> ticketCategory,//object
         EventOrganiserDisplayDto organiser, //object
         Venue venue, //object

@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.dto.eventticketcategory;
 
-import com.authenticket.authenticket.model.EventTicketCategory;
+import com.authenticket.authenticket.model.TicketPricing;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -8,28 +8,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class EventTicketCategoryDtoMapper implements Function<EventTicketCategory, EventTicketCategoryDisplayDto> {
-    public EventTicketCategoryDisplayDto apply(EventTicketCategory eventTicketCategory) {
+public class EventTicketCategoryDtoMapper implements Function<TicketPricing, EventTicketCategoryDisplayDto> {
+    public EventTicketCategoryDisplayDto apply(TicketPricing ticketPricing) {
 
         return new EventTicketCategoryDisplayDto(
-                eventTicketCategory.getCat().getCategoryId(), eventTicketCategory.getCat().getCategoryName(),
-                eventTicketCategory.getPrice(),eventTicketCategory.getAvailableTickets(),
-                eventTicketCategory.getTotalTicketsPerCat());
+                ticketPricing.getCat().getCategoryId(), ticketPricing.getCat().getCategoryName(),
+                ticketPricing.getPrice());
     }
 
-    public void update(EventTicketCategoryUpdateDto newEventTicketCategoryDto, EventTicketCategory oldEventTicketCategory){
-        if(newEventTicketCategoryDto.availableTickets() != null){
-            oldEventTicketCategory.setAvailableTickets(newEventTicketCategoryDto.availableTickets());
-        }
-        if(newEventTicketCategoryDto.totalTicketsPerCat() != null){
-            oldEventTicketCategory.setTotalTicketsPerCat(newEventTicketCategoryDto.totalTicketsPerCat());
-        }
+    public void update(EventTicketCategoryUpdateDto newEventTicketCategoryDto, TicketPricing oldTicketPricing){
         if(newEventTicketCategoryDto.price() != null){
-            oldEventTicketCategory.setPrice(newEventTicketCategoryDto.price());
+            oldTicketPricing.setPrice(newEventTicketCategoryDto.price());
         }
     }
 
-    public Set<EventTicketCategoryDisplayDto> map(Set<EventTicketCategory> eventTicketObjects) {
+    public Set<EventTicketCategoryDisplayDto> map(Set<TicketPricing> eventTicketObjects) {
         return eventTicketObjects.stream()
                 .map(this::apply)
                 .collect(Collectors.toSet());

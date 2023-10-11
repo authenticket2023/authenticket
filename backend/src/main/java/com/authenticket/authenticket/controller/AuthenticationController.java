@@ -121,9 +121,6 @@ public class AuthenticationController extends Utility{
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
         }
-        catch (BadCredentialsException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
-        }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));
         }
@@ -159,9 +156,6 @@ public class AuthenticationController extends Utility{
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
         }
-        catch (BadCredentialsException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
-        }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Account not yet approved by company administrator"));
         }
@@ -194,9 +188,6 @@ public class AuthenticationController extends Utility{
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome " + email));
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
-        }
-        catch (BadCredentialsException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
         }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));

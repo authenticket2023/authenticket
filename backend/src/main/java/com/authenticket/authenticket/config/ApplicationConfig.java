@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.config;
 
+import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.AwaitingVerificationException;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.User;
@@ -48,19 +50,28 @@ public class ApplicationConfig {
             Optional<com.authenticket.authenticket.model.User> userOptional = userRepository.findByEmail(username);
             Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findByEmail(username);
             if (adminOptional.isPresent()) {
+                if(adminOptional.get().getDeletedAt() != null){
+                    throw new AlreadyDeletedException("Account already deleted. Please contact administrator if this is mistake");
+                }
                 return new User(adminOptional.get().getEmail(), adminOptional.get().getPassword(), adminOptional.get().getAuthorities());
             } else if (userOptional.isPresent()) {
+                if(userOptional.get().getDeletedAt() != null){
+                    throw new AlreadyDeletedException("Account already deleted. Please contact administrator if this is mistake");
+                }
                 if (userOptional.get().getEnabled()) {
                     return new User(userOptional.get().getEmail(), userOptional.get().getPassword(), userOptional.get().getAuthorities());
                 }
                 throw new AwaitingVerificationException("Verification required");
             } else if (eventOrganiserOptional.isPresent()) {
+                if(eventOrganiserOptional.get().getDeletedAt() != null){
+                    throw new AlreadyDeletedException("Account already deleted. Please contact administrator if this is mistake");
+                }
                 if (eventOrganiserOptional.get().getEnabled()) {
                     return new User(eventOrganiserOptional.get().getEmail(), eventOrganiserOptional.get().getPassword(), eventOrganiserOptional.get().getAuthorities());
                 }
                 throw new AwaitingVerificationException("Awaiting approval");
             } else {
-                throw new UsernameNotFoundException("User not found");
+                throw new BadCredentialsException("User not found");
             }
         };
     }
@@ -85,8 +96,8 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @PostConstruct
-    public void init() {
-        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Singapore"));
-    }
+//    @PostConstruct
+//    public void init() {
+//        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Singapore"));
+//    }
 }

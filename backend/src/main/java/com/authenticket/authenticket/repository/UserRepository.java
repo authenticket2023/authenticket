@@ -13,7 +13,7 @@ import java.util.*;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
-
+    Optional<User> findUserByUserId(Integer userId);
 
     @Transactional
     @Modifying(clearAutomatically = true)

@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface UserService {
     List<UserFullDisplayDto> findAllUser();
+    Optional<User> findUserById(Integer userId);
     Optional<UserFullDisplayDto> findById(Integer userId);
     UserDisplayDto updateUser(User newUser);
     //    Admin updateAdmin (AdminDto adminDto);
