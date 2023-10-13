@@ -8,7 +8,36 @@ const faceApiService = require("../../services/utils/faceapiService");
 const FaceModel = require('../../models/face');
 const baseDir = path.resolve(__dirname, "../../..");
 
-async function uploadLabeledImages(index: any, images: any, eventID: any, label: any, sectionID: any, row: any, seat: any) : Promise<boolean> {
+//Checking the crypto module
+const crypto = require('crypto');
+const algorithm = 'aes-256-cbc'; //Using AES encryption
+
+// get encryption_key and IV from env variables
+const iv = process.env.INIT_VECTOR || '';
+const encryption_key = process.env.ENCRYPTION_KEY || '';
+//need to convert to Buffer for Initialization Vector(IV) and key
+const bufferIV = Buffer.from(iv, 'hex');
+const bufferKey = Buffer.from(encryption_key, 'hex');
+
+
+//Encrypting Facial Data
+function encrypt(data: any) {
+    let cipher = crypto.createCipheriv('aes-256-cbc', bufferKey, bufferIV);
+    let encrypted = cipher.update(data);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return { encryptedData: encrypted.toString('hex') };
+}
+
+// Decrypting Facial Data
+function decrypt(data: any) {
+    let encryptedText = Buffer.from(data.encryptedData, 'hex');
+    let decipher = crypto.createDecipheriv('aes-256-cbc', bufferKey, bufferIV);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+
+async function uploadLabeledImages(index: any, images: any, eventID: any, label: any, sectionID: any, row: any, seat: any): Promise<boolean> {
     try {
         console.log(`========== uploadLabeledImages for image ${index} ==========`)
 
@@ -25,16 +54,20 @@ async function uploadLabeledImages(index: any, images: any, eventID: any, label:
             .withFaceLandmarks()
             .withFaceDescriptor();
 
-        descriptions.push(detections.descriptor);
-        // }
-
+        // descriptions.push(detections.descriptor);
+        const floatArrayString = JSON.stringify(Array.from(detections.descriptor))
+        var encryptedFacialData = encrypt(floatArrayString);
+        descriptions.push(encryptedFacialData);
+        //decoding
+        var decodedString = decrypt(encryptedFacialData);
+        // descriptions.push(new Float32Array(JSON.parse(decodedString)));
         // Create a new face document with the given label and save it in DB
         const createFace = new FaceModel({
             eventID: eventID,
             sectionID: sectionID,
             row: row,
             seat: seat,
-            label: label,
+            label: `${label}(${sectionID}-${row}-${seat})`,
             descriptions: descriptions,
         });
         try {
@@ -43,7 +76,6 @@ async function uploadLabeledImages(index: any, images: any, eventID: any, label:
             return true;
         } catch (error) {
             // mean facial info was existed in DB
-            // console.error('Failed to save data:', error);
             return false;
         }
     } catch (error) {
@@ -141,7 +173,10 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
         for (let i = 0; i < faces.length; i++) {
             // Change the face data descriptors from Objects to Float32Array type
             for (let j = 0; j < faces[i].descriptions.length; j++) {
-                faces[i].descriptions[j] = new Float32Array(Object.values(faces[i].descriptions[j]));
+                //decode the facial data
+                var decodedString = decrypt(faces[i].descriptions[j]);
+                var facialData = new Float32Array(JSON.parse(decodedString));
+                faces[i].descriptions[j] = new Float32Array(Object.values(facialData));
             }
             // Turn the DB face docs to
             faces[i] = new faceapi.LabeledFaceDescriptors(faces[i].label, faces[i].descriptions);
