@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 
 // Mount REST on /api
-app.use('/api', services);
+app.use('/api/v2', services);
 
 const port = process.env.PORT || 8000;
 

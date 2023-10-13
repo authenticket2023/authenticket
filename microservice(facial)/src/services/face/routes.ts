@@ -4,9 +4,9 @@ import * as controller from './controller';
 
 export const faceRouter = express.Router();
 
-/** POST /api/checkImage */
-faceRouter.route('/checkImage').post(controller.checkImage);
-/** POST /api/createFacialInfo */
-faceRouter.route('/createFacialInfo').post(controller.createFacialInfo);
-/** POST /api/facialVerification */
-faceRouter.route('/facialVerification').post(controller.facialVerification);
+/** POST /api/image-verification */
+faceRouter.route('/image-verification').post(controller.checkImage);
+/** POST /api/facial-creation */
+faceRouter.route('/facial-creation').post(controller.createFacialInfo);
+/** POST /api/facial-verification */
+faceRouter.route('/facial-verification').post(controller.facialVerification);

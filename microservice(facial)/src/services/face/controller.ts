@@ -54,13 +54,9 @@ async function uploadLabeledImages(index: any, images: any, eventID: any, label:
             .withFaceLandmarks()
             .withFaceDescriptor();
 
-        // descriptions.push(detections.descriptor);
         const floatArrayString = JSON.stringify(Array.from(detections.descriptor))
         var encryptedFacialData = encrypt(floatArrayString);
         descriptions.push(encryptedFacialData);
-        //decoding
-        var decodedString = decrypt(encryptedFacialData);
-        // descriptions.push(new Float32Array(JSON.parse(decodedString)));
         // Create a new face document with the given label and save it in DB
         const createFace = new FaceModel({
             eventID: eventID,
@@ -82,6 +78,7 @@ async function uploadLabeledImages(index: any, images: any, eventID: any, label:
         throw error;
     }
 }
+
 interface Files {
     image1: any;
     image2?: any;
