@@ -55,12 +55,10 @@ async function verifyToken(token: any, email: any) {
         if (response.statusCode === 200) {
             return true;
         } else {
-            console.error('Error: Status code', response.statusCode);
-            return false;
+            throw new Error(`${response.message}`);
         }
     } catch (error: any) {
-        console.error('Error:', error.message);
-        return false;
+        throw new Error(`${error.message}`);
     }
 }
 
@@ -117,8 +115,17 @@ interface Files {
 export const createFacialInfo = async (req: any, res: any, next: NextFunction) => {
     try {
         console.log('Creating Facial Information');
+        const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
         const { image1, image2, image3, image4, image5 }: Files = req.files;
-        const { eventID, info1, info2, info3, info4, info5 } = req.body;
+        const { email, eventID, info1, info2, info3, info4, info5 } = req.body;
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
         const info1Array = info1.split(',');
         if (info1Array.length != 4) {
             throw new Error(`Invalid info1 field! Please follow the following format : {label,sectionID,row,seat}.`);
@@ -241,8 +248,17 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
 
 export const facialVerification = async (req: any, res: any, next: NextFunction) => {
     try {
+        const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
         const { image } = req.files;
-        const eventID = req.body.eventID;
+        const { eventID, email } = req.body;
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
 
         let result = await getDescriptorsFromDB(image.data, eventID);
 
@@ -259,10 +275,18 @@ export const facialVerification = async (req: any, res: any, next: NextFunction)
 export const checkImage = async (req: any, res: any, next: NextFunction) => {
     try {
         console.log("========= Calling checkImage =========");
-        const test = await verifyToken('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhdXRoZW50aWNrZXQyMDIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NzIwNTk0NCwiZXhwIjoxNjk3MjkyMzQ0fQ.cAHlHmGUjY6X7dO00Zy3PH3lb-T3U3oOxZciDy3BHnU', 'authenticket2023@gmail.com');
-        console.log(test)
-
+        const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
         const { image } = req.files;
+        const { email } = req.body;
+
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
         const img = await canvas.loadImage(image.data);
         const numOfFaces = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
         if (numOfFaces.length != 1) {
