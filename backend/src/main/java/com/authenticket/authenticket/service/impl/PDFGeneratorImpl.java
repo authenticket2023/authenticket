@@ -34,7 +34,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
     }
 
     @Override
-    public InputStreamResource  generateOrderDetails(Order order) {
+    public InputStreamResource generateOrderDetails(Order order) {
         try {
             int ticketCount = 0;
             Event event = null;
@@ -46,8 +46,6 @@ public class PDFGeneratorImpl implements PDFGenerator {
             }
             if (event == null) {
                 throw new IllegalArgumentException("Event cannot be null");
-            } else if (ticketPricing == null) {
-                throw new IllegalArgumentException("TicketPricing cannot be null");
             }
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -80,8 +78,6 @@ public class PDFGeneratorImpl implements PDFGenerator {
             cell.addElement(title);
             table.addCell(cell);
             document.add(table);
-
-
 
             table = new PdfPTable(2); // Create 2 columns in table.
             // Set table Width as 100%
@@ -300,7 +296,6 @@ public class PDFGeneratorImpl implements PDFGenerator {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        return null;
     }
 
     @Override
