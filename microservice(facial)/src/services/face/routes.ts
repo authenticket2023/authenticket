@@ -1,5 +1,4 @@
 import express from 'express';
-import jwt from 'express-jwt';
 import * as controller from './controller';
 
 export const faceRouter = express.Router();

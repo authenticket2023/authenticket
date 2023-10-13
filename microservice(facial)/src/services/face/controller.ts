@@ -7,6 +7,8 @@ const faceapi = require("@vladmandic/face-api/dist/face-api.node.js");
 const faceApiService = require("../../services/utils/faceapiService");
 const FaceModel = require('../../models/face');
 const baseDir = path.resolve(__dirname, "../../..");
+const request = require('request-promise-native');
+const FormData = require('form-data');
 
 //Checking the crypto module
 const crypto = require('crypto');
@@ -18,7 +20,6 @@ const encryption_key = process.env.ENCRYPTION_KEY || '';
 //need to convert to Buffer for Initialization Vector(IV) and key
 const bufferIV = Buffer.from(iv, 'hex');
 const bufferKey = Buffer.from(encryption_key, 'hex');
-
 
 //Encrypting Facial Data
 function encrypt(data: any) {
@@ -35,6 +36,32 @@ function decrypt(data: any) {
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
+}
+
+async function verifyToken(token: any, email: any) {
+    const apiUrl = `${process.env.MAIN_PRODUCTION_BACKEND_HOST}/api/auth/token-check`;
+    const formData = new FormData();
+    formData.append('jwtToken', token);
+    formData.append('userEmail', email);
+    const options = {
+        uri: apiUrl,
+        method: 'POST',
+        body: formData,
+        headers: formData.getHeaders(),
+        resolveWithFullResponse: true,
+    };
+    try {
+        const response = await request(options);
+        if (response.statusCode === 200) {
+            return true;
+        } else {
+            console.error('Error: Status code', response.statusCode);
+            return false;
+        }
+    } catch (error: any) {
+        console.error('Error:', error.message);
+        return false;
+    }
 }
 
 async function uploadLabeledImages(index: any, images: any, eventID: any, label: any, sectionID: any, row: any, seat: any): Promise<boolean> {
@@ -232,6 +259,9 @@ export const facialVerification = async (req: any, res: any, next: NextFunction)
 export const checkImage = async (req: any, res: any, next: NextFunction) => {
     try {
         console.log("========= Calling checkImage =========");
+        const test = await verifyToken('eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhdXRoZW50aWNrZXQyMDIzQGdtYWlsLmNvbSIsImlhdCI6MTY5NzIwNTk0NCwiZXhwIjoxNjk3MjkyMzQ0fQ.cAHlHmGUjY6X7dO00Zy3PH3lb-T3U3oOxZciDy3BHnU', 'authenticket2023@gmail.com');
+        console.log(test)
+
         const { image } = req.files;
         const img = await canvas.loadImage(image.data);
         const numOfFaces = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
