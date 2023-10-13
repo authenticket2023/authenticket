@@ -196,10 +196,13 @@ export const VenueDetails: React.FC = (): JSX.Element => {
 
               {/* Tab 3: Ticket Sales */}
               <CustomTabPanel value={value} index={2}>
-                {/* <InitMap venueId = {venueId}></InitMap> */}
-                <Box sx={{backgroundImage: `./CapitolMap.png`, width: 400, height: 400} }>
-                </Box>
-                <img src='./CapitolMap.png'></img>
+                <Typography sx={{fontWeight: "bold"}}>
+                  Address:
+                </Typography>
+                <Typography marginBottom = {2}>
+                  {venueDetails.venueLocation}
+                </Typography>
+                <InitMap venueId = {venueDetails.venueId}></InitMap>
                 </CustomTabPanel>
 
               {/* Tab 4: Organiser Info */}
