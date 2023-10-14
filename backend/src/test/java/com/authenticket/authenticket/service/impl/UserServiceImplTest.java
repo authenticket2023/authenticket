@@ -138,6 +138,23 @@ class UserServiceImplTest {
     }
 
     @Test
+    public void testFindUserById() {
+        // Create a test user and an expected result
+        User testUser = new User();
+        testUser.setUserId(1);
+        Optional<User> expectedResult = Optional.of(testUser);
+
+        // Mock the UserRepository to return the expected result when called
+        when(userRepository.findUserByUserId(1)).thenReturn(expectedResult);
+
+        // Call the findUserById method
+        Optional<User> result = underTest.findUserById(1);
+
+        // Assert that the result is as expected
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
     void testUpdateUserWhenUserExists() {
         // Arrange
         Integer userId = 99;
