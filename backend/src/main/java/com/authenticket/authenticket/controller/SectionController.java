@@ -1,6 +1,6 @@
 package com.authenticket.authenticket.controller;
 
-
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
@@ -11,15 +11,11 @@ import com.authenticket.authenticket.repository.TicketCategoryRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.SectionServiceImpl;
-import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
@@ -47,8 +43,7 @@ public class SectionController extends Utility {
                              SectionRepository sectionRepository,
                              VenueRepository venueRepository,
                              TicketCategoryRepository ticketCategoryRepository,
-                             EventRepository eventRepository,
-                             TicketServiceImpl ticketService) {
+                             EventRepository eventRepository) {
         this.sectionService = sectionService;
         this.sectionRepository = sectionRepository;
         this.venueRepository = venueRepository;
@@ -62,15 +57,12 @@ public class SectionController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveSection(@RequestParam(value = "svgFile", required = false) MultipartFile svgFile,
-                                         @RequestParam(value = "sectionId") String sectionId,
-                                         @RequestParam(value = "venueId") Integer venueId,
-                                         @RequestParam(value = "catId") Integer catId,
-                                         @RequestParam(value = "noOfRows") Integer noOfRows,
-                                         @RequestParam(value = "noOfSeatsPerRow") Integer noOfSeatsPerRow
+    public ResponseEntity<GeneralApiResponse<Object>> saveSection(@RequestParam(value = "sectionId") String sectionId,
+                                                                  @RequestParam(value = "venueId") Integer venueId,
+                                                                  @RequestParam(value = "catId") Integer catId,
+                                                                  @RequestParam(value = "noOfRows") Integer noOfRows,
+                                                                  @RequestParam(value = "noOfSeatsPerRow") Integer noOfSeatsPerRow
     ) {
-
-
         Venue venue = venueRepository.findById(venueId).orElse(null);
         TicketCategory ticketCategory = ticketCategoryRepository.findById(catId).orElse(null);
         if (venue == null) {
@@ -90,7 +82,7 @@ public class SectionController extends Utility {
     }
 
     @PostMapping("/ticket-details")
-    public ResponseEntity<?> findSectionTicketDetails(
+    public ResponseEntity<GeneralApiResponse<Object>> findTicketDetailsBySection(
             @RequestParam(value = "eventId") Integer eventId,
             @RequestParam(value = "sectionId") String sectionId) {
 
@@ -112,7 +104,7 @@ public class SectionController extends Utility {
     }
 
     @PostMapping("/seat-matrix")
-    public ResponseEntity<?> seatMatrix(
+    public ResponseEntity<GeneralApiResponse<Object>> seatMatrix(
             @RequestParam(value = "eventId") Integer eventId,
                                             @RequestParam(value = "sectionId") String sectionId) {
 

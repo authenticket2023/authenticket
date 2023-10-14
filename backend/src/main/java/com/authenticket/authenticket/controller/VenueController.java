@@ -31,7 +31,7 @@ import java.util.Optional;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping(path = "/api/venue")
+@RequestMapping(path = "/api/v2/venue")
 
 public class VenueController extends Utility {
     private final VenueServiceImpl venueService;
@@ -68,7 +68,7 @@ public class VenueController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveVenue(@RequestParam(value = "venueName") String venueName,
+    public ResponseEntity<GeneralApiResponse<Object>> saveVenue(@RequestParam(value = "venueName") String venueName,
                                         @RequestParam(value = "venueLocation") String venueLocation,
                                        @RequestParam(value = "venueDescription") String venueDescription,
                                         @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
@@ -108,10 +108,10 @@ public class VenueController extends Utility {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction: " + e.getMessage()));
         }
 
-        return ResponseEntity.ok(savedVenue);
+        return ResponseEntity.ok(generateApiResponse(savedVenue, "Venue created successfully"));
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateVenue(@RequestParam(value = "venueId") Integer venueId,
                                          @RequestParam(value = "venueName") String venueName,
                                          @RequestParam(value = "venueLocation") String venueLocation,
@@ -135,11 +135,5 @@ public class VenueController extends Utility {
             }
         }
         return ResponseEntity.ok(generateApiResponse(updatedVenue, "Venue updated successfully."));
-    }
-
-    @DeleteMapping("/{venueId}")
-    public String removeVenue(@PathVariable("venueId") Integer venueId) {
-        venueService.removeVenue(venueId);
-        return "Venue removed successfully.";
     }
 }

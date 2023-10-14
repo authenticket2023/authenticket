@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.controller;
 
 
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.model.EventType;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventTypeServiceImpl;
@@ -22,7 +23,7 @@ import java.util.List;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/event-type")
+@RequestMapping("/api/v2/event-type")
 public class EventTypeController extends Utility {
 
     private final EventTypeServiceImpl eventTypeService;
@@ -38,19 +39,19 @@ public class EventTypeController extends Utility {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAllEvents() {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEventTypes() {
         List<EventType> eventTypeList = eventTypeService.findAllEventType();
-        if (eventTypeList.isEmpty() || eventTypeList ==null){
+        if (eventTypeList == null || eventTypeList.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body( generateApiResponse(null, "Event Types Not Found"));
         }
-        return ResponseEntity.ok( generateApiResponse(eventTypeList, "Event Types Returned Successfully"));
+        return ResponseEntity.ok(generateApiResponse(eventTypeList, "Event Types Returned Successfully"));
     }
 
     @PostMapping
-    public ResponseEntity<?> saveEventType(@RequestParam("typeName") String typeName) {
+    public ResponseEntity<GeneralApiResponse<Object>> saveEventType(@RequestParam("typeName") String typeName) {
 
         EventType eventType = new EventType(null, typeName);
 
-        return ResponseEntity.ok( generateApiResponse(eventTypeService.saveEventType(eventType), "Event Type Created Successfully"));
+        return ResponseEntity.ok(generateApiResponse(eventTypeService.saveEventType(eventType), "Event Type Created Successfully"));
     }
 }

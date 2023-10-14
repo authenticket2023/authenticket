@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/order")
+@RequestMapping("/api/v2/order")
 public class OrderController extends Utility {
     public final OrderServiceImpl orderService;
     private final OrderRepository orderRepository;
@@ -74,7 +74,7 @@ public class OrderController extends Utility {
         return "test successful";
     }
 
-    @GetMapping("/testPDF")
+    @GetMapping("/test-pdf")
     public ResponseEntity<?> testPDF() {
         // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
         try {
@@ -94,7 +94,7 @@ public class OrderController extends Utility {
         }
     }
 
-    @GetMapping("/testPDF2")
+    @GetMapping("/test-pdf2")
     public ResponseEntity<?> testPDF2() {
         // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
         try {
@@ -250,18 +250,7 @@ public class OrderController extends Utility {
         throw new NonExistentException("Order", orderId);
     }
 
-    @PutMapping("/add-ticket")
-    public ResponseEntity<GeneralApiResponse<Object>> addTicketToOrder(@RequestParam(value = "ticketId") Integer ticketId,
-                                                               @RequestParam(value = "orderId") Integer orderId) {
-        return ResponseEntity.ok(generateApiResponse(orderService.addTicketToOrder(ticketId, orderId), "Ticket added successfully"));
-    }
-
-    @PutMapping("/remove-ticket")
-    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@RequestParam(value = "ticketId") Integer ticketId,
-                                                                  @RequestParam(value = "orderId") Integer orderId) {
-        return ResponseEntity.ok(generateApiResponse(orderService.removeTicketInOrder(ticketId, orderId), "Ticket added successfully"));
-    }
-
+    //remove ticket from order and database
     @DeleteMapping("/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
@@ -280,11 +269,6 @@ public class OrderController extends Utility {
 
         
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
-
-//         HttpHeaders headers = new HttpHeaders();
-//         headers.add("Location", "http://localhost:3000/cancel/"+orderId);
-//         return ResponseEntity.status(200).headers(headers).body(generateApiResponse(null, "Order cancelled successfully"));
-
     }
 
     @GetMapping("/complete/{orderId}")
@@ -296,11 +280,5 @@ public class OrderController extends Utility {
         orderService.completeOrder(orderRepository.findById(orderId).get());
 
         return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
-
-//         Order completedOrder = orderService.completeOrder(orderRepository.findById(orderId).get());
-//         HttpHeaders headers = new HttpHeaders();
-//         headers.add("Location", "http://localhost:3000/success/"+orderId);
-//         return ResponseEntity.status(200).headers(headers).body(generateApiResponse(completedOrder, "Order completed successfully"));
-
     }
 }

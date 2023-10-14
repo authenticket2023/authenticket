@@ -6,7 +6,6 @@ import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.repository.AdminRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.model.EventOrganiser;
@@ -21,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
@@ -34,7 +32,7 @@ import java.util.stream.Collectors;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/event-organiser")
+@RequestMapping("/api/v2/event-organiser")
 public class EventOrganiserController extends Utility {
     private final EventOrganiserServiceImpl eventOrganiserService;
 
@@ -42,17 +40,13 @@ public class EventOrganiserController extends Utility {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final AdminRepository adminRepository;
-
     @Autowired
     public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService,
                                     AmazonS3Service amazonS3Service,
-                                    PasswordEncoder passwordEncoder,
-                                    AdminRepository adminRepository) {
+                                    PasswordEncoder passwordEncoder) {
         this.eventOrganiserService = eventOrganiserService;
         this.amazonS3Service = amazonS3Service;
         this.passwordEncoder = passwordEncoder;
-        this.adminRepository = adminRepository;
     }
 
     @GetMapping("/test")
@@ -91,31 +85,6 @@ public class EventOrganiserController extends Utility {
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
 
-    }
-
-//    @GetMapping("/events/findMappedOrganisers")
-//    public ResponseEntity<GeneralApiResponse> findMappedOrganisers() {
-//        List<ArtistEvent> artistEventList = artistEventRepository.findAll();
-//
-//        List<Artist> artists = artistRepository.findAll();
-//
-//        if (!events.isEmpty()) {
-//            return ResponseEntity.ok(generateApiResponse(events, String.format("All events hosted by organiser %d retrieved successfully", organiserId)));
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
-//
-//    }
-
-    @PostMapping
-    public ResponseEntity<GeneralApiResponse<Object>> saveEventOrganiser(@RequestParam("name") String name,
-                                       @RequestParam("email") String email,
-                                       @RequestParam("description") String description) {
-
-            //save eventOrganiser first without image name to get the eventOrganiser id
-            EventOrganiser newEventOrganiser = new EventOrganiser(null, name, email, passwordEncoder.encode(generateRandomPassword()), description,null,false,null,"pending",null,null);
-            EventOrganiser savedEventOrganiser = eventOrganiserService.saveEventOrganiser(newEventOrganiser);
-
-            return ResponseEntity.ok(generateApiResponse(savedEventOrganiser,"Event organiser created successfully"));
     }
 
     @PutMapping
@@ -168,11 +137,11 @@ public class EventOrganiserController extends Utility {
 
 
     @PutMapping("/delete")
-    public ResponseEntity<GeneralApiResponse> deleteEventOrganiser(@RequestParam("organiserId") String organiserIdString) {
+    public ResponseEntity<GeneralApiResponse<Object>> deleteEventOrganiser(@RequestParam("organiserId") String organiserIdString) {
         try {
             List<Integer> organiserIdList = Arrays.stream(organiserIdString.split(","))
                     .map(Integer::parseInt)
-                    .collect(Collectors.toList());
+                    .toList();
 
             //check if all events exist first
             for(Integer organiserId: organiserIdList){

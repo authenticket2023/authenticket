@@ -32,7 +32,7 @@ import java.util.Optional;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping(path = "/api/user")
+@RequestMapping(path = "/api/v2/user")
 public class UserController extends Utility {
     private final UserRepository userRepository;
 
@@ -67,7 +67,7 @@ public class UserController extends Utility {
         }
     }
 
-    @GetMapping("/interestedEvents")
+    @GetMapping("/interested-events")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsOfInterestToUser(@RequestParam("userId") Integer userId) {
         Optional<User> userOptional = userService.findUserById(userId);
         if (userOptional.isEmpty()) {
@@ -87,7 +87,7 @@ public class UserController extends Utility {
                 .orElseGet(() -> ResponseEntity.status(400).body(generateApiResponse(null, "User does not exist")));
     }
 
-    @PutMapping("/updateUserProfile")
+    @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateUser(@RequestBody User newUser) {
         if(userRepository.findByEmail(newUser.getEmail()).isPresent()){
             UserDisplayDto updatedUser = userService.updateUser(newUser);
@@ -97,14 +97,14 @@ public class UserController extends Utility {
         return ResponseEntity.status(404).body(generateApiResponse(null, "User does not exist"));
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/delete/{userId}")
     public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("userId") Integer userId) {
             userService.deleteUser(userId);
             return ResponseEntity.ok(generateApiResponse(null, String.format("User %d Deleted Successfully", userId)));
 
     }
 
-    @PutMapping("/updateUserImage")
+    @PutMapping("/image")
     public ResponseEntity<GeneralApiResponse<Object>> updateProfileImage(@RequestParam("profileImage")MultipartFile profileImage,
                                              @RequestParam("imageName") String imageName,
                                              @RequestParam("userId") Integer userId) {

@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(
@@ -256,7 +255,7 @@ public class EventController extends Utility {
         //artistIdString to artistId List
         List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
                 .map(Integer::parseInt)
-                .collect(Collectors.toList());
+                .toList();
         //check that all artist is valid first
         for (Integer artistId : artistIdList) {
             if (artistRepository.findById(artistId).isEmpty()) {
@@ -323,7 +322,7 @@ public class EventController extends Utility {
         //adding ticket pricing for each cat
         List<Double> ticketPrices = Arrays.stream(ticketPricesString.split(","))
                 .map(Double::parseDouble)
-                .collect(Collectors.toList());
+                .toList();
 
         if (ticketPrices.size() != 5) {
             throw new IllegalArgumentException("Ticket Prices should have 5 values");
@@ -403,7 +402,6 @@ public class EventController extends Utility {
             try {
                 System.out.println(eventImageFile.getName());
                 amazonS3Service.uploadFile(eventImageFile, event.getEventImage(), "event_images");
-//                amazonS3Service.deleteFile()
                 // delete event from db if got error saving image
             } catch (AmazonS3Exception e) {
                 String errorCode = e.getErrorCode();
@@ -424,7 +422,7 @@ public class EventController extends Utility {
         try {
             List<Integer> eventIdList = Arrays.stream(eventIdString.split(","))
                     .map(Integer::parseInt)
-                    .collect(Collectors.toList());
+                    .toList();
 
             //check if all events exist first
             for (Integer eventId : eventIdList) {
@@ -445,31 +443,20 @@ public class EventController extends Utility {
         }
     }
 
-
-    //response not handled yet
-//    @DeleteMapping("/event/{eventId}")
-//    public String removeEvent(@PathVariable("eventId") Integer eventId) {
-//        return eventService.removeEvent(eventId);
-//    }
-
-    //  @PutMapping("/event/addArtistToEvent")
-//    public ResponseEntity<GeneralApiResponse> addArtistToEvent(
-//            @RequestParam("artistId") Integer artistId,
     @PutMapping("/event/update-artist")
-    public ResponseEntity<GeneralApiResponse> updateEventArtist(@RequestParam("artistIdString") String artistIdString,
+    public ResponseEntity<GeneralApiResponse<Object>> updateEventArtist(@RequestParam("artistIdString") String artistIdString,
                                                                 @RequestParam("eventId") Integer eventId) {
 
 
         List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
                 .map(Integer::parseInt)
-                .collect(Collectors.toList());
+                .toList();
 
         //check that all artist is valid first
         for (Integer artistId : artistIdList) {
             if (artistRepository.findById(artistId).isEmpty()) {
                 throw new NonExistentException(String.format("Artist with id %d does not exist, please try again", artistId));
             }
-            ;
         }
 
         eventService.removeAllArtistFromEvent(eventId);
@@ -479,17 +466,6 @@ public class EventController extends Utility {
         }
 
         return ResponseEntity.ok(generateApiResponse(eventService.findArtistForEvent(eventId), String.format("Artist successfully assigned to event %d", eventId)));
-
-//        try {
-//            EventDisplayDto artist = eventService.addArtistToEvent(artistId, eventId);
-//            if (artist != null) {
-//                return ResponseEntity.ok(generateApiResponse(artist, "Artist successfully assigned to event"));
-//            } else {
-//                return ResponseEntity.status(401).body(generateApiResponse(null, "Artist failed to assigned to event"));
-//            }
-//        } catch (DataIntegrityViolationException | StackOverflowError e) {
-//            return ResponseEntity.status(400).body(generateApiResponse(null, "Artist already linked to stated event,or Event and Artist does not exists"));
-//        }
     }
 
     @PostMapping("/event/featured")
@@ -530,7 +506,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(sectionDetailsForEvent, String.format("Success returning all section ticket details for event %d", eventId)));
     }
 
-    @GetMapping("/event/available-tickets")
+    @GetMapping("/event/available")
     public ResponseEntity<GeneralApiResponse<Object>> eventHasTickets(@RequestParam("eventId") Integer eventId) {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null) {

@@ -21,7 +21,7 @@ import java.util.Optional;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/ticket-category")
+@RequestMapping("/api/v2/ticket-category")
 public class TicketCategoryController {
     private final TicketCategoryServiceImpl ticketCategoryService;
 
@@ -43,34 +43,24 @@ public class TicketCategoryController {
     @GetMapping("/{categoryId}")
     public Optional<TicketCategoryDisplayDto> findTicketCategoryById(@PathVariable("categoryId") Integer categoryId) {
         return ticketCategoryService.findTicketCategoryById(categoryId);
-//        if(ticketCategoryDisplayDtoOptional.isPresent()){
-//            return ResponseEntity.ok(ticketCategoryDisplayDtoOptional.get());
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ticket Category Not Found");
     }
 
     @PostMapping
-    public ResponseEntity<?> saveTicketCategory(@RequestParam(value = "name") String name) {
+    public ResponseEntity<TicketCategory> saveTicketCategory(@RequestParam(value = "name") String name) {
         return ResponseEntity.ok(ticketCategoryService.saveTicketCategory(name));
     }
 
     @PutMapping
-    public ResponseEntity<?> updateTicketCategory(@RequestParam(value = "categoryId") Integer categoryId,
+    public ResponseEntity<TicketCategory> updateTicketCategory(@RequestParam(value = "categoryId") Integer categoryId,
                                                   @RequestParam(value = "name") String name) {
         TicketCategory ticketCategory = ticketCategoryService.updateTicketCategory(categoryId, name);
 
         return ResponseEntity.ok(ticketCategory);
     }
 
-    @PutMapping("/{categoryId}")
-    public String deleteTicket(@PathVariable("categoryId") Integer categoryId) {
-        ticketCategoryService.deleteTicket(categoryId);
-        return "Ticket Category deleted successfully.";
-    }
-
-    @DeleteMapping("/{categoryId}")
-    public String removeTicketCategory(@PathVariable("categoryId") Integer categoryId) {
-        ticketCategoryService.removeTicketCategory(categoryId);
-        return "Ticket Category removed successfully.";
-    }
+//    @PutMapping("/{categoryId}")
+//    public String deleteTicket(@PathVariable("categoryId") Integer categoryId) {
+//        ticketCategoryService.deleteTicket(categoryId);
+//        return "Ticket Category deleted successfully.";
+//    }
 }
