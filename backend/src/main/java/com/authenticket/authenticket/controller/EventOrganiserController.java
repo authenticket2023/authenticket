@@ -42,17 +42,13 @@ public class EventOrganiserController extends Utility {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final AdminRepository adminRepository;
-
     @Autowired
     public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService,
                                     AmazonS3Service amazonS3Service,
-                                    PasswordEncoder passwordEncoder,
-                                    AdminRepository adminRepository) {
+                                    PasswordEncoder passwordEncoder) {
         this.eventOrganiserService = eventOrganiserService;
         this.amazonS3Service = amazonS3Service;
         this.passwordEncoder = passwordEncoder;
-        this.adminRepository = adminRepository;
     }
 
     @GetMapping("/test")

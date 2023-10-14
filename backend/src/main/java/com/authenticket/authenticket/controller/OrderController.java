@@ -50,29 +50,23 @@ public class OrderController extends Utility {
     public final OrderServiceImpl orderService;
     private final OrderRepository orderRepository;
     private final OrderDtoMapper orderDtoMapper;
-    private final UserRepository userRepository;
     private final TicketServiceImpl ticketService;
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
-    private final JwtService jwtService;
 
     @Autowired
     public OrderController(OrderServiceImpl orderService,
                            OrderRepository orderRepository,
                            OrderDtoMapper orderDtoMapper,
-                           UserRepository userRepository,
                            TicketServiceImpl ticketService,
                            TicketRepository ticketRepository,
-                           EventRepository eventRepository,
-                           JwtService jwtService) {
+                           EventRepository eventRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
-        this.userRepository = userRepository;
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
         this.eventRepository = eventRepository;
-        this.jwtService = jwtService;
     }
 
     @GetMapping("/test")
@@ -169,15 +163,11 @@ public class OrderController extends Utility {
 
     @PostMapping
     public ResponseEntity<GeneralApiResponse<Object>> saveOrder(@RequestParam(value = "eventId") Integer eventId,
-                                                        @RequestParam(value = "sectionId") String sectionId,
-                                                        @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase,
-                                                        @RequestParam(value = "ticketHolderString", required = false) String ticketHolderString,
+                                                                @RequestParam(value = "sectionId") String sectionId,
+                                                                @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase,
+                                                                @RequestParam(value = "ticketHolderString", required = false) String ticketHolderString,
                                                                 @NonNull HttpServletRequest request) {
-        Optional<User> userOptional = retrieveUserOptionalFromRequest(request);
-        if (userOptional.isEmpty()) {
-            throw new NonExistentException("User not found from token");
-        }
-
+        User purchaser = retrieveUserFromRequest(request);
         checkIfEventExistsAndIsApprovedAndNotDeleted(eventId);
 
         Event event = eventRepository.findById(eventId).orElse(null);
@@ -202,60 +192,55 @@ public class OrderController extends Utility {
             }
         }
 
-
-        if (userOptional.isPresent()) {
-            User purchaser = userOptional.get();
-            List<Ticket> ticketList = ticketService.allocateSeats(eventId, sectionId, ticketsToPurchase);
-            Double orderAmount = 0.0;
-            for (Ticket ticket : ticketList) {
-                orderAmount += ticket.getTicketPricing().getPrice();
-            }
-            Set<Ticket> ticketSet = new HashSet<>(ticketList);
-
-            Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser,event,ticketSet);
-
-            Order savedOrder = orderService.saveOrder(newOrder);
-
-            List<Ticket> updatedTicketList = ticketList.stream()
-                    .peek(ticket -> ticket.setOrder(savedOrder))
-                    .collect(Collectors.toList());
-
-
-            //check if event is enhanced and if ticket holder provided is == ticketsToPurchase
-            if (event != null && event.getIsEnhanced()) {
-
-                for (int i = 0; i < ticketHolderList.size(); i++) {
-                    String ticketHolder = ticketHolderList.get(i);
-                    Ticket ticket = updatedTicketList.get(i);
-                    ticket.setTicketHolder(ticketHolder);
-
-                }
-            }
-            ticketRepository.saveAll(updatedTicketList);
-            OrderDisplayDto savedOrderDto = orderDtoMapper.apply(orderRepository.findById(savedOrder.getOrderId()).get());
-
-            return ResponseEntity.ok(generateApiResponse(savedOrderDto, "Order successfully recorded"));
+        List<Ticket> ticketList = ticketService.allocateSeats(eventId, sectionId, ticketsToPurchase);
+        Double orderAmount = 0.0;
+        for (Ticket ticket : ticketList) {
+            orderAmount += ticket.getTicketPricing().getPrice();
         }
-        throw new NonExistentException("User does not exist");
+        Set<Ticket> ticketSet = new HashSet<>(ticketList);
+
+        Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser, event, ticketSet);
+
+        Order savedOrder = orderService.saveOrder(newOrder);
+
+        List<Ticket> updatedTicketList = ticketList.stream()
+                .peek(ticket -> ticket.setOrder(savedOrder))
+                .collect(Collectors.toList());
+
+
+        //check if event is enhanced and if ticket holder provided is == ticketsToPurchase
+        if (event != null && event.getIsEnhanced()) {
+
+            for (int i = 0; i < ticketHolderList.size(); i++) {
+                String ticketHolder = ticketHolderList.get(i);
+                Ticket ticket = updatedTicketList.get(i);
+                ticket.setTicketHolder(ticketHolder);
+
+            }
+        }
+        ticketRepository.saveAll(updatedTicketList);
+        OrderDisplayDto savedOrderDto = orderDtoMapper.apply(orderRepository.findById(savedOrder.getOrderId()).get());
+
+        return ResponseEntity.ok(generateApiResponse(savedOrderDto, "Order successfully recorded"));
     }
 
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateOrder(@RequestParam(value = "orderId") Integer orderId,
-                                                          @RequestParam(value = "orderAmount") Double orderAmount,
-                                                          @RequestParam(value = "orderStatus") String orderStatus,
+                                                                  @RequestParam(value = "orderAmount") Double orderAmount,
+                                                                  @RequestParam(value = "orderStatus") String orderStatus,
                                                                   @NonNull HttpServletRequest request) {
-        Optional<User> userOptional = retrieveUserOptionalFromRequest(request);
-        if (userOptional.isEmpty()) {
-            throw new NonExistentException("User not found from token");
-        }
+        User purchaser = retrieveUserFromRequest(request);
 
         Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if (orderOptional.isEmpty()){
+        if (orderOptional.isEmpty()) {
             throw new NonExistentException("Order", orderId);
         }
 
         Order existingOrder = orderOptional.get();
-        User purchaser = userOptional.get();
+        if (existingOrder.getUser() != purchaser) {
+            throw new IllegalArgumentException("Unable to update other user's order");
+        }
+
         OrderUpdateDto newOrder = new OrderUpdateDto(existingOrder.getOrderId(), orderAmount, existingOrder.getPurchaseDate(), orderStatus, purchaser);
         orderDtoMapper.update(newOrder, existingOrder);
         orderService.saveOrder(existingOrder);
@@ -264,13 +249,13 @@ public class OrderController extends Utility {
 
     @PutMapping("/add-ticket")
     public ResponseEntity<GeneralApiResponse<Object>> addTicketToOrder(@RequestParam(value = "ticketId") Integer ticketId,
-                                                               @RequestParam(value = "orderId") Integer orderId) {
+                                                                       @RequestParam(value = "orderId") Integer orderId) {
         return ResponseEntity.ok(generateApiResponse(orderService.addTicketToOrder(ticketId, orderId), "Ticket added successfully"));
     }
 
     @PutMapping("/remove-ticket")
     public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@RequestParam(value = "ticketId") Integer ticketId,
-                                                                  @RequestParam(value = "orderId") Integer orderId) {
+                                                                          @RequestParam(value = "orderId") Integer orderId) {
         return ResponseEntity.ok(generateApiResponse(orderService.removeTicketInOrder(ticketId, orderId), "Ticket added successfully"));
     }
 
@@ -283,20 +268,25 @@ public class OrderController extends Utility {
         return ResponseEntity.ok(generateApiResponse(null, "Order removed successfully"));
     }
 
-    @GetMapping("/cancel/{orderId}")
+    @PutMapping("/cancel/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> cancelOrder(@PathVariable(value = "orderId") Integer orderId,
                                                                   @NonNull HttpServletRequest request) {
-        Optional<User> userOptional = retrieveUserOptionalFromRequest(request);
-        if (userOptional.isEmpty()) {
-            throw new NonExistentException("User not found from token");
-        }
+        User user = retrieveUserFromRequest(request);
 
-        if (orderRepository.findById(orderId).isEmpty()) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-        orderService.cancelOrder(orderRepository.findById(orderId).get());
+        if (user != null) {
+            Order order = orderOptional.get();
+            if (order.getUser() != user) {
+               throw new IllegalArgumentException("Unable to cancel other user's order");
+            }
 
-        
+            orderService.cancelOrder(order);
+        }
+
+
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
 
 //         HttpHeaders headers = new HttpHeaders();
@@ -308,15 +298,13 @@ public class OrderController extends Utility {
     @GetMapping("/complete/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> complete(@PathVariable(value = "orderId") Integer orderId,
                                                                @NonNull HttpServletRequest request) {
-        Optional<User> userOptional = retrieveUserOptionalFromRequest(request);
-        if (userOptional.isEmpty()) {
-            throw new NonExistentException("User not found from token");
-        }
+        User user = retrieveUserFromRequest(request);
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-
-        orderService.completeOrder(orderRepository.findById(orderId).get());
+        if (user != null) {
+            orderService.completeOrder(orderRepository.findById(orderId).get());
+        }
 
         return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
 

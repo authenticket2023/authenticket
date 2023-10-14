@@ -13,6 +13,8 @@ import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.TicketService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -48,8 +51,6 @@ public class EventController extends Utility {
     private final EventRepository eventRepository;
 
     private final UserRepository userRepository;
-
-    private final EventOrganiserRepository eventOrganiserRepository;
 
     private final AdminRepository adminRepository;
 
@@ -84,7 +85,6 @@ public class EventController extends Utility {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
-        this.eventOrganiserRepository = eventOrganiserRepository;
         this.adminRepository = adminRepository;
         this.artistRepository = artistRepository;
         this.venueRepository = venueRepository;
@@ -190,23 +190,27 @@ public class EventController extends Utility {
 
     @GetMapping("/public/event/by-venue/{venueId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
-        List<EventHomeDto> eventList = eventService.findEventsByVenue( venueId, pageable);
+        List<EventHomeDto> eventList = eventService.findEventsByVenue(venueId, pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Events for venue successfully returned."));
 
-    }    @GetMapping("/public/event/by-venue/past/{venueId}")
+    }
+
+    @GetMapping("/public/event/by-venue/past/{venueId}")
     public ResponseEntity<GeneralApiResponse<Object>> findPastEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
-        List<EventHomeDto> eventList = eventService.findPastEventsByVenue( venueId, pageable);
+        List<EventHomeDto> eventList = eventService.findPastEventsByVenue(venueId, pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Past events for venue successfully returned."));
 
-    }    @GetMapping("/public/event/by-venue/upcoming/{venueId}")
+    }
+
+    @GetMapping("/public/event/by-venue/upcoming/{venueId}")
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
-        List<EventHomeDto> eventList = eventService.findEventsByVenue( venueId, pageable);
+        List<EventHomeDto> eventList = eventService.findEventsByVenue(venueId, pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
         }
@@ -237,7 +241,7 @@ public class EventController extends Utility {
                                                                 @RequestParam("eventDate") LocalDateTime eventDate,
                                                                 @RequestParam("otherEventInfo") String otherEventInfo,
                                                                 @RequestParam("ticketSaleDate") LocalDateTime ticketSaleDate,
-                                                                @RequestParam("organiserId") Integer organiserId,
+//                                                                @RequestParam("organiserId") Integer organiserId,
                                                                 @RequestParam("venueId") Integer venueId,
                                                                 @RequestParam("typeId") Integer typeId,
                                                                 //comma separated string
@@ -245,11 +249,12 @@ public class EventController extends Utility {
                                                                 //comma separated string
                                                                 @RequestParam("ticketPrices") String ticketPricesString,
                                                                 @RequestParam("hasPresale") Boolean hasPresale,
-                                                                @RequestParam("isEnhanced") Boolean isEnhanced) {
+                                                                @RequestParam("isEnhanced") Boolean isEnhanced,
+                                                                @NonNull HttpServletRequest request) {
         String imageName;
         Event savedEvent;
         //Getting the Respective Objects for Organiser, Venue and Type and checking if it exists
-        EventOrganiser eventOrganiser = eventOrganiserRepository.findById(organiserId).orElse(null);
+        EventOrganiser eventOrganiser = retrieveOrganiserFromRequest(request);
         Venue venue = venueRepository.findById(venueId).orElse(null);
         EventType eventType = eventTypeRepository.findById(typeId).orElse(null);
 
@@ -276,7 +281,7 @@ public class EventController extends Utility {
         try {
             //save event first without image name to get the event id
             Event newEvent = new Event(null, eventName, eventDescription, eventDate, otherEventInfo, null,
-                    ticketSaleDate, null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>(),new HashSet<Order>());
+                    ticketSaleDate, null, "pending", null, isEnhanced, hasPresale, false, eventOrganiser, venue, null, eventType, new HashSet<TicketPricing>(), new HashSet<Order>());
             savedEvent = eventService.saveEvent(newEvent);
 
             //generating the file name with the extension
@@ -360,7 +365,13 @@ public class EventController extends Utility {
                                                                   @RequestParam(value = "ticketSaleDate", required = false) LocalDateTime ticketSaleDate,
                                                                   @RequestParam(value = "venueId", required = false) Integer venueId,
                                                                   @RequestParam(value = "typeId", required = false) Integer typeId,
-                                                                  @RequestParam(value = "ticketPrices", required = false) String ticketPricesString) {
+                                                                  @RequestParam(value = "ticketPrices", required = false) String ticketPricesString,
+                                                                  @NonNull HttpServletRequest request) {
+        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+        if (!eventRepository.existsEventByEventIdAndOrganiser(eventId, organiser)) {
+            throw new IllegalArgumentException("Organiser is not allowed to update events created by other organisers.");
+        }
+
         Venue venue = null;
         if (venueId != null) {
             Optional<Venue> venueOptional = venueRepository.findById(venueId);
@@ -420,7 +431,16 @@ public class EventController extends Utility {
     }
 
     @PutMapping("/event/delete")
-    public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@RequestParam("eventId") String eventIdString) {
+    public ResponseEntity<GeneralApiResponse<Object>> deleteEvent(@RequestParam("eventId") String eventIdString,
+                                                                  @NonNull HttpServletRequest request) {
+        // Check if deleteEvent is called by admin or event Organiser
+        boolean isAdmin = isAdminRequest(request);
+        EventOrganiser organiser = null;
+
+        if (!isAdmin) {
+            organiser = retrieveOrganiserFromRequest(request);
+        }
+
         try {
             List<Integer> eventIdList = Arrays.stream(eventIdString.split(","))
                     .map(Integer::parseInt)
@@ -430,6 +450,9 @@ public class EventController extends Utility {
             for (Integer eventId : eventIdList) {
                 if (eventRepository.findById(eventId).isEmpty()) {
                     throw new NonExistentException(String.format("Event %d does not exist, deletion halted", eventId));
+                }
+                if (!isAdmin && !eventRepository.existsEventByEventIdAndOrganiser(eventId, organiser)) {
+                    throw new IllegalArgumentException("No such event listed under organiser, deletion halted");
                 }
             }
 
@@ -496,9 +519,10 @@ public class EventController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> saveFeaturedEvents(@RequestParam("eventId") Integer eventId,
                                                                          @RequestParam("startDate") LocalDateTime startDate,
                                                                          @RequestParam("endDate") LocalDateTime endDate,
-                                                                         @RequestParam("addedBy") Integer adminId) {
+//                                                                         @RequestParam("addedBy") Integer adminId,
+                                                                         @NonNull HttpServletRequest request) {
         Event event = eventRepository.findById(eventId).orElse(null);
-        Admin admin = adminRepository.findById(adminId).orElse(null);
+        Admin admin = retrieveAdminFromRequest(request);
 
         if (event == null) {
             throw new NonExistentException(String.format("No event of id %d found", eventId));
@@ -541,8 +565,9 @@ public class EventController extends Utility {
     }
 
     @PutMapping("/event/indicateInterest")
-    public ResponseEntity<GeneralApiResponse<Object>> userIndicateInterest(@RequestParam("userId") Integer userId,
-                                                                           @RequestParam("eventId") Integer eventId) {
+    public ResponseEntity<GeneralApiResponse<Object>> userIndicateInterest(//@RequestParam("userId") Integer userId,
+                                                                           @RequestParam("eventId") Integer eventId,
+                                                                           @NonNull HttpServletRequest request) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
             throw new NonExistentException("Event", eventId);
@@ -553,12 +578,9 @@ public class EventController extends Utility {
             throw new ApiRequestException("The presale interest indication period for event '" + event.getEventName() + "' has ended.");
         }
 
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NonExistentException("User", userId);
-        }
+        User user = retrieveUserFromRequest(request);
 
-        presaleService.setPresaleInterest(userOptional.get(), event, false, false);
+        presaleService.setPresaleInterest(user, event, false, false);
         return ResponseEntity.status(201).body(generateApiResponse(null, "Presale interest recorded"));
     }
 
