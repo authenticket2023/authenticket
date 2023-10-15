@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
 import UpdateArtist from './updateArtist';
+import CreateArtist from './createArtist';
 
 export function AllArtist() {
 
@@ -134,13 +135,19 @@ export function AllArtist() {
             });
     }
 
-    //For update  event page
+    //For update  artist page
     const [updateOpen, setUpdateOpen] = React.useState(false);
     const [updateArtistID, setUpdateArtistID] = React.useState('');
     const handleRowClick = (rowData: any, rowMeta: any) => {
         setUpdateArtistID(rowData[0]);
         setUpdateOpen(true);
     };
+
+    //For create artist page
+    const [createOpen, setCreateOpen] = React.useState(false);
+    const handleCreateButton = () => {
+        setCreateOpen(true);
+    }
 
     // for deletion
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -215,6 +222,18 @@ export function AllArtist() {
     };
 
     return (
+        <Grid>
+            <Grid sx={{display:'flex', justifyContent:'right', marginBottom:2, marginRight:5}}>
+            <Button variant="contained" sx={{backgroundColor:'#FF5C35'}} onClick={handleCreateButton}>
+                Add Artist
+            </Button>
+            </Grid>
+
+            {/* createArtist data popup */}
+            {createOpen ?
+                <CreateArtist open={setCreateOpen} setReload={setReload} setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
+                : null}
+
         <Box 
             sx={{
             justifyContent: 'center',
@@ -251,6 +270,7 @@ export function AllArtist() {
             {updateOpen ?
                 <UpdateArtist open={setUpdateOpen} setReload={setReload} setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} artistID={updateArtistID} />
                 : null}
+
             <Dialog open={openConfirmDialog} onClose={handleCloseConfirmDialog}>
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
@@ -271,5 +291,6 @@ export function AllArtist() {
                 </Alert>
             </Snackbar>
         </Box>
+        </Grid>
     )
 }
