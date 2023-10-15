@@ -277,15 +277,13 @@ public class OrderController extends Utility {
         if (orderOptional.isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-        if (user != null) {
-            Order order = orderOptional.get();
-            if (order.getUser() != user) {
-               throw new IllegalArgumentException("Unable to cancel other user's order");
-            }
 
-            orderService.cancelOrder(order);
+        Order order = orderOptional.get();
+        if (order.getUser() != user) {
+           throw new IllegalArgumentException("Unable to cancel other user's order");
         }
 
+        orderService.cancelOrder(order);
 
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
 
@@ -295,16 +293,17 @@ public class OrderController extends Utility {
 
     }
 
-    @GetMapping("/complete/{orderId}")
+    @PutMapping("/complete/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> complete(@PathVariable(value = "orderId") Integer orderId,
                                                                @NonNull HttpServletRequest request) {
-        User user = retrieveUserFromRequest(request);
+        // throws error if request does not have a valid user
+        retrieveUserFromRequest(request);
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
-        if (user != null) {
-            orderService.completeOrder(orderRepository.findById(orderId).get());
-        }
+
+        orderService.completeOrder(orderRepository.findById(orderId).get());
+
 
         return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
 
