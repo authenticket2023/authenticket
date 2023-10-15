@@ -41,12 +41,16 @@ export default function displayPast(props: eventInfo) {
         backgroundColor: "#F8F8F8",
         borderRadius: "2px",
         backgroundImage: `url('${process.env.REACT_APP_S3_URL}/event_images/${props.event.eventImage}')`,
-        backgroundSize: "480px",
+        backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
       }}
     >
-      <CardActionArea href={`/EventDetails/${props.event.eventId}`}>
+      <CardActionArea
+        href={`/EventDetails/${props.event.eventId}`}
+      >
+        <Box sx = {{minHeight: 180}}>
+        </Box>
       </CardActionArea>
     </Card>
   );

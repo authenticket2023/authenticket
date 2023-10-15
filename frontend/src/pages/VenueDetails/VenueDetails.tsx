@@ -192,7 +192,6 @@ export const VenueDetails: React.FC = (): JSX.Element => {
   return (
     <div>
       {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
-
       <Box>
         {venueDetails && (
           <div
@@ -202,7 +201,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
               justifyContent: "center",
               backgroundPositionY: "center",
               backgroundSize: "cover",
-              backgroundImage: `url('https://authenticket.s3.ap-southeast-1.amazonaws.com/venue_image/${venueDetails.venueImage}')`,
+              backgroundImage: `url('${process.env.REACT_APP_S3_URL}/venue_image/${venueDetails.venueImage}')`,
               flexDirection: "column",
             }}
           >
@@ -267,7 +266,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                 </Tabs>
               </Box>
 
-              {/* Tab 1: general Info */}
+              {/* Tab 1: General Info */}
               <CustomTabPanel value={value} index={0}>
                 <Grid container spacing={12} style={{}}>
                   <Grid item xs={6}>
@@ -276,17 +275,20 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                     </Typography>
                     <Typography>{venueDetails.venueDescription}</Typography>
                   </Grid>
-                  <Grid container item xs={6} direction = {'column'} justifyContent={'center'}>
-                    <Typography marginLeft={8} sx={{fontWeight: "bold"}}>
+                  <Grid
+                    container
+                    item
+                    xs={6}
+                    direction={"column"}
+                    justifyContent={"center"}
+                  >
+                    <Typography marginLeft={8} sx={{ fontWeight: "bold" }}>
                       Past Events
                     </Typography>
                     {past.map((event: any, index: any) => (
                       <React.Fragment key={index}>
                         <Box paddingLeft={8} paddingRight={8}>
-                          <Grid
-                            item
-                            xs={12}
-                          >
+                          <Grid item xs={12}>
                             <DisplayPast event={event} />
                           </Grid>
                         </Box>
@@ -296,7 +298,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                 </Grid>
               </CustomTabPanel>
 
-              {/* Tab 2: Ticket Pricing */}
+              {/* Tab 2: Seating */}
               <CustomTabPanel value={value} index={1}>
                 <Grid container>
                   <Grid
@@ -316,7 +318,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                 </Grid>
               </CustomTabPanel>
 
-              {/* Tab 3: Ticket Sales */}
+              {/* Tab 3: Location */}
               <CustomTabPanel value={value} index={2}>
                 <Typography sx={{ fontWeight: "bold" }}>Address:</Typography>
                 <Typography marginBottom={2}>
@@ -325,7 +327,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                 <InitMap venueId={venueDetails.venueId}></InitMap>
               </CustomTabPanel>
 
-              {/* Tab 4: Organiser Info */}
+              {/* Tab 4: Future Events */}
               <CustomTabPanel value={value} index={3}>
                 <Grid
                   container
@@ -343,7 +345,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                     </React.Fragment>
                   ))}
                 </Grid>
-                {/* show if no past events */}
+                {/* show if no future events */}
                 {related.length == 0 ? (
                   <Box
                     sx={{
