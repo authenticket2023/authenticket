@@ -14,7 +14,6 @@ import com.authenticket.authenticket.service.impl.JwtServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -60,7 +59,7 @@ public class AuthenticationController extends Utility{
     }
 
     @PostMapping("token-check")
-    public ResponseEntity<GeneralApiResponse> tokenCheck(
+    public ResponseEntity<GeneralApiResponse<Object>> tokenCheck(
             @RequestParam("jwtToken") String token,
             @RequestParam("userEmail") String userEmail){
         try {
@@ -69,7 +68,7 @@ public class AuthenticationController extends Utility{
             if (jwtValidity) {
                 return ResponseEntity.status(200).body(generateApiResponse(true, "valid token." + userDetails.getAuthorities()));
             }
-            return ResponseEntity.status(200).body(generateApiResponse(false, "invalid token"));
+            return ResponseEntity.status(400).body(generateApiResponse(false, "invalid token"));
         }
         catch (UsernameNotFoundException e) {
             return ResponseEntity.status(400).body(generateApiResponse(null, "email not registered"));
@@ -79,7 +78,7 @@ public class AuthenticationController extends Utility{
     }
 
     @PostMapping("/userRegister")
-    public ResponseEntity<GeneralApiResponse> userRegister(
+    public ResponseEntity<GeneralApiResponse<Object>> userRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
@@ -97,7 +96,7 @@ public class AuthenticationController extends Utility{
     }
 
     @GetMapping(path = "/userRegister/userConfirm")
-    public ResponseEntity<GeneralApiResponse> userConfirm(@RequestParam("token") String token,
+    public ResponseEntity<GeneralApiResponse<Object>> userConfirm(@RequestParam("token") String token,
                                                           @RequestParam("redirect") String redirect){
         try{
             AuthenticationUserResponse response = service.confirmUserToken(token);
@@ -110,7 +109,7 @@ public class AuthenticationController extends Utility{
     }
 
     @PostMapping("/userAuthenticate")
-    public ResponseEntity<GeneralApiResponse> userAuthenticate(
+    public ResponseEntity<GeneralApiResponse<Object>> userAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ){
@@ -127,7 +126,7 @@ public class AuthenticationController extends Utility{
     }
 
     @PostMapping("/eventOrgRegister")
-    public ResponseEntity<GeneralApiResponse> orgRegister(
+    public ResponseEntity<GeneralApiResponse<Object>> orgRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
             @RequestParam("description") String description
@@ -146,7 +145,7 @@ public class AuthenticationController extends Utility{
     }
 
     @PostMapping("/eventOrgAuthenticate")
-    public ResponseEntity<GeneralApiResponse> eventOrgAuthenticate(
+    public ResponseEntity<GeneralApiResponse<Object>> eventOrgAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ){
@@ -162,7 +161,7 @@ public class AuthenticationController extends Utility{
     }
 
     @PostMapping("/adminRegister")
-    public ResponseEntity<GeneralApiResponse> adminRegister(
+    public ResponseEntity<GeneralApiResponse<Object>> adminRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
             @RequestParam("password") String password
@@ -178,7 +177,7 @@ public class AuthenticationController extends Utility{
     }
 
     @PostMapping("/adminAuthenticate")
-    public ResponseEntity<GeneralApiResponse> adminAuthenticate(
+    public ResponseEntity<GeneralApiResponse<Object>> adminAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ){
