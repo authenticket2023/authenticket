@@ -61,6 +61,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/event/hasTickets").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/event/isPresaleEvent").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/event/getQueuePosition").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/event/getQueueTotal").permitAll()
+
+                        .requestMatchers(HttpMethod.PUT, "/api/event/enterQueue").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/event/leaveQueue").hasAuthority("USER")
+
                         .requestMatchers(HttpMethod.GET,"/api/event-organiser").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/event-organiser").hasAuthority("ORGANISER")
                         .requestMatchers(HttpMethod.GET,"/api/event-organiser/{organiserId}").permitAll()

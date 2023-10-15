@@ -19,6 +19,7 @@ import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.OrderService;
 import com.authenticket.authenticket.service.PDFGenerator;
+import com.authenticket.authenticket.service.QueueService;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -53,6 +54,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final PDFGenerator pdfGenerator;
 
+    private final QueueService queueService;
+
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
@@ -60,7 +63,9 @@ public class OrderServiceImpl implements OrderService {
                             TicketDisplayDtoMapper ticketDisplayDtoMapper,
                             TicketRepository ticketRepository,
                             TaskScheduler taskScheduler,
-                            EmailService emailService, PDFGenerator pdfGenerator) {
+                            EmailService emailService,
+                            PDFGenerator pdfGenerator,
+                            QueueService queueService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDtoMapper = orderDtoMapper;
@@ -69,6 +74,7 @@ public class OrderServiceImpl implements OrderService {
         this.taskScheduler = taskScheduler;
         this.emailService = emailService;
         this.pdfGenerator = pdfGenerator;
+        this.queueService = queueService;
     }
 
     @Override
@@ -286,6 +292,13 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
             throw new ApiRequestException(e.getMessage());
         }
+
+        try {
+            queueService.removeFromQueue(user, order.getEvent());
+        } catch (NonExistentException e) {
+            // ignore if presale, as presale does not need queue
+//            order.getEvent().getTicketSaleDate()
+        }
         return updatedOrder;
     }
 
@@ -308,6 +321,5 @@ public class OrderServiceImpl implements OrderService {
 
         //cancel all the filtered out orders
         cancelAllOrder(ordersToCancel);
-
     }
 }
