@@ -3,19 +3,15 @@ import { Navigate } from "react-router-dom";
 import { NavbarNotLoggedIn, NavbarLoggedIn } from "../../Navbar";
 import { useParams } from "react-router-dom";
 import { Box } from "@mui/system";
-import { Grid, List, ListItem, Typography } from "@mui/material";
-import { Button } from "react-bootstrap";
+import { Grid, Typography } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Avatar from "@mui/material/Avatar";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { format } from "date-fns";
-import { SGStad } from '../../utility/seatMap/SeatMap';
-import { InitMap } from './VenueMap';
-import CapitolMap from './CapitolMap.png';  
+import { Alert, Snackbar } from "@mui/material";
+import { SGStad } from "../../utility/seatMap/SeatMap";
+import { InitMap } from "./VenueMap";
+import DisplayEvent from "./displayEvent";
+import CircularProgress from "@mui/material/CircularProgress";
+import DisplayPast from "./displayPast";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,6 +39,8 @@ function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
+const alternate: number[] = [0, 20];
+
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -56,6 +54,104 @@ export const VenueDetails: React.FC = (): JSX.Element => {
   }, []);
 
   const token = window.localStorage.getItem("accessToken");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [alertType, setAlertType]: any = useState("info");
+  const [alertMsg, setAlertMsg] = useState("");
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+  };
+
+  const [past, setPast]: any = useState([]);
+  const [pastLoad, setPastLoad]: any = useState(false);
+
+  const loadPast = async () => {
+    //call backend API
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/by-venue/past/1?page=0&size=3`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      }
+    )
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const pastArr = data.map((event: any) => ({
+            eventId: event.eventId,
+            eventName: event.eventName,
+            eventDescription: event.eventDescription,
+            eventImage: event.eventImage,
+            eventType: event.eventType,
+            eventDate: event.eventDate,
+            totalTickets: event.totalTickets,
+            eventVenue: event.eventVenue,
+          }));
+          setPast(pastArr);
+          setPastLoad(true);
+        } else {
+          //display alert, for fetch fail
+          setOpenSnackbar(true);
+          setAlertType("error");
+          setAlertMsg(
+            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
+          );
+        }
+      })
+      .catch((err) => {
+        setOpenSnackbar(true);
+        setAlertType("error");
+        setAlertMsg(`Oops something went wrong! Error : ${err}`);
+      });
+  };
+
+  //variables
+  const [related, setRelated]: any = useState([]);
+  const [relatedLoad, setRelatedLoad]: any = useState(false);
+  const loadRelated = async () => {
+    //call backend API
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/by-venue/1?page=0&size=25`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      }
+    )
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          const data = apiResponse.data;
+          const relatedArr = data.map((event: any) => ({
+            eventId: event.eventId,
+            eventName: event.eventName,
+            eventDescription: event.eventDescription,
+            eventImage: event.eventImage,
+            eventType: event.eventType,
+            eventDate: event.eventDate,
+            totalTickets: event.totalTickets,
+            eventVenue: event.eventVenue,
+          }));
+          setRelated(relatedArr);
+          setRelatedLoad(true);
+        } else {
+          //display alert, for fetch fail
+          setOpenSnackbar(true);
+          setAlertType("error");
+          setAlertMsg(
+            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
+          );
+        }
+      })
+      .catch((err) => {
+        setOpenSnackbar(true);
+        setAlertType("error");
+        setAlertMsg(`Oops something went wrong! Error : ${err}`);
+      });
+  };
 
   //set parameters
   const { venueId } = useParams<{ venueId: string }>();
@@ -63,7 +159,6 @@ export const VenueDetails: React.FC = (): JSX.Element => {
   //set variables
   const [venueDetails, setVenueDetails]: any = React.useState();
   const [value, setValue] = useState(0);
-  const colorArray = ["#E5E23D", "#D74A50", "#30A1D3", "#E08D24", "#5BB443"];
 
   const loadVenueDetails = async () => {
     // //calling backend API
@@ -79,6 +174,8 @@ export const VenueDetails: React.FC = (): JSX.Element => {
           const data = apiResponse;
           setVenueDetails(data);
           console.log(data);
+          loadRelated();
+          loadPast();
         } else {
           //passing to parent component
         }
@@ -179,77 +276,108 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                     </Typography>
                     <Typography>{venueDetails.venueDescription}</Typography>
                   </Grid>
-                  <Grid item xs={6}></Grid>
+                  <Grid container item xs={6} direction = {'column'} justifyContent={'center'}>
+                    <Typography marginLeft={8} sx={{fontWeight: "bold"}}>
+                      Past Events
+                    </Typography>
+                    {past.map((event: any, index: any) => (
+                      <React.Fragment key={index}>
+                        <Box paddingLeft={8} paddingRight={8}>
+                          <Grid
+                            item
+                            xs={12}
+                          >
+                            <DisplayPast event={event} />
+                          </Grid>
+                        </Box>
+                      </React.Fragment>
+                    ))}
+                  </Grid>
                 </Grid>
               </CustomTabPanel>
 
               {/* Tab 2: Ticket Pricing */}
               <CustomTabPanel value={value} index={1}>
                 <Grid container>
-                  <Grid item xs = {12} justifyContent={'center'} alignItems={'center'} marginLeft={20}>
-                <Box alignItems={'center'} justifyItems={'center'}>
-                <SGStad id={venueDetails.venueId} setSelectedSection={loadVenueDetails}/>
-                </Box>
+                  <Grid
+                    item
+                    xs={12}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    marginLeft={20}
+                  >
+                    <Box alignItems={"center"} justifyItems={"center"}>
+                      <SGStad
+                        id={venueDetails.venueId}
+                        setSelectedSection={loadVenueDetails}
+                      />
+                    </Box>
                   </Grid>
                 </Grid>
               </CustomTabPanel>
 
               {/* Tab 3: Ticket Sales */}
               <CustomTabPanel value={value} index={2}>
-                <Typography sx={{fontWeight: "bold"}}>
-                  Address:
-                </Typography>
-                <Typography marginBottom = {2}>
+                <Typography sx={{ fontWeight: "bold" }}>Address:</Typography>
+                <Typography marginBottom={2}>
                   {venueDetails.venueLocation}
                 </Typography>
-                <InitMap venueId = {venueDetails.venueId}></InitMap>
-                </CustomTabPanel>
+                <InitMap venueId={venueDetails.venueId}></InitMap>
+              </CustomTabPanel>
 
               {/* Tab 4: Organiser Info */}
-              {/* <CustomTabPanel value={value} index={3}>
-                <Grid container spacing={12} style={{}}>
-                    <Grid item xs={8}>
-                      <Typography style={{font:'Roboto', fontWeight:500, fontSize:'18px'}}>
-                          About the Organiser
-                      </Typography>
-                      <div style={{display:'flex', flexDirection:'row', marginBottom:30}}>
-                        <img 
-                          alt={venueDetails.organiser.name} 
-                          src={`${process.env.REACT_APP_S3_URL}/event_organiser_profile/${venueDetails.organiser.logoImage}`}
-                          style={{height:'70px', width:'80px', marginTop:25, marginLeft:35}}
-                        />
-                        <Typography style={{font:'Roboto', marginTop:49, marginLeft:12, fontSize:'14px', fontWeight:500}}>
-                          {venueDetails.organiser.name}
-                        </Typography>
-                      </div>
-                      <Typography style={{font:'Roboto', fontWeight:300, fontSize:'15px', marginBottom:30}}>
-                        {venueDetails.organiser.description}
-                      </Typography>
-                      <Typography style={{font:'Roboto', fontWeight:500, fontSize:'18px'}}>
-                          Contact Information
-                      </Typography>
-                      <div style={{display:'flex', flexDirection:'row', marginTop:10, marginLeft:15 }}>
-                        <MailOutlineIcon style={{fontSize:'25px'}}/>
-                        <Typography style={{font:'Roboto', fontWeight:300, fontSize:'15px', marginBottom:30, marginLeft:6}}>
-                          {venueDetails.organiser.email}
-                        </Typography>
-                      </div>
-                    </Grid>
-                     */}
-              {/* Do check here if its enhanced or not enhanced, if it is use InfoBoxEnhanced */}
-              {/* <Grid item xs={4}>
-                      <InfoBox
-                        eventDate={venueDetails.eventDate}
-                        venueName={venueDetails.venue.venueName}
-                      />
-                    </Grid>
-                  </Grid>
-                </CustomTabPanel> */}
+              <CustomTabPanel value={value} index={3}>
+                <Grid
+                  container
+                  rowSpacing={2}
+                  columnSpacing={7}
+                  sx={{ mb: 10 }}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {related.map((event: any, index: any) => (
+                    <React.Fragment key={index}>
+                      <Grid item xs={5}>
+                        <DisplayEvent event={event} />
+                      </Grid>
+                    </React.Fragment>
+                  ))}
+                </Grid>
+                {/* show if no past events */}
+                {related.length == 0 ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="h4">
+                      Stay alert, more exciting events are on the horizon
+                    </Typography>
+                    <Box marginLeft={3}>
+                      <CircularProgress></CircularProgress>
+                    </Box>
+                  </Box>
+                ) : null}
+              </CustomTabPanel>
             </Box>
           </Box>
         )}
       </Box>
-      {/* <p>Event ID: {eventId}</p> */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={alertType}
+          sx={{ width: "100%" }}
+        >
+          {alertMsg}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
