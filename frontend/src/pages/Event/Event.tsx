@@ -39,7 +39,7 @@ function CustomTabPanel(props: TabPanelProps) {
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
@@ -49,8 +49,8 @@ export const Event = () => {
   //for alert
   //error , warning , info , success
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [alertType, setAlertType]: any = useState('info');
-  const [alertMsg, setAlertMsg] = useState('');
+  const [alertType, setAlertType]: any = useState("info");
+  const [alertMsg, setAlertMsg] = useState("");
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
   };
@@ -62,12 +62,15 @@ export const Event = () => {
 
   const loadCurrEvents = async () => {
     //call backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/current?page=0&size=20`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'GET',
-    })
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/current?page=0&size=20`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      }
+    )
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
@@ -95,25 +98,30 @@ export const Event = () => {
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
-          setAlertType('error');
-          setAlertMsg(`Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`);
+          setAlertType("error");
+          setAlertMsg(
+            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
+          );
         }
       })
       .catch((err) => {
         setOpenSnackbar(true);
-        setAlertType('error');
+        setAlertType("error");
         setAlertMsg(`Oops something went wrong! Error : ${err}`);
       });
-  }
+  };
 
   const loadPastEvents = async () => {
     //call backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/public/event/past?page=0&size=20`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'GET',
-    })
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/past?page=0&size=20`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      }
+    )
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
@@ -141,16 +149,18 @@ export const Event = () => {
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
-          setAlertType('error');
-          setAlertMsg(`Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`);
+          setAlertType("error");
+          setAlertMsg(
+            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
+          );
         }
       })
       .catch((err) => {
         setOpenSnackbar(true);
-        setAlertType('error');
+        setAlertType("error");
         setAlertMsg(`Oops something went wrong! Error : ${err}`);
       });
-  }
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -670,12 +680,19 @@ export const Event = () => {
         : null
       }
 
-      <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={alertType}
+          sx={{ width: "100%" }}
+        >
           {alertMsg}
         </Alert>
       </Snackbar>
     </div>
-
-  )
-}
+  );
+};
