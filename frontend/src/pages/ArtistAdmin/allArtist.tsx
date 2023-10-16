@@ -29,6 +29,7 @@ export function AllArtist() {
             loadData()
             //need set this, if not cannot click open again
             setUpdateOpen(false);
+            setCreateOpen(false);
             setReload(false);
         }
     }, [reload]);
