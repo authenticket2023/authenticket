@@ -3,6 +3,7 @@ package com.authenticket.authenticket.dto.artist;
 import com.authenticket.authenticket.model.Artist;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -14,7 +15,10 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
         return new ArtistDisplayDto(
                 artist.getArtistId(),
                 artist.getArtistName(),
-                artist.getArtistImage()
+                artist.getArtistImage(),
+                artist.getCreatedAt(),
+                artist.getUpdatedAt(),
+                artist.getDeletedAt()
         );
     }
 
@@ -28,7 +32,10 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
         return new ArtistDisplayDto(
                 (Integer) obj[0],
                 (String) obj[1],
-                (String) obj[2]
+                (String) obj[2],
+                (LocalDateTime) obj[3],
+                (LocalDateTime) obj[4],
+                (LocalDateTime) obj[5]
         );
     }
 

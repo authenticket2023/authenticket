@@ -19,7 +19,10 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             value = "SELECT " +
                     "A.artist_id, " +
                     "A.artist_name, " +
-                    "A.artist_image " +
+                    "A.artist_image, " +
+                    "A.created_at, " +
+                    "A.updated_at, " +
+                    "A.deleted_at " +
                     "FROM " +
                     "dev.Artist AS A " +
                     "JOIN " +
