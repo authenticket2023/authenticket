@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { NavbarNotLoggedIn, NavbarLoggedIn } from '../../Navbar';
 import { useParams } from 'react-router-dom';
 import { Box } from '@mui/system';
@@ -8,7 +8,11 @@ import { Button } from 'react-bootstrap';
 import { PurchaseSteps, PurchaseStepsFace } from './PurchaseSteps';
 
 export const TicketPurchase: React.FC = (): JSX.Element => {
+  let navigate = useNavigate();
     useEffect(() => {
+      if(token == null) {
+        navigate(`/Forbidden`);
+      } 
         loadEventDetails();
     }, []);
 

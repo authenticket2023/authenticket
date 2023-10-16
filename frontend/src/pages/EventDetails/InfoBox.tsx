@@ -89,7 +89,6 @@ export const InfoBox = (props: any) => {
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
-          console.log(apiResponse)
           setPreSaleStatus(apiResponse.data);
         }
       })
@@ -193,10 +192,15 @@ export const InfoBox = (props: any) => {
   };
 
 
-  //*** TODO ***
   const handleBuyTicket = () => {
-    console.log('redirect to buy ticket page, need check whether logged in or not')
-    navigate(`/TicketPurchase/${props.eventId}`);
+    if(token != null) {
+      navigate(`/TicketPurchase/${props.eventId}`);
+    } else {
+      setOpenSnackbar(true);
+      setAlertType('warning');
+      setAlertMsg('Please log in before purchasing!');
+      return;
+    }
   };
 
   //*** TODO ***
@@ -292,7 +296,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: preSaleStatus ? 'green' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -307,7 +311,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: !isSelectedForPreSale ? 'grey' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -327,7 +331,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: !availableTicket ? 'grey' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -344,7 +348,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: 'grey',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -358,7 +362,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: !availableTicket ? 'grey' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
