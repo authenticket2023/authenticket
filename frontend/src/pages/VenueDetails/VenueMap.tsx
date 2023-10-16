@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import CapitolMap from "./CapitolMap.png";
 import StarMap from "./StarMap.png";

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
 import { NavbarNotLoggedIn, NavbarLoggedIn } from "../../Navbar";
 import { useParams } from "react-router-dom";
 import { Box } from "@mui/system";
@@ -67,7 +66,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
   const loadPast = async () => {
     //call backend API
     fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/public/event/by-venue/past/1?page=0&size=3`,
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/by-venue/past/${venueId}?page=0&size=3`,
       {
         headers: {
           "Content-Type": "application/json",
