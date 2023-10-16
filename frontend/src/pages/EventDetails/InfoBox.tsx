@@ -35,6 +35,7 @@ export const InfoBox = (props: any) => {
   const [preSaleStatus, setPreSaleStatus] = useState(true);
   const [isSelectedForPreSale, setIsSelectedForPreSale] = useState(true);
   const [availableTicket, setAvailableTicket] = useState(true);
+
   // Get today's date and time
   // Create a Date object for the eventDate
   const ticketSaleDateTime: any = new Date(props.ticketSaleDate);
@@ -56,6 +57,10 @@ export const InfoBox = (props: any) => {
   // => True , means will allow user to indicate interest etc
   // => False, only allow buy ticket after sale date start
   const loadIsPresaleEvent = async () => {
+    if (token === null || userID === null) {
+      setIsSelectedForPreSale(false);
+      setPreSaleStatus(false);
+    }
     fetch(`${process.env.REACT_APP_BACKEND_URL}/event/isPresaleEvent?eventId=${props.eventId}`, {
       headers: {
         'Accept': 'application/json',
@@ -203,10 +208,8 @@ export const InfoBox = (props: any) => {
     }
   };
 
-  //*** TODO ***
   const handleViewVenue = () => {
-    console.log('redirect to view venue page')
-    navigate('');
+    navigate(`/VenueDetails/${props.venueId}`);
   };
 
   const handleSeatMap = () => {
@@ -234,7 +237,6 @@ export const InfoBox = (props: any) => {
     if (token != null && isPresaleEvent) {
       //if isOneDayBeforeSaleDate == false, means current date is before D-1 day, show presale button
       if (!isOneDayBeforeSaleDate) {
-        console.log('loading presale status')
         loadPreSaleStatus();
       }
       //this means the current date is btw D-1 to D day
@@ -269,8 +271,8 @@ export const InfoBox = (props: any) => {
           variant="outlined"
           style={{
             backgroundColor: '#F0F0F0',
-            color: '#FF5C35', // Text color
-            border: '2px solid #FF5C35', // Add a border
+            color: '#FF5C35',
+            border: '2px solid #FF5C35',
             width: '250px'
           }}
           onClick={handleSeatMap}
@@ -281,8 +283,8 @@ export const InfoBox = (props: any) => {
           variant="outlined"
           style={{
             backgroundColor: '#F0F0F0',
-            color: '#FF5C35', // Text color
-            border: '2px solid #FF5C35', // Add a border
+            color: '#FF5C35',
+            border: '2px solid #FF5C35',
             width: '250px',
             marginTop: 8
           }}
