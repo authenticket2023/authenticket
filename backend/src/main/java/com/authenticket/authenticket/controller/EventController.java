@@ -480,8 +480,12 @@ public class EventController extends Utility {
 //            @RequestParam("artistId") Integer artistId,
     @PutMapping("/event/updateEventArtist")
     public ResponseEntity<GeneralApiResponse> updateEventArtist(@RequestParam("artistIdString") String artistIdString,
-                                                                @RequestParam("eventId") Integer eventId) {
-
+                                                                @RequestParam("eventId") Integer eventId,
+                                                                @NonNull HttpServletRequest request) {
+        EventOrganiser eventOrganiser = retrieveOrganiserFromRequest(request);
+        if (!eventRepository.existsEventByEventIdAndOrganiser(eventId, eventOrganiser)) {
+            throw new IllegalArgumentException("Event organiser does not have an event with id " + eventId);
+        }
 
         List<Integer> artistIdList = Arrays.stream(artistIdString.split(","))
                 .map(Integer::parseInt)
@@ -618,7 +622,8 @@ public class EventController extends Utility {
 
     @GetMapping("/event/checkIfUserSelected")
     public ResponseEntity<GeneralApiResponse<Object>> checkIfUserSelected(@RequestParam("eventId") Integer eventId,
-                                                                          @RequestParam("userId") Integer userId) {
+//                                                                          @RequestParam("userId") Integer userId,
+                                                                          @NonNull HttpServletRequest request) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
             throw new NonExistentException("Event", eventId);
@@ -628,18 +633,19 @@ public class EventController extends Utility {
             throw new IllegalArgumentException("Event '" + event.getEventName() + "' does not have a presale period");
         }
 
-        Optional<User> userOptional = userRepository.findUserByUserId(userId);
-        if (userOptional.isEmpty()) {
-            throw new NonExistentException("User", userId);
-        }
-        User user = userOptional.get();
+        User user = retrieveUserFromRequest(request);
+//        Optional<User> userOptional = userRepository.findUserByUserId(userId);
+//        if (userOptional.isEmpty()) {
+//            throw new NonExistentException("User", userId);
+//        }
+//        User user = userOptional.get();
 
         Optional<PresaleInterest> presaleInterestOptional = presaleService.findPresaleInterestByID(new EventUserId(user, event));
         if (presaleInterestOptional.isPresent() && presaleInterestOptional.get().getIsSelected()) {
-            return ResponseEntity.ok(generateApiResponse(true, "User " + userId + " has been selected"));
+            return ResponseEntity.ok(generateApiResponse(true, "User " + user.getUserId() + " has been selected"));
         }
 
-        return ResponseEntity.ok(generateApiResponse(false, "User " + userId + " has not been selected"));
+        return ResponseEntity.ok(generateApiResponse(false, "User " + user.getUserId() + " has not been selected"));
     }
 
     @GetMapping("/event/selectedUsers")

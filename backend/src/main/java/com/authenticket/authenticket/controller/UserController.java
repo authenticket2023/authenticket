@@ -113,7 +113,6 @@ public class UserController extends Utility {
     @PutMapping("/updateUserImage")
     public ResponseEntity<GeneralApiResponse<Object>> updateProfileImage(@RequestParam("profileImage") MultipartFile profileImage,
                                                                          @RequestParam("imageName") String imageName,
-//                                                                         @RequestParam("userId") Integer userId,
                                                                          @NonNull HttpServletRequest request) {
         User user = retrieveUserFromRequest(request);
         try {
