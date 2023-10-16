@@ -44,4 +44,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     void deleteOrderById(@Param("orderId") Integer orderId);
 
     List<Order> findAllByOrderStatus(String orderStatus);
+
+    //getting all orders by event id
+    List<Order> findAllByEventEventId(Integer eventId, Pageable pageable);
 }

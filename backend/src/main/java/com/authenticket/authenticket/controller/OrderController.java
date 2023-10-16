@@ -281,4 +281,24 @@ public class OrderController extends Utility {
 
         return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
     }
+
+    //getting all orders by event, for admin & organiser
+    @GetMapping("/event/{eventId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllOrdersByEvent(Pageable pageable,@PathVariable(value = "eventId") Integer eventId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if(event == null){
+            throw new NonExistentException("Event does not exist");
+        }
+        try {
+            List<OrderDisplayDto> orderList = orderService.findAllOrderByEventId(pageable,eventId);
+            if (orderList.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(orderList, String.format("No orders found for event id: %d.",eventId)));
+            } else {
+                return ResponseEntity.ok(generateApiResponse(orderList, String.format("Orders for event id: %d successfully returned.",eventId)));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+    }
+
 }
