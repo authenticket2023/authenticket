@@ -660,7 +660,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true), "Returned list of users allowed in presale"));
     }
 
-    @GetMapping("/event/getQueuePosition")
+    @GetMapping("/event/queue-position")
     public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(
             @RequestParam("eventId") Integer eventId,
             @RequestParam("userId") Integer userId,
@@ -686,7 +686,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(queueService.getPosition(user, event), "Returned queue number"));
     }
 
-    @GetMapping("/event/getQueueTotal")
+    @GetMapping("/event/queue-total")
     public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(@RequestParam("eventId") Integer eventId) {
 
         Optional<Event> eventOptional = eventRepository.findById(eventId);
@@ -698,7 +698,7 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(queueService.getTotalInQueue(event), "Returned number of users in queue"));
     }
 
-    @PutMapping("/event/enterQueue")
+    @PutMapping("/event/enter-queue")
     public ResponseEntity<GeneralApiResponse<Object>> enterQueue(
             @RequestParam("eventId") Integer eventId,
             @RequestParam("userId") Integer userId,
@@ -726,7 +726,7 @@ public class EventController extends Utility {
         return ResponseEntity.status(201).body(generateApiResponse(queueService.getPosition(user, event), "Added to queue and returned queue number"));
     }
 
-    @PutMapping("/event/leaveQueue")
+    @PutMapping("/event/leave-queue")
     public ResponseEntity<GeneralApiResponse<Object>> leaveQueue(
             @RequestParam("eventId") Integer eventId,
             @RequestParam("userId") Integer userId,
