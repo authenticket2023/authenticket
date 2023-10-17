@@ -103,24 +103,6 @@ public class AdminController extends Utility {
         return ResponseEntity.status(404).body(generateApiResponse(null, "Admin does not exist"));
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<GeneralApiResponse<Object>> saveAdmin(@RequestParam(value = "name") String name,
-                                                        @RequestParam("email") String email,
-                                                        @RequestParam("password") String password) {
-        if (adminRepository.findByEmail(email).isEmpty()) {
-            Admin newAdmin = Admin
-                    .builder()
-                    .adminId(null)
-                    .name(name)
-                    .email(email)
-                    .password(passwordEncoder.encode(password))
-                    .build();
-            Admin savedAdmin = adminService.saveAdmin(newAdmin);
-            return ResponseEntity.status(200).body(generateApiResponse(adminDtoMapper.apply(savedAdmin), "Admin has been saved"));
-        }
-        return ResponseEntity.status(401).body(generateApiResponse(null, "Admin already exist"));
-    }
-
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateAdmin(@RequestBody Admin newAdmin) {
         if (adminRepository.findByEmail(newAdmin.getEmail()).isPresent()) {

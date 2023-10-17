@@ -160,7 +160,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/adminRegister")
+    @PostMapping("/admin-register")
     public ResponseEntity<GeneralApiResponse<Object>> adminRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,

@@ -74,7 +74,7 @@ public class SecurityConfig {
 
 //                        .requestMatchers(HttpMethod.PUT,"/api/v2/order/complete/**").permitAll()
 //                        .requestMatchers(HttpMethod.PUT, "/api/v2/order/cancel/**").permitAll()
-                        .requestMatchers( "/api/v2/order/**").hasAuthority("USER") //to be reviewed (all order services)
+                        .requestMatchers( "/api/v2/order/**").hasAnyAuthority("USER", "ADMIN") //to be reviewed (all order services)
 
                         .requestMatchers(HttpMethod.POST, "/api/v2/section/ticket-details").hasAuthority("USER")//to be reviewed (findTicketDetailsBySection)
                         .requestMatchers(HttpMethod.POST, "/api/v2/section").hasAuthority("ADMIN")
