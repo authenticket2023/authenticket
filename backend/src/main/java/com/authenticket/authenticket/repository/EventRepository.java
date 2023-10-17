@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.repository;
 
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.model.EventOrganiser;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -90,6 +91,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     //find all upcoming events by venue
     Page<Event> findAllByReviewStatusAndVenueVenueIdAndDeletedAtIsNullAndEventDateAfterOrderByEventDateDesc(String reviewStatus, Integer venueId, Pageable pageable, LocalDateTime currentDate);
+
+    Boolean existsEventByEventIdAndOrganiser(Integer eventId, EventOrganiser organiser);
 
     //remove all artist for event
      @Transactional

@@ -1,30 +1,35 @@
 package com.authenticket.authenticket.service;
 
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
-import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
 import com.authenticket.authenticket.exception.AlreadyDeletedException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.exception.NotApprovedException;
+import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Event;
+import com.authenticket.authenticket.model.EventOrganiser;
+import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.AdminRepository;
+import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.repository.EventRepository;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageConfig;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
+import com.authenticket.authenticket.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Utility {
     @Autowired
     private EventRepository eventRepository;
-
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private EventOrganiserRepository eventOrganiserRepository;
+    @Autowired
+    private AdminRepository adminRepository;
 
     public String getFileExtension(String contentType) {
         if (contentType == null) {
@@ -65,6 +70,47 @@ public class Utility {
             throw new AlreadyDeletedException("Event", eventId);
         } else if(!Objects.equals(event.getReviewStatus(), "approved")){
             throw new NotApprovedException("Event",eventId);
-        };
+        }
+    }
+
+    public User retrieveUserFromRequest(HttpServletRequest request) throws NonExistentException {
+        String jwt = request.getHeader("Authorization").substring(7);
+        String email = jwtService.extractUsername(jwt);
+
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new NonExistentException("Could not derive user from token in request header");
+        }
+        return userOptional.get();
+    }
+
+    public EventOrganiser retrieveOrganiserFromRequest(HttpServletRequest request) throws NonExistentException {
+        String jwt = request.getHeader("Authorization").substring(7);
+        String email = jwtService.extractUsername(jwt);
+
+        Optional<EventOrganiser> organiserOptional = eventOrganiserRepository.findByEmail(email);
+        if (organiserOptional.isEmpty()) {
+            throw new NonExistentException("Could not derive organiser from token in request header");
+        }
+        return organiserOptional.get();
+    }
+
+    public Admin retrieveAdminFromRequest(HttpServletRequest request) throws NonExistentException {
+        String jwt = request.getHeader("Authorization").substring(7);
+        String email = jwtService.extractUsername(jwt);
+
+        Optional<Admin> adminOptional = adminRepository.findByEmail(email);
+        if (adminOptional.isEmpty()) {
+            throw new NonExistentException("Could not derive admin from token in request header");
+        }
+        return adminOptional.get();
+    }
+
+    public Boolean isAdminRequest(HttpServletRequest request) throws NonExistentException {
+        String jwt = request.getHeader("Authorization").substring(7);
+        String email = jwtService.extractUsername(jwt);
+
+        Optional<Admin> adminOptional = adminRepository.findByEmail(email);
+        return adminOptional.isPresent();
     }
 }

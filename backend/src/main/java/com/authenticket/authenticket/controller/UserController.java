@@ -12,6 +12,8 @@ import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import com.authenticket.authenticket.service.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,22 +60,19 @@ public class UserController extends Utility {
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllUser() {
         List<UserFullDisplayDto> userList = userService.findAllUser();
-        if(userList.isEmpty()){
+        if (userList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(userList, "No event user found."));
 
-        } else{
+        } else {
             return ResponseEntity.ok(generateApiResponse(userList, "User successfully returned."));
 
         }
     }
 
-    @GetMapping("/interestedEvents")
-    public ResponseEntity<GeneralApiResponse<Object>> findEventsOfInterestToUser(@RequestParam("userId") Integer userId) {
-        Optional<User> userOptional = userService.findUserById(userId);
-        if (userOptional.isEmpty()) {
-            throw new NonExistentException("User", userId);
-        }
-        List<Event> events = presaleService.findEventsByUser(userOptional.get());
+    @GetMapping("/interested-events")
+    public ResponseEntity<GeneralApiResponse<Object>> findEventsOfInterestToUser(@NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+        List<Event> events = presaleService.findEventsByUser(user);
         return ResponseEntity.ok(generateApiResponse(events, "User has indicated interest for " + events.size() + " events."));
     }
 
@@ -81,15 +80,21 @@ public class UserController extends Utility {
     public ResponseEntity<GeneralApiResponse<Object>> findUserById(@PathVariable("userId") Integer userId) {
         Optional<UserFullDisplayDto> userDisplayDto = userService.findById(userId);
         return userDisplayDto.map(
-                displayDto -> ResponseEntity.status(200).body(
-                        generateApiResponse(displayDto, "User found")
-                ))
+                        displayDto -> ResponseEntity.status(200).body(
+                                generateApiResponse(displayDto, "User found")
+                        ))
                 .orElseGet(() -> ResponseEntity.status(400).body(generateApiResponse(null, "User does not exist")));
     }
 
     @PutMapping("/updateUserProfile")
-    public ResponseEntity<GeneralApiResponse<Object>> updateUser(@RequestBody User newUser) {
-        if(userRepository.findByEmail(newUser.getEmail()).isPresent()){
+    public ResponseEntity<GeneralApiResponse<Object>> updateUser(@RequestBody User newUser,
+                                                                 @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+        Optional<User> optionalUser = userRepository.findByEmail(newUser.getEmail());
+        if (optionalUser.isPresent()) {
+            if (!optionalUser.get().equals(user)) {
+                throw new IllegalArgumentException("Cannot update other user's profile");
+            }
             UserDisplayDto updatedUser = userService.updateUser(newUser);
             return ResponseEntity.status(200).body(generateApiResponse(updatedUser, "User has been successfully updated"));
         }
@@ -99,23 +104,19 @@ public class UserController extends Utility {
 
     @PutMapping("/{userId}")
     public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("userId") Integer userId) {
-            userService.deleteUser(userId);
-            return ResponseEntity.ok(generateApiResponse(null, String.format("User %d Deleted Successfully", userId)));
+        userService.deleteUser(userId);
+        return ResponseEntity.ok(generateApiResponse(null, String.format("User %d Deleted Successfully", userId)));
 
     }
 
     @PutMapping("/updateUserImage")
-    public ResponseEntity<GeneralApiResponse<Object>> updateProfileImage(@RequestParam("profileImage")MultipartFile profileImage,
-                                             @RequestParam("imageName") String imageName,
-                                             @RequestParam("userId") Integer userId) {
-        try{
-            if(userRepository.findById(userId).isPresent()){
-                amazonS3Service.uploadFile(profileImage, imageName, "user_profile");
-                return ResponseEntity.ok(generateApiResponse(userService.updateProfileImage(imageName, userId),"Profile Image Uploaded Successfully."));
-            } else {
-                return ResponseEntity.status(400).body(generateApiResponse(userService.updateProfileImage(imageName, userId),"Profile Image Uploaded Failed."));
-            }
-
+    public ResponseEntity<GeneralApiResponse<Object>> updateProfileImage(@RequestParam("profileImage") MultipartFile profileImage,
+                                                                         @RequestParam("imageName") String imageName,
+                                                                         @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+        try {
+            amazonS3Service.uploadFile(profileImage, imageName, "user_profile");
+            return ResponseEntity.ok(generateApiResponse(userService.updateProfileImage(imageName, user.getUserId()), "Profile Image Uploaded Successfully."));
         } catch (AmazonS3Exception e) {
             String errorCode = e.getErrorCode();
             if ("AccessDenied".equals(errorCode)) {
@@ -127,7 +128,5 @@ public class UserController extends Utility {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction."));
             }
         }
-
     }
-
 }
