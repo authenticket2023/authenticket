@@ -15,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
@@ -47,4 +48,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     //getting all orders by event id
     List<Order> findAllByEventEventId(Integer eventId, Pageable pageable);
+
+    boolean existsByOrderIdAndUser(Integer orderId, User user);
+
 }

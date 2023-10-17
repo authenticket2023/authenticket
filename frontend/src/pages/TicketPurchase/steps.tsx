@@ -269,6 +269,7 @@ export function EnterDetailsFace(props: any) {
     };
 
     const token = window.localStorage.getItem('accessToken');
+    const currUserEmail: any = window.localStorage.getItem('email');
     const delay = (ms: number) => new Promise(
         resolve => setTimeout(resolve, ms)
     );
@@ -294,8 +295,10 @@ export function EnterDetailsFace(props: any) {
             const formData = new FormData();
             const file = files[0];
             formData.append('image', file);
+            //add in email for facial api to verify the token
+            formData.append('email', currUserEmail);
 
-            fetch(`http://13.228.86.148:8000/api/face/checkImage`, {
+            fetch(`${process.env.REACT_APP_FACIAL_URL}/face/image-verification`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },

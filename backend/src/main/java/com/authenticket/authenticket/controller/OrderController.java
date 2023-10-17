@@ -14,10 +14,13 @@ import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
+import com.authenticket.authenticket.service.JwtService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.OrderServiceImpl;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import com.itextpdf.text.DocumentException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -47,7 +50,6 @@ public class OrderController extends Utility {
     public final OrderServiceImpl orderService;
     private final OrderRepository orderRepository;
     private final OrderDtoMapper orderDtoMapper;
-    private final UserRepository userRepository;
     private final TicketServiceImpl ticketService;
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
@@ -56,14 +58,12 @@ public class OrderController extends Utility {
     public OrderController(OrderServiceImpl orderService,
                            OrderRepository orderRepository,
                            OrderDtoMapper orderDtoMapper,
-                           UserRepository userRepository,
                            TicketServiceImpl ticketService,
                            TicketRepository ticketRepository,
                            EventRepository eventRepository) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
-        this.userRepository = userRepository;
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
         this.eventRepository = eventRepository;
@@ -116,7 +116,17 @@ public class OrderController extends Utility {
 
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<GeneralApiResponse<Object>> findById(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> findById(@PathVariable(value = "orderId") Integer orderId,
+                                                               @NonNull HttpServletRequest request) {
+       boolean isAdmin = isAdminRequest(request);
+       if (!isAdmin) {
+           User user = retrieveUserFromRequest(request);
+
+           if (!orderRepository.existsByOrderIdAndUser(orderId, user)) {
+               throw new NonExistentException("Cannot view order of other users");
+           }
+       }
+
         OrderDisplayDto orderDisplayDto = orderService.findById(orderId);
         if (orderDisplayDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Order with id %d not found", orderId)));
@@ -125,7 +135,17 @@ public class OrderController extends Utility {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllOrderByUserId(@PathVariable(value = "userId") Integer userId, Pageable pageable) {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllOrderByUserId(@PathVariable(value = "userId") Integer userId,
+                                                                           Pageable pageable,
+                                                                           @NonNull HttpServletRequest request) {
+        boolean isAdmin = isAdminRequest(request);
+        if (!isAdmin) {
+            User user = retrieveUserFromRequest(request);
+            if (user.getUserId() != userId) {
+                throw new NonExistentException("Cannot view orders of other users");
+            }
+        }
+
         List<OrderDisplayDto> eventList = orderService.findAllOrderByUserId(userId, pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No orders found"));
@@ -162,13 +182,12 @@ public class OrderController extends Utility {
     }
 
     @PostMapping
-    public ResponseEntity<GeneralApiResponse<Object>> saveOrder(@RequestParam(value = "userId") Integer userId,
-                                                        @RequestParam(value = "eventId") Integer eventId,
-                                                        @RequestParam(value = "sectionId") String sectionId,
-                                                        @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase,
-                                                        @RequestParam(value = "ticketHolderString", required = false) String ticketHolderString) {
-        Optional<User> userOptional = userRepository.findById(userId);
-
+    public ResponseEntity<GeneralApiResponse<Object>> saveOrder(@RequestParam(value = "eventId") Integer eventId,
+                                                                @RequestParam(value = "sectionId") String sectionId,
+                                                                @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase,
+                                                                @RequestParam(value = "ticketHolderString", required = false) String ticketHolderString,
+                                                                @NonNull HttpServletRequest request) {
+        User purchaser = retrieveUserFromRequest(request);
         checkIfEventExistsAndIsApprovedAndNotDeleted(eventId);
 
         Event event = eventRepository.findById(eventId).orElse(null);
@@ -193,66 +212,63 @@ public class OrderController extends Utility {
             }
         }
 
-
-        if (userOptional.isPresent()) {
-            User purchaser = userOptional.get();
-            List<Ticket> ticketList = ticketService.allocateSeats(eventId, sectionId, ticketsToPurchase);
-            Double orderAmount = 0.0;
-            for (Ticket ticket : ticketList) {
-                orderAmount += ticket.getTicketPricing().getPrice();
-            }
-            Set<Ticket> ticketSet = new HashSet<>(ticketList);
-
-            Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser,event,ticketSet);
-
-            Order savedOrder = orderService.saveOrder(newOrder);
-
-            List<Ticket> updatedTicketList = ticketList.stream()
-                    .peek(ticket -> ticket.setOrder(savedOrder))
-                    .collect(Collectors.toList());
-
-
-            //check if event is enhanced and if ticket holder provided is == ticketsToPurchase
-            if (event != null && event.getIsEnhanced()) {
-
-                for (int i = 0; i < ticketHolderList.size(); i++) {
-                    String ticketHolder = ticketHolderList.get(i);
-                    Ticket ticket = updatedTicketList.get(i);
-                    ticket.setTicketHolder(ticketHolder);
-
-                }
-            }
-            ticketRepository.saveAll(updatedTicketList);
-            OrderDisplayDto savedOrderDto = orderDtoMapper.apply(orderRepository.findById(savedOrder.getOrderId()).get());
-
-            return ResponseEntity.ok(generateApiResponse(savedOrderDto, "Order successfully recorded"));
+        List<Ticket> ticketList = ticketService.allocateSeats(eventId, sectionId, ticketsToPurchase);
+        Double orderAmount = 0.0;
+        for (Ticket ticket : ticketList) {
+            orderAmount += ticket.getTicketPricing().getPrice();
         }
-        throw new NonExistentException("User does not exist does not exist");
+        Set<Ticket> ticketSet = new HashSet<>(ticketList);
+
+        Order newOrder = new Order(null, orderAmount, LocalDate.now(), Order.Status.PROCESSING.getStatusValue(), purchaser, event, ticketSet);
+
+        Order savedOrder = orderService.saveOrder(newOrder);
+
+        List<Ticket> updatedTicketList = ticketList.stream()
+                .peek(ticket -> ticket.setOrder(savedOrder))
+                .collect(Collectors.toList());
+
+
+        //check if event is enhanced and if ticket holder provided is == ticketsToPurchase
+        if (event != null && event.getIsEnhanced()) {
+
+            for (int i = 0; i < ticketHolderList.size(); i++) {
+                String ticketHolder = ticketHolderList.get(i);
+                Ticket ticket = updatedTicketList.get(i);
+                ticket.setTicketHolder(ticketHolder);
+
+            }
+        }
+        ticketRepository.saveAll(updatedTicketList);
+        OrderDisplayDto savedOrderDto = orderDtoMapper.apply(orderRepository.findById(savedOrder.getOrderId()).get());
+
+        return ResponseEntity.ok(generateApiResponse(savedOrderDto, "Order successfully recorded"));
     }
 
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateOrder(@RequestParam(value = "orderId") Integer orderId,
-                                                          @RequestParam(value = "orderAmount") Double orderAmount,
-                                                          @RequestParam(value = "orderStatus") String orderStatus,
-                                                          @RequestParam(value = "userId") Integer userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+                                                                  @RequestParam(value = "orderAmount") Double orderAmount,
+                                                                  @RequestParam(value = "orderStatus") String orderStatus,
+                                                                  @NonNull HttpServletRequest request) {
+        User purchaser = retrieveUserFromRequest(request);
+
         Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if (userOptional.isPresent() && orderOptional.isPresent()) {
-            Order existingOrder = orderOptional.get();
-            User purchaser = userOptional.get();
-            OrderUpdateDto newOrder = new OrderUpdateDto(existingOrder.getOrderId(), orderAmount, existingOrder.getPurchaseDate(), orderStatus, purchaser);
-            orderDtoMapper.update(newOrder, existingOrder);
-            orderService.saveOrder(existingOrder);
-            return ResponseEntity.ok(generateApiResponse(newOrder, "Order successfully updated"));
-        } else if (userOptional.isEmpty()) {
-            throw new NonExistentException("User", userId);
+        if (orderOptional.isEmpty()) {
+            throw new NonExistentException("Order", orderId);
         }
-        throw new NonExistentException("Order", orderId);
+
+        Order existingOrder = orderOptional.get();
+        if (existingOrder.getUser() != purchaser) {
+            throw new IllegalArgumentException("Unable to update other user's order");
+        }
+
+        OrderUpdateDto newOrder = new OrderUpdateDto(existingOrder.getOrderId(), orderAmount, existingOrder.getPurchaseDate(), orderStatus, purchaser);
+        orderDtoMapper.update(newOrder, existingOrder);
+        orderService.saveOrder(existingOrder);
+        return ResponseEntity.ok(generateApiResponse(newOrder, "Order successfully updated"));
     }
 
-    //remove ticket from order and database
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> removeOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
@@ -261,23 +277,38 @@ public class OrderController extends Utility {
     }
 
     @PutMapping("/cancel/{orderId}")
-    public ResponseEntity<GeneralApiResponse<Object>> cancelOrder(@PathVariable(value = "orderId") Integer orderId) {
-        if (orderRepository.findById(orderId).isEmpty()) {
+    public ResponseEntity<GeneralApiResponse<Object>> cancelOrder(@PathVariable(value = "orderId") Integer orderId,
+                                                                  @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isEmpty()) {
+
             throw new NonExistentException("Order does not exist");
         }
-        orderService.cancelOrder(orderRepository.findById(orderId).get());
 
-        
+        Order order = orderOptional.get();
+        if (order.getUser() != user) {
+           throw new IllegalArgumentException("Unable to cancel other user's order");
+        }
+
+        orderService.cancelOrder(order);
+
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
     }
 
     @PutMapping("/complete/{orderId}")
-    public ResponseEntity<GeneralApiResponse<Object>> complete(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> complete(@PathVariable(value = "orderId") Integer orderId,
+                                                               @NonNull HttpServletRequest request) {
+        // throws error if request does not have a valid user
+        retrieveUserFromRequest(request);
+
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
 
         orderService.completeOrder(orderRepository.findById(orderId).get());
+
 
         return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
     }

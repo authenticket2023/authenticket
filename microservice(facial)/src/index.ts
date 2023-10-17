@@ -7,8 +7,6 @@ const faceapi = require("@vladmandic/face-api/dist/face-api.node.js");
 const fileupload = require("express-fileupload");
 const bodyParser = require('body-parser')
 const mongoose = require("mongoose");
-const { Canvas, Image } = require("canvas");
-const canvas = require("canvas");
 
 //to access the variable in .env file as : process.env.{variableName}
 const app = express();
@@ -25,13 +23,13 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 
 // Mount REST on /api
-app.use('/api', services);
+app.use('/api/v2', services);
 
 const port = process.env.PORT || 8000;
 
 //connect to mongoDB
 mongoose.connect(
-	`mongodb+srv://authenticket:Qwerty123@authenticket.yibufxm.mongodb.net/AuthenTicket?retryWrites=true&w=majority`,
+	process.env.DB_URL,
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
