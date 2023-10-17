@@ -11,6 +11,7 @@ import { InitMap } from "./VenueMap";
 import DisplayEvent from "./displayEvent";
 import CircularProgress from "@mui/material/CircularProgress";
 import DisplayPast from "./displayPast";
+import Card from "@mui/material/Card"
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -91,18 +92,9 @@ export const VenueDetails: React.FC = (): JSX.Element => {
           setPast(pastArr);
           setPastLoad(true);
         } else {
-          //display alert, for fetch fail
-          setOpenSnackbar(true);
-          setAlertType("error");
-          setAlertMsg(
-            `Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`
-          );
         }
       })
       .catch((err) => {
-        setOpenSnackbar(true);
-        setAlertType("error");
-        setAlertMsg(`Oops something went wrong! Error : ${err}`);
       });
   };
 
@@ -281,9 +273,26 @@ export const VenueDetails: React.FC = (): JSX.Element => {
                     direction={"column"}
                     justifyContent={"center"}
                   >
-                    <Typography marginLeft={8} sx={{ fontWeight: "bold" }}>
-                      Past Events
-                    </Typography>
+                    {past.length != 0 ? (
+                      <Typography marginLeft={8} sx={{ fontWeight: "bold" }}>
+                        Past Events
+                      </Typography>
+                    ) : null}
+                    {past.length == 0 ? (
+                      <Card elevation={8}>
+                      <div
+                      style={{
+                        height: "300px",
+                        display: "flex",
+                        justifyContent: "center",
+                        backgroundPositionY: "center",
+                        backgroundSize: "cover",
+                        backgroundImage: `url('${process.env.REACT_APP_S3_URL}/venue_image/${venueDetails.venueImage}')`,
+                        flexDirection: "column",
+                      }}
+                      ></div>
+                      </Card>
+                    ) : null}
                     {past.map((event: any, index: any) => (
                       <React.Fragment key={index}>
                         <Box paddingLeft={8} paddingRight={8}>
