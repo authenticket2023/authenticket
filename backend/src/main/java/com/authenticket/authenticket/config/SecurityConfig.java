@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v2/event/presale-event").permitAll()// to be review (isPresaleEvent)
                         .requestMatchers(HttpMethod.GET, "/api/v2/event/presale-status").permitAll()//to be reviewed (checkPresaleStatus)
                         .requestMatchers(HttpMethod.GET, "/api/v2/event/user-selected").hasAuthority("USER")//to be reviewed (checkIfUserSelected)
-                        .requestMatchers(HttpMethod.GET, "/api/v2/event/selected-users").hasAuthority("USER")//to be reviewed (getEventSelectedUsers)
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/selected-users").hasAuthority("ADMIN")//to be reviewed (getEventSelectedUsers)
 
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser").hasAuthority("ORGANISER")

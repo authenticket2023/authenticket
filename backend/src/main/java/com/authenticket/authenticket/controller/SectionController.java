@@ -28,7 +28,7 @@ import java.util.List;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/section")
+@RequestMapping("/api/v2/section")
 public class SectionController extends Utility {
 
     private final SectionServiceImpl sectionService;
