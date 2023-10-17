@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Mock;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +37,12 @@ class AuthenticationServiceImplTest {
 
     private AuthenticationServiceImpl underTest;
 
+    private JwtServiceImpl jwtServiceImpl;
+
+    private EmailServiceImpl emailServiceImpl;
+    @Mock
+    private JavaMailSenderImpl mailSender;
+
     @Mock
     private UserRepository userRepository;
 
@@ -45,14 +52,9 @@ class AuthenticationServiceImplTest {
     @Mock
     private EventOrganiserRepository organiserRepository;
 
-    @InjectMocks
-    private JwtServiceImpl jwtServiceImpl;
-
     @Mock
     private AuthenticationManager authenticationManager;
 
-    @InjectMocks
-    private EmailServiceImpl emailServiceImpl;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -62,6 +64,8 @@ class AuthenticationServiceImplTest {
         UserDtoMapper userDtoMapper = new UserDtoMapper(passwordEncoder);
         AdminDtoMapper adminDtoMapper = new AdminDtoMapper(passwordEncoder);
         EventOrganiserDtoMapper eventOrgDtoMapper = new EventOrganiserDtoMapper(passwordEncoder, adminDtoMapper);
+        jwtServiceImpl = new JwtServiceImpl();
+        emailServiceImpl = new EmailServiceImpl(mailSender);
         underTest = new AuthenticationServiceImpl(
                 userRepository,
                 adminRepository,
@@ -77,6 +81,31 @@ class AuthenticationServiceImplTest {
     }
     //anything that requires the jwt service cannot be tested as secret key cannot be parsed it
     //anything that requires email service cannot be replicate either
+    @Test
+    public void testUserRegisterUserExists() {
+        // Mock data
+        String email = "test@example.com";
+        User user = User.builder()
+                .userId(99)
+                .name("Georgia")
+                .email(email)
+                .password("password")
+                .dateOfBirth(LocalDate.now())
+                .profileImage(null)
+                .enabled(false)
+                .build();
+
+        // Mock repository behavior to simulate an existing user
+        userRepository.save(user);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        // Test the method and expect an exception
+        //IllegalArgumentException thrown due to limitations in jwtServiceImpl and its secret
+        assertThrows(IllegalArgumentException.class, () -> underTest.userRegister(user));
+
+        // Verify interactions
+        verify(userRepository, times(1)).findByEmail(user.getEmail());
+    }
 
     @Test
     public void testOrgRegisterOrganiserExists() {
@@ -98,8 +127,9 @@ class AuthenticationServiceImplTest {
                 .build();
 
         // Mock repository behavior to simulate an existing event organiser
-        when(organiserRepository.findByEmail(eventOrg.getEmail())).thenReturn(Optional.of(eventOrg));
         organiserRepository.save(eventOrg);
+        when(organiserRepository.findByEmail(eventOrg.getEmail())).thenReturn(Optional.of(eventOrg));
+
         // Test the method and expect an exception
         assertThrows(AlreadyExistsException.class, () -> underTest.orgRegister(eventOrg));
 
@@ -144,8 +174,9 @@ class AuthenticationServiceImplTest {
                 .build();
 
         // Mock repository behavior to simulate an existing user
-        when(adminRepository.findByEmail(admin.getEmail())).thenReturn(Optional.of(admin));
         adminRepository.save(admin);
+        when(adminRepository.findByEmail(admin.getEmail())).thenReturn(Optional.of(admin));
+
         // Test the method and expect an exception
         assertThrows(AlreadyExistsException.class, () -> underTest.adminRegister(admin));
 
