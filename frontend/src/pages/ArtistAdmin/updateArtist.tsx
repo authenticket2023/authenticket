@@ -55,6 +55,7 @@ export default function UpdateArtist(props: any) {
     const [reviewOpen, setReviewOpen] = React.useState(true);
     const [artistName, setArtistName]: any = React.useState(null);
     const [artistImage, setArtistImage]: any = React.useState(null);
+    const [imageName, setImageName]: any = React.useState(null);
 
     const handleReviewEventModalClose = () => {
         setReviewOpen(false);
@@ -113,6 +114,8 @@ export default function UpdateArtist(props: any) {
             if (fileUploaded) {
                 formData.append('artistImage', selectedFile);
             }
+            formData.append('imageName', imageName);
+            formData.append('artistId', artistID);
 
             fetch(`${process.env.REACT_APP_BACKEND_URL}/artist/image`, {
                 headers: {
@@ -126,7 +129,7 @@ export default function UpdateArtist(props: any) {
                     if (response.status == 200) {
                         props.setOpenSnackbar(true);
                         props.setAlertType('success');
-                        props.setAlertMsg(`Image for Artist ID ${artistID} has been successfully updated!`);
+                        props.setAlertMsg(`Artist ID ${artistID} has been successfully updated!`);
                         setReviewOpen(false);
                         //to update parent element
                         props.open(false);
@@ -150,6 +153,11 @@ export default function UpdateArtist(props: any) {
     const handleUpdate = (event: any) => {
         event.preventDefault();
         updateArtistStatus();
+    }
+
+    const handleImageName = (event: any) => {
+        const name = event.target.value;
+        setImageName(name);
     }
 
     // Generate a unique query parameter based on the current time
@@ -205,6 +213,17 @@ export default function UpdateArtist(props: any) {
                                         label="Artist name"
                                         fullWidth
                                         defaultValue={artistName}
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12} sm={4}>
+                                    <TextField
+                                        required
+                                        id="outlined-required"
+                                        label="Image name"
+                                        fullWidth
+                                        defaultValue={imageName}
+                                        onChange={handleImageName}
                                     />
                                 </Grid>
 

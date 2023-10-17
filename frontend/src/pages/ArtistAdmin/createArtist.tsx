@@ -1,6 +1,6 @@
 import {
     Box, Typography, Modal,
-    Grid, Button, ListItemText, CardMedia, TextareaAutosize, TextField, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ImageListItem, ImageList
+    Grid, Button, ListItemText, CardMedia, TextareaAutosize, TextField, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ImageListItem, ImageList, Snackbar, Alert
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Sheet } from '@mui/joy';
@@ -281,6 +281,13 @@ export default function CreateArtist(props: any) {
                     </Box>
                 </Modal>
                 : null}
+
+            {/* success / error feedback */}
+            <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
 
         </div>
     )

@@ -59,41 +59,46 @@ export function AllArtist() {
 
     //for datatable
     const columns = ["Artist ID", "Name", "Image",
-        // {
-        //     name: "Event Date",
-        //     options: {
-        //         customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
-        //     }
-        // },
-        // {
-        //     name: "Ticket Sale Date",
-        //     options: {
-        //         customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
-        //     }
-        // },
-        // {
-        //     name: "Deleted At",
-        //     options: {
-        //         customBodyRender: (value: any) => {
-        //             const getColor = (value: string) => {
-        //                 if (value === null) {
-        //                     return 'black';
-        //                 } else {
-        //                     return 'red';
-        //                 }
-        //             };
-        //             return (
-
-        //                 <Typography style={{ color: getColor(value) }}>
-        //                     {
-        //                         value == null ? "-" :
-        //                             new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })
-        //                     }
-        //                 </Typography>
-        //             )
-        //         }
-        //     }
-        // },
+    {
+        name: "Created At",
+        options: {
+            customBodyRender: (value: any) => (
+                <span>{new Date(value.split('.')[0]).toLocaleString('en-US', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+            )
+        }
+    },
+    {
+        name: "Updated At",
+        options: {
+            customBodyRender: (value: any) => (
+                <span>{new Date(value.split('.')[0]).toLocaleString('en-US', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+            )
+        }
+    },
+    {
+        name: "Deleted At",
+        options: {
+            customBodyRender: (value: any) => {
+                const getColor = (value: string) => {
+                    if (value === null) {
+                        return 'black';
+                    } else {
+                        return 'red';
+                    }
+                };
+                return (
+                    <Typography style={{ color: getColor(value) }}>
+                        {
+                            value == null ? "-" :
+                                new Date(value.split('.')[0]).toLocaleString('en-US', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })
+                        }
+                    </Typography>
+                )
+            }
+        }
+    }
+    
+        
     ];
     const [allArtistData, setAllArtistData]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -120,7 +125,7 @@ export function AllArtist() {
                     const data = apiResponse.data;
                     const fetchData: any = [];
                     data.forEach((artist: any) => {
-                        const row = [artist.artistId, artist.artistName, artist.artistImage]
+                        const row = [artist.artistId, artist.artistName, artist.artistImage, artist.createdAt, artist.updatedAt, artist.deletedAt]
                         fetchData.push(row)
                     });
                     setAllArtistData(fetchData);
