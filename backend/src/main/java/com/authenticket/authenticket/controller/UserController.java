@@ -69,9 +69,8 @@ public class UserController extends Utility {
         }
     }
 
-    @GetMapping("/interestedEvents")
-    public ResponseEntity<GeneralApiResponse<Object>> findEventsOfInterestToUser(@RequestParam("userId") Integer userId,
-                                                                                 @NonNull HttpServletRequest request) {
+    @GetMapping("/interested-events")
+    public ResponseEntity<GeneralApiResponse<Object>> findEventsOfInterestToUser(@NonNull HttpServletRequest request) {
         User user = retrieveUserFromRequest(request);
         List<Event> events = presaleService.findEventsByUser(user);
         return ResponseEntity.ok(generateApiResponse(events, "User has indicated interest for " + events.size() + " events."));
