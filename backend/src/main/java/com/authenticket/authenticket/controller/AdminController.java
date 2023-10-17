@@ -40,7 +40,7 @@ import java.util.Optional;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/admin")
+@RequestMapping("/api/v2/admin")
 public class AdminController extends Utility {
 
     private final AdminServiceImpl adminService;
@@ -86,7 +86,6 @@ public class AdminController extends Utility {
     //have to implement response entity
     @GetMapping("/test")
     public String test() {
-
         return "test successful";
     }
 
@@ -104,25 +103,7 @@ public class AdminController extends Utility {
         return ResponseEntity.status(404).body(generateApiResponse(null, "Admin does not exist"));
     }
 
-    @PostMapping("/saveAdmin")
-    public ResponseEntity<GeneralApiResponse<Object>> saveAdmin(@RequestParam(value = "name") String name,
-                                                        @RequestParam("email") String email,
-                                                        @RequestParam("password") String password) {
-        if (adminRepository.findByEmail(email).isEmpty()) {
-            Admin newAdmin = Admin
-                    .builder()
-                    .adminId(null)
-                    .name(name)
-                    .email(email)
-                    .password(passwordEncoder.encode(password))
-                    .build();
-            Admin savedAdmin = adminService.saveAdmin(newAdmin);
-            return ResponseEntity.status(200).body(generateApiResponse(adminDtoMapper.apply(savedAdmin), "Admin has been saved"));
-        }
-        return ResponseEntity.status(401).body(generateApiResponse(null, "Admin already exist"));
-    }
-
-    @PutMapping("/updateAdmin")
+    @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateAdmin(@RequestBody Admin newAdmin) {
         if (adminRepository.findByEmail(newAdmin.getEmail()).isPresent()) {
             AdminDisplayDto updatedAdmin = adminService.updateAdmin(newAdmin);
@@ -132,7 +113,7 @@ public class AdminController extends Utility {
         return ResponseEntity.status(404).body(generateApiResponse(null, "Admin does not exist"));
     }
 
-    @PutMapping("/updateEventOrganiser")
+    @PutMapping("/update-organiser")
     public ResponseEntity<GeneralApiResponse<Object>> updateEventOrganiser(@RequestParam("organiserId") Integer organiserId,
                                                                    @RequestParam(value = "name", required = false) String name,
                                                                    @RequestParam(value = "description", required = false) String description,
@@ -159,7 +140,7 @@ public class AdminController extends Utility {
         }
     }
 
-    @PutMapping("/updateEvent")
+    @PutMapping("/update-event")
     public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
                                          @RequestParam(value = "eventId") Integer eventId,
                                          @RequestParam(value = "eventName", required = false) String eventName,

@@ -46,5 +46,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findAllByOrderStatus(String orderStatus);
 
+    //getting all orders by event id
+    List<Order> findAllByEventEventId(Integer eventId, Pageable pageable);
+
     boolean existsByOrderIdAndUser(Integer orderId, User user);
+
 }

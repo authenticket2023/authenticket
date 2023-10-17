@@ -28,7 +28,7 @@ import java.util.Optional;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping(path = "/api/artist")
+@RequestMapping(path = "/api/v2/artist")
 public class ArtistController extends Utility {
     private final ArtistRepository artistRepository;
 
@@ -79,7 +79,7 @@ public class ArtistController extends Utility {
         return ResponseEntity.ok(generateApiResponse(saveArtist,"Artist created successfully"));
     }
 
-    @PutMapping("/{artistId}")
+    @PutMapping("/delete/{artistId}")
     public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("artistId") Integer artistId) {
         artistService.deleteArtist(artistId);
         return ResponseEntity.ok(generateApiResponse(null, String.format("Artist %d Deleted Successfully", artistId)));

@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/order")
+@RequestMapping("/api/v2/order")
 public class OrderController extends Utility {
     public final OrderServiceImpl orderService;
     private final OrderRepository orderRepository;
@@ -74,7 +74,7 @@ public class OrderController extends Utility {
         return "test successful";
     }
 
-    @GetMapping("/testPDF")
+    @GetMapping("/test-pdf")
     public ResponseEntity<?> testPDF() {
         // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
         try {
@@ -94,7 +94,7 @@ public class OrderController extends Utility {
         }
     }
 
-    @GetMapping("/testPDF2")
+    @GetMapping("/test-pdf2")
     public ResponseEntity<?> testPDF2() {
         // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
         try {
@@ -267,20 +267,8 @@ public class OrderController extends Utility {
         return ResponseEntity.ok(generateApiResponse(newOrder, "Order successfully updated"));
     }
 
-    @PutMapping("/add-ticket")
-    public ResponseEntity<GeneralApiResponse<Object>> addTicketToOrder(@RequestParam(value = "ticketId") Integer ticketId,
-                                                                       @RequestParam(value = "orderId") Integer orderId) {
-        return ResponseEntity.ok(generateApiResponse(orderService.addTicketToOrder(ticketId, orderId), "Ticket added successfully"));
-    }
-
-    @PutMapping("/remove-ticket")
-    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@RequestParam(value = "ticketId") Integer ticketId,
-                                                                          @RequestParam(value = "orderId") Integer orderId) {
-        return ResponseEntity.ok(generateApiResponse(orderService.removeTicketInOrder(ticketId, orderId), "Ticket added successfully"));
-    }
-
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<GeneralApiResponse<Object>> removeTicketInOrder(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> removeOrder(@PathVariable(value = "orderId") Integer orderId) {
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
@@ -295,6 +283,7 @@ public class OrderController extends Utility {
 
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         if (orderOptional.isEmpty()) {
+
             throw new NonExistentException("Order does not exist");
         }
 
@@ -306,11 +295,6 @@ public class OrderController extends Utility {
         orderService.cancelOrder(order);
 
         return ResponseEntity.ok(generateApiResponse(null, "Order cancelled successfully"));
-
-//         HttpHeaders headers = new HttpHeaders();
-//         headers.add("Location", "http://localhost:3000/cancel/"+orderId);
-//         return ResponseEntity.status(200).headers(headers).body(generateApiResponse(null, "Order cancelled successfully"));
-
     }
 
     @PutMapping("/complete/{orderId}")
@@ -318,6 +302,7 @@ public class OrderController extends Utility {
                                                                @NonNull HttpServletRequest request) {
         // throws error if request does not have a valid user
         retrieveUserFromRequest(request);
+
         if (orderRepository.findById(orderId).isEmpty()) {
             throw new NonExistentException("Order does not exist");
         }
@@ -326,11 +311,25 @@ public class OrderController extends Utility {
 
 
         return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
-
-//         Order completedOrder = orderService.completeOrder(orderRepository.findById(orderId).get());
-//         HttpHeaders headers = new HttpHeaders();
-//         headers.add("Location", "http://localhost:3000/success/"+orderId);
-//         return ResponseEntity.status(200).headers(headers).body(generateApiResponse(completedOrder, "Order completed successfully"));
-
     }
+
+    //getting all orders by event, for admin & organiser
+    @GetMapping("/event/{eventId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllOrdersByEvent(Pageable pageable,@PathVariable(value = "eventId") Integer eventId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if(event == null){
+            throw new NonExistentException("Event does not exist");
+        }
+        try {
+            List<OrderDisplayDto> orderList = orderService.findAllOrderByEventId(pageable,eventId);
+            if (orderList.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(orderList, String.format("No orders found for event id: %d.",eventId)));
+            } else {
+                return ResponseEntity.ok(generateApiResponse(orderList, String.format("Orders for event id: %d successfully returned.",eventId)));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+    }
+
 }
