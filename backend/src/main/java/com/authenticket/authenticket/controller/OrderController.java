@@ -116,7 +116,17 @@ public class OrderController extends Utility {
 
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<GeneralApiResponse<Object>> findById(@PathVariable(value = "orderId") Integer orderId) {
+    public ResponseEntity<GeneralApiResponse<Object>> findById(@PathVariable(value = "orderId") Integer orderId,
+                                                               @NonNull HttpServletRequest request) {
+       boolean isAdmin = isAdminRequest(request);
+       if (!isAdmin) {
+           User user = retrieveUserFromRequest(request);
+
+           if (!orderRepository.existsByOrderIdAndUser(orderId, user)) {
+               throw new NonExistentException("Cannot view order of other users");
+           }
+       }
+
         OrderDisplayDto orderDisplayDto = orderService.findById(orderId);
         if (orderDisplayDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("Order with id %d not found", orderId)));
@@ -125,7 +135,17 @@ public class OrderController extends Utility {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllOrderByUserId(@PathVariable(value = "userId") Integer userId, Pageable pageable) {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllOrderByUserId(@PathVariable(value = "userId") Integer userId,
+                                                                           Pageable pageable,
+                                                                           @NonNull HttpServletRequest request) {
+        boolean isAdmin = isAdminRequest(request);
+        if (!isAdmin) {
+            User user = retrieveUserFromRequest(request);
+            if (user.getUserId() != userId) {
+                throw new NonExistentException("Cannot view orders of other users");
+            }
+        }
+
         List<OrderDisplayDto> eventList = orderService.findAllOrderByUserId(userId, pageable);
         if (eventList == null || eventList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(null, "No orders found"));

@@ -74,7 +74,7 @@ public class SecurityConfig {
 // AUT-169 branch
                         .requestMatchers(HttpMethod.PUT,"/api/order/complete/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/order/cancel/**").permitAll()
-                        .requestMatchers( "/api/order/**").hasAuthority("USER")
+                        .requestMatchers( "/api/order/**").hasAnyAuthority("USER", "ADMIN")
 //                        .requestMatchers(HttpMethod.GET, "/api/order/testPDF").hasAuthority("USER")
 //                        .requestMatchers(HttpMethod.GET, "/api/order/testPDF2").hasAuthority("USER")
 //                        .requestMatchers(HttpMethod.GET, "/api/order/{orderId}").hasAuthority("USER")
