@@ -88,6 +88,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v2/user/interested-events").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/v2/user").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/api/v2/user/image").hasAuthority("USER")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v2/user/interested-events").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET,"/api/v2/user/{userId}").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/api/v2/user/delete/{userId}").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/v2/user").hasAuthority("ADMIN")
