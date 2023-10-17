@@ -3,6 +3,8 @@ package com.authenticket.authenticket.dto.artist;
 import com.authenticket.authenticket.model.Artist;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -29,13 +31,17 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
     }
 
     public ArtistDisplayDto applyArtistDisplayDto(Object[] obj){
+        LocalDateTime deletedAtTimeStamp = null;
+        if (obj[5] != null){
+            deletedAtTimeStamp = ((Timestamp)obj[5]).toLocalDateTime();
+        }
         return new ArtistDisplayDto(
                 (Integer) obj[0],
                 (String) obj[1],
                 (String) obj[2],
-                (LocalDateTime) obj[3],
-                (LocalDateTime) obj[4],
-                (LocalDateTime) obj[5]
+                ((Timestamp)obj[3]).toLocalDateTime(),
+                ((Timestamp)obj[4]).toLocalDateTime(),
+                deletedAtTimeStamp
         );
     }
 
