@@ -5,7 +5,6 @@ import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.FeaturedEvent;
-import com.authenticket.authenticket.model.Section;
 import org.springframework.data.domain.Pageable;
 
 import java.util.*;
@@ -21,6 +20,8 @@ public interface EventService {
     OverallEventDto findEventById(Integer eventId);
 
     //get methods
+
+    List<EventHomeDto> findEventsByOrganiserAndEnhancedStatus(Integer organiserId, Boolean enhanced);
     List<EventHomeDto> findRecentlyAddedEvents(Pageable pageable);
 
     List<FeaturedEventDto> findFeaturedEvents(Pageable pageable);
