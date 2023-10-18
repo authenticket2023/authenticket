@@ -104,5 +104,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                      "WHERE e.event_id = :eventId " )
      void deleteAllArtistByEventId(@Param("eventId") Integer eventId);
 
-
+    //FOR CHECK IN
+    //find all event by organiser and enhanced status
+    List<Event> findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullAndIsEnhancedAndOrganiserOrganiserIdOrderByEventDateAsc(String reviewStatus, LocalDateTime currentDate, Boolean enhanced, Integer organiserId);
 }

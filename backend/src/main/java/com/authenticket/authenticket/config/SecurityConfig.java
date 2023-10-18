@@ -61,6 +61,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v2/event/user-selected").hasAuthority("USER")//to be reviewed (checkIfUserSelected)
                         .requestMatchers(HttpMethod.GET, "/api/v2/event/selected-users").hasAuthority("ADMIN")//to be reviewed (getEventSelectedUsers)
 
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/enhanced").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/not-enhanced").hasAuthority("ORGANISER")
+
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser").hasAuthority("ORGANISER")
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/{organiserId}").permitAll()

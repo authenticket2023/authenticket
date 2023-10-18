@@ -231,6 +231,41 @@ public class EventController extends Utility {
         }
     }
 
+    @GetMapping("/event/enhanced")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEnhancedEventForOrg(@NonNull HttpServletRequest request) {
+        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+        Integer organiserId = organiser.getOrganiserId();
+
+        try {
+            List<EventHomeDto> eventList = eventService.findEventsByOrganiserAndEnhancedStatus(organiserId, Boolean.TRUE);
+            if (eventList.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
+            } else {
+                return ResponseEntity.ok(generateApiResponse(eventList, "Enhanced events successfully returned."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/event/not-enhanced")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllNotEnhancedEventForOrg(@NonNull HttpServletRequest request) {
+        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+        Integer organiserId = organiser.getOrganiserId();
+
+        try {
+            List<EventHomeDto> eventList = eventService.findEventsByOrganiserAndEnhancedStatus(organiserId, Boolean.FALSE);
+            if (eventList.isEmpty()) {
+                return ResponseEntity.ok(generateApiResponse(eventList, "No events found."));
+            } else {
+                return ResponseEntity.ok(generateApiResponse(eventList, "Not enhanced events successfully returned."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
+        }
+    }
+
+
 
     @PostMapping("/event")
     public ResponseEntity<GeneralApiResponse<Object>> saveEvent(@RequestParam("file") MultipartFile file,

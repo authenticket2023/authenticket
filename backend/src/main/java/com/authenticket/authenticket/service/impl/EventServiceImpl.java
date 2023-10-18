@@ -370,5 +370,12 @@ public class EventServiceImpl implements EventService {
         return sectionDtoMapper.mapSectionTicketDetailsDto(ticketRepository.findAllTicketDetailsBySectionForEvent(event.getEventId()));
     }
 
-    ;
+    @Override
+    public List<EventHomeDto> findEventsByOrganiserAndEnhancedStatus(Integer organiserId, Boolean enhanced){
+        LocalDateTime currentDateTime = LocalDateTime.now();
+    List<EventHomeDto> eventHomeDtoList = eventDTOMapper.mapEventHomeDto(eventRepository.findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullAndIsEnhancedAndOrganiserOrganiserIdOrderByEventDateAsc
+            (Event.ReviewStatus.APPROVED.getStatusValue(), currentDateTime,enhanced,organiserId));
+
+    return eventHomeDtoList;
+}
 }
