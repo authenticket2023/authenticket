@@ -67,7 +67,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
   const loadPast = async () => {
     //call backend API
     fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/public/event/by-venue/past/${venueId}?page=0&size=3`,
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/venue/past/${venueId}?page=0&size=3`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +104,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
   const loadRelated = async () => {
     //call backend API
     fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/public/event/by-venue/1?page=0&size=25`,
+      `${process.env.REACT_APP_BACKEND_URL}/public/event/venue/1?page=0&size=25`,
       {
         headers: {
           "Content-Type": "application/json",

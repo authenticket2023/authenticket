@@ -227,7 +227,7 @@ export default function UpdateEvent(props: any) {
         const formData = new FormData();
         formData.append('eventId', eventID);
         formData.append('artistIdString', artistIdString);
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/event/updateEventArtist`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/event/update-artist`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -269,11 +269,6 @@ export default function UpdateEvent(props: any) {
             props.setOpenSnackbar(true);
             props.setAlertType('error');
             props.setAlertMsg("Invlid event/sale date!!!");
-        } else if (dayjs(eventDate).isBefore(dayjs(saleDate))) {
-            //show alert msg
-            props.setOpenSnackbar(true);
-            props.setAlertType('error');
-            props.setAlertMsg("Sale date cannot be after Event date!!!");
         } else {
             const formData = new FormData();
             formData.append('eventId', eventID);

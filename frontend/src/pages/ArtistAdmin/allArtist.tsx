@@ -186,7 +186,7 @@ export function AllArtist() {
         }
 
         selectedRows.forEach((artistId) => {
-            fetch(`${process.env.REACT_APP_BACKEND_URL}/artist/${artistId}`, {
+            fetch(`${process.env.REACT_APP_BACKEND_URL}/artist/delete/${artistId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
