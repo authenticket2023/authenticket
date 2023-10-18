@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { NavbarLoggedIn, NavbarNotLoggedIn } from '../../Navbar';
+import { NavbarOrganiser } from '../../Navbar';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -8,13 +8,18 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Grid } from '@mui/material';
 
-export const FAQ = () => {
+export const FAQOrganiser = () => {
     useEffect(() => {
     }, []);
     const token = window.localStorage.getItem('accessToken');
+    const role = window.localStorage.getItem('role');
+
     return (
         <div>
-            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
+            {
+                token != null && role == 'ORGANISER' ?
+                    <Navigate to="/HomeOrganiser" /> : <Navigate to="/Forbidden" />
+            }
             <h3 style={{marginLeft:170, marginTop:40}}>
                 Frequently Asked Questions
             </h3>
