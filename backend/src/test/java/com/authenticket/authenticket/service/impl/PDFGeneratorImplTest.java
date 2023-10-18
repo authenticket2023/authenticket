@@ -1,20 +1,15 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.service.JwtService;
 import com.authenticket.authenticket.service.QRCodeGenerator;
 import com.google.zxing.WriterException;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -206,13 +201,13 @@ class PDFGeneratorImplTest {
         byte[] qrCodeData = "MockedImageData".getBytes();
 
         // Mock the behavior of jwtService to generate a JWT token
-        when(jwtService.generateToken(ticket)).thenReturn(jwtToken);
+        when(jwtService.generateToken(ticket, LocalDateTime.now().plusHours(1))).thenReturn(jwtToken);
 
         // Mock the behavior of qrCodeGenerator to generate a QR code
         when(qrCodeGenerator.getQRCode(jwtToken, 350, 300)).thenReturn(qrCodeData);
 
         // Generate the ticket QR code
-        assertThrows(RuntimeException.class, () -> underTest.generateTicketQRCode(ticket));
+        assertThrows(RuntimeException.class, () -> underTest.generateTicketQRCode(ticket, LocalDateTime.now().plusHours(1)));
     }
     //Unable to unit test due to QRCode generation
 }

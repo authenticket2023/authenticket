@@ -5,6 +5,7 @@ import com.authenticket.authenticket.exception.ApiException;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.service.Utility;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -37,7 +38,6 @@ public class ApiExceptionHandler extends Utility {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
 
-        ex.printStackTrace();
         ApiException apiException = new ApiException(
                 "Access denied"
         );
@@ -49,7 +49,7 @@ public class ApiExceptionHandler extends Utility {
     public ResponseEntity<Object> handleInsufficientAuthentication(Exception ex) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
-        ex.printStackTrace();
+
         ApiException apiException = new ApiException(
                 "Access denied! Insufficient authentication to access this resource."
         );
@@ -58,13 +58,12 @@ public class ApiExceptionHandler extends Utility {
     }
 
     @ExceptionHandler({ExpiredJwtException.class})
-    public ResponseEntity<Object> handleExpiredJwtException(Exception ex) {
+    public ResponseEntity<Object> handleExpiredJwtException(JwtException ex) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
 
-        ex.printStackTrace();
         ApiException apiException = new ApiException(
-                "Token expired. Please log in again."
+                "Token expired."
         );
 
         return new ResponseEntity<>(apiException, status);
@@ -78,8 +77,6 @@ public class ApiExceptionHandler extends Utility {
         ApiException apiException = new ApiException(
                 "Something went wrong: " + e.getMessage()
         );
-
-        e.printStackTrace();
 
         return new ResponseEntity<>(apiException, status);
     }

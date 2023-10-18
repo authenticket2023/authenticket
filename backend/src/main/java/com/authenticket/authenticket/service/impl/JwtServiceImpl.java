@@ -7,11 +7,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -26,6 +29,12 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return (String) claims.get("role");
+    }
+
+    @Override
     public  <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -37,8 +46,15 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(Ticket ticket) {
-        return generateToken(new HashMap<>(), ticket);
+    public String generateToken(Ticket ticket, LocalDateTime expirationDate) {
+        return Jwts
+                .builder()
+                .claim("role", "ticket")
+                .setSubject(ticket.getTicketId().toString())
+                .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
+                .setExpiration(Timestamp.valueOf(expirationDate))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     @Override
@@ -57,17 +73,6 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(Map<String, Object> extraClaims, Ticket ticket) {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(ticket.getTicketHolder())
-                .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    @Override
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
@@ -75,7 +80,11 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isTokenExpired(String token){
-        return extractExpiration(token).before(new Date());
+        Date expirationDate = extractExpiration(token);
+        if (expirationDate == null) {
+            return false;
+        }
+        return expirationDate.before(new Date());
     }
 
     private Date extractExpiration(String token){

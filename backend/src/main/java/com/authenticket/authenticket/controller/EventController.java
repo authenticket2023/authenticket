@@ -1,17 +1,17 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.authenticket.authenticket.controller.response.AuthenticationUserResponse;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
+import com.authenticket.authenticket.exception.AwaitingVerificationException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
-import com.authenticket.authenticket.service.AmazonS3Service;
-import com.authenticket.authenticket.service.PresaleService;
-import com.authenticket.authenticket.service.TicketService;
-import com.authenticket.authenticket.service.Utility;
+import com.authenticket.authenticket.service.*;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,6 +66,8 @@ public class EventController extends Utility {
 
     private final TicketService ticketService;
 
+    private final JwtService jwtService;
+
     private static final int PRESALE_HOURS = 24;
 
     @Autowired
@@ -80,7 +83,8 @@ public class EventController extends Utility {
                            PresaleService presaleService,
                            UserRepository userRepository,
                            TaskScheduler taskScheduler,
-                           TicketService ticketService) {
+                           TicketService ticketService,
+                           JwtService jwtService) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
@@ -93,6 +97,7 @@ public class EventController extends Utility {
         this.userRepository = userRepository;
         this.taskScheduler = taskScheduler;
         this.ticketService = ticketService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/public/event/test")
@@ -667,5 +672,30 @@ public class EventController extends Utility {
         }
 
         return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true), "Returned list of users allowed in presale"));
+    }
+
+    @GetMapping("/event/valid-qr")
+    public ResponseEntity<GeneralApiResponse<Object>> getQR(@RequestParam("token")String token,
+                                                            @NonNull HttpServletRequest request) {
+        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+
+        if (jwtService.isTokenExpired(token)) {
+            throw new IllegalStateException("Ticket has expired");
+        }
+
+        if (!"ticket".equals(jwtService.extractRole(token))) {
+            throw new IllegalStateException("Token role is not valid");
+        }
+
+        String ticketId = jwtService.extractUsername(token);
+        try {
+            TicketDisplayDto dto = ticketService.findTicketById(Integer.parseInt(ticketId));
+            if (!eventRepository.existsEventByEventIdAndOrganiser(dto.eventId(), organiser)) {
+                throw new IllegalArgumentException("Ticket does not correspond to event by organiser");
+            }
+            return ResponseEntity.ok(generateApiResponse(dto, "Returned ticket details"));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Ticket ID for QR is not valid.");
+        }
     }
 }
