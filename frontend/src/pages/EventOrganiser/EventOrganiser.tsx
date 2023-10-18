@@ -163,7 +163,7 @@ export const EventOrganiser = () => {
             formData.append('ticketPrices', `${VIPPrice},${cat1Price},${cat2Price},${cat3Price},${cat4Price}`);
             formData.append('isEnhanced', facialCheckIn);
             formData.append('hasPresale', presale);
-            //TODO: add special requirement into formdata, pending BE
+
             //calling create event backend API
             fetch(`${process.env.REACT_APP_BACKEND_URL}/event`, {
                 headers: {
@@ -284,18 +284,6 @@ export const EventOrganiser = () => {
                             /> : null}
 
                             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                {/* <Button
-                                    color="inherit"
-                                    disabled={activeStep === 0}
-                                    onClick={handleBack}
-                                    sx={{ mr: 1 }}
-                                >
-                                    Back
-                                </Button>
-                                <Box sx={{ flex: '1 1 auto' }} />
-                                <Button onClick={handleNext} sx={{ mr: 1 }}>
-                                    Next
-                                </Button> */}
                                 {activeStep !== steps.length &&
                                     (completed[activeStep] ? (
                                         <Typography variant="caption" sx={{ display: 'inline-block' }}>

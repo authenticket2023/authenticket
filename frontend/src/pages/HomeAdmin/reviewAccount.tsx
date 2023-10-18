@@ -72,7 +72,7 @@ export default function ReviewAccount(props: any) {
         } else {
             formData.append('enabled', 'false');
         }
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/updateEventOrganiser`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/update-organiser`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
