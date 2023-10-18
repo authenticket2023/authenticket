@@ -50,6 +50,7 @@ public class JwtServiceImpl implements JwtService {
         return Jwts
                 .builder()
                 .claim("role", "ticket")
+                .claim("event", ticket.getOrder().getEvent().getEventName())
                 .setSubject(ticket.getTicketId().toString())
                 .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
                 .setExpiration(Timestamp.valueOf(expirationDate))

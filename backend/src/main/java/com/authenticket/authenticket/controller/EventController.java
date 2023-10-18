@@ -687,8 +687,8 @@ public class EventController extends Utility {
             throw new IllegalStateException("Token role is not valid");
         }
 
-        String ticketId = jwtService.extractUsername(token);
         try {
+            String ticketId = jwtService.extractUsername(token);
             TicketDisplayDto dto = ticketService.findTicketById(Integer.parseInt(ticketId));
             if (!eventRepository.existsEventByEventIdAndOrganiser(dto.eventId(), organiser)) {
                 throw new IllegalArgumentException("Ticket does not correspond to event by organiser");

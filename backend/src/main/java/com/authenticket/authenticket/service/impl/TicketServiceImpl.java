@@ -72,7 +72,7 @@ public class TicketServiceImpl implements TicketService {
             return ticketDisplayDtoOptional.get();
         }
 
-        throw new ApiRequestException("Ticket not found");
+        throw new NonExistentException("Ticket", ticketId);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class TicketServiceImpl implements TicketService {
                     .map(ticketDisplayDtoMapper)
                     .collect(Collectors.toList());
         }
-        throw new ApiRequestException("Order not found");
+        throw new NonExistentException("Order", orderId);
     }
 
     @Override

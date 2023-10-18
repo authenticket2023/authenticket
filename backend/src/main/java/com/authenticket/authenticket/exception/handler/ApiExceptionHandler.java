@@ -58,12 +58,20 @@ public class ApiExceptionHandler extends Utility {
     }
 
     @ExceptionHandler({ExpiredJwtException.class})
-    public ResponseEntity<Object> handleExpiredJwtException(JwtException ex) {
+    public ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException ex) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
 
+        if ("ticket".equals(ex.getClaims().get("role"))) {
+            ApiException apiException = new ApiException(
+                    "Event '" + ex.getClaims().get("event") + "' is over."
+            );
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<>(apiException, status);
+        }
         ApiException apiException = new ApiException(
-                "Token expired."
+                "Token expired. Please log in again."
         );
 
         return new ResponseEntity<>(apiException, status);
