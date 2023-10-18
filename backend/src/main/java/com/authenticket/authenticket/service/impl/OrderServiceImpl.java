@@ -257,7 +257,7 @@ public class OrderServiceImpl implements OrderService {
 
     public InputStreamResource test() throws FileNotFoundException, DocumentException {
         Order order = orderRepository.findById(1).orElse(null);
-        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0], LocalDateTime.now().plusMinutes(5));
+        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0], LocalDateTime.now().plusMinutes(30));
     }
 
     public InputStreamResource test2()  throws FileNotFoundException, DocumentException {
