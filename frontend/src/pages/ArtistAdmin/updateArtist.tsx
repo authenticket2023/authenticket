@@ -55,7 +55,6 @@ export default function UpdateArtist(props: any) {
     const [reviewOpen, setReviewOpen] = React.useState(true);
     const [artistName, setArtistName]: any = React.useState(null);
     const [artistImage, setArtistImage]: any = React.useState(null);
-    const [imageName, setImageName]: any = React.useState(null);
 
     const handleReviewEventModalClose = () => {
         setReviewOpen(false);
@@ -114,7 +113,7 @@ export default function UpdateArtist(props: any) {
             if (fileUploaded) {
                 formData.append('artistImage', selectedFile);
             }
-            formData.append('imageName', imageName);
+            formData.append('imageName', `${artistName}.jpeg`);
             formData.append('artistId', artistID);
 
             fetch(`${process.env.REACT_APP_BACKEND_URL}/artist/image`, {
@@ -153,11 +152,6 @@ export default function UpdateArtist(props: any) {
     const handleUpdate = (event: any) => {
         event.preventDefault();
         updateArtistStatus();
-    }
-
-    const handleImageName = (event: any) => {
-        const name = event.target.value;
-        setImageName(name);
     }
 
     // Generate a unique query parameter based on the current time
@@ -215,28 +209,6 @@ export default function UpdateArtist(props: any) {
                                         defaultValue={artistName}
                                     />
                                 </Grid>
-
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        required
-                                        id="outlined-required"
-                                        label="Image name"
-                                        fullWidth
-                                        defaultValue={imageName}
-                                        onChange={handleImageName}
-                                    />
-                                </Grid>
-
-                                {/* add dates in disabled fields */}
-                                {/* <Grid item xs={12} sm={2}>
-                                    <TextField
-                                        required
-                                        id="outlined-disabled"
-                                        label="Artist name"
-                                        fullWidth
-                                        defaultValue={artistName}
-                                    />
-                                </Grid> */}
                             </Grid>
 
                             <Button color="success" variant="contained" sx={{ mt: 3 }} onClick={handleUpdate}>Update</Button>

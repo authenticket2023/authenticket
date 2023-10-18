@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Typography, LinearProgress, Modal, Avatar, Grid, TextField, FormControlLabel,
-    Checkbox, FormControl, InputLabel, MenuItem, Select,
-    Switch, FormGroup, Button, ListItemText, OutlinedInput, Snackbar, Alert, IconButton, InputAdornment,
+    Box, Typography, LinearProgress, Modal, Grid,
+    Button, Snackbar, Alert, 
     Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";

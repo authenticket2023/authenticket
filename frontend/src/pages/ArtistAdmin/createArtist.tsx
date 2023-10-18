@@ -1,8 +1,8 @@
 import {
     Box, Typography, Modal,
-    Grid, Button, ListItemText, CardMedia, TextareaAutosize, TextField, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ImageListItem, ImageList, Snackbar, Alert
+    Grid, Button, TextField, ImageListItem, ImageList, Snackbar, Alert
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Sheet } from '@mui/joy';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
@@ -43,7 +43,6 @@ export default function CreateArtist(props: any) {
     const [isClicked, setIsClicked] = useState(false);
     const [artistName, setArtistName]: any = React.useState(null);
     const [artistImage, setArtistImage]: any = React.useState(null);
-    const [imageName, setImageName]: any = React.useState(null);
 
     //for pop up message => error , warning , info , success
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -126,9 +125,8 @@ export default function CreateArtist(props: any) {
         setArtistName(name);
     }
 
-    const handleImageName = (event: any) => {
-        const name = event.target.value;
-        setImageName(name);
+    const handleReload = () => {
+        props.setReload(true);
     }
 
     //update artist image
@@ -138,7 +136,7 @@ export default function CreateArtist(props: any) {
             if (fileUploaded) {
                 formData.append('artistImage', selectedFile);
             }
-            formData.append('imageName', imageName);
+            formData.append('imageName', `${artistName}.jpeg`);
             formData.append('artistId', props);
 
             fetch(`${process.env.REACT_APP_BACKEND_URL}/artist/image`, {
@@ -155,6 +153,7 @@ export default function CreateArtist(props: any) {
                         setAlertType('success');
                         setAlertMsg(`Artist has been successfully created!`);
                         setReviewOpen(false);
+                        handleReload();
                     } else {
                         setOpenSnackbar(true);
                         setAlertType('error');
@@ -260,17 +259,6 @@ export default function CreateArtist(props: any) {
                                         fullWidth
                                         defaultValue={artistName}
                                         onChange={handleArtistName}
-                                    />
-                                </Grid>
-
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        required
-                                        id="outlined-required"
-                                        label="Image name"
-                                        fullWidth
-                                        defaultValue={imageName}
-                                        onChange={handleImageName}
                                     />
                                 </Grid>
                             </Grid>
