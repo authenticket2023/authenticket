@@ -50,19 +50,37 @@ public class ArtistController extends Utility {
         return "test successful";
     }
 
+    /**
+     * Retrieve a list of all artists.
+     *
+     * This endpoint is mapped to an HTTP GET request and is used to retrieve a list of all artists.
+     *
+     * @return A ResponseEntity with a GeneralApiResponse containing a list of artists if they exist, or a message
+     *         indicating that no artists were found.
+     */
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllArtist() {
 
         List<ArtistDisplayDto> artistList = artistService.findAllArtists();
         if(artistList.isEmpty()){
             return ResponseEntity.ok(generateApiResponse(artistList, "No artists found."));
-
         } else{
             return ResponseEntity.ok(generateApiResponse(artistList, "Artists successfully returned."));
-
         }
     }
 
+
+    /**
+     * Retrieve an artist by their unique identifier.
+     *
+     * This endpoint is mapped to an HTTP GET request with a dynamic path variable, 'artistId',
+     * representing the unique identifier of the artist. It calls the 'findByArtistId' method from
+     * the artistService to search for the artist's information.
+     *
+     * @param artistId The unique identifier of the artist to retrieve.
+     * @return A ResponseEntity with a GeneralApiResponse containing the artist's data if found, or an error message
+     *         if the artist does not exist.
+     */
     @GetMapping("/{artistId}")
     public ResponseEntity<GeneralApiResponse<Object>> findArtistById(@PathVariable("artistId") Integer artistId) {
         Optional<ArtistDisplayDto> artistDisplayDto = artistService.findByArtistId(artistId);
@@ -72,6 +90,14 @@ public class ArtistController extends Utility {
         return ResponseEntity.status(400).body(generateApiResponse(null, "User does not exist"));
     }
 
+    /**
+     * Create a new artist with the provided name.
+     *
+     * This endpoint is mapped to an HTTP POST request and is used to create a new artist with the provided name.
+     *
+     * @param name The name of the new artist.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the success of artist creation.
+     */
     @PostMapping
     public ResponseEntity<GeneralApiResponse<Object>> saveArtist(@RequestParam("name") String name) {
         Artist newArtist = new Artist(null, name, null, null);
@@ -79,12 +105,35 @@ public class ArtistController extends Utility {
         return ResponseEntity.ok(generateApiResponse(saveArtist,"Artist created successfully"));
     }
 
+    /**
+     * Delete an artist by their unique identifier.
+     *
+     * This endpoint is mapped to an HTTP PUT request with the '/delete/{artistId}' path.
+     * It is used to mark an artist as deleted, typically by updating the "deleted at" field or a similar
+     * mechanism, based on their unique identifier.
+     *
+     * @param artistId The unique identifier of the artist to delete.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the success of artist deletion.
+     */
+
     @PutMapping("/delete/{artistId}")
     public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("artistId") Integer artistId) {
         artistService.deleteArtist(artistId);
         return ResponseEntity.ok(generateApiResponse(null, String.format("Artist %d Deleted Successfully", artistId)));
 
     }
+
+    /**
+     * Update an artist's image with the provided image file and image name.
+     *
+     * This endpoint is mapped to an HTTP PUT request and is used to update an artist's image
+     * with the provided image file and image name.
+     *
+     * @param artistImage The new artist image file.
+     * @param imageName The name to associate with the artist image.
+     * @param artistId The unique identifier of the artist for whom to update the image.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the success or failure of the image update.
+     */
 
     @PutMapping("/image")
     public ResponseEntity<GeneralApiResponse<Object>> updateArtistImage(@RequestParam("artistImage") MultipartFile artistImage,

@@ -83,17 +83,35 @@ public class AdminController extends Utility {
         this.eventTypeRepository = eventTypeRepository;
     }
 
-    //have to implement response entity
     @GetMapping("/test")
     public String test() {
         return "test successful";
     }
 
+    /**
+     * Retrieves a list of AdminDisplayDto objects representing administrators.
+     *
+     * This endpoint is mapped to an HTTP GET request, and it calls the `findAllAdmin` method
+     * from the adminService to retrieve a list of administrator data in the form of AdminDisplayDto objects.
+     *
+     * @return A List of AdminDisplayDto objects containing administrator information.
+     */
     @GetMapping
     public List<AdminDisplayDto> findAllAdmin() {
         return adminService.findAllAdmin();
     }
 
+    /**
+     * Retrieve an administrator by their unique identifier.
+     *
+     * This endpoint is mapped to an HTTP GET request with a dynamic path variable, `admin_id`,
+     * representing the unique identifier of the administrator. It calls the `findAdminById` method
+     * from the adminService to search for the administrator's information.
+     *
+     * @param admin_id The unique identifier of the administrator to retrieve.
+     * @return A ResponseEntity containing a GeneralApiResponse with the administrator's data if found,
+     *         or an error message if the administrator does not exist.
+     */
     @GetMapping("/{admin_id}")
     public ResponseEntity<GeneralApiResponse<Object>> findAdminById(@PathVariable(value = "admin_id") Integer admin_id) {
         Optional<AdminDisplayDto> adminDisplayDto = adminService.findAdminById(admin_id);
@@ -103,6 +121,19 @@ public class AdminController extends Utility {
         return ResponseEntity.status(404).body(generateApiResponse(null, "Admin does not exist"));
     }
 
+    /**
+     * Update an administrator's information.
+     *
+     * This endpoint is mapped to an HTTP PUT request and is used to update an administrator's information.
+     * It expects a JSON representation of the new administrator data in the request body, and it checks
+     * if an administrator with the provided email already exists in the adminRepository. If an administrator
+     * with the same email exists, the method updates their information using the provided data.
+     *
+     * @param newAdmin The new administrator data to update.
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated administrator's data
+     *         and a success message if the update is successful, or an error message if the administrator
+     *         does not exist in the repository.
+     */
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateAdmin(@RequestBody Admin newAdmin) {
         if (adminRepository.findByEmail(newAdmin.getEmail()).isPresent()) {
@@ -113,6 +144,25 @@ public class AdminController extends Utility {
         return ResponseEntity.status(404).body(generateApiResponse(null, "Admin does not exist"));
     }
 
+
+    /**
+     * Update an event organizer's information by specifying various parameters.
+     *
+     * This endpoint is mapped to an HTTP PUT request and is used to update an event organizer's information.
+     * It allows you to specify multiple parameters as query parameters to update different aspects of the organizer's profile.
+     *
+     * @param organiserId The unique identifier of the event organizer to update.
+     * @param name The new name for the event organizer (optional).
+     * @param description The new description for the event organizer (optional).
+     * @param password The new password for the event organizer (optional).
+     * @param reviewStatus The new review status for the event organizer (optional).
+     * @param reviewRemarks The new review remarks for the event organizer (optional).
+     * @param reviewedBy The unique identifier of the admin who reviewed the event organizer (optional).
+     * @param enabled The new status of the event organizer (optional).
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated event organizer's data
+     *         and a success message if the update is successful, or an error message if the update fails.
+     * @throws NonExistentException if the 'reviewedBy' parameter is provided and does not correspond to an existing admin.
+     */
     @PutMapping("/update-organiser")
     public ResponseEntity<GeneralApiResponse<Object>> updateEventOrganiser(@RequestParam("organiserId") Integer organiserId,
                                                                    @RequestParam(value = "name", required = false) String name,
@@ -139,6 +189,32 @@ public class AdminController extends Utility {
             return ResponseEntity.badRequest().body(generateApiResponse(null, "Event organiser update unsuccessful"));
         }
     }
+
+    /**
+     * Update event information, including optional event image upload.
+     *
+     * This endpoint is mapped to an HTTP PUT request and is used to update event information.
+     * It allows you to specify multiple parameters as query parameters to update different aspects of the event's details.
+     * Additionally, you can upload a new event image using the 'eventImageFile' parameter.
+     *
+     * @param eventImageFile The new event image file (optional).
+     * @param eventId The unique identifier of the event to update.
+     * @param eventName The new name for the event (optional).
+     * @param eventDescription The new description for the event (optional).
+     * @param eventDate The new date for the event (optional).
+     * @param eventLocation The new location for the event (optional).
+     * @param otherEventInfo Other additional information about the event (optional).
+     * @param ticketSaleDate The new date when ticket sales start (optional).
+     * @param venueId The unique identifier of the venue for the event (optional).
+     * @param typeId The unique identifier of the event type (optional).
+     * @param reviewRemarks The new review remarks for the event (optional).
+     * @param reviewStatus The new review status for the event (optional).
+     * @param reviewedBy The unique identifier of the admin who reviewed the event (optional).
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated event's data
+     *         and a success message if the update is successful, or an error message if the update fails.
+     * @throws NonExistentException if the 'venueId', 'typeId', or 'reviewedBy' parameter is provided and
+     *         does not correspond to an existing venue, event type, or admin, respectively.
+     */
 
     @PutMapping("/update-event")
     public ResponseEntity<?> updateEvent(@RequestParam(value = "file", required = false) MultipartFile eventImageFile,
@@ -208,6 +284,16 @@ public class AdminController extends Utility {
         return ResponseEntity.ok(generateApiResponse(event, "Event updated successfully."));
     }
 
+    /**
+     * Retrieve a list of event organizers by their review status.
+     *
+     * This endpoint is mapped to an HTTP GET request and is used to find event organizers with a specific review status.
+     * It takes the 'status' path variable to filter organizers based on their review status.
+     *
+     * @param status The review status to filter the event organizers by. Valid statuses are "approved","pending" and "rejected".
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of event organizers matching the given review status,
+     *         or a message indicating that no organizers were found with the specified review status.
+     */
     @GetMapping("/event-organiser/review-status/{status}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventOrganisersByReviewStatus(@PathVariable("status") String status) {
         List<EventOrganiserDisplayDto> organiserList = eventOrganiserService.findEventOrganisersByReviewStatus(status);
@@ -216,6 +302,17 @@ public class AdminController extends Utility {
         }
         return ResponseEntity.ok(generateApiResponse(organiserList, String.format("%s organisers successfully returned.", status)));
     }
+
+    /**
+     * Retrieve a list of events by their review status.
+     *
+     * This endpoint is mapped to an HTTP GET request and is used to find events with a specific review status.
+     * It takes the 'status' path variable to filter events based on their review status.
+     *
+     * @param status The review status to filter the events by. Valid statuses are "approved","pending" and "rejected".
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of events matching the given review status,
+     *         or a message indicating that no events were found with the specified review status.
+     */
 
     @GetMapping("/event/review-status/{status}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventsByReviewStatus(@PathVariable("status") String status) {
