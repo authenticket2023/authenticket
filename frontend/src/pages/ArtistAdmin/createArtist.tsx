@@ -1,6 +1,6 @@
 import {
     Box, Typography, Modal,
-    Grid, Button, TextField, ImageListItem, ImageList, Snackbar, Alert
+    Grid, Button, TextField, ImageListItem, ImageList,
 } from '@mui/material';
 import React, { useState } from 'react';
 import { Sheet } from '@mui/joy';
@@ -37,29 +37,18 @@ const delay = (ms: number) => new Promise(
 export default function CreateArtist(props: any) {
 
     const token = window.localStorage.getItem('accessToken');
-    const [artistID, setartistID] = React.useState('');
-    const [loaded, setLoaded]: any = React.useState(true);
-    const [reviewOpen, setReviewOpen] = React.useState(true);
+    const [modalOpen, setModalOpen] = React.useState(true);
     const [isClicked, setIsClicked] = useState(false);
     const [artistName, setArtistName]: any = React.useState(null);
-    const [artistImage, setArtistImage]: any = React.useState(null);
-
-    //for pop up message => error , warning , info , success
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [alertType, setAlertType]: any = useState('info');
-    const [alertMsg, setAlertMsg] = useState('');
-    const handleSnackbarClose = () => {
-        setOpenSnackbar(false);
-    };
 
     const handleConfirm = (event: any) => {
         event.preventDefault();
 
         if (!fileUploaded) {
             //show alert msg
-            setOpenSnackbar(true);
-            setAlertType('error');
-            setAlertMsg("Need at least one event poster!!!");
+            props.setOpenSnackbar(true);
+            props.setAlertType('error');
+            props.setAlertMsg("Need at least one event poster!!!");
         } else {
             handleCreateArtist();
         }
@@ -94,10 +83,10 @@ export default function CreateArtist(props: any) {
                         await updateArtistImage(data.artistId);
                     } else {
                         const eventResponse = await response.json();
-                        setOpenSnackbar(true);
-                        setAlertType('warning');
-                        setAlertMsg(eventResponse.message);
-                        //if transaction faile, enable clickable
+                        props.setOpenSnackbar(true);
+                        props.setAlertType('warning');
+                        props.setAlertMsg(eventResponse.message);
+                        //if transaction failed, enable clickable
                         setIsClicked(false);
                     }
                 })
@@ -119,7 +108,7 @@ export default function CreateArtist(props: any) {
         const file = event.target.files[0];
         setSelectedFile(file);
     };
-    
+
     const handleArtistName = (event: any) => {
         const name = event.target.value;
         setArtistName(name);
@@ -130,45 +119,46 @@ export default function CreateArtist(props: any) {
     }
 
     //update artist image
-    const updateArtistImage = async (props: any) => {
-            console.log(props);
-            const formData = new FormData();
-            if (fileUploaded) {
-                formData.append('artistImage', selectedFile);
-            }
-            formData.append('imageName', `${artistName}.jpeg`);
-            formData.append('artistId', props);
+    const updateArtistImage = async (artistID: any) => {
+        const formData = new FormData();
+        if (fileUploaded) {
+            formData.append('artistImage', selectedFile);
+        }
+        formData.append('imageName', `${artistName}.jpeg`);
+        formData.append('artistId', artistID);
 
-            fetch(`${process.env.REACT_APP_BACKEND_URL}/artist/image`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                method: 'PUT',
-                body: formData
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/artist/image`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'PUT',
+            body: formData
+        })
+            .then(async (response) => {
+                const apiResponse = await response.json();
+                if (response.status == 200) {
+                    props.setOpenSnackbar(true);
+                    props.setAlertType('success');
+                    props.setAlertMsg(`Artist has been successfully created!`);
+                    setModalOpen(false);
+                    handleReload();
+                } else {
+                    props.setOpenSnackbar(true);
+                    props.setAlertType('error');
+                    props.setAlertMsg(`${apiResponse['message']}`);
+                }
             })
-                .then(async (response) => {
-                    const apiResponse = await response.json();
-                    if (response.status == 200) {
-                        setOpenSnackbar(true);
-                        setAlertType('success');
-                        setAlertMsg(`Artist has been successfully created!`);
-                        setReviewOpen(false);
-                        handleReload();
-                    } else {
-                        setOpenSnackbar(true);
-                        setAlertType('error');
-                        setAlertMsg(`${apiResponse['message']}`);
-                    }
-                })
-                .catch((err) => {
-                    //close the modal
-                    setReviewOpen(false);
-                    window.alert(err);
-                });
+            .catch((err) => {
+                //close the modal
+                setModalOpen(false);
+                window.alert(err);
+            });
     }
 
-    const handleReviewEventModalClose = () => {
-        setReviewOpen(false);
+    const handleCreateArtistModalClose = () => {
+        setModalOpen(false);
+        //to update parent element
+        props.open(false);
     }
 
 
@@ -177,105 +167,83 @@ export default function CreateArtist(props: any) {
 
     return (
         <div>
-            {loaded ?
-                <Modal
-                    open={reviewOpen}
-                    onClose={handleReviewEventModalClose}
-                    sx={{
-                        position: 'absolute',
-                        overflow: 'scroll',
-                        height: '100%',
-                        display: 'box',
-                    }}
-                >
-                    <Box sx={{ ...style, width: 1000, mt: '15%', mb: '15%', height: 800 }} textAlign='center'>
-                        <Sheet>
-                            <Typography variant="h2" >Create Artist</Typography>
-                            <Grid container spacing={2}>
-                    <Grid item xs={6} sx={{marginTop:4}}>
-                        <Grid container spacing={2} sx={{}}>
-                            <Grid item xs={12}>
 
-                                <Button
-                                    variant="outlined"
-                                    component="label"
-                                    sx={{ marginBottom: 2 }}
-                                    size='large'
-                                    startIcon={<CloudUploadIcon />}
-                                    fullWidth
-                                >
-                                    Upload Event Poster
-                                    <input
-                                        type="file"
-                                        hidden
-                                        onChange={handleFileSelect}
-                                        accept="image/*"
-                                    />
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={6}>
-                    <Grid container spacing={2} sx={{ marginLeft: 2, marginTop:2 }}>
-                    <Grid item xs={12}>
-                        {selectedFile != null && (
-                            <ImageList sx={{ width: 575, height: "100%" }} cols={1} rowHeight={250}>
-                                {Array.isArray(selectedFile) ? (
-                                    selectedFile.map((file: any, index: any) => (
-                                        <ImageListItem key={index}>
-                                            <img
-                                                src={`${URL.createObjectURL(file)}?w=575&h=250&fit=crop&auto=format`}
-                                                srcSet={`${URL.createObjectURL(file)}`}
-                                                alt={`Selected ${index + 1}`}
-                                                loading="lazy"
+            <Modal
+                open={modalOpen}
+                onClose={handleCreateArtistModalClose}
+                sx={{
+                    position: 'absolute',
+                    overflow: 'scroll',
+                    height: '100%',
+                    display: 'box',
+                }}
+            >
+                <Box sx={{ ...style, width: 1000, mt: '15%', mb: '15%', height: 800 }} textAlign='center'>
+                    <Sheet>
+                        <Typography variant="h2" >Create Artist</Typography>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6} sx={{ marginTop: 4 }}>
+                                <Grid container spacing={2} sx={{}}>
+                                    <Grid item xs={12}>
+
+                                        <Button
+                                            variant="outlined"
+                                            component="label"
+                                            sx={{ marginBottom: 2 }}
+                                            size='large'
+                                            startIcon={<CloudUploadIcon />}
+                                            fullWidth
+                                        >
+                                            Upload Artist Image
+                                            <input
+                                                type="file"
+                                                hidden
+                                                onChange={handleFileSelect}
+                                                accept="image/*"
                                             />
-                                        </ImageListItem>
-                                    ))
-                                ) : (
-                                    <ImageListItem key="single">
-                                        <img
-                                            src={`${URL.createObjectURL(selectedFile)}?w=575&h=250&fit=crop&auto=format`}
-                                            srcSet={`${URL.createObjectURL(selectedFile)}`}
-                                            alt={`Selected 1`}
-                                            loading="lazy"
-                                        />
-                                    </ImageListItem>
-                                )}
-                            </ImageList>
-                        )}
-                        </Grid>
-                    </Grid>
-                    </Grid>
-                </Grid>
-
-                            {/* Basic information section */}
-                            <Typography variant="h6" sx={{ mb: 2 }} textAlign='left'>Basic Information</Typography>
-                            <Grid container spacing={3} sx={{ textAlign: "left" }}>
-                                <Grid item xs={12} sm={4}>
-                                    <TextField
-                                        required
-                                        id="outlined-required"
-                                        label="Artist name"
-                                        fullWidth
-                                        defaultValue={artistName}
-                                        onChange={handleArtistName}
-                                    />
+                                        </Button>
+                                    </Grid>
                                 </Grid>
                             </Grid>
+                            <Grid item xs={6}>
+                                <Grid container spacing={2} sx={{ marginLeft: 2, marginTop: 2 }}>
+                                    <Grid item xs={12}>
+                                        {selectedFile != null && (
+                                            <ImageListItem key="single">
+                                                <img
+                                                    src={`${URL.createObjectURL(selectedFile)}`}
+                                                    srcSet={`${URL.createObjectURL(selectedFile)}`}
+                                                    alt={`Selected 1`}
+                                                    style={{ maxWidth: '300px', maxHeight: '250px', width: 'auto', height: 'auto' }}
+                                                    loading="lazy"
+                                                />
+                                            </ImageListItem>
+                                        )}
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
 
-                            <Button color="success" variant="contained" sx={{ mt: 3 }} onClick={handleConfirm}>Create Artist</Button>
+                        {/* Basic information section */}
+                        <Typography variant="h6" sx={{ mb: 2 }} textAlign='left'>Basic Information</Typography>
+                        <Grid container spacing={3} sx={{ textAlign: "left" }}>
+                            <Grid item xs={12} sm={4}>
+                                <TextField
+                                    required
+                                    id="outlined-required"
+                                    label="Artist name"
+                                    fullWidth
+                                    defaultValue={artistName}
+                                    onChange={handleArtistName}
+                                />
+                            </Grid>
+                        </Grid>
 
-                        </Sheet>
-                    </Box>
-                </Modal>
-                : null}
+                        <Button color="success" variant="contained" sx={{ mt: 3 }} onClick={handleConfirm}>Create Artist</Button>
 
-            {/* success / error feedback */}
-            <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
-                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
-                    {alertMsg}
-                </Alert>
-            </Snackbar>
+                    </Sheet>
+                </Box>
+            </Modal>
 
         </div>
     )
