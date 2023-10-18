@@ -19,7 +19,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-
     private final CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
 
     @Autowired
@@ -72,8 +71,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-type").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v2/event-type").hasAuthority("ADMIN")//to be reviewed (saveEventType)
 
-//                        .requestMatchers(HttpMethod.PUT,"/api/v2/order/complete/**").permitAll()
-//                        .requestMatchers(HttpMethod.PUT, "/api/v2/order/cancel/**").permitAll()
                         .requestMatchers( "/api/v2/order/**").hasAnyAuthority("USER", "ADMIN") //to be reviewed (all order services)
 
                         .requestMatchers(HttpMethod.POST, "/api/v2/section/ticket-details").hasAuthority("USER")//to be reviewed (findTicketDetailsBySection)
@@ -94,7 +91,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v2/user/delete/{userId}").hasAnyAuthority("ADMIN", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/v2/user").hasAuthority("ADMIN")
 
-
                         .requestMatchers(HttpMethod.GET, "/api/v2/venue/**").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/api/v2/venue").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/api/v2/venue").hasAuthority("ADMIN")
@@ -107,7 +103,6 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(customBasicAuthenticationEntryPoint));
-
 
         return http.build();
     }

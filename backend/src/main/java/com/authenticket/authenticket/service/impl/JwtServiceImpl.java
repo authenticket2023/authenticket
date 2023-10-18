@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements JwtService {
     @Value("${authenticket.secret-key}")
-    public String SECRET_KEY;
+    private String SECRET_KEY;
 
     @Override
     public String extractUsername(String token) {
