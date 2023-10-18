@@ -29,6 +29,7 @@ import { EventOrganiser } from './pages/EventOrganiser';
 import { OrganiserSignup } from './pages/OrganiserSignup';
 import { OrganiserLogin } from './pages/OrganiserLogin';
 import { CheckinOrganiser } from './pages/CheckinOrganiser';
+import { QRCheckinOrganiser } from './pages/QRCheckinOrganiser';
 //for admin user
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
@@ -57,6 +58,7 @@ root.render(
 			<Route path="/HomeOrganiser" element={<HomeOrganiser />} />
 			<Route path="/EventOrganiser" element={<EventOrganiser />} />
 			<Route path="/CheckinOrganiser" element={<CheckinOrganiser />} />
+			<Route path="/QRCheckinOrganiser" element={<QRCheckinOrganiser />} />
 			<Route path="/HomeAdmin" element={<HomeAdmin />} />
 			<Route path="/EventAdmin" element={<EventAdmin />} />
 			<Route path="/VenueAdmin" element={<VenueAdmin />} />
