@@ -55,6 +55,7 @@ export const NavbarNotLoggedIn = () => {
     const handleLogin = () => {
         navigate('/Login');
     }
+    
 
     return (
         <AppBar position="sticky" style={{ background: '#000000' }} >
@@ -409,6 +410,7 @@ export const NavbarOrganiser = () => {
                             <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 0, display: 'block', color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} >Home</Button>
                             <Button key='Event' href={'/EventOrganiser'} sx={{ my: 0, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
                             <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 0, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Checkin</Button>
+                            <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 0, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
                         </Menu>
                     </Box>
                     <Typography
@@ -434,6 +436,7 @@ export const NavbarOrganiser = () => {
                         <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 2, color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
                         <Button key='Event' href={'/EventOrganiser'} sx={{ my: 2, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
                         <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Checkin</Button>
+                        <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 2, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -470,6 +473,11 @@ export const NavbarOrganiser = () => {
                             </MenuItem>
                             <MenuItem key='Checkin' onClick={handleCheckinOrganiser}>
                                 <Typography sx={{ color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Checkin</Typography>
+                            </MenuItem>
+                            <MenuItem key='FAQ'>
+                                <a href='/FAQOrganiser' style={linkStyle}>
+                                    <Typography sx={{ color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">FAQ</Typography>
+                                </a>
                             </MenuItem>
                             <MenuItem key='Logout' onClick={handledLogout}>
                                 <Typography textAlign="center">Log out</Typography>
