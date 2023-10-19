@@ -79,10 +79,11 @@ public class EventOrganiserController extends Utility {
 
     }
 
-    @GetMapping("/events")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@NonNull HttpServletRequest request) {
-        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
-        Integer organiserId = organiser.getOrganiserId();
+    @GetMapping("/events/{organiserId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId, @NonNull HttpServletRequest request) {
+        if (!isAdminRequest(request) && retrieveOrganiserFromRequest(request).getOrganiserId() != organiserId) {
+            throw new IllegalArgumentException("Unable to cancel other user's order");
+        }
 
         List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
         if (!events.isEmpty()) {
@@ -92,10 +93,11 @@ public class EventOrganiserController extends Utility {
 
     }
 
-    @GetMapping("/current-events")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllCurrentEventsByOrganiser(@NonNull HttpServletRequest request) {
-        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
-        Integer organiserId = organiser.getOrganiserId();
+    @GetMapping("/current-events/{organiserId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllCurrentEventsByOrganiser(@PathVariable("organiserId") Integer organiserId, @NonNull HttpServletRequest request) {
+        if (!isAdminRequest(request) && retrieveOrganiserFromRequest(request).getOrganiserId() != organiserId) {
+            throw new IllegalArgumentException("Unable to cancel other user's order");
+        }
 
         List<Event> events = eventOrganiserService.findAllCurrentEventsByOrganiser(organiserId);
         if (!events.isEmpty()) {
