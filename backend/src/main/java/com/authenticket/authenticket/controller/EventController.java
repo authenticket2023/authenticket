@@ -713,13 +713,15 @@ public class EventController extends Utility {
     }
 
     /**
-     * Deletes one or more events based on their unique identifiers. This action can
-     * be performed by event organizers and administrators.
+     * Update event with one or more artists based on the artist's and event's unique identifiers.
+     * This action can be performed by event organizers and administrators.
      *
-     * @param eventIdString A comma-separated string of event IDs to be deleted.
+     * @param artistIdString A comma-separated string of artist IDs to be added to event if they
+     *                       are not already there.
+     * @param eventId       The unique identifier of the event to be featured.
      * @param request       The HTTPServletRequest for authorization and validation.
      * @return A ResponseEntity containing a GeneralApiResponse indicating the
-     *         results of event deletion
+     *         results of artist(s) being successfully assigned to the given event
      *         or an error message if an exception occurs during the deletion
      *         process.
      */
@@ -873,16 +875,13 @@ public class EventController extends Utility {
     }
 
     /**
-     * Allows a user to indicate their interest in a specific event's presale. This
-     * action is available to users.
+     * Check whether an event is a presale event.
      *
      * @param eventId The unique identifier of the event for which the user is
      *                indicating interest.
-     * @param request The HTTPServletRequest for authorization and validation.
-     * @return A ResponseEntity indicating the successful recording of presale
-     *         interest or an error message if the event does not exist
-     *         or the interest indication period has ended.
+     * @return A ResponseEntity with information about the presale status of the event.
      */
+
     @GetMapping("/event/presale-event")
     public ResponseEntity<GeneralApiResponse<Object>> isPresaleEvent(@RequestParam("eventId") Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
