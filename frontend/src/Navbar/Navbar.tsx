@@ -436,7 +436,7 @@ export const NavbarOrganiser = () => {
                         <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 2, color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
                         <Button key='Event' href={'/EventOrganiser'} sx={{ my: 2, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
                         <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Checkin</Button>
-                        <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 0, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
+                        <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 2, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
