@@ -7,24 +7,48 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * This class provides mapping functionality for Event Ticket Category related objects.
+ */
 @Service
 public class EventTicketCategoryDtoMapper implements Function<TicketPricing, EventTicketCategoryDisplayDto> {
-    public EventTicketCategoryDisplayDto apply(TicketPricing ticketPricing) {
 
+    /**
+     * Maps a TicketPricing object to an EventTicketCategoryDisplayDto.
+     *
+     * @param ticketPricing The TicketPricing object to be mapped.
+     * @return The resulting EventTicketCategoryDisplayDto.
+     */
+    public EventTicketCategoryDisplayDto apply(TicketPricing ticketPricing) {
         return new EventTicketCategoryDisplayDto(
-                ticketPricing.getCat().getCategoryId(), ticketPricing.getCat().getCategoryName(),
-                ticketPricing.getPrice());
+                ticketPricing.getCat().getCategoryId(),
+                ticketPricing.getCat().getCategoryName(),
+                ticketPricing.getPrice()
+        );
     }
 
-    public void update(EventTicketCategoryUpdateDto newEventTicketCategoryDto, TicketPricing oldTicketPricing){
-        if(newEventTicketCategoryDto.price() != null){
+    /**
+     * Updates the fields of a TicketPricing object based on the provided EventTicketCategoryUpdateDto.
+     *
+     * @param newEventTicketCategoryDto The EventTicketCategoryUpdateDto containing updated information.
+     * @param oldTicketPricing          The TicketPricing object to be updated.
+     */
+    public void update(EventTicketCategoryUpdateDto newEventTicketCategoryDto, TicketPricing oldTicketPricing) {
+        if (newEventTicketCategoryDto.price() != null) {
             oldTicketPricing.setPrice(newEventTicketCategoryDto.price());
         }
     }
 
+    /**
+     * Maps a set of TicketPricing objects to a set of EventTicketCategoryDisplayDtos.
+     *
+     * @param eventTicketObjects The set of TicketPricing objects to be mapped.
+     * @return The resulting set of EventTicketCategoryDisplayDtos.
+     */
     public Set<EventTicketCategoryDisplayDto> map(Set<TicketPricing> eventTicketObjects) {
         return eventTicketObjects.stream()
                 .map(this::apply)
                 .collect(Collectors.toSet());
     }
 }
+

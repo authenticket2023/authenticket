@@ -1,13 +1,48 @@
 package com.authenticket.authenticket.dto.ticket;
 
-import com.authenticket.authenticket.model.Event;
+/**
+ * Data Transfer Object (DTO) for displaying ticket information.
+ */
+public record TicketDisplayDto(
+        /**
+         * The unique identifier of the ticket.
+         */
+        Integer ticketId,
 
-public record TicketDisplayDto(Integer ticketId,
-                               Integer eventId,
-                               Integer catId,
-                               String sectionId,
-                               Integer rowNo,
-                               Integer seatNo,
-                               String ticketHolder,
-                               Integer orderId) {
+        /**
+         * The identifier of the associated event.
+         */
+        Integer eventId,
+
+        /**
+         * The category identifier of the ticket.
+         */
+        Integer catId,
+
+        /**
+         * The unique identifier of the section.
+         */
+        String sectionId,
+
+        /**
+         * The row number of the seat.
+         */
+        Integer rowNo,
+
+        /**
+         * The seat number.
+         */
+        Integer seatNo,
+
+        /**
+         * The name of the ticket holder.
+         */
+        String ticketHolder,
+
+        /**
+         * The identifier of the associated order.
+         */
+        Integer orderId
+) {
 }
+

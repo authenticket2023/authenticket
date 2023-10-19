@@ -1,56 +1,69 @@
 package com.authenticket.authenticket.dto.section;
 
-import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
-import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
-import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
-import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
-import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
-import com.authenticket.authenticket.model.Artist;
 import com.authenticket.authenticket.model.Section;
-import com.authenticket.authenticket.model.Venue;
-import com.authenticket.authenticket.repository.AdminRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * A service class for mapping and processing Section DTOs.
+ */
 @Service
 public class SectionDtoMapper implements Function<Section, SectionDisplayDto> {
 
     private final TicketServiceImpl ticketService;
 
-
+    /**
+     * Constructs a new SectionDtoMapper with the specified dependencies.
+     *
+     * @param ticketService The TicketService implementation for retrieving ticket-related information.
+     */
     @Autowired
     public SectionDtoMapper(TicketServiceImpl ticketService) {
         this.ticketService = ticketService;
     }
 
+    /**
+     * Applies the mapping function to convert a Section object to a SectionDisplayDto.
+     *
+     * @param section The Section object to be mapped to a SectionDisplayDto.
+     * @return The SectionDisplayDto representing the section details.
+     */
     @Override
     public SectionDisplayDto apply(Section section) {
-        return null;
+        // Implementation is not provided here as it depends on your specific requirements.
+        return null; // Modify this to return the mapped SectionDisplayDto.
     }
 
-    public SectionTicketDetailsDto applySectionTicketDetailsDto(Object[] obj){
-
+    /**
+     * Applies the mapping function to convert an array of objects to a SectionTicketDetailsDto.
+     *
+     * @param obj An array of objects containing section ticket details.
+     * @return The SectionTicketDetailsDto representing the section's ticket details.
+     */
+    public SectionTicketDetailsDto applySectionTicketDetailsDto(Object[] obj) {
         return new SectionTicketDetailsDto(
-                (String) obj[1],
-                (Integer) obj[2],
-                (Integer) obj[3],
-                (Integer) obj[4],
-                (Integer) obj[5],
-                ticketService.getMaxConsecutiveSeatsForSection((Integer)obj[0],(String) obj[1]),
-                (String) obj[6],
-                (Double) obj[7]
+                (String) obj[1],           // Section ID
+                (Integer) obj[2],          // Category ID
+                (Integer) obj[3],          // Total Seats
+                (Integer) obj[4],          // Occupied Seats
+                (Integer) obj[5],          // Available Seats
+                ticketService.getMaxConsecutiveSeatsForSection((Integer) obj[0], (String) obj[1]), // Max Consecutive Seats
+                (String) obj[6],           // Status
+                (Double) obj[7]            // Ticket Price
         );
     }
 
+    /**
+     * Maps a list of section ticket details objects to a list of SectionTicketDetailsDto objects.
+     *
+     * @param sectionTicketDetailsObjects The list of section ticket details as arrays of objects.
+     * @return A list of SectionTicketDetailsDto representing the section ticket details.
+     */
     public List<SectionTicketDetailsDto> mapSectionTicketDetailsDto(List<Object[]> sectionTicketDetailsObjects) {
         return sectionTicketDetailsObjects.stream()
                 .map(this::applySectionTicketDetailsDto)
