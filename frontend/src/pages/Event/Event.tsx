@@ -61,6 +61,7 @@ export const Event = () => {
   const [pastEvents, setPastEvents]: any = useState([]);
 
   const loadCurrEvents = async () => {
+    setLoading(true);
     //call backend API
     fetch(
       `${process.env.REACT_APP_BACKEND_URL}/public/event/current?page=0&size=20`,
@@ -95,7 +96,9 @@ export const Event = () => {
           }
           setCurrEvents(currEventsArr);
           setDataLoaded(true);
+          setLoading(false);
         } else {
+          setLoading(false);
           //display alert, for fetch fail
           setOpenSnackbar(true);
           setAlertType("error");
@@ -105,6 +108,7 @@ export const Event = () => {
         }
       })
       .catch((err) => {
+        setLoading(false);
         setOpenSnackbar(true);
         setAlertType("error");
         setAlertMsg(`Oops something went wrong! Error : ${err}`);
@@ -112,6 +116,7 @@ export const Event = () => {
   };
 
   const loadPastEvents = async () => {
+    setLoading(true);
     //call backend API
     fetch(
       `${process.env.REACT_APP_BACKEND_URL}/public/event/past?page=0&size=20`,
@@ -146,7 +151,9 @@ export const Event = () => {
           }
           setPastEvents(pastEvents);
           setDataLoaded(true);
+          setLoading(false);
         } else {
+          setLoading(false);
           //display alert, for fetch fail
           setOpenSnackbar(true);
           setAlertType("error");
@@ -156,6 +163,7 @@ export const Event = () => {
         }
       })
       .catch((err) => {
+        setLoading(false);
         setOpenSnackbar(true);
         setAlertType("error");
         setAlertMsg(`Oops something went wrong! Error : ${err}`);
@@ -206,14 +214,6 @@ export const Event = () => {
     }
 
   };
-  const filteredEvents = currEvents.filter((item: any) => {
-    const nameMatch = item.eventName.toLowerCase().includes(currentSearchInput.toLowerCase());
-    const venueMatch = checkedVenues.includes(item.eventVenue);
-    const eventTypeMatch = checkedEventTypes.includes(item.eventType);
-    return nameMatch && venueMatch && eventTypeMatch;
-  });
-
-
 
   //past search
   const [pastSearchInput, setPastSearchInput] = useState('');
@@ -227,9 +227,8 @@ export const Event = () => {
     setAnchorElPast(event.currentTarget);
   };
 
-  //TODO: enhencement to get from DB
   const [checkedVenuesPast, setCheckedVenuesPast]: any = useState(['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other']); // State to store checked venues
-  // const venues = ['The Star Theatre', 'Capitol Theatre', 'Singapore National Stadium', 'Other'];
+
   // Function to handle checkbox change
   const handleVenueCheckboxChangePast = (item: any) => {
     if (checkedVenuesPast.includes(item)) {
@@ -254,12 +253,8 @@ export const Event = () => {
     }
 
   };
-  const filteredEventsPast = pastEvents.filter((item: any) => {
-    const nameMatch = item.eventName.toLowerCase().includes(pastSearchInput.toLowerCase());
-    const venueMatch = checkedVenuesPast.includes(item.eventVenue);
-    const eventTypeMatch = checkedEventTypesPast.includes(item.eventType);
-    return nameMatch && venueMatch && eventTypeMatch;
-  });
+
+  const [loading, setLoading] = useState(false);
 
   //lazy load
   const [hasMoreCur, setHasMoreCur] = useState(true);
@@ -313,17 +308,20 @@ export const Event = () => {
             setPastEvents((old: any) => [...old, ...EventsArr]);
             setPastEventPage(pastEventPage + 1);
           }
+          setLoading(false);
         } else {
           //display alert, for fetch fail
           setOpenSnackbar(true);
           setAlertType('error');
           setAlertMsg(`Oops something went wrong! Code:${response.status}; Status Text : ${response.statusText}`);
+          setLoading(false);
         }
       })
       .catch((err) => {
         setOpenSnackbar(true);
         setAlertType('error');
         setAlertMsg(`Oops something went wrong! Error : ${err}`);
+        setLoading(false);
       });
   }
   const handleScroll = (e: any) => {
@@ -338,6 +336,8 @@ export const Event = () => {
     //for current event section
     if (value == 0 && hasMoreCur) {
       console.log('loading current event')
+      setLoading(true);
+      
       loadMoreData('current', currEventPage);
     } else if (value == 0 && !hasMoreCur) {
       console.log('no more current event')
@@ -346,6 +346,7 @@ export const Event = () => {
     //for past event section
     if (value == 1 && hasMorePast) {
       console.log('loading past event')
+      setLoading(true);
       loadMoreData('past', pastEventPage);
     } else if (value == 1 && !hasMorePast) {
       console.log('no more past event')
@@ -357,21 +358,8 @@ export const Event = () => {
     if (!dataLoaded) {
       loadCurrEvents();
       loadPastEvents();
-    } else {
-      //current event
-      if (filteredEvents.length < 20) {
-        setHasMoreCur(false);
-      } else {
-        setHasMoreCur(true);
-      }
-      //past event
-      if (filteredEventsPast.length < 20) {
-        setHasMorePast(false);
-      } else {
-        setHasMorePast(true);
-      }
     }
-  }, [currentSearchInput, checkedEventTypes, checkedVenues, pastSearchInput, checkedEventTypesPast, checkedVenuesPast]);
+  }, []);
 
   return (
     <div >
@@ -520,7 +508,7 @@ export const Event = () => {
                 null
               }
               {/* show a loading indicator */}
-              {hasMoreCur ?
+              {loading ?
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <CircularProgress />
                 </Box> :
@@ -666,7 +654,7 @@ export const Event = () => {
                 null
               }
               {/* show a loading indicator */}
-              {hasMorePast ?
+              {loading ?
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <CircularProgress />
                 </Box> :
