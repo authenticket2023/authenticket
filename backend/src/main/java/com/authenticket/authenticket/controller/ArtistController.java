@@ -17,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The `ArtistController` class is responsible for handling HTTP requests related to artists.
+ */
 @RestController
 @CrossOrigin(
         origins = {

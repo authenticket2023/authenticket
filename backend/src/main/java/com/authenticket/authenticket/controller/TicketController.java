@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+/**
+ * The `TicketController` class handles HTTP requests related to ticket management and allocation.
+ */
 @RestController
 @CrossOrigin(
         origins = {
@@ -30,10 +32,15 @@ import java.util.stream.Collectors;
 public class TicketController extends Utility {
 
     private final TicketServiceImpl ticketService;
+
     private final TicketCategoryRepository ticketCategoryRepository;
+
     private final TicketPricingRepository ticketPricingRepository;
+
     private final SectionRepository sectionRepository;
+
     private final EventRepository eventRepository;
+
     private final OrderRepository orderRepository;
 
     @Autowired
@@ -51,21 +58,44 @@ public class TicketController extends Utility {
         this.orderRepository = orderRepository;
     }
 
+    /**
+     * A test endpoint to check if the controller is operational.
+     *
+     * @return A simple test message indicating the operation was successful.
+     */
     @GetMapping("/test")
     public String test() {
         return "test successful";
     }
 
+    /**
+     * Retrieve a list of all tickets in the system.
+     *
+     * @return A list of ticket information as `TicketDisplayDto`.
+     */
     @GetMapping
     public List<TicketDisplayDto> findAllTicket() {
         return ticketService.findAllTicket();
     }
 
+    /**
+     * Retrieve a list of all tickets in the system.
+     *
+     * @return A list of ticket information as `TicketDisplayDto`.
+     */
     @GetMapping("/{ticketId}")
     public ResponseEntity<GeneralApiResponse<Object>> findTicketById(@PathVariable("ticketId") Integer ticketId) {
         return ResponseEntity.ok(generateApiResponse(ticketService.findTicketById(ticketId), "Tickets returned successfully"));
     }
 
+    /**
+     * Allocate seats for an event within a specific section.
+     *
+     * @param eventId           The ID of the event for seat allocation.
+     * @param sectionId         The ID of the section for seat allocation.
+     * @param ticketsToPurchase The number of tickets to allocate.
+     * @return A response indicating the successful allocation of seats.
+     */
     @PostMapping("/allocate-seats")
     public ResponseEntity<GeneralApiResponse<Object>> allocateSeats(@RequestParam(value = "eventId") Integer eventId,
                                            @RequestParam(value = "sectionId") String sectionId,
@@ -79,6 +109,18 @@ public class TicketController extends Utility {
         return ResponseEntity.ok(generateApiResponse(ticketList, String.format("%d seats successfully assigned", ticketsToPurchase)));
     }
 
+    /**
+     * Save a new ticket with optional details.
+     *
+     * @param eventId     The ID of the event for the ticket.
+     * @param categoryId  The ID of the ticket category.
+     * @param sectionId   The ID of the section for the ticket.
+     * @param rowNo       The row number for the ticket (optional).
+     * @param seatNo      The seat number for the ticket (optional).
+     * @param ticketHolder The name of the ticket holder (optional).
+     * @param orderId     The ID of the order associated with the ticket (optional).
+     * @return A response indicating the successful creation of the ticket.
+     */
     @PostMapping
     public ResponseEntity<GeneralApiResponse<Object>> saveTicket(@RequestParam(value = "eventId") Integer eventId,
                                         @RequestParam(value = "categoryId") Integer categoryId,

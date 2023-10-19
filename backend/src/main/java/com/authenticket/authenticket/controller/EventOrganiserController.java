@@ -23,6 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class represents a controller for managing event organizers. It provides endpoints
+ * for retrieving, updating, and deleting event organizers, as well as managing their associated events
+ * and profile images.
+ */
 @RestController
 @CrossOrigin(
         origins = {
@@ -56,7 +61,11 @@ public class EventOrganiserController extends Utility {
         return "test successful";
     }
 
-
+    /**
+     * Retrieves a list of all event organizers.
+     *
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of EventOrganiserDisplayDto objects.
+     */
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllEventOrganiser() {
 
@@ -70,6 +79,12 @@ public class EventOrganiserController extends Utility {
         }
     }
 
+    /**
+     * Retrieves an event organizer by their ID.
+     *
+     * @param organiserId The ID of the event organizer to retrieve.
+     * @return A ResponseEntity containing a GeneralApiResponse with the EventOrganiserDisplayDto or an error message.
+     */
     @GetMapping("/{organiserId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
         Optional<EventOrganiserDisplayDto> organiserDisplayDtoOptional = eventOrganiserService.findOrganiserById(organiserId);
@@ -79,6 +94,12 @@ public class EventOrganiserController extends Utility {
 
     }
 
+    /**
+     * Retrieves a list of events associated with a specific event organizer.
+     *
+     * @param organiserId The ID of the event organizer whose events are to be retrieved.
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of Event objects or an error message.
+     */
     @GetMapping("/events/{organiserId}")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId) {
         List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
@@ -89,6 +110,15 @@ public class EventOrganiserController extends Utility {
 
     }
 
+    /**
+     * Updates an event organizer's information.
+     *
+     * @param organiserId The ID of the event organizer to be updated.
+     * @param name The new name of the event organizer (optional).
+     * @param description The new description of the event organizer (optional).
+     * @param password The new password for the event organizer (optional).
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated EventOrganiser or an error message.
+     */
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId,
                                                                            @RequestParam(value = "name", required = false) String name,
@@ -103,6 +133,13 @@ public class EventOrganiserController extends Utility {
         }
     }
 
+    /**
+     * Updates an event organizer's profile image.
+     *
+     * @param file The MultipartFile containing the new image file.
+     * @param request The HttpServletRequest containing the request information.
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated EventOrganiser or an error message.
+     */
     @PutMapping("/image")
     public ResponseEntity<GeneralApiResponse<Object>> updateOrganiserImage(@RequestParam("file") MultipartFile file,
                                                                            @NonNull HttpServletRequest request) {
@@ -132,6 +169,12 @@ public class EventOrganiserController extends Utility {
     }
 
 
+    /**
+     * Deletes one or more event organizers by their IDs.
+     *
+     * @param organiserIdString A comma-separated string of event organizer IDs to be deleted.
+     * @return A ResponseEntity containing a GeneralApiResponse with the results of the deletion process or an error message.
+     */
     @PutMapping("/delete")
     public ResponseEntity<GeneralApiResponse<Object>> deleteEventOrganiser(@RequestParam("organiserId") String organiserIdString) {
         try {
