@@ -195,8 +195,9 @@ public class EventController extends Utility {
             return ResponseEntity.ok(generateApiResponse(null, "No events found for venue"));
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Events for venue successfully returned."));
-    }    
-@GetMapping("/public/event/venue/past/{venueId}")
+    }
+
+    @GetMapping("/public/event/venue/past/{venueId}")
 
     public ResponseEntity<GeneralApiResponse<Object>> findPastEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
         List<EventHomeDto> eventList = eventService.findPastEventsByVenue(venueId, pageable);
@@ -205,8 +206,9 @@ public class EventController extends Utility {
         }
         return ResponseEntity.ok(generateApiResponse(eventList, "Past events for venue successfully returned."));
 
-    }    
-@GetMapping("/public/event/venue/upcoming/{venueId}")
+    }
+
+    @GetMapping("/public/event/venue/upcoming/{venueId}")
 
     public ResponseEntity<GeneralApiResponse<Object>> findUpcomingEventsByVenue(Pageable pageable, @PathVariable("venueId") Integer venueId) {
         List<EventHomeDto> eventList = eventService.findEventsByVenue(venueId, pageable);
@@ -265,7 +267,6 @@ public class EventController extends Utility {
             return ResponseEntity.badRequest().body(generateApiResponse(null, e.getMessage()));
         }
     }
-
 
 
     @PostMapping("/event")
@@ -685,10 +686,8 @@ public class EventController extends Utility {
     }
 
     @GetMapping("/event/queue-position")
-    public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(
-            @RequestParam("eventId") Integer eventId,
-            @RequestParam("userId") Integer userId,
-            @NonNull HttpServletRequest request) {
+    public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(@RequestParam("eventId") Integer eventId,
+                                                                       @NonNull HttpServletRequest request) {
         User user = retrieveUserFromRequest(request);
 
         Optional<Event> eventOptional = eventRepository.findById(eventId);
@@ -696,16 +695,6 @@ public class EventController extends Utility {
             throw new NonExistentException("Event", eventId);
         }
         Event event = eventOptional.get();
-
-        // can be removed after testing as userId will be derived
-        if (userId != null) {
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (userOptional.isEmpty()) {
-                throw new NonExistentException("Event", eventId);
-            }
-
-            return ResponseEntity.ok(generateApiResponse(queueService.getPosition(userOptional.get(), event), "Returned queue number"));
-        }
 
         return ResponseEntity.ok(generateApiResponse(queueService.getPosition(user, event), "Returned queue number"));
     }
@@ -723,10 +712,8 @@ public class EventController extends Utility {
     }
 
     @PutMapping("/event/enter-queue")
-    public ResponseEntity<GeneralApiResponse<Object>> enterQueue(
-            @RequestParam("eventId") Integer eventId,
-            @RequestParam("userId") Integer userId,
-            @NonNull HttpServletRequest request) {
+    public ResponseEntity<GeneralApiResponse<Object>> enterQueue(@RequestParam("eventId") Integer eventId,
+                                                                 @NonNull HttpServletRequest request) {
         User user = retrieveUserFromRequest(request);
 
         Optional<Event> eventOptional = eventRepository.findById(eventId);
@@ -734,27 +721,14 @@ public class EventController extends Utility {
             throw new NonExistentException("Event", eventId);
         }
         Event event = eventOptional.get();
-
-        // can be removed after testing as userId will be derived
-        if (userId != null) {
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (userOptional.isEmpty()) {
-                throw new NonExistentException("Event", eventId);
-            }
-
-            queueService.addToQueue(userOptional.get(), event);
-            return ResponseEntity.status(201).body(generateApiResponse(queueService.getPosition(userOptional.get(), event), "Added to queue and returned queue number"));
-        }
 
         queueService.addToQueue(user, event);
         return ResponseEntity.status(201).body(generateApiResponse(queueService.getPosition(user, event), "Added to queue and returned queue number"));
     }
 
     @PutMapping("/event/leave-queue")
-    public ResponseEntity<GeneralApiResponse<Object>> leaveQueue(
-            @RequestParam("eventId") Integer eventId,
-            @RequestParam("userId") Integer userId,
-            @NonNull HttpServletRequest request) {
+    public ResponseEntity<GeneralApiResponse<Object>> leaveQueue(@RequestParam("eventId") Integer eventId,
+                                                                 @NonNull HttpServletRequest request) {
         User user = retrieveUserFromRequest(request);
 
         Optional<Event> eventOptional = eventRepository.findById(eventId);
@@ -762,17 +736,6 @@ public class EventController extends Utility {
             throw new NonExistentException("Event", eventId);
         }
         Event event = eventOptional.get();
-
-        // can be removed after testing as userId will be derived
-        if (userId != null) {
-            Optional<User> userOptional = userRepository.findById(userId);
-            if (userOptional.isEmpty()) {
-                throw new NonExistentException("Event", eventId);
-            }
-
-            queueService.removeFromQueue(userOptional.get(), event);
-            return ResponseEntity.ok(generateApiResponse(null, "Removed from queue"));
-        }
 
         queueService.removeFromQueue(user, event);
         return ResponseEntity.ok(generateApiResponse(null, "Removed from queue"));
