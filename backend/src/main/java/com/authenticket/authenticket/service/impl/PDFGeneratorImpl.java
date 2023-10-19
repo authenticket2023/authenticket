@@ -18,7 +18,12 @@ import java.io.*;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.TreeSet;
-
+/**
+ * This class implements the PDFGenerator interface and provides methods to generate PDF documents
+ * for order details and QR code tickets. It uses QRCodeGenerator and JwtService to generate QR codes
+ * and adds various order and ticket details to the PDF documents.
+ *
+ */
 @Service
 public class PDFGeneratorImpl implements PDFGenerator {
 
@@ -34,6 +39,13 @@ public class PDFGeneratorImpl implements PDFGenerator {
         this.jwtService = jwtService;
     }
 
+    /**
+     * Generates and returns an input stream resource for the order details PDF for a given order.
+     *
+     * @param order The order for which to generate the PDF.
+     * @return An input stream resource containing the order details PDF.
+     * @throws ApiRequestException If a documentation error occurs or an IOException is encountered.
+     */
     @Override
     public InputStreamResource generateOrderDetails(Order order) {
         try {
@@ -299,6 +311,13 @@ public class PDFGeneratorImpl implements PDFGenerator {
         }
     }
 
+    /**
+     * Generates and returns an input stream resource for a QR code ticket for a given ticket.
+     *
+     * @param ticket The ticket for which to generate the QR code.
+     * @return An input stream resource containing the QR code ticket.
+     * @throws ApiRequestException If a documentation error occurs, an IOException is encountered, or a WriterException is thrown.
+     */
     @Override
     public InputStreamResource generateTicketQRCode(Ticket ticket, LocalDateTime expirationDate) {
         try {

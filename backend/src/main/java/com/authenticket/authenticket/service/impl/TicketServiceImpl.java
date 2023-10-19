@@ -14,6 +14,10 @@ import org.webjars.NotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This class provides the implementation of the `TicketService` interface, which manages tickets.
+ */
+
 @Service
 public class TicketServiceImpl implements TicketService {
 
@@ -57,6 +61,11 @@ public class TicketServiceImpl implements TicketService {
         this.venueRepository = venueRepository;
     }
 
+    /**
+     * Retrieve a list of all tickets.
+     *
+     * @return A list of `TicketDisplayDto` objects representing all tickets.
+     */
     @Override
     public List<TicketDisplayDto> findAllTicket() {
         return ticketRepository.findAll()
@@ -65,6 +74,12 @@ public class TicketServiceImpl implements TicketService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Find a ticket by its unique identifier (ID).
+     *
+     * @param ticketId The unique identifier of the ticket.
+     * @return A `TicketDisplayDto` if found, or throw an `ApiRequestException` if the ticket does not exist.
+     */
     @Override
     public TicketDisplayDto findTicketById(Integer ticketId) {
         Optional<TicketDisplayDto> ticketDisplayDtoOptional = ticketRepository.findById(ticketId).map(ticketDisplayDtoMapper);
@@ -75,6 +90,12 @@ public class TicketServiceImpl implements TicketService {
         throw new NonExistentException("Ticket", ticketId);
     }
 
+    /**
+     * Find all tickets associated with a specific order.
+     *
+     * @param orderId The unique identifier of the order.
+     * @return A list of `TicketDisplayDto` objects representing the tickets in the order, or throw an `ApiRequestException` if the order does not exist.
+     */
     @Override
     public List<TicketDisplayDto> findAllByOrderId(Integer orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -88,6 +109,12 @@ public class TicketServiceImpl implements TicketService {
         throw new NonExistentException("Order", orderId);
     }
 
+    /**
+     * Save a new ticket.
+     *
+     * @param ticket The `Ticket` entity to be saved.
+     * @return The saved `Ticket` entity.
+     */
     @Override
     public Ticket saveTicket(Ticket ticket) {
         return ticketRepository.save(ticket);
@@ -133,6 +160,16 @@ public class TicketServiceImpl implements TicketService {
 //        }
 //    }
 
+    /**
+     * Allocate seats for a specified number of tickets in a section for an event.
+     *
+     * @param eventId         The unique identifier of the event.
+     * @param sectionId       The unique identifier of the section.
+     * @param ticketsToPurchase The number of tickets to allocate.
+     * @return A list of allocated `Ticket` entities.
+     * @throws NonExistentException If the event or section does not exist.
+     * @throws IllegalArgumentException If the number of tickets to purchase is outside the valid range or if seats are insufficient.
+     */
     @Override
     public List<Ticket> allocateSeats(Integer eventId, String sectionId, Integer ticketsToPurchase) {
         //seat allocate, create ticket then order and reassign order number to ticket
@@ -205,6 +242,13 @@ public class TicketServiceImpl implements TicketService {
         return ticketList;
     }
 
+    /**
+     * Get the current seat matrix for an event in a section.
+     *
+     * @param event   The `Event` entity.
+     * @param section The `Section` entity.
+     * @return A 2D array representing the seat matrix.
+     */
     @Override
     public int[][] getCurrentSeatMatrix(Event event, Section section) {
         //getting dimensions of section
@@ -235,6 +279,13 @@ public class TicketServiceImpl implements TicketService {
         return seatMatrix;
     }
 
+    /**
+     * Get the updated seat matrix with newly assigned seats.
+     *
+     * @param currentSeatMatrix The current seat matrix.
+     * @param newTicketsList     A list of newly assigned tickets.
+     * @return The updated 2D array representing the seat matrix.
+     */
     @Override
     public int[][] getNewSeatMatrix(int[][] currentSeatMatrix, List<Ticket> newTicketsList) {
 
@@ -261,6 +312,16 @@ public class TicketServiceImpl implements TicketService {
         return currentSeatMatrix;
     }
 
+    /**
+    * Finds consecutive seats for the specified event and section.
+    * 
+    * @param event The event for which seats should be allocated.
+    * @param section The section in the venue where seats should be allocated.
+    * @param ticketCount The number of consecutive seats to allocate.
+    * @return A list of allocated ticket objects.
+    * @throws NotFoundException If the consecutive seats of the specified count are not found.
+    * @throws NonExistentException If there are issues with the event or section.
+    */
     @Override
     public List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount) throws NotFoundException, NonExistentException {
         //getting dimensions of section
@@ -318,6 +379,12 @@ public class TicketServiceImpl implements TicketService {
 
     }
 
+    /**
+     * Retrieves the ranking of seat combination patterns for the given ticket count.
+     * 
+     * @param ticketCount The number of tickets for which seat combination rankings are needed.
+     * @return An array of seat combination patterns ranked by preference.
+     */
     @Override
     public String[] getSeatCombinationRank(Integer ticketCount) {
         String[] seatCombiRank = null;
@@ -339,6 +406,12 @@ public class TicketServiceImpl implements TicketService {
         return seatCombiRank;
     }
 
+    /**
+     * Finds consecutive groups of seats in an array.
+     * 
+     * @param availableSeatsArrayForRow An array of available seats in a row.
+     * @return A list of lists containing consecutive groups of seat numbers.
+     */
     @Override
     public List<List<Integer>> findConsecutiveGroups(int[] availableSeatsArrayForRow) {
         List<List<Integer>> consecutiveGroups = new ArrayList<>();
@@ -367,6 +440,13 @@ public class TicketServiceImpl implements TicketService {
         return consecutiveGroups;
     }
 
+    /**
+     * Randomly selects a subset of consecutive seats from available groups.
+     * 
+     * @param consecutiveGroupsOfSeats A list of consecutive seat groups.
+     * @param n The number of seats to select in the subset.
+     * @return A list of selected seat numbers.
+     */
     @Override
     public List<Integer> getRandomSubsetOfSeats(List<List<Integer>> consecutiveGroupsOfSeats, int n) {
         List<List<Integer>> validGroups = new ArrayList<>();
@@ -395,6 +475,13 @@ public class TicketServiceImpl implements TicketService {
         return selectedSubset;
     }
 
+    /**
+     * Gets the number of available seats in a section for a specific event.
+     * 
+     * @param event The event for which seat availability is checked.
+     * @param section The section in the venue.
+     * @return The number of available seats in the section.
+     */
     @Override
     public Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section) {
         if (ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(event.getEventId(), section.getSectionId()) == null) {
@@ -404,6 +491,12 @@ public class TicketServiceImpl implements TicketService {
 
     }
 
+    /**
+     * Removes a list of tickets from the database.
+     * 
+     * @param ticketIdList A list of ticket IDs to be removed.
+     * @throws IllegalArgumentException If any of the specified ticket IDs are invalid.
+     */
     @Override
     public void removeAllTickets(List<Integer> ticketIdList) {
         List<Ticket> ticketList = ticketRepository.findAllById(ticketIdList);
@@ -425,6 +518,14 @@ public class TicketServiceImpl implements TicketService {
         }
     }
 
+    /**
+     * Retrieves the maximum number of consecutive seats available in a section for an event.
+     * 
+     * @param eventId The ID of the event.
+     * @param sectionId The ID of the section in the venue.
+     * @return The maximum number of consecutive seats available in the section.
+     * @throws NonExistentException If there are issues with the event or section.
+     */
     @Override
     public Integer getMaxConsecutiveSeatsForSection(Integer eventId, String sectionId) {
         Event event = eventRepository.findById(eventId).orElse(null);
@@ -477,6 +578,12 @@ public class TicketServiceImpl implements TicketService {
         return maxConsecutiveSeatsForSection;
     }
 
+    /**
+     * Checks if the event has available tickets for sale.
+     * 
+     * @param event The event for which ticket availability is checked.
+     * @return True if there are available tickets for the event, false otherwise.
+     */
     @Override
     public Boolean getEventHasTickets(Event event) {
         int totalSeats = venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId());

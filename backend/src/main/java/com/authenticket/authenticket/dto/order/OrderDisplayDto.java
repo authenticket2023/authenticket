@@ -10,12 +10,38 @@ import com.authenticket.authenticket.model.User;
 import java.time.LocalDate;
 import java.util.Set;
 
+/**
+ * A DTO representing an order with its details.
+ */
 public record OrderDisplayDto(
+        /**
+         * The unique identifier of the order.
+         */
         Integer orderId,
+
+        /**
+         * The total order amount.
+         */
         Double orderAmount,
+
+        /**
+         * The purchase date of the order.
+         */
         LocalDate purchaseDate,
+
+        /**
+         * The status of the order (e.g., pending, completed, etc.).
+         */
         String orderStatus,
+
+        /**
+         * The user who made the purchase, represented as a UserDisplayDto.
+         */
         UserDisplayDto purchaser,
+
+        /**
+         * The set of tickets included in the order, represented as TicketDisplayDto objects.
+         */
         Set<TicketDisplayDto> ticketSet
 ) {
 }

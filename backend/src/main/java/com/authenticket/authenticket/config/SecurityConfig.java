@@ -70,12 +70,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/{organiserId}").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser/delete").hasAnyAuthority("ADMIN","ORGANISER")
                         .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser/image").hasAuthority("ORGANISER")
-                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/events/{organiserId}").hasAuthority("ORGANISER")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/events").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/current-events").hasAuthority("ORGANISER")
+
 
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-type").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v2/event-type").hasAuthority("ADMIN")//to be reviewed (saveEventType)
 
-                        .requestMatchers( "/api/v2/order/**").hasAnyAuthority("USER", "ADMIN") //to be reviewed (all order services)
+                        .requestMatchers( "/api/v2/order/**").hasAnyAuthority("USER", "ADMIN","ORGANISER") //to be reviewed (all order services)
 
                         .requestMatchers(HttpMethod.POST, "/api/v2/section/ticket-details").hasAuthority("USER")//to be reviewed (findTicketDetailsBySection)
                         .requestMatchers(HttpMethod.POST, "/api/v2/section").hasAuthority("ADMIN")
