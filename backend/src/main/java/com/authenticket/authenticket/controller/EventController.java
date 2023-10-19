@@ -670,6 +670,20 @@ public class EventController extends Utility {
         return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true), "Returned list of users allowed in presale"));
     }
 
+    @GetMapping("/event/purchaseable-tickets")
+    public ResponseEntity<GeneralApiResponse<Object>> getNumberOfPurchaseableTickets(@RequestParam("eventId") Integer eventId,
+                                                                                     @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        return ResponseEntity.ok(generateApiResponse(ticketService.getNumberOfTicketsPurchaseable(event,user), "Returned number of tickets user can purchase"));
+    }
+
     @GetMapping("/event/queue-position")
     public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(
             @RequestParam("eventId") Integer eventId,

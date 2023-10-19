@@ -6,6 +6,7 @@ import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
+import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -483,5 +484,11 @@ public class TicketServiceImpl implements TicketService {
         int sold = ticketRepository.countTicketsByOrder_Event(event);
 
         return sold < totalSeats;
+    }
+
+    @Override
+    public Integer getNumberOfTicketsPurchaseable(Event event, User user) {
+        System.out.println(ticketRepository.countAllByTicketPricing_EventAndOrder_User(event, user));
+        return PresaleService.MAX_TICKETS_SOLD_PER_USER - ticketRepository.countAllByTicketPricing_EventAndOrder_User(event, user);
     }
 }

@@ -3,6 +3,7 @@ package com.authenticket.authenticket.repository;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.Ticket;
+import com.authenticket.authenticket.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -70,6 +71,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Ticket> findAllByOrder(Order order);
 
     List<Ticket> findAllByOrderIn(List<Order> order);
-
-    List<Ticket> findAllByOrder_OrderId(Integer orderId);
+    Integer countAllByTicketPricing_EventAndOrder_User(Event event, User user);
 }
