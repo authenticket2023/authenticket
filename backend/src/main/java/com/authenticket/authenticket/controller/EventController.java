@@ -880,8 +880,8 @@ public class EventController extends Utility {
      * @param eventId The unique identifier of the event for which the user is
      *                indicating interest.
      * @return A ResponseEntity with information about the presale status of the event.
+     *          if event exists
      */
-
     @GetMapping("/event/presale-event")
     public ResponseEntity<GeneralApiResponse<Object>> isPresaleEvent(@RequestParam("eventId") Integer eventId) {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
