@@ -48,6 +48,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return convertFile;
     }
 
+    
     @Override
     public String uploadFile(MultipartFile file, String imageName, String fileType) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
