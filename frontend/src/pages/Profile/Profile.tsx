@@ -11,11 +11,13 @@ import {
   Alert,
   Snackbar,
 } from "@mui/material";
-
+import DisplayOrder from "./displayOrders";
 
 export const Profile = () => {
   useEffect(() => {
-    loadOrders();
+    if (loaded == false){
+      loadOrders();
+    }
   }, []);
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -29,19 +31,16 @@ export const Profile = () => {
   const id = window.localStorage.getItem("id");
   const [loaded, setLoaded]: any = useState(false);
   const [order, setOrders]: any = useState();
-  
+
   const loadOrders = async () => {
     //call backend API
-    fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/order/user/${id}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': `Bearer ${token}`,
-        },
-        method: "GET",
-      }
-    )
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/order/user/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      method: "GET",
+    })
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
@@ -51,7 +50,7 @@ export const Profile = () => {
             orderAmount: order.orderAmount,
             purchaseDate: order.purchaseDate,
             orderStatus: order.orderStatus,
-            tickets: order.ticketSet,
+            ticketSet: order.ticketSet,
           }));
           console.log(orderArr);
           setOrders(orderArr);
@@ -141,20 +140,31 @@ export const Profile = () => {
             </Typography>
           </Box>
         </Box>
-      </Box>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={4000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert
+        <Box>
+          <Grid container>
+            {order.map((orderInfo: any, index: any) => (
+              <React.Fragment key={index}>
+                <Grid item xs={6}>
+                  <DisplayOrder order={orderInfo} />
+                </Grid>
+              </React.Fragment>
+            ))}
+          </Grid>
+        </Box>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={4000}
           onClose={handleSnackbarClose}
-          severity={alertType}
-          sx={{ width: "100%" }}
         >
-          {alertMsg}
-        </Alert>
-      </Snackbar>
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={alertType}
+            sx={{ width: "100%" }}
+          >
+            {alertMsg}
+          </Alert>
+        </Snackbar>
+      </Box>
     </div>
   );
 };

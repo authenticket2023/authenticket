@@ -10,22 +10,18 @@ interface orderInfo {
     orderAmount: number,
     purchaseDate: string,
     orderStatus: string,
-    tickets: {
-      ticketId: number,
-      eventId: number,
-      catId: number,
-      sectionId: string,
-      rowNo: number,
-      seatNo: number,
-      ticketHolder: string,
-    },
+    ticketSet: any[],
   };
 }
 
-export default function displayVenue(props: orderInfo) {
+export default function DisplayOrder(props: orderInfo) {
+
+  
   return (
-    <Card>
-      
+    <Card variant="outlined"
+      elevation={0}
+      sx={{ borderColor: "grey", borderRadius: 3 }}>
+        {/* {props.order.purchaseDate} */}
     </Card>
   );
 }
