@@ -681,7 +681,7 @@ public class EventController extends Utility {
         }
         Event event = eventOptional.get();
 
-        return ResponseEntity.ok(generateApiResponse(ticketService.getNumberOfTicketsPurchaseable(event,user), "Returned number of tickets user can purchase"));
+        return ResponseEntity.ok(generateApiResponse(ticketService.getNumberOfTicketsPurchaseable(event, user), "Returned number of tickets user can purchase"));
     }
 
     @GetMapping("/event/queue-position")

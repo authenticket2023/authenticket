@@ -88,14 +88,6 @@ public class UserController extends Utility {
         return ResponseEntity.ok(generateApiResponse(events, "User has indicated interest for " + events.size() + " events."));
     }
 
-//    @GetMapping("/inQueue")
-//    public ResponseEntity<GeneralApiResponse<Object>> findIfQueuing(@NonNull HttpServletRequest request) {
-//        User user = retrieveUserFromRequest(request);
-//
-//        queueService.
-//        return ResponseEntity.ok(generateApiResponse(events, "User has indicated interest for " + events.size() + " events."));
-//    }
-
     @GetMapping("/{userId}")
     public ResponseEntity<GeneralApiResponse<Object>> findUserById(@PathVariable("userId") Integer userId) {
         Optional<UserFullDisplayDto> userDisplayDto = userService.findById(userId);

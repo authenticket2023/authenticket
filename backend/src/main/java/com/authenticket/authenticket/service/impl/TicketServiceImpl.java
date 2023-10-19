@@ -488,7 +488,6 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Integer getNumberOfTicketsPurchaseable(Event event, User user) {
-        System.out.println(ticketRepository.countAllByTicketPricing_EventAndOrder_User(event, user));
-        return PresaleService.MAX_TICKETS_SOLD_PER_USER - ticketRepository.countAllByTicketPricing_EventAndOrder_User(event, user);
+        return PresaleService.MAX_TICKETS_SOLD_PER_USER - ticketRepository.countAllByOrder_EventAndOrder_User(event, user);
     }
 }
