@@ -29,6 +29,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The `EventTypeController` class handles HTTP requests related to event types.
+ */
 @RestController
 @CrossOrigin(
         origins = {
@@ -60,7 +63,6 @@ public class AdminController extends Utility {
     private final EventTypeRepository eventTypeRepository;
 
     private final PasswordEncoder passwordEncoder;
-
 
     @Autowired
     public AdminController(AdminServiceImpl adminService,

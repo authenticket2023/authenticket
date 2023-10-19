@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * The `AmazonController` class handles HTTP requests related to Amazon S3 operations.
+ */
 @RestController
 @CrossOrigin(
         origins = {
@@ -28,7 +31,6 @@ public class AmazonController extends Utility {
     public AmazonController(AmazonS3ServiceImpl service) {
         this.service = service;
     }
-
 
     /**
      * Upload a file and associate it with the provided image name and file type.
@@ -63,7 +65,6 @@ public class AmazonController extends Utility {
                                              @RequestParam(value = "file-type") String fileType) {
         return ResponseEntity.status(200).body(generateApiResponse( null, service.deleteFile(imageName, fileType)));
     }
-
 
     /**
      * Retrieve the URL for displaying a file based on its image name and file type.
