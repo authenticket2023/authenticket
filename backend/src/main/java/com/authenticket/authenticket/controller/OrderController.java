@@ -6,10 +6,7 @@ import com.authenticket.authenticket.dto.order.OrderDtoMapper;
 import com.authenticket.authenticket.dto.order.OrderUpdateDto;
 import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.Order;
-import com.authenticket.authenticket.model.Ticket;
-import com.authenticket.authenticket.model.User;
+import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
@@ -152,7 +149,7 @@ public class OrderController extends Utility {
            User user = retrieveUserFromRequest(request);
 
            if (!orderRepository.existsByOrderIdAndUser(orderId, user)) {
-               throw new NonExistentException("Cannot view order of other users");
+               throw new NonExistentException("Cannot view orders of other users");
            }
        }
 
@@ -440,8 +437,18 @@ public class OrderController extends Utility {
      * @throws NonExistentException If the provided eventId does not correspond to an existing event.
      */
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllOrdersByEvent(Pageable pageable,@PathVariable(value = "eventId") Integer eventId) {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllOrdersByEvent(Pageable pageable,@PathVariable(value = "eventId") Integer eventId,
+                                                                           @NonNull HttpServletRequest request) {
         Event event = eventRepository.findById(eventId).orElse(null);
+
+        boolean isAdmin = isAdminRequest(request);
+        if (!isAdmin) {
+            EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+            if (!Objects.equals(organiser.getOrganiserId(), event.getOrganiser().getOrganiserId())) {
+                throw new NonExistentException("Cannot view orders of other organisers");
+            }
+        }
+
         if(event == null){
             throw new NonExistentException("Event does not exist");
         }
