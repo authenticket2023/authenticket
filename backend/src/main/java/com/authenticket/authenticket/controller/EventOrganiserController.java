@@ -79,13 +79,29 @@ public class EventOrganiserController extends Utility {
 
     }
 
-    @GetMapping("/events/{organiserId}")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId) {
+    @GetMapping("/events")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@NonNull HttpServletRequest request) {
+        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+        Integer organiserId = organiser.getOrganiserId();
+
         List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
         if (!events.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(events, String.format("All events hosted by organiser %d retrieved successfully", organiserId)));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
+
+    }
+
+    @GetMapping("/current-events")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllCurrentEventsByOrganiser(@NonNull HttpServletRequest request) {
+        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+        Integer organiserId = organiser.getOrganiserId();
+
+        List<Event> events = eventOrganiserService.findAllCurrentEventsByOrganiser(organiserId);
+        if (!events.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(events, String.format("All current events hosted by organiser %d retrieved successfully", organiserId)));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated current events or the organiser does not exist", organiserId)));
 
     }
 

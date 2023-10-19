@@ -10,6 +10,7 @@ import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
+import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import com.authenticket.authenticket.service.EventOrganiserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
     private String apiUrl;
 
 
+    private final EventRepository eventRepository;
     private final EventOrganiserRepository eventOrganiserRepository;
     private final EventOrganiserDtoMapper eventOrganiserDtoMapper;
     private final EmailServiceImpl emailService;
@@ -41,12 +43,14 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
 
     @Autowired
     public EventOrganiserServiceImpl(EventOrganiserRepository eventOrganiserRepository,
+                                     EventRepository eventRepository,
                                      EventOrganiserDtoMapper eventOrganiserDtoMapper,
                                      EmailServiceImpl emailService,
                                      AmazonS3Service amazonS3Service,
                                      PasswordEncoder passwordEncoder) {
         this.eventOrganiserRepository = eventOrganiserRepository;
         this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
+        this.eventRepository = eventRepository;
         this.emailService = emailService;
         this.amazonS3Service = amazonS3Service;
         this.passwordEncoder = passwordEncoder;
@@ -69,6 +73,14 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         }
 
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<Event> findAllCurrentEventsByOrganiser(Integer organiserId) {
+        LocalDateTime currentDate = LocalDateTime.now();
+        List<Event> eventList = eventRepository.findAllByReviewStatusAndOrganiserOrganiserIdAndEventDateIsAfterAndDeletedAtIsNullOrderByEventDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), organiserId,currentDate);
+
+        return eventList;
     }
 
     @Override
