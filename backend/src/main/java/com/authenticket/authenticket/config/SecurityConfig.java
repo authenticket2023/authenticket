@@ -69,7 +69,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/{organiserId}").permitAll()
                         .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser/delete").hasAnyAuthority("ADMIN","ORGANISER")
                         .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser/image").hasAuthority("ORGANISER")
-                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/events/{organiserId}").hasAuthority("ORGANISER")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/events").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/current-events").hasAuthority("ORGANISER")
+
 
                         .requestMatchers(HttpMethod.GET,"/api/v2/event-type").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v2/event-type").hasAuthority("ADMIN")//to be reviewed (saveEventType)

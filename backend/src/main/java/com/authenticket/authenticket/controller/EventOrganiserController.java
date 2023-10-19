@@ -93,12 +93,37 @@ public class EventOrganiserController extends Utility {
      * @return A ResponseEntity containing a GeneralApiResponse with a list of Event objects or an error message.
      */
     @GetMapping("/events/{organiserId}")
-    public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId) {
+    public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId, @NonNull HttpServletRequest request) {
+        if (!isAdminRequest(request) && retrieveOrganiserFromRequest(request).getOrganiserId() != organiserId) {
+            throw new IllegalArgumentException("Unable to cancel other user's order");
+        }
+
         List<Event> events = eventOrganiserService.findAllEventsByOrganiser(organiserId);
         if (!events.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(events, String.format("All events hosted by organiser %d retrieved successfully", organiserId)));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
+
+    }
+  
+      /**
+     * Retrieves a list of current events associated with a specific event organizer. (events with event date after current date)
+     *
+     * @param organiserId The ID of the event organizer whose events are to be retrieved.
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of Event objects or an error message.
+     */
+  
+      @GetMapping("/current-events/{organiserId}")
+    public ResponseEntity<GeneralApiResponse<Object>> findAllCurrentEventsByOrganiser(@PathVariable("organiserId") Integer organiserId, @NonNull HttpServletRequest request) {
+        if (!isAdminRequest(request) && retrieveOrganiserFromRequest(request).getOrganiserId() != organiserId) {
+            throw new IllegalArgumentException("Unable to cancel other user's order");
+        }
+
+        List<Event> events = eventOrganiserService.findAllCurrentEventsByOrganiser(organiserId);
+        if (!events.isEmpty()) {
+            return ResponseEntity.ok(generateApiResponse(events, String.format("All current events hosted by organiser %d retrieved successfully", organiserId)));
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated current events or the organiser does not exist", organiserId)));
 
     }
 
@@ -111,6 +136,7 @@ public class EventOrganiserController extends Utility {
      * @param password The new password for the event organizer (optional).
      * @return A ResponseEntity containing a GeneralApiResponse with the updated EventOrganiser or an error message.
      */
+
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId,
                                                                            @RequestParam(value = "name", required = false) String name,
