@@ -20,8 +20,6 @@ public interface JwtService {
             UserDetails userDetails
     );
     String generateToken(Ticket ticket, LocalDateTime time);
-
-    String generateToken(Map<String, Object> extraClaims, Ticket ticket);
     boolean isTokenValid(String token, UserDetails userDetails);
     boolean isTokenExpired(String token);
 }

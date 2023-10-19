@@ -35,11 +35,10 @@ public class JwtServiceImpl implements JwtService {
     }
 
     /**
-     * Extracts a claim from a JWT token using a provided claims resolver function.
+     * Extracts the user role from a JWT token.
      *
-     * @param token           The JWT token from which to extract the claim.
-     * @param claimsResolver  A function to resolve the desired claim from the token's claims.
-     * @return The claim extracted from the token.
+     * @param token The JWT token from which to extract the user role.
+     * @return The user role contained in the token.
      */
     @Override
     public String extractRole(String token) {
@@ -47,6 +46,13 @@ public class JwtServiceImpl implements JwtService {
         return (String) claims.get("role");
     }
 
+    /**
+     * Extracts a claim from a JWT token using a provided claims resolver function.
+     *
+     * @param token           The JWT token from which to extract the claim.
+     * @param claimsResolver  A function to resolve the desired claim from the token's claims.
+     * @return The claim extracted from the token.
+     */
     @Override
     public  <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
         final Claims claims = extractAllClaims(token);
@@ -65,10 +71,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     /**
-     * Generates a JWT token for a user based on their ticket.
+     * Generates a JWT token for a given ticket with a specified expiration date.
      *
-     * @param ticket The ticket for whom the token is generated.
-     * @return The generated JWT token.
+     * @param ticket          The ticket for which the token is generated.
+     * @param expirationDate  The date and time when the token will expire.
+     * @return A JWT representing the ticket with the specified expiration date.
      */
     @Override
     public String generateToken(Ticket ticket, LocalDateTime expirationDate) {
@@ -101,24 +108,6 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
                 .setExpiration(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis() + 1000 * 60 * 60 * 24))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    /**
-     * Generates a JWT token for a ticket holder based on a Ticket object and optional extra claims.
-     *
-     * @param extraClaims Additional claims to include in the token.
-     * @param ticket The Ticket object for which the token is generated.
-     * @return The generated JWT token.
-     */
-    @Override
-    public String generateToken(Map<String, Object> extraClaims, Ticket ticket) {
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setSubject(ticket.getTicketHolder())
-                .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
