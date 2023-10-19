@@ -88,7 +88,7 @@ export const OrganiserLogin = () => {
     formData.append('email', email);
     formData.append('password', password);
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/eventOrgAuthenticate`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/org`, {
       method: 'POST',
       body: formData
     })

@@ -1,8 +1,10 @@
 package com.authenticket.authenticket.dto.order;
 
+import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
+import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,27 +69,10 @@ public class OrderDtoMapper implements Function<Order, OrderDisplayDto> {
             oldOrder.setUser(newOrder.user());
         }
     }
-//    public OrderDisplayDto applyOrderDto(Order order) {
-//        return new OrderDisplayDto(
-//                order.getOrderId(),
-//                order.getOrderAmount(),
-//                order.getPurchaseDate(),
-//                userDtoMapper.apply(order.getUser())
-//        );
-//    }
 
-//    public OrderDisplayDto applyArtistDisplayDto(Object[] obj){
-//        return new OrderDisplayDto(
-//                (Integer) obj[0],
-//                (String) obj[1],
-//                (String) obj[2]
-//        );
-//    }
-//
-//    public Set<OrderDisplayDto> mapArtistDisplayDto(List<Object[]> artistObjects) {
-//
-//        return artistObjects.stream()
-//                .map(this::applyArtistDisplayDto)
-//                .collect(Collectors.toSet());
-//    }
+public List<OrderDisplayDto> map(List<Order> orderList) {
+    return orderList.stream()
+            .map(this::apply)
+            .collect(Collectors.toList());
+}
 }

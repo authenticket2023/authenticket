@@ -61,7 +61,7 @@ export const InfoBox = (props: any) => {
       setIsSelectedForPreSale(false);
       setPreSaleStatus(false);
     }
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/isPresaleEvent?eventId=${props.eventId}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/presale-event?eventId=${props.eventId}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -85,7 +85,7 @@ export const InfoBox = (props: any) => {
     if (token === null || userID === null) {
       return;
     }
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/checkPresaleStatus?eventId=${props.eventId}&userId=${userID}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/presale-status?eventId=${props.eventId}&userId=${userID}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -108,7 +108,7 @@ export const InfoBox = (props: any) => {
     if (token === null || userID === null) {
       return;
     }
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/checkIfUserSelected?eventId=${props.eventId}&userId=${userID}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/user-selected?eventId=${props.eventId}&userId=${userID}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -128,7 +128,7 @@ export const InfoBox = (props: any) => {
   // dont need logged in
   //check if the current event still have tickets
   const loadAvailableTicket = async () => {
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/hasTickets?eventId=${props.eventId}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/available?eventId=${props.eventId}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -156,7 +156,7 @@ export const InfoBox = (props: any) => {
     const formData = new FormData();
     formData.append('eventId', props.eventId);
     formData.append('userId', userID);
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/indicateInterest`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/interest`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

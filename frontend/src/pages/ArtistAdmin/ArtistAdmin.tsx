@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { NavbarAdmin } from '../../Navbar';
+import { Box } from '@mui/material';
+import { AllArtist } from './allArtist';
 
 export const ArtistAdmin = () => {
     useEffect(() => {
@@ -15,9 +17,9 @@ export const ArtistAdmin = () => {
                  <Navigate to="/ArtistAdmin" /> :  <Navigate to="/Forbidden" />
             }
             < NavbarAdmin />
-            <h1>
-                ArtistAdmin Page under construction ...
-            </h1>
+            <Box sx={{margin: 5}}>
+                <AllArtist />
+            </Box>
         </div>
 
     )

@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import { CardActionArea } from "@mui/material";
-import { format } from "date-fns";
+
 interface eventInfo {
   event: {
     eventId: number;
@@ -13,11 +13,6 @@ interface eventInfo {
     totalTickets: number;
     eventVenue: string;
   };
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return format(date, "dd MMMM yyyy, h:mm a");
 }
 
 export default function displayPast(props: eventInfo) {

@@ -39,7 +39,7 @@ function decrypt(data: any) {
 }
 
 async function verifyToken(token: any, email: any) {
-    const apiUrl = `${process.env.MAIN_PRODUCTION_BACKEND_HOST}/api/auth/token-check`;
+    const apiUrl = `${process.env.MAIN_PRODUCTION_BACKEND_HOST}/api/v2/auth/token-verification`;
     const formData = new FormData();
     formData.append('jwtToken', token);
     formData.append('userEmail', email);

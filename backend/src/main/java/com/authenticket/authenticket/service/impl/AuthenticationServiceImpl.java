@@ -91,7 +91,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         var existingOrg = organiserRepository.findByEmail(request.getEmail());
         var jwtToken = jwtServiceImpl.generateToken(request);
         String redirectUrl = frontendUrl + "/Login";
-        String link = backendUrl +"/api/auth/userRegister/userConfirm?token=" + jwtToken + "&redirect=" + redirectUrl;
+        String link = backendUrl +"/api/v2/auth/user-register/confirm?token=" + jwtToken + "&redirect=" + redirectUrl;
 
         if(existingUser.isPresent() || existingAdmin.isPresent() || existingOrg.isPresent()){
             if(existingUser.isPresent() && !existingUser.get().getEnabled()){

@@ -36,7 +36,7 @@ import java.time.LocalDate;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v2/auth")
 public class AuthenticationController extends Utility{
 
     private final AuthenticationServiceImpl service;
@@ -58,7 +58,7 @@ public class AuthenticationController extends Utility{
         this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping("token-check")
+    @PostMapping("token-verification")
     public ResponseEntity<GeneralApiResponse<Object>> tokenCheck(
             @RequestParam("jwtToken") String token,
             @RequestParam("userEmail") String userEmail){
@@ -77,7 +77,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/userRegister")
+    @PostMapping("/user-register")
     public ResponseEntity<GeneralApiResponse<Object>> userRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
@@ -95,7 +95,7 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Verification required"));
     }
 
-    @GetMapping(path = "/userRegister/userConfirm")
+    @GetMapping(path = "/user-register/confirm")
     public ResponseEntity<GeneralApiResponse<Object>> userConfirm(@RequestParam("token") String token,
                                                           @RequestParam("redirect") String redirect){
         try{
@@ -108,7 +108,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/userAuthenticate")
+    @PostMapping("/user")
     public ResponseEntity<GeneralApiResponse<Object>> userAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
@@ -125,7 +125,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/eventOrgRegister")
+    @PostMapping("/org-register")
     public ResponseEntity<GeneralApiResponse<Object>> orgRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
@@ -144,7 +144,7 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Approval required"));
     }
 
-    @PostMapping("/eventOrgAuthenticate")
+    @PostMapping("/org")
     public ResponseEntity<GeneralApiResponse<Object>> eventOrgAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
@@ -160,7 +160,7 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/adminRegister")
+    @PostMapping("/admin-register")
     public ResponseEntity<GeneralApiResponse<Object>> adminRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
@@ -176,7 +176,7 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Admin account created"));
     }
 
-    @PostMapping("/adminAuthenticate")
+    @PostMapping("/admin")
     public ResponseEntity<GeneralApiResponse<Object>> adminAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
