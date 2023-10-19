@@ -24,12 +24,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementation of the {@link EmailService} interface for sending emails.
+ */
 @Service
 public class EmailServiceImpl implements EmailService {
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     private final JavaMailSenderImpl mailSender;
 
+    /**
+     * Constructs an instance of EmailServiceImpl with a JavaMailSenderImpl.
+     *
+     * @param mailSender The JavaMailSenderImpl for sending emails.
+     */
     @Autowired
     public EmailServiceImpl(JavaMailSenderImpl mailSender) {
         this.mailSender = mailSender;
@@ -41,6 +49,13 @@ public class EmailServiceImpl implements EmailService {
     @Value("${authenticket.smtp-password}")
     private String smtpPassword;
 
+    /**
+     * Asynchronously sends an email with the given recipient, body, and subject.
+     *
+     * @param to      The recipient's email address.
+     * @param body    The email body.
+     * @param subject The email subject.
+     */
     @Async
     @Override
     public void send(String to, String body, String subject) {
@@ -63,6 +78,14 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    /**
+     * Sends an email with attachments to the given recipient.
+     *
+     * @param to      The recipient's email address.
+     * @param subject The email subject.
+     * @param body    The email body.
+     * @param pdfList A list of file attachments as {@link FileNameRecord} objects.
+     */
     @Override
     public void send(String to, String subject, String body, List<FileNameRecord> pdfList) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -92,6 +115,13 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    /**
+     * Builds an HTML email message for account activation.
+     *
+     * @param name The recipient's name.
+     * @param link The activation link.
+     * @return A formatted HTML email message.
+     */
     public static String buildActivationEmail(String name, String link) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
@@ -161,6 +191,12 @@ public class EmailServiceImpl implements EmailService {
                 "</div></div>";
     }
 
+    /**
+     * Builds an HTML email message for event review.
+     *
+     * @param event The event to be reviewed.
+     * @return A formatted HTML email message.
+     */
     public static String buildEventReviewEmail(Event event) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
@@ -239,6 +275,12 @@ public class EmailServiceImpl implements EmailService {
                 "</div></div>";
     }
 
+    /**
+     * Builds an email template for notifying the user that their application is pending review.
+     *
+     * @param name The name of the recipient.
+     * @return The email template in HTML format.
+     */
     public static String buildOrganiserPendingEmail(String name) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
@@ -286,6 +328,13 @@ public class EmailServiceImpl implements EmailService {
                 "</div></div>";
     }
 
+    /**
+     * Builds an email template for notifying the user that their account has been rejected.
+     *
+     * @param name    The name of the recipient.
+     * @param remarks Remarks or additional information.
+     * @return The email template in HTML format.
+     */
     public static String buildOrganiserApprovalEmail(String name, String link, String password, String remarks) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
@@ -355,6 +404,13 @@ public class EmailServiceImpl implements EmailService {
                 "</div></div>";
     }
 
+    /**
+     * Builds an email template for notifying the user that their account has been rejected.
+     *
+     * @param name    The name of the recipient.
+     * @param remarks Remarks or additional information.
+     * @return The email template in HTML format.
+     */
     public static String buildOrganiserRejectionEmail(String name, String remarks) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
@@ -424,6 +480,13 @@ public class EmailServiceImpl implements EmailService {
                 "</div></div>";
     }
 
+    /**
+     * Builds an email template for notifying the user of a successful order.
+     *
+     * @param name The name of the recipient.
+     * @param link The link to view the order.
+     * @return The email template in HTML format.
+     */
     public static String buildEarlyTicketSaleNotificationEmail(String name, String eventName, String link, String endTime) {
         return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
                 "\n" +
@@ -495,6 +558,13 @@ public class EmailServiceImpl implements EmailService {
                 "</div></div>";
     }
 
+    /**
+     * Builds an email template for notifying the user of a successful order.
+     *
+     * @param name The name of the recipient.
+     * @param link The link to view the order.
+     * @return The email template in HTML format.
+     */
     public static String buildSuccessfulOrderEmail(String name, String link) {
         return "<div style=\"font-family: Helvetica, Arial, sans-serif; font-size: 16px; margin: 0; color: #0b0c0c\">\n" +
                 "\n" +

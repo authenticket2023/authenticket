@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * This class provides the implementation of the `ArtistService` interface, which is responsible for managing artists, their information, and artist images.
+ */
 
 @Service
 public class ArtistServiceImpl implements ArtistService {
@@ -30,6 +33,11 @@ public class ArtistServiceImpl implements ArtistService {
         this.artistDtoMapper = artistDtoMapper;
     }
 
+    /**
+     * Retrieve a list of all artists.
+     *
+     * @return A list of artist information.
+     */
     @Override
     public List<ArtistDisplayDto> findAllArtists() {
         return artistRepository.findAll()
@@ -38,16 +46,34 @@ public class ArtistServiceImpl implements ArtistService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Find an artist by their unique identifier.
+     *
+     * @param artistId The unique identifier of the artist.
+     * @return An optional containing artist information if found, or empty if not found.
+     */
     @Override
     public Optional<ArtistDisplayDto> findByArtistId(Integer artistId) {
         return artistRepository.findById(artistId).map(artistDtoMapper);
     }
 
+    /**
+     * Save a new artist or update an existing artist.
+     *
+     * @param artist The artist object to save or update.
+     * @return The saved artist.
+     */
     @Override
     public Artist saveArtist(Artist artist){
         return artistRepository.save(artist);
     }
 
+    /**
+     * Update artist information.
+     *
+     * @param artist The artist information to update.
+     * @return The updated artist information.
+     */
     @Override
     public ArtistDisplayDto updateVenue(Artist artist){
         Optional<Artist> artistOptional = artistRepository.findById(artist.getArtistId());
@@ -62,6 +88,13 @@ public class ArtistServiceImpl implements ArtistService {
         return null;
     }
 
+    /**
+     * Delete an artist by setting the deletion timestamp.
+     *
+     * @param artistId The unique identifier of the artist to delete.
+     * @throws AlreadyDeletedException if the artist is already deleted.
+     * @throws NonExistentException if the artist does not exist.
+     */
     @Override
     public void deleteArtist(Integer artistId){
         Optional<Artist> artistOptional = artistRepository.findById(artistId);
@@ -80,6 +113,13 @@ public class ArtistServiceImpl implements ArtistService {
         }
     }
 
+    /**
+     * Update the artist image filename for an artist.
+     *
+     * @param filename The new artist image filename.
+     * @param artistId The unique identifier of the artist.
+     * @return The updated artist information.
+     */
     @Override
     public ArtistDisplayDto updateArtistImage(String filename, Integer artistId){
         Optional<Artist> artistOptional = artistRepository.findById(artistId);

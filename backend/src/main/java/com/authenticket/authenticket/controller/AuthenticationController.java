@@ -25,6 +25,8 @@ import io.jsonwebtoken.security.SignatureException;
 import java.net.URI;
 import java.time.LocalDate;
 
+/**This is the authentication controller class and the base path for this controller's endpoint is api/v2/auth.*/
+
 @RestController
 @CrossOrigin(
         origins = {
@@ -58,6 +60,17 @@ public class AuthenticationController extends Utility{
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Verify the validity of a JWT token and check if it is associated with a specific user.
+     *
+     * @param token The JWT token to be verified.
+     * @param userEmail The email of the user to which the token should be associated.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the result of token verification. If the token is valid
+     *         and associated with the provided user, it returns a success message along with user authorities. If the token
+     *         is invalid, it returns an error message. If the provided email is not registered, it returns an error message.
+     *         If the token's signature cannot be trusted, it returns an error message.
+     */
+
     @PostMapping("token-verification")
     public ResponseEntity<GeneralApiResponse<Object>> tokenCheck(
             @RequestParam("jwtToken") String token,
@@ -77,6 +90,17 @@ public class AuthenticationController extends Utility{
         }
     }
 
+    /**
+     * Register a new user with the provided information.
+     *
+     * @param name The name of the user to be registered.
+     * @param email The email address of the user to be registered.
+     * @param password The password for the user's account (will be securely hashed and stored).
+     * @param dob The date of birth of the user.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the success of user registration. The response
+     *         typically includes a message stating that user verification is required.
+     */
+
     @PostMapping("/user-register")
     public ResponseEntity<GeneralApiResponse<Object>> userRegister(
             @RequestParam("name") String name,
@@ -95,6 +119,14 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Verification required"));
     }
 
+    /**
+     * Confirm a user's registration using a verification token and redirect to a specified URL. Used in email when a confirmation email is sent to the user's email to verify the user.
+     *
+     * @param token The verification token used to confirm the user's registration.
+     * @param redirect The URL to which the endpoint should redirect after confirmation.
+     * @return A ResponseEntity that typically performs a redirect response to the specified URL if confirmation is successful,
+     *         or returns an error response with a message if confirmation fails.
+     */
     @GetMapping(path = "/user-register/confirm")
     public ResponseEntity<GeneralApiResponse<Object>> userConfirm(@RequestParam("token") String token,
                                                           @RequestParam("redirect") String redirect){
@@ -108,6 +140,14 @@ public class AuthenticationController extends Utility{
         }
     }
 
+    /**
+     * Authenticate a user by their email and password.
+     *
+     * @param email The email of the user to authenticate.
+     * @param password The password of the user for authentication.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the result of user authentication. If successful, it returns a welcome message,
+     *         or an error message if authentication fails due to an unregistered email or account lock.
+     */
     @PostMapping("/user")
     public ResponseEntity<GeneralApiResponse<Object>> userAuthenticate(
             @RequestParam("email") String email,
@@ -124,6 +164,15 @@ public class AuthenticationController extends Utility{
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));
         }
     }
+
+    /**
+     * Register a new organization (event organizer) with the provided information.
+     *
+     * @param name The name of the organization to be registered.
+     * @param email The email address of the organization.
+     * @param description A description of the organization.
+     * @return A ResponseEntity indicating the success of organization registration.
+     */
 
     @PostMapping("/org-register")
     public ResponseEntity<GeneralApiResponse<Object>> orgRegister(
@@ -144,6 +193,14 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Approval required"));
     }
 
+    /**
+     * Authenticate an organization (event organizer) by their email and password.
+     *
+     * @param email The email of the organization.
+     * @param password The password for authentication.
+     * @return A ResponseEntity indicating the result of organization authentication.
+     */
+
     @PostMapping("/org")
     public ResponseEntity<GeneralApiResponse<Object>> eventOrgAuthenticate(
             @RequestParam("email") String email,
@@ -160,6 +217,16 @@ public class AuthenticationController extends Utility{
         }
     }
 
+
+    /**
+     * Register a new admin with the provided information.
+     *
+     * @param name The name of the admin to be registered.
+     * @param email The email address of the admin.
+     * @param password The password for the admin's account (will be securely hashed and stored).
+     * @return A ResponseEntity indicating the success of admin registration.
+     */
+
     @PostMapping("/admin-register")
     public ResponseEntity<GeneralApiResponse<Object>> adminRegister(
             @RequestParam("name") String name,
@@ -175,6 +242,16 @@ public class AuthenticationController extends Utility{
         service.adminRegister(admin);
         return ResponseEntity.status(200).body(generateApiResponse(null, "Admin account created"));
     }
+
+    /**
+     * Authenticate an admin by their email and password.
+     *
+     * @param email The email of the admin to authenticate.
+     * @param password The password of the admin for authentication.
+     * @return A ResponseEntity indicating the result of admin authentication. If successful, it returns a welcome message,
+     *         or an error message if authentication fails due to an unregistered email or account lock.
+     *
+     */
 
     @PostMapping("/admin")
     public ResponseEntity<GeneralApiResponse<Object>> adminAuthenticate(

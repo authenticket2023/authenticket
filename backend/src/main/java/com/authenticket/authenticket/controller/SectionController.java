@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**This is the section controller class and the base path for this controller's endpoint is api/v2/section.*/
+
 @RestController
 @CrossOrigin(
         origins = {
@@ -56,6 +58,16 @@ public class SectionController extends Utility {
         return "test successful";
     }
 
+    /**
+     * Endpoint for saving a new section associated with a venue and a ticket category.
+     *
+     * @param sectionId         The identifier for the section.
+     * @param venueId           The identifier of the associated venue.
+     * @param catId             The identifier of the associated ticket category.
+     * @param noOfRows          The number of rows in the section.
+     * @param noOfSeatsPerRow   The number of seats per row in the section.
+     * @return A response containing information about the created section.
+     */
     @PostMapping
     public ResponseEntity<GeneralApiResponse<Object>> saveSection(@RequestParam(value = "sectionId") String sectionId,
                                                                   @RequestParam(value = "venueId") Integer venueId,
@@ -81,6 +93,14 @@ public class SectionController extends Utility {
         return ResponseEntity.ok(generateApiResponse(section, "Section Created Successfully"));
     }
 
+    /**
+     * Endpoint for retrieving ticket details for a section within an event.
+     *
+     * @param eventId    The identifier of the associated event.
+     * @param sectionId  The identifier of the section within the venue.
+     * @return A response containing ticket details for the specified section.
+     */
+
     @PostMapping("/ticket-details")
     public ResponseEntity<GeneralApiResponse<Object>> findTicketDetailsBySection(
             @RequestParam(value = "eventId") Integer eventId,
@@ -103,6 +123,15 @@ public class SectionController extends Utility {
         return ResponseEntity.ok(generateApiResponse(sectionTicketDetailsDto, "Ticket details for section return successfully"));
     }
 
+    /**
+     * Endpoint for generating the seat matrix in the console for a section within an event.
+     * Used for testing of seat allocation. Generates a matrix of 1 and 0s where the dimensions are of the seat plan for the section.
+     * 0s are the empty seat and 1s are the taken seats.
+     *
+     * @param eventId    The identifier of the associated event.
+     * @param sectionId  The identifier of the section within the venue.
+     * @return A response indicating that the seat matrix method has been called.
+     */
     @PostMapping("/seat-matrix")
     public ResponseEntity<GeneralApiResponse<Object>> seatMatrix(
             @RequestParam(value = "eventId") Integer eventId,

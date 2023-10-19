@@ -15,13 +15,14 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+/**This is the event organiser controller class and the base path for this controller's endpoint is api/v2/event-organiser.*/
 
 @RestController
 @CrossOrigin(
@@ -40,15 +41,11 @@ public class EventOrganiserController extends Utility {
 
     private final AmazonS3Service amazonS3Service;
 
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
     public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService,
-                                    AmazonS3Service amazonS3Service,
-                                    PasswordEncoder passwordEncoder) {
+                                    AmazonS3Service amazonS3Service) {
         this.eventOrganiserService = eventOrganiserService;
         this.amazonS3Service = amazonS3Service;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/test")
@@ -56,7 +53,11 @@ public class EventOrganiserController extends Utility {
         return "test successful";
     }
 
-
+    /**
+     * Retrieves a list of all event organizers.
+     *
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of EventOrganiserDisplayDto objects.
+     */
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllEventOrganiser() {
 
@@ -70,6 +71,12 @@ public class EventOrganiserController extends Utility {
         }
     }
 
+    /**
+     * Retrieves an event organizer by their ID.
+     *
+     * @param organiserId The ID of the event organizer to retrieve.
+     * @return A ResponseEntity containing a GeneralApiResponse with the EventOrganiserDisplayDto or an error message.
+     */
     @GetMapping("/{organiserId}")
     public ResponseEntity<GeneralApiResponse<Object>> findEventOrganiserById(@PathVariable("organiserId") Integer organiserId) {
         Optional<EventOrganiserDisplayDto> organiserDisplayDtoOptional = eventOrganiserService.findOrganiserById(organiserId);
@@ -79,6 +86,12 @@ public class EventOrganiserController extends Utility {
 
     }
 
+    /**
+     * Retrieves a list of events associated with a specific event organizer.
+     *
+     * @param organiserId The ID of the event organizer whose events are to be retrieved.
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of Event objects or an error message.
+     */
     @GetMapping("/events/{organiserId}")
     public ResponseEntity<GeneralApiResponse<Object>> findAllEventsByOrganiser(@PathVariable("organiserId") Integer organiserId, @NonNull HttpServletRequest request) {
         if (!isAdminRequest(request) && retrieveOrganiserFromRequest(request).getOrganiserId() != organiserId) {
@@ -92,8 +105,15 @@ public class EventOrganiserController extends Utility {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated events or the organiser does not exist", organiserId)));
 
     }
-
-    @GetMapping("/current-events/{organiserId}")
+  
+      /**
+     * Retrieves a list of current events associated with a specific event organizer. (events with event date after current date)
+     *
+     * @param organiserId The ID of the event organizer whose events are to be retrieved.
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of Event objects or an error message.
+     */
+  
+      @GetMapping("/current-events/{organiserId}")
     public ResponseEntity<GeneralApiResponse<Object>> findAllCurrentEventsByOrganiser(@PathVariable("organiserId") Integer organiserId, @NonNull HttpServletRequest request) {
         if (!isAdminRequest(request) && retrieveOrganiserFromRequest(request).getOrganiserId() != organiserId) {
             throw new IllegalArgumentException("Unable to cancel other user's order");
@@ -106,6 +126,16 @@ public class EventOrganiserController extends Utility {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(generateApiResponse(null, String.format("The organiser with ID %d does not have associated current events or the organiser does not exist", organiserId)));
 
     }
+
+    /**
+     * Updates an event organizer's information.
+     *
+     * @param organiserId The ID of the event organizer to be updated.
+     * @param name The new name of the event organizer (optional).
+     * @param description The new description of the event organizer (optional).
+     * @param password The new password for the event organizer (optional).
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated EventOrganiser or an error message.
+     */
 
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateEventOrganiser(@RequestParam(value = "organiserId") Integer organiserId,
@@ -121,6 +151,13 @@ public class EventOrganiserController extends Utility {
         }
     }
 
+    /**
+     * Updates an event organizer's profile image.
+     *
+     * @param file The MultipartFile containing the new image file.
+     * @param request The HttpServletRequest containing the request information.
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated EventOrganiser or an error message.
+     */
     @PutMapping("/image")
     public ResponseEntity<GeneralApiResponse<Object>> updateOrganiserImage(@RequestParam("file") MultipartFile file,
                                                                            @NonNull HttpServletRequest request) {
@@ -150,6 +187,12 @@ public class EventOrganiserController extends Utility {
     }
 
 
+    /**
+     * Deletes one or more event organizers by their IDs.
+     *
+     * @param organiserIdString A comma-separated string of event organizer IDs to be deleted.
+     * @return A ResponseEntity containing a GeneralApiResponse with the results of the deletion process or an error message.
+     */
     @PutMapping("/delete")
     public ResponseEntity<GeneralApiResponse<Object>> deleteEventOrganiser(@RequestParam("organiserId") String organiserIdString) {
         try {
