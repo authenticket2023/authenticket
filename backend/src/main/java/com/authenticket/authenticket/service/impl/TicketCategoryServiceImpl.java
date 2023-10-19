@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * This class provides the implementation of the `TicketCategoryService` interface, which manages ticket categories.
+ */
+
 @Service
 public class TicketCategoryServiceImpl implements TicketCategoryService {
 
@@ -31,6 +35,11 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         this.ticketCategoryDisplayDtoMapper = ticketCategoryDisplayDtoMapper;
     }
 
+    /**
+     * Retrieve a list of all ticket categories.
+     *
+     * @return A list of `TicketCategoryDisplayDto` objects representing all ticket categories.
+     */
     @Override
     public List<TicketCategoryDisplayDto> findAllTicketCategory() {
         return ticketCategoryRepository.findAll()
@@ -39,11 +48,24 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Find a ticket category by its unique identifier (ID).
+     *
+     * @param categoryId The unique identifier of the ticket category.
+     * @return An `Optional` containing a `TicketCategoryDisplayDto` if found, or empty if the ticket category does not exist.
+     */
     @Override
     public Optional<TicketCategoryDisplayDto> findTicketCategoryById(Integer categoryId) {
         return ticketCategoryRepository.findById(categoryId).map(ticketCategoryDisplayDtoMapper);
     }
 
+    /**
+     * Create and save a new ticket category with the given name.
+     *
+     * @param name The name of the new ticket category.
+     * @return The saved `TicketCategory` entity.
+     * @throws AlreadyExistsException If a ticket category with the same name already exists.
+     */
     @Override
     public TicketCategory saveTicketCategory(String name) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findByCategoryName(name);
@@ -54,6 +76,15 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         return ticketCategoryRepository.save(ticketCategory);
     }
 
+    /**
+     * Update an existing ticket category with a new name.
+     *
+     * @param categoryId The unique identifier of the ticket category to update.
+     * @param name      The new name for the ticket category.
+     * @return The updated `TicketCategory` entity.
+     * @throws AlreadyExistsException If a ticket category with the new name already exists.
+     * @throws NonExistentException  If the ticket category to update does not exist.
+     */
     @Override
     public TicketCategory updateTicketCategory(Integer categoryId, String name) {
         TicketCategoryUpdateDto ticketCategoryUpdateDto = new TicketCategoryUpdateDto(categoryId, name);
@@ -74,6 +105,13 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         throw new NonExistentException("Ticket Category not found");
     }
 
+    /**
+     * Delete a ticket category by marking it as deleted.
+     *
+     * @param categoryId The unique identifier of the ticket category to delete.
+     * @throws AlreadyDeletedException If the ticket category is already deleted.
+     * @throws NonExistentException   If the ticket category does not exist.
+     */
     @Override
     public void deleteTicket(Integer categoryId) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);
@@ -91,6 +129,12 @@ public class TicketCategoryServiceImpl implements TicketCategoryService {
         }
     }
 
+    /**
+     * Remove a ticket category permanently by its unique identifier (ID).
+     *
+     * @param categoryId The unique identifier of the ticket category to remove.
+     * @throws NonExistentException If the ticket category does not exist.
+     */
     @Override
     public void removeTicketCategory(Integer categoryId) {
         Optional<TicketCategory> ticketCategoryOptional = ticketCategoryRepository.findById(categoryId);

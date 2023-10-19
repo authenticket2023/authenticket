@@ -8,6 +8,7 @@ import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
+import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,8 @@ class EventOrganiserServiceImplTest {
     @Mock
     private EventOrganiserRepository eventOrganiserRepository;
     @Mock
+    private EventRepository eventRepository;
+    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private AmazonS3Service amazonS3Service;
@@ -46,6 +49,7 @@ class EventOrganiserServiceImplTest {
         EventOrganiserDtoMapper eventOrganiserDtoMapper = new EventOrganiserDtoMapper(passwordEncoder, adminDtoMapper);
         underTest = new EventOrganiserServiceImpl(
                 eventOrganiserRepository,
+                eventRepository,
                 eventOrganiserDtoMapper,
                 emailService,
                 amazonS3Service,

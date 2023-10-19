@@ -11,8 +11,19 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * A service class responsible for mapping Artist entities to ArtistDisplayDto objects
+ * and vice versa.
+ */
 @Service
 public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
+
+    /**
+     * Maps an Artist entity to an ArtistDisplayDto object.
+     *
+     * @param artist The Artist entity to map.
+     * @return An ArtistDisplayDto containing the artist's information.
+     */
     public ArtistDisplayDto apply(Artist artist){
         return new ArtistDisplayDto(
                 artist.getArtistId(),
@@ -24,12 +35,24 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
         );
     }
 
-    public void update (Artist newArtist, Artist oldArtist){
+    /**
+     * Updates an existing artist's information with new data.
+     *
+     * @param newArtist The new artist information.
+     * @param oldArtist The existing artist to be updated.
+     */
+    public void update(Artist newArtist, Artist oldArtist){
         if(newArtist.getArtistName() != null){
             oldArtist.setArtistName(newArtist.getArtistName());
         }
     }
 
+    /**
+     * Maps an array of objects to an ArtistDisplayDto object.
+     *
+     * @param obj An array of objects representing artist data.
+     * @return An ArtistDisplayDto containing the artist's information.
+     */
     public ArtistDisplayDto applyArtistDisplayDto(Object[] obj){
         LocalDateTime deletedAtTimeStamp = null;
         if (obj[5] != null){
@@ -45,6 +68,12 @@ public class ArtistDtoMapper implements Function<Artist, ArtistDisplayDto> {
         );
     }
 
+    /**
+     * Maps a list of arrays of objects to a set of ArtistDisplayDto objects.
+     *
+     * @param artistObjects A list of arrays of objects representing artist data.
+     * @return A set of ArtistDisplayDto objects containing artists' information.
+     */
     public Set<ArtistDisplayDto> mapArtistDisplayDto(List<Object[]> artistObjects) {
 
         return artistObjects.stream()

@@ -15,6 +15,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * This class provides the implementation of the `AmazonS3Service` interface, which is responsible
+ * for handling file storage and retrieval using Amazon S3.
+ */
 
 @Service
 @Slf4j
@@ -48,6 +52,15 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return convertFile;
     }
 
+    /**
+     * Upload a file to Amazon S3 with the given `imageName` and `fileType`.
+     *
+     * @param file     The file to be uploaded.
+     * @param imageName The name of the image.
+     * @param fileType The type of file (e.g., "event_images").
+     * @return A message indicating the success of the file upload.
+     * @throws NonExistentException if the specified `fileType` does not exist or if the S3 bucket does not exist.
+     */
     @Override
     public String uploadFile(MultipartFile file, String imageName, String fileType) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
@@ -78,6 +91,14 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return "File upload: " + fileName;
     }
 
+    /**
+     * Delete a file from Amazon S3 with the given `imageName` and `fileType`.
+     *
+     * @param imageName The name of the image.
+     * @param fileType   The type of file (e.g., "event_images").
+     * @return A message indicating the success of the file deletion.
+     * @throws NonExistentException if the specified `fileType` does not exist, the file does not exist, or if the S3 bucket does not exist.
+     */
     @Override
     public String deleteFile(String imageName, String fileType) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {
@@ -105,6 +126,14 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
         return "File deleted: " + fileName;
     }
 
+    /**
+     * Display a file from Amazon S3 with the given `imageName` and `fileType`.
+     *
+     * @param imageName The name of the image.
+     * @param fileType   The type of file (e.g., "event_images").
+     * @return The URL of the displayed file.
+     * @throws NonExistentException if the specified `fileType` does not exist or if the S3 bucket does not exist.
+     */
     @Override
     public String displayFile(String imageName, String fileType) {
         if (!amazonS3.doesBucketExistV2(bucketName)) {

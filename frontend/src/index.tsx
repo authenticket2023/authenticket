@@ -30,6 +30,7 @@ import { OrganiserSignup } from './pages/OrganiserSignup';
 import { OrganiserLogin } from './pages/OrganiserLogin';
 import { CheckinOrganiser } from './pages/CheckinOrganiser';
 import { QRCheckinOrganiser } from './pages/QRCheckinOrganiser';
+import { FAQOrganiser } from './pages/FAQOrganiser';
 //for admin user
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
@@ -71,6 +72,7 @@ root.render(
 			<Route path="/TicketPurchase/:eventId" element={<TicketPurchase />} />
 			<Route path="/success/:orderId" element={<SuccessPage />} />
 			<Route path="/cancel/:orderId" element={<CancelPage />} />
+			<Route path="/FAQOrganiser" element={<FAQOrganiser />} />
 		</Routes>
 	</BrowserRouter>);
 

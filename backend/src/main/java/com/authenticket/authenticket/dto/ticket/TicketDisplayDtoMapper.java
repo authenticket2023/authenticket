@@ -1,11 +1,7 @@
 package com.authenticket.authenticket.dto.ticket;
 
-import com.authenticket.authenticket.dto.artist.ArtistDisplayDto;
+import com.authenticket.authenticket.dto.section.SectionDisplayDto;
 import com.authenticket.authenticket.model.Ticket;
-import com.authenticket.authenticket.model.User;
-import com.authenticket.authenticket.repository.TicketCategoryRepository;
-import com.authenticket.authenticket.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,21 +9,22 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Service for mapping Ticket entities to TicketDisplayDto.
+ * {@link TicketDisplayDto} DTOs and performing updates on ticket entities.
+ */
 @Service
 public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto> {
-    private final UserRepository userRepository;
 
-    private final TicketCategoryRepository categoryRepository;
-
-    @Autowired
-    public TicketDisplayDtoMapper(UserRepository userRepository, TicketCategoryRepository categoryRepository) {
-        this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
-    }
-
+    /**
+     * Maps a Ticket entity to a TicketDisplayDto.
+     *
+     * @param ticket The Ticket entity to map.
+     * @return A TicketDisplayDto representing the ticket information.
+     */
     public TicketDisplayDto apply(Ticket ticket) {
         Integer orderId = null;
-        if(ticket.getOrder() != null){
+        if (ticket.getOrder() != null) {
             orderId = ticket.getOrder().getOrderId();
         }
         return new TicketDisplayDto(
@@ -41,7 +38,13 @@ public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto
                 orderId);
     }
 
-    public TicketDisplayDto applyTicketDisplayDto(Object[] obj){
+    /**
+     * Maps an Object array to a TicketDisplayDto.
+     *
+     * @param obj The Object array representing ticket information.
+     * @return A TicketDisplayDto representing the ticket information.
+     */
+    public TicketDisplayDto applyTicketDisplayDto(Object[] obj) {
         return new TicketDisplayDto(
                 (Integer) obj[0],
                 (Integer) obj[1],
@@ -54,26 +57,28 @@ public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto
         );
     }
 
-
+    /**
+     * Maps a list of Object arrays to a list of TicketDisplayDto objects.
+     *
+     * @param ticketObjects The list of Object arrays representing ticket information.
+     * @return A list of TicketDisplayDto objects representing the ticket information.
+     */
     public List<TicketDisplayDto> mapTicketObjects(List<Object[]> ticketObjects) {
-
         return ticketObjects.stream()
                 .map(this::applyTicketDisplayDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Maps a list of Ticket entities to a set of TicketDisplayDto objects.
+     *
+     * @param allByOrder The list of Ticket entities to map.
+     * @return A set of TicketDisplayDto objects representing the ticket information.
+     */
     public Set<TicketDisplayDto> mapTicketDisplayDto(List<Ticket> allByOrder) {
         return allByOrder.stream()
                 .map(this)
                 .collect(Collectors.toSet());
     }
-//
-//    public void update(TicketUpdateDto dto, Ticket ticket) {
-//        if (dto.userId() != null) {
-//            User user = userRepository.findById(dto.userId()).orElse(null);
-//            ticket.setUser(user);
-//        }
-//    }
-
-
 }
+
