@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.service.impl;
 
-
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
@@ -24,14 +23,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.authenticket.authenticket.service.Utility;
+
 @Service
 public class EventOrganiserServiceImpl extends Utility implements EventOrganiserService {
-//    @Value("${authenticket.frontend-dev-url}")
-//    private String apiUrl;
+    // @Value("${authenticket.frontend-dev-url}")
+    // private String apiUrl;
 
     @Value("${authenticket.frontend-production-url}")
     private String apiUrl;
-
 
     private final EventOrganiserRepository eventOrganiserRepository;
     private final EventOrganiserDtoMapper eventOrganiserDtoMapper;
@@ -39,12 +38,30 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
     private final AmazonS3Service amazonS3Service;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Constructs an instance of EventOrganiserServiceImpl with the specified
+     * dependencies.
+     * This constructor is used for dependency injection to set various
+     * repositories,
+     * mappers, services, and other dependencies required for managing event
+     * organisers in the application.
+     *
+     * @param eventOrganiserRepository The EventOrganiserRepository to interact with
+     *                                 event organiser data.
+     * @param eventOrganiserDtoMapper  The EventOrganiserDtoMapper for mapping Event
+     *                                 Organiser entities to DTOs.
+     * @param emailService             The EmailServiceImpl for sending emails.
+     * @param amazonS3Service          The AmazonS3Service for interacting with
+     *                                 Amazon S3 storage.
+     * @param passwordEncoder          The PasswordEncoder for encoding and decoding
+     *                                 passwords.
+     */
     @Autowired
     public EventOrganiserServiceImpl(EventOrganiserRepository eventOrganiserRepository,
-                                     EventOrganiserDtoMapper eventOrganiserDtoMapper,
-                                     EmailServiceImpl emailService,
-                                     AmazonS3Service amazonS3Service,
-                                     PasswordEncoder passwordEncoder) {
+            EventOrganiserDtoMapper eventOrganiserDtoMapper,
+            EmailServiceImpl emailService,
+            AmazonS3Service amazonS3Service,
+            PasswordEncoder passwordEncoder) {
         this.eventOrganiserRepository = eventOrganiserRepository;
         this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
         this.emailService = emailService;
@@ -52,6 +69,15 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Retrieves a list of Event Organisers from the database and maps them to
+     * EventOrganiserDisplayDto objects.
+     * This method returns a list of EventOrganiserDisplayDto representing the event
+     * organisers.
+     *
+     * @return A List of EventOrganiserDisplayDto containing information about the
+     *         event organisers.
+     */
     @Override
     public List<EventOrganiserDisplayDto> findAllEventOrganisers() {
         return eventOrganiserRepository.findAll()
@@ -60,6 +86,17 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a list of events organized by a specific Event Organiser identified
+     * by their unique ID.
+     *
+     * @param organiserId The unique ID of the Event Organiser whose organized
+     *                    events are to be retrieved.
+     * @return A List of Event objects representing the events organized by the
+     *         specified Event Organiser.
+     *         If the Event Organiser with the given ID is not found, an empty list
+     *         is returned.
+     */
     @Override
     public List<Event> findAllEventsByOrganiser(Integer organiserId) {
         EventOrganiser organiser = eventOrganiserRepository.findById(organiserId).orElse(null);
@@ -71,27 +108,65 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         return new ArrayList<>();
     }
 
+    /**
+     * Retrieves a list of Event Organisers based on their review status and sorts
+     * them by creation date in ascending order.
+     *
+     * @param status The review status to filter Event Organisers (e.g., "approved,"
+     *               "pending," "rejected").
+     * @return A List of EventOrganiserDisplayDto objects representing Event
+     *         Organisers that match the specified review status.
+     */
     @Override
     public List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status) {
-        return eventOrganiserDtoMapper.map(eventOrganiserRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(status));
+        return eventOrganiserDtoMapper
+                .map(eventOrganiserRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(status));
     }
 
+    /**
+     * Retrieves an Event Organiser by their unique identifier and returns it as an
+     * Optional of EventOrganiserDisplayDto.
+     *
+     * @param organiserId The unique identifier of the Event Organiser to retrieve.
+     * @return An Optional containing an EventOrganiserDisplayDto if an Event
+     *         Organiser with the specified ID is found, or an empty Optional if not
+     *         found.
+     */
     @Override
     public Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId) {
         return eventOrganiserRepository.findById(organiserId).map(eventOrganiserDtoMapper);
     }
 
+    /**
+     * Saves an Event Organiser in the database.
+     *
+     * @param eventOrganiser The Event Organiser to be saved.
+     * @return The saved Event Organiser, including any generated unique
+     *         identifiers.
+     */
     @Override
     public EventOrganiser saveEventOrganiser(EventOrganiser eventOrganiser) {
         return eventOrganiserRepository.save(eventOrganiser);
     }
 
+    /**
+     * Updates an existing Event Organiser based on the information provided in the
+     * EventOrganiserUpdateDto.
+     * 
+     * @param eventOrganiserUpdateDto The data containing the updates for the Event
+     *                                Organiser.
+     * @return The updated Event Organiser after the modifications.
+     * @throws NonExistentException If the Event Organiser with the specified ID
+     *                              does not exist.
+     */
     @Override
     public EventOrganiser updateEventOrganiser(EventOrganiserUpdateDto eventOrganiserUpdateDto) {
-        Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(eventOrganiserUpdateDto.organiserId());
+        Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository
+                .findById(eventOrganiserUpdateDto.organiserId());
 
         if (eventOrganiserOptional.isEmpty()) {
-            throw new NonExistentException("Event Organiser with ID " + eventOrganiserUpdateDto.organiserId() + " does not exist");
+            throw new NonExistentException(
+                    "Event Organiser with ID " + eventOrganiserUpdateDto.organiserId() + " does not exist");
         }
 
         EventOrganiser eventOrganiser = eventOrganiserOptional.get();
@@ -99,17 +174,21 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
 
         String reviewStatus = eventOrganiserUpdateDto.reviewStatus();
         if (reviewStatus != null) {
-            if(reviewStatus.equals("approved")) {
-                //Generate password and update db
+            if (reviewStatus.equals("approved")) {
+                // Generate password and update db
                 String password = generateRandomPassword();
                 eventOrganiser.setPassword(passwordEncoder.encode(password));
 
-                //change link to log in page
+                // change link to log in page
                 String link = apiUrl + "/OrganiserLogin";
                 // Send email to organiser
-                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password, eventOrganiser.getReviewRemarks()), "Your account has been approved");
-            } else if (reviewStatus.equals("rejected")){
-                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(eventOrganiser.getName(), eventOrganiser.getReviewRemarks()), "Your account has been rejected");
+                emailService.send(eventOrganiser.getEmail(),
+                        EmailServiceImpl.buildOrganiserApprovalEmail(eventOrganiser.getName(), link, password,
+                                eventOrganiser.getReviewRemarks()),
+                        "Your account has been approved");
+            } else if (reviewStatus.equals("rejected")) {
+                emailService.send(eventOrganiser.getEmail(), EmailServiceImpl.buildOrganiserRejectionEmail(
+                        eventOrganiser.getName(), eventOrganiser.getReviewRemarks()), "Your account has been rejected");
             }
         }
 
@@ -117,6 +196,14 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
         return eventOrganiser;
     }
 
+    /**
+     * Updates the logo image of an existing Event Organiser.
+     *
+     * @param organiserId The unique identifier of the Event Organiser.
+     * @param filename    The new filename of the logo image to be associated with
+     *                    the Event Organiser.
+     * @return The updated Event Organiser after setting the new logo image.
+     */
     @Override
     public EventOrganiser updateEventOrganiserImage(Integer organiserId, String filename) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
@@ -132,6 +219,18 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
 
     }
 
+    /**
+     * Deletes an Event Organiser by marking it as deleted in the database.
+     *
+     * @param organiserId The unique identifier of the Event Organiser to be
+     *                    deleted.
+     * @return A message indicating the result of the deletion operation, including
+     *         success or an error message.
+     *         If the Event Organiser is already deleted, it returns a message
+     *         indicating that it's already deleted.
+     * @throws NonExistentException if there is no Event Organiser with the
+     *                              specified ID.
+     */
     @Override
     public String deleteEventOrganiser(Integer organiserId) {
         Optional<EventOrganiser> eventOrganiserOptional = eventOrganiserRepository.findById(organiserId);
