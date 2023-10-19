@@ -1,6 +1,6 @@
 import { NavbarOrganiser } from '../../Navbar';
 import { Navigate } from 'react-router-dom';
-import { Alert, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, Typography, CircularProgress } from '@mui/material';
+import { Alert, Box, Button, Grid, MenuItem, Select, Snackbar, Typography,} from '@mui/material';
 import { useState } from 'react';
 import QrReader from "react-qr-reader";
 import './index.css';
@@ -20,25 +20,27 @@ export const QRCheckinOrganiser = (): JSX.Element => {
     const [selected, setSelected]: any = useState("environment");
     const [startScan, setStartScan] = useState(false);
     const [QRData, setQRData] = useState("");
-
+    const [seatInfo, setSeatInfo] = useState("-");
     const verifyQR = async (QRData : any) => {
-        // //calling backend API
+        //calling backend API
         fetch(`${process.env.REACT_APP_BACKEND_URL}/event/valid-qr?token=${QRData}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
             },
-            method: 'GET',
+            method: 'PUT',
         })
             .then(async (response) => {
                 if (response.status != 200) {
+                    const apiResponse = await response.json();
                     //show alert msg
                     setOpenSnackbar(true);
                     setAlertType('error');
-                    setAlertMsg(`Fetch data failed, code: ${response.status}`);
+                    setAlertMsg(`${apiResponse.message}`);
                 } else {
                     const apiResponse = await response.json();
                     const data = apiResponse.data;
+                    setSeatInfo(`${data.sectionId}-${data.rowNo}-${data.seatNo}`)
                     setOpenSnackbar(true);
                     setAlertType('success');
                     setAlertMsg(`Welcome! QR Code Verified.`);
@@ -72,7 +74,7 @@ export const QRCheckinOrganiser = (): JSX.Element => {
 
                 <Grid item xs={12} sx={{ mt: 5 }} >
                     <Typography variant="h4" textAlign="center">
-                        Last Scan: {QRData}
+                        Last Scan: {seatInfo}
                     </Typography>
                 </Grid>
 
