@@ -28,10 +28,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-/**
- * This is event controller class and base path for the controller's endpoints is "/api/v2".
- * @extends Utility
- */
+/** This is event controller class and base path for the controller's endpoints is "/api/v2".*/
 @RestController
 @CrossOrigin(origins = {
         "${authenticket.frontend-production-url}",
@@ -51,8 +48,6 @@ public class EventController extends Utility {
 
     private final UserRepository userRepository;
 
-    private final AdminRepository adminRepository;
-
     private final ArtistRepository artistRepository;
 
     private final VenueRepository venueRepository;
@@ -71,8 +66,6 @@ public class EventController extends Utility {
     public EventController(EventServiceImpl eventService,
             AmazonS3Service amazonS3Service,
             EventRepository eventRepository,
-            EventOrganiserRepository eventOrganiserRepository,
-            AdminRepository adminRepository,
             ArtistRepository artistRepository,
             VenueRepository venueRepository,
             EventTypeRepository eventTypeRepository,
@@ -84,7 +77,6 @@ public class EventController extends Utility {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
-        this.adminRepository = adminRepository;
         this.artistRepository = artistRepository;
         this.venueRepository = venueRepository;
         this.eventTypeRepository = eventTypeRepository;
@@ -726,7 +718,7 @@ public class EventController extends Utility {
      *         process.
      */
     @PutMapping("/event/update-artist")
-    public ResponseEntity<GeneralApiResponse> updateEventArtist(@RequestParam("artistIdString") String artistIdString,
+    public ResponseEntity<GeneralApiResponse<Object>> updateEventArtist(@RequestParam("artistIdString") String artistIdString,
             @RequestParam("eventId") Integer eventId,
             @NonNull HttpServletRequest request) {
         EventOrganiser eventOrganiser = retrieveOrganiserFromRequest(request);

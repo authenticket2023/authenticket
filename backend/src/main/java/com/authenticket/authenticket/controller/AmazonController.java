@@ -34,9 +34,6 @@ public class AmazonController extends Utility {
     /**
      * Upload a file and associate it with the provided image name and file type.
      *
-     * This endpoint is mapped to an HTTP POST request and is used to upload a file,
-     * such as an image, and associate it with an image name and file type.
-     *
      * @param file The file to be uploaded.
      * @param imageName The name to associate with the uploaded file.
      * @param fileType The type of the file being uploaded (e.g., image, document).
@@ -52,9 +49,6 @@ public class AmazonController extends Utility {
     /**
      * Delete a file based on its image name and file type.
      *
-     * This endpoint is mapped to an HTTP DELETE request and is used to delete a file
-     * based on its associated image name and file type.
-     *
      * @param imageName The name of the file to be deleted.
      * @param fileType The type of the file to be deleted.
      * @return A ResponseEntity with a GeneralApiResponse indicating the success or failure of the file deletion.
@@ -67,9 +61,6 @@ public class AmazonController extends Utility {
 
     /**
      * Retrieve the URL for displaying a file based on its image name and file type.
-     *
-     * This endpoint is mapped to an HTTP GET request and is used to retrieve the URL
-     * for displaying a file based on its associated image name and file type.
      *
      * @param imageName The name of the file for which to generate the display URL.
      * @param fileType The type of the file for which to generate the display URL.

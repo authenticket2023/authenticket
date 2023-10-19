@@ -3,7 +3,6 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
-import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.dto.event.EventUpdateDto;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
@@ -21,7 +20,6 @@ import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,8 +45,6 @@ public class AdminController extends Utility {
 
     private final AdminServiceImpl adminService;
 
-    private final AdminDtoMapper adminDtoMapper;
-
     private final AdminRepository adminRepository;
 
     private final EventOrganiserServiceImpl eventOrganiserService;
@@ -61,22 +57,16 @@ public class AdminController extends Utility {
 
     private final EventTypeRepository eventTypeRepository;
 
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
     public AdminController(AdminServiceImpl adminService,
-                           AdminDtoMapper adminDtoMapper,
                            AdminRepository adminRepository,
-                           PasswordEncoder passwordEncoder,
                            EventOrganiserServiceImpl eventOrganiserService,
                            VenueRepository venueRepository,
                            EventServiceImpl eventService,
                            AmazonS3ServiceImpl amazonS3Service,
                            EventTypeRepository eventTypeRepository) {
         this.adminService = adminService;
-        this.adminDtoMapper = adminDtoMapper;
         this.adminRepository = adminRepository;
-        this.passwordEncoder = passwordEncoder;
         this.eventOrganiserService = eventOrganiserService;
         this.venueRepository = venueRepository;
         this.eventService = eventService;
@@ -92,9 +82,6 @@ public class AdminController extends Utility {
     /**
      * Retrieves a list of AdminDisplayDto objects representing administrators.
      *
-     * This endpoint is mapped to an HTTP GET request, and it calls the `findAllAdmin` method
-     * from the adminService to retrieve a list of administrator data in the form of AdminDisplayDto objects.
-     *
      * @return A List of AdminDisplayDto objects containing administrator information.
      */
     @GetMapping
@@ -104,10 +91,6 @@ public class AdminController extends Utility {
 
     /**
      * Retrieve an administrator by their unique identifier.
-     *
-     * This endpoint is mapped to an HTTP GET request with a dynamic path variable, `admin_id`,
-     * representing the unique identifier of the administrator. It calls the `findAdminById` method
-     * from the adminService to search for the administrator's information.
      *
      * @param admin_id The unique identifier of the administrator to retrieve.
      * @return A ResponseEntity containing a GeneralApiResponse with the administrator's data if found,
@@ -124,11 +107,6 @@ public class AdminController extends Utility {
 
     /**
      * Update an administrator's information.
-     *
-     * This endpoint is mapped to an HTTP PUT request and is used to update an administrator's information.
-     * It expects a JSON representation of the new administrator data in the request body, and it checks
-     * if an administrator with the provided email already exists in the adminRepository. If an administrator
-     * with the same email exists, the method updates their information using the provided data.
      *
      * @param newAdmin The new administrator data to update.
      * @return A ResponseEntity containing a GeneralApiResponse with the updated administrator's data
@@ -148,9 +126,6 @@ public class AdminController extends Utility {
 
     /**
      * Update an event organizer's information by specifying various parameters.
-     *
-     * This endpoint is mapped to an HTTP PUT request and is used to update an event organizer's information.
-     * It allows you to specify multiple parameters as query parameters to update different aspects of the organizer's profile.
      *
      * @param organiserId The unique identifier of the event organizer to update.
      * @param name The new name for the event organizer (optional).
@@ -193,10 +168,6 @@ public class AdminController extends Utility {
 
     /**
      * Update event information, including optional event image upload.
-     *
-     * This endpoint is mapped to an HTTP PUT request and is used to update event information.
-     * It allows you to specify multiple parameters as query parameters to update different aspects of the event's details.
-     * Additionally, you can upload a new event image using the 'eventImageFile' parameter.
      *
      * @param eventImageFile The new event image file (optional).
      * @param eventId The unique identifier of the event to update.
@@ -269,8 +240,6 @@ public class AdminController extends Utility {
             try {
                 System.out.println(eventImageFile.getName());
                 amazonS3Service.uploadFile(eventImageFile, event.getEventImage(), "event_images");
-//                amazonS3Service.deleteFile()
-                // delete event from db if got error saving image
             } catch (AmazonS3Exception e) {
                 String errorCode = e.getErrorCode();
                 if ("AccessDenied".equals(errorCode)) {
@@ -288,9 +257,6 @@ public class AdminController extends Utility {
     /**
      * Retrieve a list of event organizers by their review status.
      *
-     * This endpoint is mapped to an HTTP GET request and is used to find event organizers with a specific review status.
-     * It takes the 'status' path variable to filter organizers based on their review status.
-     *
      * @param status The review status to filter the event organizers by. Valid statuses are "approved","pending" and "rejected".
      * @return A ResponseEntity containing a GeneralApiResponse with a list of event organizers matching the given review status,
      *         or a message indicating that no organizers were found with the specified review status.
@@ -306,9 +272,6 @@ public class AdminController extends Utility {
 
     /**
      * Retrieve a list of events by their review status.
-     *
-     * This endpoint is mapped to an HTTP GET request and is used to find events with a specific review status.
-     * It takes the 'status' path variable to filter events based on their review status.
      *
      * @param status The review status to filter the events by. Valid statuses are "approved","pending" and "rejected".
      * @return A ResponseEntity containing a GeneralApiResponse with a list of events matching the given review status,

@@ -55,8 +55,6 @@ public class ArtistController extends Utility {
     /**
      * Retrieve a list of all artists.
      *
-     * This endpoint is mapped to an HTTP GET request and is used to retrieve a list of all artists.
-     *
      * @return A ResponseEntity with a GeneralApiResponse containing a list of artists if they exist, or a message
      *         indicating that no artists were found.
      */
@@ -75,10 +73,6 @@ public class ArtistController extends Utility {
     /**
      * Retrieve an artist by their unique identifier.
      *
-     * This endpoint is mapped to an HTTP GET request with a dynamic path variable, 'artistId',
-     * representing the unique identifier of the artist. It calls the 'findByArtistId' method from
-     * the artistService to search for the artist's information.
-     *
      * @param artistId The unique identifier of the artist to retrieve.
      * @return A ResponseEntity with a GeneralApiResponse containing the artist's data if found, or an error message
      *         if the artist does not exist.
@@ -95,8 +89,6 @@ public class ArtistController extends Utility {
     /**
      * Create a new artist with the provided name.
      *
-     * This endpoint is mapped to an HTTP POST request and is used to create a new artist with the provided name.
-     *
      * @param name The name of the new artist.
      * @return A ResponseEntity with a GeneralApiResponse indicating the success of artist creation.
      */
@@ -109,10 +101,6 @@ public class ArtistController extends Utility {
 
     /**
      * Delete an artist by their unique identifier.
-     *
-     * This endpoint is mapped to an HTTP PUT request with the '/delete/{artistId}' path.
-     * It is used to mark an artist as deleted, typically by updating the "deleted at" field or a similar
-     * mechanism, based on their unique identifier.
      *
      * @param artistId The unique identifier of the artist to delete.
      * @return A ResponseEntity with a GeneralApiResponse indicating the success of artist deletion.
@@ -127,9 +115,6 @@ public class ArtistController extends Utility {
 
     /**
      * Update an artist's image with the provided image file and image name.
-     *
-     * This endpoint is mapped to an HTTP PUT request and is used to update an artist's image
-     * with the provided image file and image name.
      *
      * @param artistImage The new artist image file.
      * @param imageName The name to associate with the artist image.

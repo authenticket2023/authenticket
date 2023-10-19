@@ -63,9 +63,6 @@ public class AuthenticationController extends Utility{
     /**
      * Verify the validity of a JWT token and check if it is associated with a specific user.
      *
-     * This endpoint is mapped to an HTTP POST request and is used to verify the validity of a JWT token
-     * and check if the token is associated with a specific user identified by their email.
-     *
      * @param token The JWT token to be verified.
      * @param userEmail The email of the user to which the token should be associated.
      * @return A ResponseEntity with a GeneralApiResponse indicating the result of token verification. If the token is valid
@@ -96,9 +93,6 @@ public class AuthenticationController extends Utility{
     /**
      * Register a new user with the provided information.
      *
-     * This endpoint is mapped to an HTTP POST request and is used to register a new user with the provided information,
-     * including their name, email, password, and date of birth.
-     *
      * @param name The name of the user to be registered.
      * @param email The email address of the user to be registered.
      * @param password The password for the user's account (will be securely hashed and stored).
@@ -128,9 +122,6 @@ public class AuthenticationController extends Utility{
     /**
      * Confirm a user's registration using a verification token and redirect to a specified URL. Used in email when a confirmation email is sent to the user's email to verify the user.
      *
-     * This endpoint is mapped to an HTTP GET request and is used to confirm a user's registration by providing a verification token.
-     * After successful confirmation, the endpoint redirects to the specified URL.
-     *
      * @param token The verification token used to confirm the user's registration.
      * @param redirect The URL to which the endpoint should redirect after confirmation.
      * @return A ResponseEntity that typically performs a redirect response to the specified URL if confirmation is successful,
@@ -151,10 +142,6 @@ public class AuthenticationController extends Utility{
 
     /**
      * Authenticate a user by their email and password.
-     *
-     * This endpoint is mapped to an HTTP POST request and is used to authenticate a user by providing their email and password.
-     * If authentication is successful, it returns a success message with the user's email. If the email is not registered, it returns an error message.
-     * If the account is locked (e.g., pending verification), it returns an error message indicating the need for verification.
      *
      * @param email The email of the user to authenticate.
      * @param password The password of the user for authentication.
@@ -234,9 +221,6 @@ public class AuthenticationController extends Utility{
     /**
      * Register a new admin with the provided information.
      *
-     * This endpoint is mapped to an HTTP POST request and is used to register a new admin with the provided information,
-     * including their name, email, and password.
-     *
      * @param name The name of the admin to be registered.
      * @param email The email address of the admin.
      * @param password The password for the admin's account (will be securely hashed and stored).
@@ -262,14 +246,11 @@ public class AuthenticationController extends Utility{
     /**
      * Authenticate an admin by their email and password.
      *
-     * This endpoint is mapped to an HTTP POST request and is used to authenticate an admin by providing their email and password.
-     * If authentication is successful, it returns a success message with the admin's email. If the email is not registered, it returns an error message.
-     * If the account is locked (e.g., pending verification), it returns an error message indicating the need for verification.
-     *
      * @param email The email of the admin to authenticate.
      * @param password The password of the admin for authentication.
      * @return A ResponseEntity indicating the result of admin authentication. If successful, it returns a welcome message,
      *         or an error message if authentication fails due to an unregistered email or account lock.
+     *
      */
 
     @PostMapping("/admin")

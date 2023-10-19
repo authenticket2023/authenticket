@@ -3,7 +3,6 @@ package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
-import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Venue;

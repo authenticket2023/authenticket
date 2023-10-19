@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**This is the ticket controller class and the base path for this controller's endpoint is api/v2/ticket.*/
 

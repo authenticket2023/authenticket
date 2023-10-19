@@ -15,7 +15,6 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,15 +41,11 @@ public class EventOrganiserController extends Utility {
 
     private final AmazonS3Service amazonS3Service;
 
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
     public EventOrganiserController(EventOrganiserServiceImpl eventOrganiserService,
-                                    AmazonS3Service amazonS3Service,
-                                    PasswordEncoder passwordEncoder) {
+                                    AmazonS3Service amazonS3Service) {
         this.eventOrganiserService = eventOrganiserService;
         this.amazonS3Service = amazonS3Service;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/test")

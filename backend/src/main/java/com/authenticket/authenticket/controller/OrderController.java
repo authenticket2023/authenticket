@@ -13,8 +13,6 @@ import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
-import com.authenticket.authenticket.repository.UserRepository;
-import com.authenticket.authenticket.service.JwtService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.OrderServiceImpl;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
@@ -79,21 +77,11 @@ public class OrderController extends Utility {
     /**
      * Retrieves a test PDF document and sends it as a response to the client.
      *
-     * This endpoint is used to test PDF generation and download functionality. It retrieves the
-     * contents of a test PDF file and sends it as an HTTP response with appropriate headers.
-     *
      * @return A ResponseEntity containing the PDF document as a byte array and the necessary headers
      * to trigger a download on the client-side.
      *
      * @throws RuntimeException If there's an error during the document retrieval, a runtime exception
      * is thrown to indicate the failure.
-     *
-     * @throws DocumentException If an error related to the PDF document generation occurs, a DocumentException
-     * is thrown.
-     *
-     * @throws IOException If there's an I/O error while reading the PDF file, an IOException is thrown.
-     *
-     * @see org.springframework.web.bind.annotation.GetMapping
      */
     @GetMapping("/test-pdf")
     public ResponseEntity<?> testPDF() {
@@ -118,22 +106,11 @@ public class OrderController extends Utility {
     /**
      * Retrieves a second test PDF document and sends it as a response to the client.
      *
-     * This endpoint is used to test the generation and download of a second PDF document. It retrieves
-     * the contents of the test PDF file using the `orderService.test2()` method and sends it as an HTTP
-     * response with appropriate headers.
-     *
      * @return A ResponseEntity containing the PDF document as a byte array and the necessary headers
      * to trigger a download on the client-side.
      *
      * @throws RuntimeException If there's an error during the document retrieval, a runtime exception
      * is thrown to indicate the failure.
-     *
-     * @throws DocumentException If an error related to the PDF document generation occurs, a DocumentException
-     * is thrown.
-     *
-     * @throws IOException If there's an I/O error while reading the PDF file, an IOException is thrown.
-     *
-     * @see org.springframework.web.bind.annotation.GetMapping
      */
     @GetMapping("/test-pdf2")
     public ResponseEntity<?> testPDF2() {
@@ -158,11 +135,6 @@ public class OrderController extends Utility {
     /**
      * Retrieves an order by its unique identifier and returns it as an HTTP response.
      *
-     * This endpoint allows users to retrieve an order based on its unique identifier (orderId). The method
-     * checks if the request is coming from an administrator. If not, it verifies if the user is authorized
-     * to access the order. If the user doesn't have permission to access the order, a NonExistentException is
-     * thrown to prevent unauthorized access.
-     *
      * @param orderId The unique identifier of the order to retrieve.
      * @param request The HttpServletRequest containing the user's request information.
      *
@@ -171,8 +143,6 @@ public class OrderController extends Utility {
      *
      * @throws NonExistentException If the user is not an administrator and is not authorized to access the order,
      * a NonExistentException is thrown to prevent unauthorized access.
-     *
-     * @see org.springframework.web.bind.annotation.GetMapping
      */
     @GetMapping("/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> findById(@PathVariable(value = "orderId") Integer orderId,
@@ -196,11 +166,6 @@ public class OrderController extends Utility {
     /**
      * Retrieves a list of orders associated with a specific user and returns them as an HTTP response.
      *
-     * This endpoint allows users to retrieve a paginated list of orders associated with a specific user,
-     * identified by their unique identifier (userId). If the request is coming from an administrator, access
-     * to the orders of other users is allowed. If not, the method checks if the user making the request matches
-     * the requested userId. If not, a NonExistentException is thrown to prevent unauthorized access.
-     *
      * @param userId   The unique identifier of the user for whom to retrieve orders.
      * @param pageable Pageable object to control pagination of the result.
      * @param request  The HttpServletRequest containing the user's request information.
@@ -210,8 +175,6 @@ public class OrderController extends Utility {
      *
      * @throws NonExistentException If the user is not an administrator and is not authorized to access orders
      * for other users, a NonExistentException is thrown to prevent unauthorized access.
-     *
-     * @see org.springframework.web.bind.annotation.GetMapping
      */
     @GetMapping("/user/{userId}")
     public ResponseEntity<GeneralApiResponse<Object>> findAllOrderByUserId(@PathVariable(value = "userId") Integer userId,
@@ -220,7 +183,7 @@ public class OrderController extends Utility {
         boolean isAdmin = isAdminRequest(request);
         if (!isAdmin) {
             User user = retrieveUserFromRequest(request);
-            if (user.getUserId() != userId) {
+            if (!Objects.equals(user.getUserId(), userId)) {
                 throw new NonExistentException("Cannot view orders of other users");
             }
         }
@@ -235,17 +198,8 @@ public class OrderController extends Utility {
     /**
      * Retrieves a list of all orders and returns them as an HTTP response.
      *
-     * This endpoint allows users to retrieve a list of all orders. The method retrieves all orders
-     * from the underlying data source and returns them in a paginated format as an HTTP response. If no
-     * orders are found, an appropriate message is returned.
-     *
      * @return A ResponseEntity containing a list of all orders if found. If no orders are found, a message
      * indicating so is returned.
-     *
-     * @throws Exception If an unexpected exception occurs during the operation, a bad request response is returned
-     * with an error message.
-     *
-     * @see org.springframework.web.bind.annotation.GetMapping
      */
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllOrder() {
@@ -264,19 +218,9 @@ public class OrderController extends Utility {
     /**
      * Retrieves the user associated with a specific order and returns them as an HTTP response.
      *
-     * This endpoint allows users to retrieve the user associated with a specific order identified by its
-     * unique order ID. The method fetches the user information from the underlying data source based on the
-     * provided order ID and returns it as an HTTP response. If no user is found for the given order ID, an
-     * appropriate message is returned.
-     *
      * @param orderId The unique identifier of the order for which the associated user is to be retrieved.
      * @return A ResponseEntity containing the user information if found. If no user is found for the given order ID,
      * a message indicating so is returned.
-     *
-     * @throws Exception If an unexpected exception occurs during the operation, a bad request response is returned
-     * with an error message.
-     *
-     * @see org.springframework.web.bind.annotation.GetMapping
      */
     @GetMapping("/find-user")
     public ResponseEntity<GeneralApiResponse<Object>> findUserByOrderId(@RequestParam(value = "orderId") Integer orderId) {
@@ -295,12 +239,6 @@ public class OrderController extends Utility {
     /**
      * Creates a new order for ticket purchases and returns the order details as an HTTP response.
      *
-     * This endpoint allows users to create a new order for ticket purchases. Users can specify the event, section,
-     * the number of tickets to purchase, and, if the event is enhanced, a list of unique ticket holders. The method
-     * performs several checks to ensure the validity of the ticket holder information and that the requested tickets
-     * can be allocated. If successful, the order is saved in the system, and details of the order are returned as an
-     * HTTP response.
-     *
      * @param eventId The unique identifier of the event for which the tickets are being purchased.
      * @param sectionId The identifier of the section where the tickets are allocated.
      * @param ticketsToPurchase The number of tickets to be purchased.
@@ -311,10 +249,6 @@ public class OrderController extends Utility {
      *
      * @throws IllegalArgumentException If the provided ticket holder list is incorrect or lacks uniqueness,
      * or if the number of ticket holders doesn't match the number of tickets requested.
-     * @throws Exception If an unexpected exception occurs during the operation, a bad request response is returned
-     * with an error message.
-     *
-     * @see org.springframework.web.bind.annotation.PostMapping
      */
     @PostMapping
     public ResponseEntity<GeneralApiResponse<Object>> saveOrder(@RequestParam(value = "eventId") Integer eventId,
@@ -382,12 +316,6 @@ public class OrderController extends Utility {
     /**
      * Updates an existing order and returns the updated order details as an HTTP response.
      *
-     * This endpoint allows users to update an existing order, including its order amount and status. To perform
-     * an update, the user must provide the order identifier, the new order amount, and the desired order status.
-     * The method validates that the user is allowed to update this order and ensures that the provided order
-     * identifier corresponds to a valid order in the system. If the update is successful, the updated order details
-     * are returned as an HTTP response.
-     *
      * @param orderId The unique identifier of the order to be updated.
      * @param orderAmount The updated order amount for the order.
      * @param orderStatus The updated status of the order.
@@ -399,10 +327,6 @@ public class OrderController extends Utility {
      * an exception is thrown with an error message.
      * @throws IllegalArgumentException If the user is attempting to update an order that does not belong to them,
      * an exception is thrown with an error message.
-     * @throws Exception If an unexpected exception occurs during the operation, a bad request response is returned
-     * with an error message.
-     *
-     * @see org.springframework.web.bind.annotation.PutMapping
      */
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateOrder(@RequestParam(value = "orderId") Integer orderId,
@@ -430,11 +354,6 @@ public class OrderController extends Utility {
     /**
      * Removes an order by its unique identifier and returns a response indicating the success of the operation.
      *
-     * This endpoint allows users to remove an order by providing its unique identifier (orderId). The method
-     * checks whether an order with the given identifier exists. If the order exists, it is removed from the system,
-     * and a successful response is returned. If no order is found with the provided identifier, an exception is thrown
-     * and an error response is generated.
-     *
      * @param orderId The unique identifier of the order to be removed.
      * @return A ResponseEntity indicating the success of the removal operation. If the order is successfully removed,
      * the response includes a message indicating the successful removal. If the provided orderId does not correspond
@@ -442,8 +361,6 @@ public class OrderController extends Utility {
      *
      * @throws NonExistentException If the provided orderId does not correspond to an existing order, an exception is
      * thrown with an error message.
-     *
-     * @see org.springframework.web.bind.annotation.DeleteMapping
      */
     @DeleteMapping("/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> removeOrder(@PathVariable(value = "orderId") Integer orderId) {
@@ -457,12 +374,6 @@ public class OrderController extends Utility {
     /**
      * Cancels an order by its unique identifier and returns a response indicating the success of the operation.
      *
-     * This endpoint allows users to cancel an order by providing its unique identifier (orderId). The method
-     * checks whether an order with the given identifier exists and whether the requestor has the necessary
-     * permissions to cancel the order. If the order exists and is associated with the requesting user, it is canceled.
-     * A successful response is then returned. If the provided orderId does not correspond to an existing order
-     * or the user doesn't have the necessary permissions, an exception is thrown and an error response is generated.
-     *
      * @param orderId The unique identifier of the order to be canceled.
      * @param request The HttpServletRequest containing the user's request information.
      * @return A ResponseEntity indicating the success of the order cancellation. If the order is successfully canceled,
@@ -473,8 +384,6 @@ public class OrderController extends Utility {
      * with an error message.
      * @throws IllegalArgumentException If the user does not have the necessary permissions to cancel the order, an exception
      * is thrown with an error message.
-     *
-     * @see org.springframework.web.bind.annotation.PutMapping
      */
     @PutMapping("/cancel/{orderId}")
     public ResponseEntity<GeneralApiResponse<Object>> cancelOrder(@PathVariable(value = "orderId") Integer orderId,
@@ -500,11 +409,6 @@ public class OrderController extends Utility {
     /**
      * Marks an order as completed based on its unique identifier and returns a response indicating the success of the operation.
      *
-     * This endpoint allows marking an order as completed by providing its unique identifier (orderId). It first validates
-     * the user's request to ensure the presence of a valid user. Then, it checks whether an order with the given identifier
-     * exists. If the order exists, it is marked as completed by invoking the `completeOrder` method in the service layer,
-     * and a success response is returned.
-     *
      * @param orderId The unique identifier of the order to be completed.
      * @param request The HTTP request from the user, containing user information.
      * @return A response entity indicating the success of marking the order as completed.
@@ -529,11 +433,6 @@ public class OrderController extends Utility {
 
     /**
      * Retrieves a list of orders associated with a specific event based on the event's unique identifier.
-     *
-     * This endpoint allows you to retrieve a paginated list of orders that are associated with a particular event. You need
-     * to provide the unique identifier (eventId) of the event for which you want to retrieve orders. The method first checks
-     * if the event with the provided identifier exists. If it does, it retrieves the list of orders using the `findAllOrderByEventId`
-     * method in the service layer and returns the results in a paginated response.
      *
      * @param eventId The unique identifier of the event for which you want to retrieve associated orders.
      * @param pageable Object containing pagination details for the result list.
