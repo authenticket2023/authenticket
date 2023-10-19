@@ -8,10 +8,7 @@ import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
-import com.authenticket.authenticket.service.AmazonS3Service;
-import com.authenticket.authenticket.service.PresaleService;
-import com.authenticket.authenticket.service.TicketService;
-import com.authenticket.authenticket.service.Utility;
+import com.authenticket.authenticket.service.*;
 import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -65,6 +62,8 @@ public class EventController extends Utility {
 
     private final TicketService ticketService;
 
+    private final QueueService queueService;
+
     private static final int PRESALE_HOURS = 24;
 
     @Autowired
@@ -80,7 +79,8 @@ public class EventController extends Utility {
                            PresaleService presaleService,
                            UserRepository userRepository,
                            TaskScheduler taskScheduler,
-                           TicketService ticketService) {
+                           TicketService ticketService,
+                           QueueService queueService) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
@@ -93,6 +93,7 @@ public class EventController extends Utility {
         this.userRepository = userRepository;
         this.taskScheduler = taskScheduler;
         this.ticketService = ticketService;
+        this.queueService = queueService;
     }
 
     @GetMapping("/public/event/test")
@@ -667,5 +668,99 @@ public class EventController extends Utility {
         }
 
         return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true), "Returned list of users allowed in presale"));
+    }
+
+    @GetMapping("/event/queue-position")
+    public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(
+            @RequestParam("eventId") Integer eventId,
+            @RequestParam("userId") Integer userId,
+            @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        // can be removed after testing as userId will be derived
+        if (userId != null) {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isEmpty()) {
+                throw new NonExistentException("Event", eventId);
+            }
+
+            return ResponseEntity.ok(generateApiResponse(queueService.getPosition(userOptional.get(), event), "Returned queue number"));
+        }
+
+        return ResponseEntity.ok(generateApiResponse(queueService.getPosition(user, event), "Returned queue number"));
+    }
+
+    @GetMapping("/event/queue-total")
+    public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(@RequestParam("eventId") Integer eventId) {
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        return ResponseEntity.ok(generateApiResponse(queueService.getTotalInQueue(event), "Returned number of users in queue"));
+    }
+
+    @PutMapping("/event/enter-queue")
+    public ResponseEntity<GeneralApiResponse<Object>> enterQueue(
+            @RequestParam("eventId") Integer eventId,
+            @RequestParam("userId") Integer userId,
+            @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        // can be removed after testing as userId will be derived
+        if (userId != null) {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isEmpty()) {
+                throw new NonExistentException("Event", eventId);
+            }
+
+            queueService.addToQueue(userOptional.get(), event);
+            return ResponseEntity.status(201).body(generateApiResponse(queueService.getPosition(userOptional.get(), event), "Added to queue and returned queue number"));
+        }
+
+        queueService.addToQueue(user, event);
+        return ResponseEntity.status(201).body(generateApiResponse(queueService.getPosition(user, event), "Added to queue and returned queue number"));
+    }
+
+    @PutMapping("/event/leave-queue")
+    public ResponseEntity<GeneralApiResponse<Object>> leaveQueue(
+            @RequestParam("eventId") Integer eventId,
+            @RequestParam("userId") Integer userId,
+            @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        // can be removed after testing as userId will be derived
+        if (userId != null) {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isEmpty()) {
+                throw new NonExistentException("Event", eventId);
+            }
+
+            queueService.removeFromQueue(userOptional.get(), event);
+            return ResponseEntity.ok(generateApiResponse(null, "Removed from queue"));
+        }
+
+        queueService.removeFromQueue(user, event);
+        return ResponseEntity.ok(generateApiResponse(null, "Removed from queue"));
     }
 }

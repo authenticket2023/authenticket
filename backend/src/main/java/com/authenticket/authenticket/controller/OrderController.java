@@ -13,8 +13,7 @@ import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
-import com.authenticket.authenticket.repository.UserRepository;
-import com.authenticket.authenticket.service.JwtService;
+import com.authenticket.authenticket.service.QueueService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.OrderServiceImpl;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +53,7 @@ public class OrderController extends Utility {
     private final TicketServiceImpl ticketService;
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
+    private final QueueService queueService;
 
     @Autowired
     public OrderController(OrderServiceImpl orderService,
@@ -60,13 +61,15 @@ public class OrderController extends Utility {
                            OrderDtoMapper orderDtoMapper,
                            TicketServiceImpl ticketService,
                            TicketRepository ticketRepository,
-                           EventRepository eventRepository) {
+                           EventRepository eventRepository,
+                           QueueService queueService) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
         this.eventRepository = eventRepository;
+        this.queueService = queueService;
     }
 
     @GetMapping("/test")
@@ -191,6 +194,11 @@ public class OrderController extends Utility {
         checkIfEventExistsAndIsApprovedAndNotDeleted(eventId);
 
         Event event = eventRepository.findById(eventId).orElse(null);
+
+        // throw exception if not a presale order but still in queue
+        if (LocalDateTime.now().isAfter(event.getTicketSaleDate()) && !queueService.canPurchase(purchaser, event)) {
+            throw new IllegalStateException("Cannot purchase while still queuing");
+        }
 
         //check that ticket holder list is correct first
         List<String> ticketHolderList = new ArrayList<>();
