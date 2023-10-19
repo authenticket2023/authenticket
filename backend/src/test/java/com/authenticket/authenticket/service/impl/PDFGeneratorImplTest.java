@@ -201,7 +201,7 @@ class PDFGeneratorImplTest {
         byte[] qrCodeData = "MockedImageData".getBytes();
 
         // Mock the behavior of jwtService to generate a JWT token
-        when(jwtService.generateToken(ticket, LocalDateTime.now().plusHours(1))).thenReturn(jwtToken);
+        when(jwtService.generateTicketToken(ticket, LocalDateTime.now().plusHours(1))).thenReturn(jwtToken);
 
         // Mock the behavior of qrCodeGenerator to generate a QR code
         when(qrCodeGenerator.getQRCode(jwtToken, 350, 300)).thenReturn(qrCodeData);

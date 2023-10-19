@@ -378,7 +378,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
             p.setIndentationLeft(30f);
             document.add(p);
 
-            image = Image.getInstance(qrCodeGenerator.getQRCode(jwtService.generateToken(ticket, expirationDate),350, 300));
+            image = Image.getInstance(qrCodeGenerator.getQRCode(jwtService.generateTicketToken(ticket, expirationDate),350, 300));
             image.scaleAbsolute(300, 300);
             image.setAlignment(Element.ALIGN_CENTER);
             document.add(image);

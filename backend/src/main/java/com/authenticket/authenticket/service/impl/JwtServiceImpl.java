@@ -7,7 +7,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,28 +65,8 @@ public class JwtServiceImpl implements JwtService {
      * @return The generated JWT token.
      */
     @Override
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
-    }
-
-    /**
-     * Generates a JWT token for a given ticket with a specified expiration date.
-     *
-     * @param ticket          The ticket for which the token is generated.
-     * @param expirationDate  The date and time when the token will expire.
-     * @return A JWT representing the ticket with the specified expiration date.
-     */
-    @Override
-    public String generateToken(Ticket ticket, LocalDateTime expirationDate) {
-        return Jwts
-                .builder()
-                .claim("role", "ticket")
-                .claim("event", ticket.getOrder().getEvent().getEventName())
-                .setSubject(ticket.getTicketId().toString())
-                .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
-                .setExpiration(Timestamp.valueOf(expirationDate))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
+    public String generateUserToken(UserDetails userDetails){
+        return generateUserToken(new HashMap<>(), userDetails);
     }
 
     /**
@@ -98,7 +77,7 @@ public class JwtServiceImpl implements JwtService {
      * @return The generated JWT token.
      */
     @Override
-    public String generateToken(
+    public String generateUserToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ){
@@ -108,6 +87,26 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
                 .setExpiration(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis() + 1000 * 60 * 60 * 24))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * Generates a JWT token for a given ticket with a specified expiration date.
+     *
+     * @param ticket          The ticket for which the token is generated.
+     * @param expirationDate  The date and time when the token will expire.
+     * @return A JWT representing the ticket with the specified expiration date.
+     */
+    @Override
+    public String generateTicketToken(Ticket ticket, LocalDateTime expirationDate) {
+        return Jwts
+                .builder()
+                .claim("role", "ticket")
+                .claim("event", ticket.getOrder().getEvent().getEventName())
+                .setSubject(ticket.getTicketId().toString())
+                .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
+                .setExpiration(Timestamp.valueOf(expirationDate))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
