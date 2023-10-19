@@ -10,8 +10,10 @@ import com.authenticket.authenticket.repository.QueueRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.QueueService;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -77,10 +79,15 @@ public class QueueImpl implements QueueService {
         }
 
         queueRepository.save(new Queue(user, event, false, LocalDateTime.now()));
+        updatePurchasingUsersInQueue(event);
     }
 
     @Override
     public void updatePurchasingUsersInQueue(Event event) {
+        if (!LocalDateTime.now().isAfter(event.getTicketSaleDate())) {
+            return;
+        }
+
         int totalUsersAllowed = getNumberOfUsersAllowed(event);
         int numUsersPurchasing = queueRepository.countAllByEventAndCanPurchase(event, true);
         if (totalUsersAllowed > numUsersPurchasing) {
