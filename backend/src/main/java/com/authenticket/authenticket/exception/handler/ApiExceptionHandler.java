@@ -139,4 +139,26 @@ public class ApiExceptionHandler extends Utility {
 
         return new ResponseEntity<>(apiException, status);
     }
+
+    /**
+     * Exception handler method for handling IllegalArgumentExceptions.
+     *
+     * This method is responsible for capturing and handling IllegalArgumentExceptions,
+     * returning an appropriate ResponseEntity with error details in the response payload.
+     *
+     * @param e The IllegalArgumentException to be handled.
+     * @return A ResponseEntity containing an ApiException with the error message and a
+     *         status code indicating a bad request (HTTP 400).
+     */
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
+        //Create payload to send inside response entity containing exception details
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        ApiException apiException = new ApiException(
+                e.getMessage()
+        );
+
+        return new ResponseEntity<>(apiException, status);
+    }
 }
