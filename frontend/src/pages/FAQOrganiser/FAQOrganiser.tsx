@@ -18,8 +18,9 @@ export const FAQOrganiser = () => {
         <div>
             {
                 token != null && role == 'ORGANISER' ?
-                    <Navigate to="/HomeOrganiser" /> : <Navigate to="/Forbidden" />
+                    <Navigate to="/FAQOrganiser" /> : <Navigate to="/Forbidden" />
             }
+            < NavbarOrganiser />
             <h3 style={{marginLeft:170, marginTop:40}}>
                 Frequently Asked Questions
             </h3>
@@ -34,12 +35,12 @@ export const FAQOrganiser = () => {
                         id="panel1a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            What is the maximum number of tickets I can purchase per user?
+                            What is the process for getting my event approved on the ticketing platform?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            You can buy a maximum of 5 tickets per user.
+                            Events created by organisers must go through a screening process before they are approved. Once approved, you will receive an email notification.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -50,12 +51,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            What payment methods or forms of payment are available?
+                            Can I choose any venue for my event as an organiser?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            You can make a payment via Pay Now, credit/debit cards, GrabPay, or Alipay.
+                            Organisers can only select from a list of fixed venues provided by the admin.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -66,12 +67,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            Can I buy tickets from different ticket categories in a single order?
+                            What if I want a venue that is not on the list of provided venues?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            No, all tickets purchased in a single order must be from the same ticket category.
+                            If you need a venue that is not in the provided list, you can send a request via email to the admin (admin@admin.com).
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -82,12 +83,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            What happens if my order is successful?
+                            How do I choose artists for my event as an organiser?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            If your order is successful, an email confirmation will be sent to you. You can check your profile under "My Orders" for details on your tickets.
+                            Organisers can only pick from a list of artists provided by the admin.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -98,12 +99,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            What happens if the ticket I intend to buy sells out while I make payment?
+                            What if I want to select an artist who is not on the provided list?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            Seats you have chosen will be put on hold when you reach the payment stage. So, you will not face the issue of the tickets selling out while you are making payment.
+                            If you wish to pick an artist not on the list, you can send a request via email to the admin (admin@admin.com).
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -114,12 +115,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            What happens if the payment stage fails?
+                            Can I offer a presale feature for my event?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            If the payment stage fails, the seats held on hold will be released, and you'll need to restart the ticket purchasing process.
+                            Yes, as an organiser, you will have the option to choose the presale feature for your event. The presale occurs one day before the actual ticket sales.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -130,12 +131,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            How much time do I have to complete the payment process?
+                            How can users indicate interest in the presale for my event?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            You have 10 minutes to complete the payment. If not, the payment will fail, and the seats will be released.
+                            Users can indicate interest in the event at any time before the presale. An "Indicate Interest" feature will be available.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -146,12 +147,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            Can I transfer my ticket to someone else?
+                            How are users selected for the presale, and how many can participate?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            No, tickets are non-transferable.
+                            A specific number of users will be chosen for the presale at random by the system. The number of people selected for the presale is calculated as the total number of tickets available for the event divided by 5.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -162,12 +163,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            What should I do if I need to change the owner of a ticket for special reasons?
+                            Can I manually select users for the presale?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            To change the owner of a ticket, please contact us (admin@admin.com), and your request will be reviewed on a case-by-case basis.
+                            No, users are chosen for the presale automatically by the system, not by the organisers.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -178,12 +179,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            Can I choose my own seats when purchasing tickets?
+                            Can I choose the facial recognition feature for my event?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            No, best available consecutive seats will be chosen for you by default.
+                            Yes, as an organiser, you will have the option to enable the facial recognition feature for your event.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -194,12 +195,12 @@ export const FAQOrganiser = () => {
                         id="panel2a-header"
                         >
                         <Typography style={{fontWeight:500}}>
-                            Where can I indicate interest in a presale event?
+                            How does the facial recognition feature work for event entry?
                         </Typography>
                         </AccordionSummary>
                         <AccordionDetails>
                         <Typography>
-                            The "Indicate Interest" button is on the same page as the "Buy Now" button on the ticket details page.
+                            The facial recognition feature, when enabled, replaces the need to scan QR codes for entry. On the day of the event, attendees will go through a face scanner to gain access to the venue.
                         </Typography>
                         </AccordionDetails>
                     </Accordion>
