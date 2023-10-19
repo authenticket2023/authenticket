@@ -12,9 +12,21 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * Implementation of the QRCodeGenerator interface that generates QR codes as byte arrays.
+ */
 @Service
 public class QRCodeGeneratorImpl implements QRCodeGenerator {
-
+    /**
+     * Generates a QR code as a byte array from the given text with the specified width and height.
+     *
+     * @param text   The text or content to encode in the QR code.
+     * @param width  The desired width of the QR code image.
+     * @param height The desired height of the QR code image.
+     * @return A byte array containing the QR code image in PNG format.
+     * @throws WriterException If an error occurs during QR code generation.
+     * @throws IOException    If an error occurs while writing the QR code image to a byte array.
+     */
     @Override
     public byte[] getQRCode(String text, int width, int height) throws WriterException, IOException {
 

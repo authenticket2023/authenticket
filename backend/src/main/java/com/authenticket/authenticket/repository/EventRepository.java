@@ -94,6 +94,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     Boolean existsEventByEventIdAndOrganiser(Integer eventId, EventOrganiser organiser);
 
+    List<Event> findAllByReviewStatusAndOrganiserOrganiserIdAndEventDateIsAfterAndDeletedAtIsNullOrderByEventDateAsc(String reviewStatus,Integer organiserId, LocalDateTime currentDate);
+
     //remove all artist for event
      @Transactional
      @Modifying

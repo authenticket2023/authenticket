@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public interface EventOrganiserService {
     List<EventOrganiserDisplayDto> findAllEventOrganisers();
-
     List<Event> findAllEventsByOrganiser(Integer organiserId);
+    List<Event> findAllCurrentEventsByOrganiser(Integer organiserId);
     List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status);
     Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId);
     EventOrganiser saveEventOrganiser (EventOrganiser eventOrganiser);

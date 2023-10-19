@@ -1,6 +1,23 @@
 package com.authenticket.authenticket.dto.venue;
 
-public record VenueUpdateDto(Integer venue_id,
-                             String venue_name,
-                             String venue_location){
+/**
+ * A DTO representing updates to venue information.
+ */
+
+public record VenueUpdateDto(
+    
+    /**
+    * The unique identifier for the venue.
+    */
+    Integer venue_id,
+                       
+    /**
+    * The name of the venue.
+    */
+    String venue_name,
+
+    /**
+    * The location of the venue.
+    */         
+    String venue_location){
 }
