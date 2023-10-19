@@ -36,9 +36,9 @@ public record OrderDisplayDto(
         LocalDateTime eventDate,
 
         /**
-         * The location of the event.
+         * The venue of the event.
          */
-        String eventLocation,
+        String venueName,
 
         /**
          * The total order amount.

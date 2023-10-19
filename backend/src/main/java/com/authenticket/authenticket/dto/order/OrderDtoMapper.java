@@ -62,7 +62,7 @@ public class OrderDtoMapper implements Function<Order, OrderDisplayDto> {
                 event.getEventId(),
                 event.getEventName(),
                 event.getEventDate(),
-                event.getVenue().getVenueLocation(),
+                event.getVenue().getVenueName(),
                 order.getOrderAmount(),
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
