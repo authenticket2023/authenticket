@@ -5,7 +5,7 @@ import MUIDataTable from "mui-datatables";
 import { Alert, Box, FormControl, Grid, InputLabel, LinearProgress, MenuItem, Modal, Select, Snackbar, Typography } from '@mui/material';
 
 export const OrderOrganiser = () => {
-
+    //To login information
     const role: any = window.localStorage.getItem('role');
     const token = window.localStorage.getItem('accessToken');
     const organiserId: any = window.localStorage.getItem('id')
@@ -19,6 +19,7 @@ export const OrderOrganiser = () => {
         setOpenSnackbar(false);
     };
 
+    //To fetch data from DB for the drop down list
     const [fetched, setFetched]: any = useState(false);
     const [eventList, setEventList]: any = useState([]);
     const [eventID, setEventID]: any = useState(null);
@@ -43,7 +44,7 @@ export const OrderOrganiser = () => {
                 setEventList(sortedArray);
                 setEventID(sortedArray[0].eventId);
                 setFetched(true);
-                loadEventOrder(sortedArray[0].eventId);
+                loadOrdersByEventID(sortedArray[0].eventId);
             }
         } catch (err) {
             window.alert(err);
@@ -123,10 +124,10 @@ export const OrderOrganiser = () => {
             }
         },
     ];
-    const [orderDataByEventID, setAllEventData]: any[] = useState([]);
+    const [orderDataByEventID, setOrderDataByEventID]: any[] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
 
-    const loadEventOrder = async (eventID: any) => {
+    const loadOrdersByEventID = async (eventID: any) => {
         // //calling backend API
         fetch(`${process.env.REACT_APP_BACKEND_URL}/order/event/${eventID}?page=0&size=100`, {
             headers: {
@@ -151,7 +152,7 @@ export const OrderOrganiser = () => {
                         const row = [order.orderId, order.orderAmount, order.purchaseDate, order.ticketSet.length, order.purchaser.email, order.orderStatus]
                         fetchData.push(row)
                     });
-                    setAllEventData(fetchData);
+                    setOrderDataByEventID(fetchData);
                     setDataLoaded(true);
                     //close the modal
                     setLoadingModal(false);
@@ -172,7 +173,7 @@ export const OrderOrganiser = () => {
         selectableRows: false,
         downloadOptions: { filename: `${organiserName} - Event ID ${eventID} Ticket Order Data(${new Date().toDateString()}).csv` },
         sortOrder: {
-            name: 'Event ID',
+            name: 'Order Status',
             direction: 'desc'
         }
     };
@@ -182,7 +183,7 @@ export const OrderOrganiser = () => {
         if (!fetched) {
             eventFetcher();
         } else {
-            loadEventOrder(eventID);
+            loadOrdersByEventID(eventID);
         }
     }, [eventID]);
 
