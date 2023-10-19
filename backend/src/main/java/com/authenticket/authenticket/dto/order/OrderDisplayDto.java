@@ -8,6 +8,7 @@ import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.model.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -18,6 +19,26 @@ public record OrderDisplayDto(
          * The unique identifier of the order.
          */
         Integer orderId,
+
+        /**
+         * The unique identifier of the event.
+         */
+        Integer eventId,
+
+        /**
+         * The name of the event.
+         */
+        String eventName,
+
+        /**
+         * The date of the event.
+         */
+        LocalDateTime eventDate,
+
+        /**
+         * The location of the event.
+         */
+        String eventLocation,
 
         /**
          * The total order amount.

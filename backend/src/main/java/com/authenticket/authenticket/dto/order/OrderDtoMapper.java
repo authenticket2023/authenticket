@@ -55,8 +55,14 @@ public class OrderDtoMapper implements Function<Order, OrderDisplayDto> {
         if (ticketRepository.findAllByOrder(order) != null) {
             ticketSet = ticketDisplayDtoMapper.mapTicketDisplayDto(ticketRepository.findAllByOrder(order));
         }
+
+        Event event = order.getEvent();
         return new OrderDisplayDto(
                 order.getOrderId(),
+                event.getEventId(),
+                event.getEventName(),
+                event.getEventDate(),
+                event.getVenue().getVenueLocation(),
                 order.getOrderAmount(),
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
