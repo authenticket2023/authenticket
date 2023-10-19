@@ -20,7 +20,10 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             value = "SELECT " +
                     "A.artist_id, " +
                     "A.artist_name, " +
-                    "A.artist_image " +
+                    "A.artist_image, " +
+                    "A.created_at, " +
+                    "A.updated_at, " +
+                    "A.deleted_at " +
                     "FROM " +
                     "dev.Artist AS A " +
                     "JOIN " +
@@ -101,5 +104,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                      "WHERE e.event_id = :eventId " )
      void deleteAllArtistByEventId(@Param("eventId") Integer eventId);
 
-
+    //FOR CHECK IN
+    //find all event by organiser and enhanced status
+    List<Event> findAllByReviewStatusAndEventDateAfterAndDeletedAtIsNullAndIsEnhancedAndOrganiserOrganiserIdOrderByEventDateAsc(String reviewStatus, LocalDateTime currentDate, Boolean enhanced, Integer organiserId);
 }

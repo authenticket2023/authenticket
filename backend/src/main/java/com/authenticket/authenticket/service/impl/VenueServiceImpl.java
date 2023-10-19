@@ -82,18 +82,5 @@ public class VenueServiceImpl implements VenueService {
         } else {
             throw new NonExistentException("Ticket does not exist");
         }
-//        Optional<Venue> venueOptional = venueRepository.findById(venueId);
-//
-//        if (venueOptional.isPresent()) {
-//            Venue venue = venueOptional.get();
-//            if(venue.getDeletedAt()!=null){
-//                throw new AlreadyDeletedException("Venue already deleted");
-//            }
-//
-//            venue.setDeletedAt(LocalDateTime.now());
-//            venueRepository.save(venue);
-//        } else {
-//            throw new NonExistentException("Venue does not exist");
-//        }
     }
 }

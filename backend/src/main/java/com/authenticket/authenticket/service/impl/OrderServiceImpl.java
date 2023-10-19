@@ -322,4 +322,10 @@ public class OrderServiceImpl implements OrderService {
         //cancel all the filtered out orders
         cancelAllOrder(ordersToCancel);
     }
+
+    @Override
+    public List<OrderDisplayDto> findAllOrderByEventId(Pageable pageable, Integer eventId){
+        List<OrderDisplayDto> orderDisplayDtoList =orderDtoMapper.map(orderRepository.findAllByEventEventId(eventId,pageable));
+        return orderDisplayDtoList;
+    }
 }

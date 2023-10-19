@@ -7,8 +7,62 @@ const faceapi = require("@vladmandic/face-api/dist/face-api.node.js");
 const faceApiService = require("../../services/utils/faceapiService");
 const FaceModel = require('../../models/face');
 const baseDir = path.resolve(__dirname, "../../..");
+const request = require('request-promise-native');
+const FormData = require('form-data');
 
-async function uploadLabeledImages(index: any, images: any, eventID: any, label: any, sectionID: any, row: any, seat: any) : Promise<boolean> {
+//Checking the crypto module
+const crypto = require('crypto');
+const algorithm = 'aes-256-cbc'; //Using AES encryption
+
+// get encryption_key and IV from env variables
+const iv = process.env.INIT_VECTOR || '';
+const encryption_key = process.env.ENCRYPTION_KEY || '';
+//need to convert to Buffer for Initialization Vector(IV) and key
+const bufferIV = Buffer.from(iv, 'hex');
+const bufferKey = Buffer.from(encryption_key, 'hex');
+
+//Encrypting Facial Data
+function encrypt(data: any) {
+    let cipher = crypto.createCipheriv('aes-256-cbc', bufferKey, bufferIV);
+    let encrypted = cipher.update(data);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return { encryptedData: encrypted.toString('hex') };
+}
+
+// Decrypting Facial Data
+function decrypt(data: any) {
+    let encryptedText = Buffer.from(data.encryptedData, 'hex');
+    let decipher = crypto.createDecipheriv('aes-256-cbc', bufferKey, bufferIV);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+
+async function verifyToken(token: any, email: any) {
+    const apiUrl = `${process.env.MAIN_PRODUCTION_BACKEND_HOST}/api/v2/auth/token-verification`;
+    const formData = new FormData();
+    formData.append('jwtToken', token);
+    formData.append('userEmail', email);
+    const options = {
+        uri: apiUrl,
+        method: 'POST',
+        body: formData,
+        headers: formData.getHeaders(),
+        resolveWithFullResponse: true,
+    };
+    try {
+        const response = await request(options);
+        if (response.statusCode === 200) {
+            return true;
+        } else {
+            throw new Error(`${response.message}`);
+        }
+    } catch (error: any) {
+        throw new Error(`${error.message}`);
+    }
+}
+
+async function uploadLabeledImages(index: any, images: any, eventID: any, label: any, sectionID: any, row: any, seat: any): Promise<boolean> {
     try {
         console.log(`========== uploadLabeledImages for image ${index} ==========`)
 
@@ -25,16 +79,16 @@ async function uploadLabeledImages(index: any, images: any, eventID: any, label:
             .withFaceLandmarks()
             .withFaceDescriptor();
 
-        descriptions.push(detections.descriptor);
-        // }
-
+        const floatArrayString = JSON.stringify(Array.from(detections.descriptor))
+        var encryptedFacialData = encrypt(floatArrayString);
+        descriptions.push(encryptedFacialData);
         // Create a new face document with the given label and save it in DB
         const createFace = new FaceModel({
             eventID: eventID,
             sectionID: sectionID,
             row: row,
             seat: seat,
-            label: label,
+            label: `${label}(${sectionID}-${row}-${seat})`,
             descriptions: descriptions,
         });
         try {
@@ -43,13 +97,13 @@ async function uploadLabeledImages(index: any, images: any, eventID: any, label:
             return true;
         } catch (error) {
             // mean facial info was existed in DB
-            // console.error('Failed to save data:', error);
             return false;
         }
     } catch (error) {
         throw error;
     }
 }
+
 interface Files {
     image1: any;
     image2?: any;
@@ -61,8 +115,17 @@ interface Files {
 export const createFacialInfo = async (req: any, res: any, next: NextFunction) => {
     try {
         console.log('Creating Facial Information');
+        const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
         const { image1, image2, image3, image4, image5 }: Files = req.files;
-        const { eventID, info1, info2, info3, info4, info5 } = req.body;
+        const { email, eventID, info1, info2, info3, info4, info5 } = req.body;
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
         const info1Array = info1.split(',');
         if (info1Array.length != 4) {
             throw new Error(`Invalid info1 field! Please follow the following format : {label,sectionID,row,seat}.`);
@@ -141,7 +204,10 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
         for (let i = 0; i < faces.length; i++) {
             // Change the face data descriptors from Objects to Float32Array type
             for (let j = 0; j < faces[i].descriptions.length; j++) {
-                faces[i].descriptions[j] = new Float32Array(Object.values(faces[i].descriptions[j]));
+                //decode the facial data
+                var decodedString = decrypt(faces[i].descriptions[j]);
+                var facialData = new Float32Array(JSON.parse(decodedString));
+                faces[i].descriptions[j] = new Float32Array(Object.values(facialData));
             }
             // Turn the DB face docs to
             faces[i] = new faceapi.LabeledFaceDescriptors(faces[i].label, faces[i].descriptions);
@@ -182,8 +248,17 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
 
 export const facialVerification = async (req: any, res: any, next: NextFunction) => {
     try {
+        const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
         const { image } = req.files;
-        const eventID = req.body.eventID;
+        const { eventID, email } = req.body;
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
 
         let result = await getDescriptorsFromDB(image.data, eventID);
 
@@ -200,7 +275,18 @@ export const facialVerification = async (req: any, res: any, next: NextFunction)
 export const checkImage = async (req: any, res: any, next: NextFunction) => {
     try {
         console.log("========= Calling checkImage =========");
+        const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
         const { image } = req.files;
+        const { email } = req.body;
+
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
         const img = await canvas.loadImage(image.data);
         const numOfFaces = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
         if (numOfFaces.length != 1) {

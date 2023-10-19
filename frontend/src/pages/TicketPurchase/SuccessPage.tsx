@@ -79,6 +79,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
   }, []);
 
   const token = window.localStorage.getItem('accessToken');
+  const currUserEmail: any = window.localStorage.getItem('email');
   const [orderSummary, setOrderSummary] = useState<OrderSummary | undefined>();
   const [completedOrder, setCompletedOrder] = useState<CompletedOrder | undefined>();
 
@@ -161,8 +162,11 @@ const submitFace = async () => {
           formData.append(`info${index + 1}`, info);
         }
 
+        //add in email for facial api to verify the token
+        formData.append('email', currUserEmail);
+
         //call backend
-        fetch(`${process.env.FACIAL_URL}/face/createFacialInfo`, {
+        fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facial-creation`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },

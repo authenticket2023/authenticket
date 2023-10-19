@@ -15,5 +15,4 @@ public interface PresaleInterestRepository extends JpaRepository<PresaleInterest
     List<PresaleInterest> findAllByUser(User user);
     List<PresaleInterest> findAllByEventAndIsSelected(Event event, Boolean isSelected);
     List<PresaleInterest> findAllByIsSelectedTrueAndEmailedFalse();
-    Boolean existsPresaleInterestByEventAndUser(Event eventId, User userId);
 }

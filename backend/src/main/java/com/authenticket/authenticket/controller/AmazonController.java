@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/aws")
+@RequestMapping("/api/v2/aws")
 public class AmazonController extends Utility {
 
     private final AmazonS3ServiceImpl service;
@@ -30,19 +30,19 @@ public class AmazonController extends Utility {
     }
 
 
-    @PostMapping("/uploadFile")
+    @PostMapping("/upload-file")
     public ResponseEntity<GeneralApiResponse<Object>>  fileUpload(@RequestParam(value = "file") MultipartFile file,
                                                           @RequestParam(value = "imageName") String imageName,
                                                           @RequestParam(value = "file-type") String fileType){
         return ResponseEntity.status(200).body(generateApiResponse(null, service.uploadFile(file, imageName, fileType)));
     }
-    @DeleteMapping("/deleteFile")
+    @DeleteMapping("/delete-file")
     public ResponseEntity<GeneralApiResponse<Object>> fileDelete(@RequestParam(value = "imageName") String imageName,
                                              @RequestParam(value = "file-type") String fileType) {
         return ResponseEntity.status(200).body(generateApiResponse( null, service.deleteFile(imageName, fileType)));
     }
 
-    @GetMapping("/displayFile")
+    @GetMapping("/display-file")
     public ResponseEntity<GeneralApiResponse<Object>>  fileDisplay(@RequestParam(value = "imageName") String imageName,
                                               @RequestParam(value = "file-type") String fileType){
         return ResponseEntity.status(200).body(generateApiResponse( service.displayFile(imageName, fileType), "url generated"));

@@ -34,6 +34,7 @@ export const CheckinOrganiser = (): JSX.Element => {
     };
 
     const token = window.localStorage.getItem('accessToken');
+    const currUserEmail: any = window.localStorage.getItem('email');
     const role = window.localStorage.getItem('role');
     const organiserId: any = window.localStorage.getItem('id')
 
@@ -57,7 +58,7 @@ export const CheckinOrganiser = (): JSX.Element => {
                 setAlertMsg("error fetching data!!!");
             } else {
                 const data = await response.json();
-                const sortedArray = data['data'].sort((a:any, b:any) => b.eventId - a.eventId);
+                const sortedArray = data['data'].sort((a: any, b: any) => b.eventId - a.eventId);
                 setEventList(sortedArray);
                 setEventID(sortedArray[0].eventId);
                 setFetched(true);
@@ -68,15 +69,16 @@ export const CheckinOrganiser = (): JSX.Element => {
     };
 
     const handleEvent = (event: any) => {
+        console.log(event.target.value);
         setEventID(event.target.value);
     };
 
 
     const [image, setImage]: any = useState(null);
-    const capture = useCallback(() => {
+    const capture = useCallback((eventID : any) => {
         const imageSrc = webcamRef.current.getScreenshot();
         setImage(imageSrc);
-        checkFace(imageSrc);
+        checkFace(imageSrc , eventID);
         setTakePicture(false);
     }, [webcamRef]);
     //for count down and screenshot
@@ -90,7 +92,7 @@ export const CheckinOrganiser = (): JSX.Element => {
     };
     const buttonColor = startCheckin ? 'error' : 'success';
 
-    const checkFace = (image: any) => {
+    const checkFace = (image: any , eventID : any) => {
         //convert from base64 to file
         const base64DataWithoutPrefix = image.replace(/^data:image\/\w+;base64,/, '');
         const binaryImageData = atob(base64DataWithoutPrefix);
@@ -103,15 +105,15 @@ export const CheckinOrganiser = (): JSX.Element => {
         const blob = new Blob([uint8Array], { type: 'image/png' }); // Change the type accordingly
         // Create a File object from the Blob
         const file = new File([blob], 'image.jpg', { type: 'image/png' });
-
         const formData = new FormData();
         formData.append('image', file);
         formData.append('eventID', eventID);
+        formData.append('email', currUserEmail);
         //calling create event backend API
-        fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facialVerification`, {
-            // headers: {
-            //     'Authorization': `Bearer ${token}`,
-            // },
+        fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facial-verification`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
             method: 'POST',
             body: formData,
         })
@@ -143,7 +145,7 @@ export const CheckinOrganiser = (): JSX.Element => {
         if (startCheckin) {
             //take screenshot
             if (takePicture) {
-                capture();
+                capture(eventID);
             }
             if (countdown > 0) {
                 const timer = setTimeout(() => {
@@ -188,11 +190,11 @@ export const CheckinOrganiser = (): JSX.Element => {
                             </Select>
                         </FormControl>
                     </Box>
-                    <Typography sx={{mb:1, mt:1}}>{`Face Detected: ${detected}`}</Typography>
-                    <Typography sx={{mb:1}}>{`Number of faces detected: ${facesDetected}`}</Typography>
+                    <Typography sx={{ mb: 1, mt: 1 }}>{`Face Detected: ${detected}`}</Typography>
+                    <Typography sx={{ mb: 1 }}>{`Number of faces detected: ${facesDetected}`}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                    <Button variant="contained" color={buttonColor} onClick={handleStartCheckin} sx={{height:'55px'}}>
+                    <Button variant="contained" color={buttonColor} onClick={handleStartCheckin} sx={{ height: '55px' }}>
                         {startCheckin ? 'Stop Checkin' : 'Start Checkin'}
                     </Button>
                 </Grid>

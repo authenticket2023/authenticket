@@ -35,6 +35,7 @@ export const InfoBox = (props: any) => {
   const [preSaleStatus, setPreSaleStatus] = useState(true);
   const [isSelectedForPreSale, setIsSelectedForPreSale] = useState(true);
   const [availableTicket, setAvailableTicket] = useState(true);
+
   // Get today's date and time
   // Create a Date object for the eventDate
   const ticketSaleDateTime: any = new Date(props.ticketSaleDate);
@@ -56,7 +57,11 @@ export const InfoBox = (props: any) => {
   // => True , means will allow user to indicate interest etc
   // => False, only allow buy ticket after sale date start
   const loadIsPresaleEvent = async () => {
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/isPresaleEvent?eventId=${props.eventId}`, {
+    if (token === null || userID === null) {
+      setIsSelectedForPreSale(false);
+      setPreSaleStatus(false);
+    }
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/presale-event?eventId=${props.eventId}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -80,7 +85,7 @@ export const InfoBox = (props: any) => {
     if (token === null || userID === null) {
       return;
     }
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/checkPresaleStatus?eventId=${props.eventId}&userId=${userID}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/presale-status?eventId=${props.eventId}&userId=${userID}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -89,7 +94,6 @@ export const InfoBox = (props: any) => {
       .then(async (response) => {
         if (response.status == 200) {
           const apiResponse = await response.json();
-          console.log(apiResponse)
           setPreSaleStatus(apiResponse.data);
         }
       })
@@ -104,7 +108,7 @@ export const InfoBox = (props: any) => {
     if (token === null || userID === null) {
       return;
     }
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/checkIfUserSelected?eventId=${props.eventId}&userId=${userID}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/user-selected?eventId=${props.eventId}&userId=${userID}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -124,7 +128,7 @@ export const InfoBox = (props: any) => {
   // dont need logged in
   //check if the current event still have tickets
   const loadAvailableTicket = async () => {
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/hasTickets?eventId=${props.eventId}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/available?eventId=${props.eventId}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -152,7 +156,7 @@ export const InfoBox = (props: any) => {
     const formData = new FormData();
     formData.append('eventId', props.eventId);
     formData.append('userId', userID);
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/indicateInterest`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/interest`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -193,16 +197,19 @@ export const InfoBox = (props: any) => {
   };
 
 
-  //*** TODO ***
   const handleBuyTicket = () => {
-    console.log('redirect to buy ticket page, need check whether logged in or not')
-    navigate(`/TicketPurchase/${props.eventId}`);
+    if(token != null) {
+      navigate(`/TicketPurchase/${props.eventId}`);
+    } else {
+      setOpenSnackbar(true);
+      setAlertType('warning');
+      setAlertMsg('Please log in before purchasing!');
+      return;
+    }
   };
 
-  //*** TODO ***
   const handleViewVenue = () => {
-    console.log('redirect to view venue page')
-    navigate('');
+    navigate(`/VenueDetails/${props.venueId}`);
   };
 
   const handleSeatMap = () => {
@@ -230,7 +237,6 @@ export const InfoBox = (props: any) => {
     if (token != null && isPresaleEvent) {
       //if isOneDayBeforeSaleDate == false, means current date is before D-1 day, show presale button
       if (!isOneDayBeforeSaleDate) {
-        console.log('loading presale status')
         loadPreSaleStatus();
       }
       //this means the current date is btw D-1 to D day
@@ -265,8 +271,8 @@ export const InfoBox = (props: any) => {
           variant="outlined"
           style={{
             backgroundColor: '#F0F0F0',
-            color: '#FF5C35', // Text color
-            border: '2px solid #FF5C35', // Add a border
+            color: '#FF5C35',
+            border: '2px solid #FF5C35',
             width: '250px'
           }}
           onClick={handleSeatMap}
@@ -277,8 +283,8 @@ export const InfoBox = (props: any) => {
           variant="outlined"
           style={{
             backgroundColor: '#F0F0F0',
-            color: '#FF5C35', // Text color
-            border: '2px solid #FF5C35', // Add a border
+            color: '#FF5C35',
+            border: '2px solid #FF5C35',
             width: '250px',
             marginTop: 8
           }}
@@ -292,7 +298,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: preSaleStatus ? 'green' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -307,7 +313,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: !isSelectedForPreSale ? 'grey' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -327,7 +333,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: !availableTicket ? 'grey' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -344,7 +350,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: 'grey',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}
@@ -358,7 +364,7 @@ export const InfoBox = (props: any) => {
             variant="contained"
             style={{
               backgroundColor: !availableTicket ? 'grey' : '#FF5C35',
-              color: 'white', // Text color
+              color: 'white',
               width: '250px',
               marginTop: 8
             }}

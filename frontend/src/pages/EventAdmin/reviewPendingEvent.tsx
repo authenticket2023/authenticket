@@ -67,7 +67,7 @@ export default function ReviewEvent(props: any) {
         formData.append('reviewRemarks', remarks);
         formData.append('reviewStatus', status);
         formData.append('reviewedBy', adminID );
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/updateEvent`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/update-event`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },

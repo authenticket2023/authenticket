@@ -128,6 +128,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
           eventDate={eventDetails.eventDate}
           ticketSaleDate={eventDetails.ticketSaleDate}
           venueName={eventDetails.venue.venueName}
+          venueId={eventDetails.venue.venueId}
           setValue={setValue}
         />
       </Grid>

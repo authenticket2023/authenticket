@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.controller;
 
+import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
@@ -25,30 +26,23 @@ import java.util.stream.Collectors;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/ticket")
+@RequestMapping("/api/v2/ticket")
 public class TicketController extends Utility {
-    private final TicketRepository ticketRepository;
 
     private final TicketServiceImpl ticketService;
-
     private final TicketCategoryRepository ticketCategoryRepository;
-
     private final TicketPricingRepository ticketPricingRepository;
-
     private final SectionRepository sectionRepository;
     private final EventRepository eventRepository;
-
     private final OrderRepository orderRepository;
 
     @Autowired
-    public TicketController(TicketRepository ticketRepository,
-                            TicketServiceImpl ticketService,
+    public TicketController(TicketServiceImpl ticketService,
                             TicketCategoryRepository ticketCategoryRepository,
                             EventRepository eventRepository,
                             TicketPricingRepository ticketPricingRepository,
                             SectionRepository sectionRepository,
                             OrderRepository orderRepository) {
-        this.ticketRepository = ticketRepository;
         this.ticketCategoryRepository = ticketCategoryRepository;
         this.eventRepository = eventRepository;
         this.ticketPricingRepository = ticketPricingRepository;
@@ -62,24 +56,18 @@ public class TicketController extends Utility {
         return "test successful";
     }
 
-    @PostMapping("/test-post")
-    public String testPost(@RequestParam(value = "eventId") Integer eventId,
-                           @RequestParam(value = "sectionId") String sectionId) {
-        return ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(eventId,sectionId).toString();
-    }
-
     @GetMapping
     public List<TicketDisplayDto> findAllTicket() {
         return ticketService.findAllTicket();
     }
 
     @GetMapping("/{ticketId}")
-    public ResponseEntity<?> findTicketById(@PathVariable("ticketId") Integer ticketId) {
-        return ResponseEntity.ok(ticketService.findTicketById(ticketId));
+    public ResponseEntity<GeneralApiResponse<Object>> findTicketById(@PathVariable("ticketId") Integer ticketId) {
+        return ResponseEntity.ok(generateApiResponse(ticketService.findTicketById(ticketId), "Tickets returned successfully"));
     }
 
     @PostMapping("/allocate-seats")
-    public ResponseEntity<?> allocateSeats(@RequestParam(value = "eventId") Integer eventId,
+    public ResponseEntity<GeneralApiResponse<Object>> allocateSeats(@RequestParam(value = "eventId") Integer eventId,
                                            @RequestParam(value = "sectionId") String sectionId,
                                            @RequestParam(value = "ticketsToPurchase") Integer ticketsToPurchase) {
         List<Ticket> ticketList;
@@ -91,30 +79,8 @@ public class TicketController extends Utility {
         return ResponseEntity.ok(generateApiResponse(ticketList, String.format("%d seats successfully assigned", ticketsToPurchase)));
     }
 
-    @DeleteMapping("/unallocate-seats")
-    public ResponseEntity<?> removeTickets(@RequestParam(value = "ticketIdString")String ticketIdString
-    ) {
-        List<Integer> ticketIdList = Arrays.stream(ticketIdString.split(","))
-                .map(Integer::parseInt)
-                .collect(Collectors.toList());
-
-
-            ticketService.removeAllTickets(ticketIdList);
-
-        return ResponseEntity.ok(generateApiResponse(null, "Tickets Unallocated Successfully"));
-    }
-
-//    @PostMapping
-//    public ResponseEntity<?> saveTicket(@RequestParam(value = "userId") Integer userId,
-//                                       @RequestParam(value = "eventId") Integer eventId,
-//                                       @RequestParam(value = "categoryId") Integer categoryId) {
-//        Ticket savedTicket = ticketService.saveTicket(userId, eventId, categoryId);
-//        return ResponseEntity.ok(savedTicket);
-//    }
-//
-
     @PostMapping
-    public ResponseEntity<?> saveTicket(@RequestParam(value = "eventId") Integer eventId,
+    public ResponseEntity<GeneralApiResponse<Object>> saveTicket(@RequestParam(value = "eventId") Integer eventId,
                                         @RequestParam(value = "categoryId") Integer categoryId,
                                         @RequestParam(value = "sectionId") String sectionId,
                                         @RequestParam(value = "rowNo") Integer rowNo,
@@ -161,31 +127,6 @@ public class TicketController extends Utility {
         Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder, order);
 
         Ticket savedTicket = ticketService.saveTicket(ticket);
-        return ResponseEntity.ok(savedTicket);
+        return ResponseEntity.ok(generateApiResponse(savedTicket, "Tickets created successfully"));
     }
-
-//    @PutMapping
-//    public ResponseEntity<?> updateTicket(@RequestParam(value = "ticketId") Integer ticketId,
-//                                          @RequestParam(value = "ticketHolder") String ticketHolder) {
-//        //DK
-//        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
-//        if (ticketOptional.isEmpty()) {
-//            throw new NonExistentException("Ticket", ticketId);
-//        }
-//        Ticket ticket = ticketOptional.get();
-//        Ticket savedTicket = ticketService.updateTicket(ticket);
-//        return ResponseEntity.ok(savedTicket);
-//    }
-
-//    @PutMapping("/{ticketId}")
-//    public String deleteTicket(@PathVariable("ticketId") Integer ticketId) {
-//        ticketService.deleteTicket(ticketId);
-//        return "Ticket deleted successfully";
-//    }
-//
-//    @DeleteMapping("/{ticketId}")
-//    public String removeTicket(@PathVariable("ticketId") Integer ticketId) {
-//        ticketService.removeTicket(ticketId);
-//        return "Ticket removed successfully.";
-//    }
 }

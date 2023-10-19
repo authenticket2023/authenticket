@@ -11,13 +11,19 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../images/logo(orange).png';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 
 export const NavbarNotLoggedIn = () => {
     let navigate = useNavigate();
+
+    const { pathname } = useLocation();
+
+    const isTabActive = (path: any) => {
+        return pathname === path;
+    };
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -48,14 +54,6 @@ export const NavbarNotLoggedIn = () => {
 
     const handleLogin = () => {
         navigate('/Login');
-    }
-
-    const handleSupport = () => {
-        navigate('/Support');
-    }
-
-    const handleAbout = () => {
-        navigate('/About');
     }
 
     return (
@@ -95,12 +93,10 @@ export const NavbarNotLoggedIn = () => {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            <Button key='Home' onClick={handleHome} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
-                            <Button key='Events' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Events</Button>
-                            <Button key='Venues' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Venues</Button>
-                            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: 'black', display: 'block' }} >FAQ</Button>
-                            {/* <Button key='Support' onClick={handleSupport} sx={{ my: 0, color: 'white', display: 'block' }} >Support</Button>
-                            <Button key='About' onClick={handleAbout} sx={{ my: 0, color: 'white', display: 'block' }} >About</Button> */}
+                            <Button key='Home' onClick={handleHome} sx={{ my: 0, color: isTabActive('/Home') ? '#FF5C35' : 'black', display: 'block' }} >Home</Button>
+                            <Button key='Event' onClick={handleEvents} sx={{ my: 0, color: isTabActive('/Event') ? '#FF5C35' : 'black', display: 'block' }} >Events</Button>
+                            <Button key='Venue' onClick={handleVenues} sx={{ my: 0, color: isTabActive('/Venue') ? '#FF5C35' : 'black', display: 'block' }} >Venues</Button>
+                            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: isTabActive('/FAQ') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
                             <Button key='Login' onClick={handleLogin} sx={{ my: 0, color: 'black', display: 'block' }} >Log In</Button>
                         </Menu>
                     </Box>
@@ -125,10 +121,10 @@ export const NavbarNotLoggedIn = () => {
                     </Typography>
 
                     <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHome} sx={{ my: 2, ml: 4, color: 'white', display: 'block' }} >Home</Button>
-                        <Button key='Events' onClick={handleEvents} sx={{ my: 2, color: 'white', display: 'block' }} >Events</Button>
-                        <Button key='Venues' onClick={handleVenues} sx={{ my: 2, color: 'white', display: 'block' }} >Venues</Button>
-                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: 'white', display: 'block' }} >FAQ</Button>
+                        <Button key='Home' onClick={handleHome} sx={{ my: 2, ml: 4, color: isTabActive('/Home') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
+                        <Button key='Event' onClick={handleEvents} sx={{ my: 2, color: isTabActive('/Event') ? '#FF5C35' : 'white', display: 'block' }} >Events</Button>
+                        <Button key='Venue' onClick={handleVenues} sx={{ my: 2, color: isTabActive('/Venue') ? '#FF5C35' : 'white', display: 'block' }} >Venues</Button>
+                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: isTabActive('/FAQ') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
                     </Box>
 
                     <Box justifyContent="right" alignItems="right" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, marginRight: 5 }}>
@@ -152,6 +148,12 @@ export const NavbarNotLoggedIn = () => {
 
 export const NavbarLoggedIn = () => {
     let navigate = useNavigate();
+
+    const { pathname } = useLocation();
+
+    const isTabActive = (path: any) => {
+        return pathname === path;
+    };
 
     let profileImage: any = window.localStorage.getItem('profileImage');
     const profileImageSrc = `${process.env.REACT_APP_S3_URL}/user_profile_images/${profileImage}`;
@@ -181,7 +183,7 @@ export const NavbarLoggedIn = () => {
         sessionStorage.clear();
         localStorage.clear();
         navigate('/logIn');
-        window. location. reload();
+        window.location.reload();
     };
 
     const handleHome = () => {
@@ -202,14 +204,6 @@ export const NavbarLoggedIn = () => {
 
     const handleLogin = () => {
         navigate('/Login');
-    }
-
-    const handleSupport = () => {
-        navigate('/Support');
-    }
-
-    const handleAbout = () => {
-        navigate('/About');
     }
 
     return (
@@ -249,12 +243,10 @@ export const NavbarLoggedIn = () => {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            <Button key='Home' onClick={handleHome} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
-                            <Button key='Events' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Events</Button>
-                            <Button key='Venues' onClick={handleEvents} sx={{ my: 0, color: 'black', display: 'block' }} >Venues</Button>
-                            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: 'black', display: 'block' }} >FAQ</Button>
-                            {/* <Button key='Support' onClick={handleSupport} sx={{ my: 0, color: 'white', display: 'block' }} >Support</Button>
-                            <Button key='About' onClick={handleAbout} sx={{ my: 0, color: 'white', display: 'block' }} >About</Button> */}
+                            <Button key='Home' onClick={handleHome} sx={{ my: 0, color: isTabActive('/Home') ? '#FF5C35' : 'black', display: 'block' }} >Home</Button>
+                            <Button key='Event' onClick={handleEvents} sx={{ my: 0, color: isTabActive('/Event') ? '#FF5C35' : 'black', display: 'block' }} >Events</Button>
+                            <Button key='Venue' onClick={handleVenues} sx={{ my: 0, color: isTabActive('/Venue') ? '#FF5C35' : 'black', display: 'block' }} >Venues</Button>
+                            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: isTabActive('/FAQ') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
                             <Button key='Login' onClick={handleLogin} sx={{ my: 0, color: 'black', display: 'block' }} >Log In</Button>
                         </Menu>
                     </Box>
@@ -279,10 +271,10 @@ export const NavbarLoggedIn = () => {
                     </Typography>
 
                     <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHome} sx={{ my: 2, ml: 4, color: 'white', display: 'block' }} >Home</Button>
-                        <Button key='Events' onClick={handleEvents} sx={{ my: 2, color: 'white', display: 'block' }} >Events</Button>
-                        <Button key='Venues' onClick={handleVenues} sx={{ my: 2, color: 'white', display: 'block' }} >Venues</Button>
-                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: 'white', display: 'block' }} >FAQ</Button>
+                        <Button key='Home' onClick={handleHome} sx={{ my: 2, ml: 4, color: isTabActive('/Home') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
+                        <Button key='Event' onClick={handleEvents} sx={{ my: 2, color: isTabActive('/Event') ? '#FF5C35' : 'white', display: 'block' }} >Events</Button>
+                        <Button key='Venue' onClick={handleVenues} sx={{ my: 2, color: isTabActive('/Venue') ? '#FF5C35' : 'white', display: 'block' }} >Venues</Button>
+                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: isTabActive('/FAQ') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -307,14 +299,17 @@ export const NavbarLoggedIn = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
+                            <MenuItem key='Home' onClick={handleHome}>
+                                <Typography sx={{ color: isTabActive('/Home') ? '#FF5C35' : 'black' }} textAlign="center">Home</Typography>
+                            </MenuItem>
                             <MenuItem key='Event' onClick={handleEvents}>
-                                <Typography textAlign="center">Event</Typography>
+                                <Typography sx={{ color: isTabActive('/Event') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
                             </MenuItem>
                             <MenuItem key='Venue' onClick={handleVenues}>
-                                <Typography textAlign="center">Venue</Typography>
+                                <Typography sx={{ color: isTabActive('/Venue') ? '#FF5C35' : 'black' }} textAlign="center">Venue</Typography>
                             </MenuItem>
                             <MenuItem key='FAQ' onClick={handleFAQ}>
-                                <Typography textAlign="center">FAQ</Typography>
+                                <Typography sx={{ color: isTabActive('/FAQ') ? '#FF5C35' : 'black' }} textAlign="center">FAQ</Typography>
                             </MenuItem>
                             <MenuItem key='Logout' onClick={handledLogout}>
                                 <Typography textAlign="center">Log out</Typography>
@@ -334,6 +329,11 @@ export const NavbarOrganiser = () => {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
+    const { pathname } = useLocation();
+
+    const isTabActive = (path: any) => {
+        return pathname === path;
+    };
 
     let profileImage: any = window.localStorage.getItem('profileImage');
     const profileImageSrc = `${process.env.REACT_APP_S3_URL}/event_organiser_profile/${profileImage}`;
@@ -360,25 +360,21 @@ export const NavbarOrganiser = () => {
         navigate('/logIn');
     };
 
-    const handleHomeOrganiser = () => {
-        navigate('/HomeOrganiser');
-    }
-
-    const handleEventOrganiser = () => {
-        navigate('/EventOrganiser');
-    }
-
     const handleCheckinOrganiser = () => {
         navigate('/CheckinOrganiser');
     }
+    const linkStyle = {
+        textDecoration: 'none',
+        color: 'black'
+    };
 
     return (
         <AppBar position="sticky" style={{ background: '#000000' }} >
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <Link to="/HomeOrganiser">
+                    <a href="/HomeOrganiser">
                         <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
-                    </Link>
+                    </a>
 
                     {/* for hamburger bar */}
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -410,9 +406,9 @@ export const NavbarOrganiser = () => {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            <Button key='Home' onClick={handleHomeOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
-                            <Button key='Event' onClick={handleEventOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Event</Button>
-                            <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 0, color: 'black', display: 'block' }} >Checkin</Button>
+                            <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 0, display: 'block', color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} >Home</Button>
+                            <Button key='Event' href={'/EventOrganiser'} sx={{ my: 0, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
+                            <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 0, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Checkin</Button>
                         </Menu>
                     </Box>
                     <Typography
@@ -435,9 +431,9 @@ export const NavbarOrganiser = () => {
                     </Typography>
 
                     <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml: 4, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHomeOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Home</Button>
-                        <Button key='Event' onClick={handleEventOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Event</Button>
-                        <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: 'white', display: 'block' }} >Checkin</Button>
+                        <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 2, color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
+                        <Button key='Event' href={'/EventOrganiser'} sx={{ my: 2, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
+                        <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Checkin</Button>
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -462,11 +458,18 @@ export const NavbarOrganiser = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            <MenuItem key='Event' onClick={handleEventOrganiser}>
-                                <Typography textAlign="center">Event</Typography>
+                            <MenuItem key='Home'>
+                                <a href='/HomeOrganiser' style={linkStyle}>
+                                    <Typography sx={{ color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Home</Typography>
+                                </a>
+                            </MenuItem>
+                            <MenuItem key='Event'>
+                                <a href='/EventOrganiser' style={linkStyle}>
+                                    <Typography sx={{ color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
+                                </a>
                             </MenuItem>
                             <MenuItem key='Checkin' onClick={handleCheckinOrganiser}>
-                                <Typography textAlign="center">Checkin</Typography>
+                                <Typography sx={{ color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Checkin</Typography>
                             </MenuItem>
                             <MenuItem key='Logout' onClick={handledLogout}>
                                 <Typography textAlign="center">Log out</Typography>
@@ -481,6 +484,11 @@ export const NavbarOrganiser = () => {
 
 export const NavbarAdmin = () => {
     let navigate = useNavigate();
+    const { pathname } = useLocation();
+
+    const isTabActive = (path: any) => {
+        return pathname === path;
+    };
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -563,10 +571,10 @@ export const NavbarAdmin = () => {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Home</Button>
-                            <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Artist</Button>
-                            <Button key='Event' onClick={handleEventAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Event</Button>
-                            <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0, color: 'black', display: 'block' }} >Venue</Button>
+                            <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 0, color: isTabActive('/HomeAdmin') ? '#FF5C35' : 'black', display: 'block' }} >Home</Button>
+                            <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 0, color: isTabActive('/ArtistAdmin') ? '#FF5C35' :  'black', display: 'block' }} >Artist</Button>
+                            <Button key='Event' onClick={handleEventAdmin} sx={{ my: 0, color: isTabActive('/EventAdmin') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
+                            <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0, color: isTabActive('/VenueAdmin') ? '#FF5C35' : 'black', display: 'block' }} >Venue</Button>
                         </Menu>
                     </Box>
                     <Typography
@@ -589,10 +597,10 @@ export const NavbarAdmin = () => {
                     </Typography>
 
                     <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml: 4, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Home</Button>
-                        <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Artist</Button>
-                        <Button key='Event' onClick={handleEventAdmin} sx={{ my: 2, color: 'white', display: 'block' }} >Event</Button>
-                        <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0, color: 'white', display: 'block' }} >Venue</Button>
+                        <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 2, color: isTabActive('/HomeAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
+                        <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 2, color: isTabActive('/ArtistAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Artist</Button>
+                        <Button key='Event' onClick={handleEventAdmin} sx={{ my: 2, color: isTabActive('/EventAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
+                        <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0,color: isTabActive('/VenueAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Venue</Button>
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -617,14 +625,17 @@ export const NavbarAdmin = () => {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
+                            <MenuItem key='Home' onClick={handleHomeAdmin}>
+                                <Typography sx={{ color: isTabActive('/HomeAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Home</Typography>
+                            </MenuItem>
                             <MenuItem key='Artist' onClick={handleArtistAdmin}>
-                                <Typography textAlign="center">Artist</Typography>
+                                <Typography sx={{ color: isTabActive('/ArtistAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Artist</Typography>
                             </MenuItem>
                             <MenuItem key='Event' onClick={handleEventAdmin}>
-                                <Typography textAlign="center">Event</Typography>
+                                <Typography sx={{ color: isTabActive('/EventAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
                             </MenuItem>
-                            <MenuItem key='Event' onClick={handleVenueAdmin}>
-                                <Typography textAlign="center">Venue</Typography>
+                            <MenuItem key='Venue' onClick={handleVenueAdmin}>
+                                <Typography sx={{ color: isTabActive('/VenueAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Venue</Typography>
                             </MenuItem>
                             <MenuItem key='Logout' onClick={handledLogout}>
                                 <Typography textAlign="center">Log out</Typography>

@@ -1,5 +1,5 @@
 import {
-    Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel
+    Box, Button, TextField, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, Switch, FormControlLabel
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import BasicDatePicker from '../../utility/dateElement';
@@ -320,7 +320,7 @@ export function VenueArtist(props: any) {
                 {/* Venue */}
                 <Sheet sx={{ marginTop: 2 }}>
                     <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
-                        Veneue
+                        Venue
                     </Typography>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={4}>
