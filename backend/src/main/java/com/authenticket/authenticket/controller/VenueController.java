@@ -20,9 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * The `VenueController` class handles HTTP requests related to venue management.
- */
+/**This is the venue controller class and the base path for this controller's endpoint is api/v2/venue.*/
+
 @RestController
 @CrossOrigin(
         origins = {

@@ -29,9 +29,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * The `EventTypeController` class handles HTTP requests related to event types.
- */
+/**This is the admin  controller class and the base path for this controller's endpoint is api/v2/admin.*/
+
 @RestController
 @CrossOrigin(
         origins = {

@@ -23,10 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * This class represents a controller for managing user-related operations. It provides endpoints
- * for retrieving, updating, and deleting user profiles, managing user interests, and uploading profile images.
- */
+/**This is the user controller class and the base path for this controller's endpoint is api/v2/user.*/
+
 @RestController
 @CrossOrigin(
         origins = {

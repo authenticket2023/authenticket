@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * The `EventTypeController` class handles HTTP requests related to event types.
- */
+/**This is the event type controller class and the base path for this controller's endpoint is api/v2/event-type.*/
+
 @RestController
 @CrossOrigin(
         origins = {

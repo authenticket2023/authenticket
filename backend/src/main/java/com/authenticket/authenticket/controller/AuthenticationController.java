@@ -25,9 +25,8 @@ import io.jsonwebtoken.security.SignatureException;
 import java.net.URI;
 import java.time.LocalDate;
 
-/**
- * The `AuthenticationController` class handles HTTP requests related to authentication and user access.
- */
+/**This is the authentication controller class and the base path for this controller's endpoint is api/v2/auth.*/
+
 @RestController
 @CrossOrigin(
         origins = {

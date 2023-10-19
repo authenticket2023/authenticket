@@ -23,11 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * This class represents a controller for managing event organizers. It provides endpoints
- * for retrieving, updating, and deleting event organizers, as well as managing their associated events
- * and profile images.
- */
+/**This is the event organiser controller class and the base path for this controller's endpoint is api/v2/event-organiser.*/
+
 @RestController
 @CrossOrigin(
         origins = {

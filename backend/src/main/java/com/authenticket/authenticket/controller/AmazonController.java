@@ -8,9 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * The `AmazonController` class handles HTTP requests related to Amazon S3 operations.
- */
+/**This is the amazon s3 controller class and the base path for this controller's endpoint is api/v2/aws.*/
+
 @RestController
 @CrossOrigin(
         origins = {

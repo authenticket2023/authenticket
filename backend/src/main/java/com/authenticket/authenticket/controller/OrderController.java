@@ -34,19 +34,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * This class represents the RESTful controller for managing orders in the application.
- *
- * It handles HTTP requests related to orders and interacts with the services and repositories
- * to perform operations on orders and their related entities.
- *
- * The controller is configured to allow cross-origin requests from specific origins and
- * supports HTTP methods GET, POST, and PUT. It allows specific headers and enables credentials.
- *
- * @see org.springframework.web.bind.annotation.RestController
- * @see org.springframework.web.bind.annotation.CrossOrigin
- * @see org.springframework.web.bind.annotation.RequestMapping
- */
+/**This is the order controller class and the base path for this controller's endpoint is api/v2/order.*/
+
 @RestController
 @CrossOrigin(
         origins = {
