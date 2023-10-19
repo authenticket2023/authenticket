@@ -86,6 +86,7 @@ public class OrderController extends Utility {
         try {
 
             byte[] contents = orderService.test().getContentAsByteArray();
+            ticketService.setCheckIn(1, false);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -115,7 +116,6 @@ public class OrderController extends Utility {
         try {
 
             byte[] contents = orderService.test2().getContentAsByteArray();
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             // Here you have to set the actual filename of your pdf

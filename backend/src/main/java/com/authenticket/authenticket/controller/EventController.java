@@ -1,13 +1,12 @@
 package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.authenticket.authenticket.controller.response.AuthenticationUserResponse;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
-import com.authenticket.authenticket.exception.AwaitingVerificationException;
+import com.authenticket.authenticket.exception.InvalidRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,16 +65,16 @@ public class EventController extends Utility {
 
     @Autowired
     public EventController(EventServiceImpl eventService,
-                            AmazonS3Service amazonS3Service,
-                            EventRepository eventRepository,
-                            ArtistRepository artistRepository,
-                            VenueRepository venueRepository,
-                            EventTypeRepository eventTypeRepository,
-                            EventDtoMapper eventDtoMapper,
-                            PresaleService presaleService,
-                            UserRepository userRepository,
-                            TaskScheduler taskScheduler,
-                            TicketService ticketService) {
+                           AmazonS3Service amazonS3Service,
+                           EventRepository eventRepository,
+                           ArtistRepository artistRepository,
+                           VenueRepository venueRepository,
+                           EventTypeRepository eventTypeRepository,
+                           EventDtoMapper eventDtoMapper,
+                           PresaleService presaleService,
+                           UserRepository userRepository,
+                           TaskScheduler taskScheduler,
+                           TicketService ticketService,
                            JwtService jwtService) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
@@ -983,32 +981,45 @@ public class EventController extends Utility {
             throw new IllegalArgumentException("Event '" + event.getEventName() + "' does not have a presale period");
         }
         if (!event.getHasPresaleUsers()) {
-            throw new IllegalStateException("Users have yet to be selected");
+            throw new InvalidRequestException("Users have yet to be selected");
         }
 
         return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true),
                 "Returned list of users allowed in presale"));
     }
 
-    @GetMapping("/event/valid-qr")
+    /**
+     * Handles the check-in process for event tickets based on a JWT token.
+     *
+     * @param token    The JWT token provided in the request query parameters.
+     * @param request  The HTTP request object containing information about the request.
+     * @return A ResponseEntity containing a GeneralApiResponse with ticket details on success.
+     * @throws InvalidRequestException if the token is expired or has an invalid role.
+     * @throws IllegalArgumentException if the ticket ID is not valid, or the ticket does not correspond to the event by the organiser.
+     */
+    @PutMapping("/event/valid-qr")
     public ResponseEntity<GeneralApiResponse<Object>> getQR(@RequestParam("token")String token,
                                                             @NonNull HttpServletRequest request) {
         EventOrganiser organiser = retrieveOrganiserFromRequest(request);
 
         if (jwtService.isTokenExpired(token)) {
-            throw new IllegalStateException("Ticket has expired");
+            throw new InvalidRequestException("Ticket has expired");
         }
 
         if (!"ticket".equals(jwtService.extractRole(token))) {
-            throw new IllegalStateException("Token role is not valid");
+            throw new InvalidRequestException("Token role is not valid");
         }
 
         try {
-            String ticketId = jwtService.extractUsername(token);
-            TicketDisplayDto dto = ticketService.findTicketById(Integer.parseInt(ticketId));
+            Integer ticketId = Integer.parseInt(jwtService.extractUsername(token));
+            TicketDisplayDto dto = ticketService.findTicketById(ticketId);
             if (!eventRepository.existsEventByEventIdAndOrganiser(dto.eventId(), organiser)) {
                 throw new IllegalArgumentException("Ticket does not correspond to event by organiser");
             }
+            if (dto.checkedIn()) {
+                throw new InvalidRequestException("User already checked in");
+            }
+            ticketService.setCheckIn(ticketId, true);
             return ResponseEntity.ok(generateApiResponse(dto, "Returned ticket details"));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Ticket ID for QR is not valid.");
