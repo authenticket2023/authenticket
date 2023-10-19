@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * Service class responsible for mapping Event entities to various DTOs.
+ * {@link EventDisplayDto} DTOs and performing updates on event entities.
  */
 @Service
 public class EventDtoMapper implements Function<Event, EventDisplayDto> {

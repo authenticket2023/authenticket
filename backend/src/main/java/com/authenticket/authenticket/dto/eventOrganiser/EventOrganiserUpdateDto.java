@@ -3,7 +3,7 @@ package com.authenticket.authenticket.dto.eventOrganiser;
 import com.authenticket.authenticket.model.Admin;
 
 /**
- * A data transfer object (DTO) representing the information needed to update an event organizer.
+ * A DTO representing the information needed to update an event organizer.
  */
 public record EventOrganiserUpdateDto(
         /**

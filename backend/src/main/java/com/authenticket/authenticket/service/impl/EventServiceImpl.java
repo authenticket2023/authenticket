@@ -211,15 +211,6 @@ public class EventServiceImpl implements EventService {
      * @return A list of EventHomeDto objects containing details of current events.
      */
     @Override
-
-    /**
-     * Retrieves a list of current events based on their event dates.
-     *
-     * @param pageable Pagination information to control the number of results
-     *                 returned.
-     * @return A list of EventHomeDto objects containing details of current events.
-     */
-    @Override
     public List<EventHomeDto> findCurrentEventsByEventDate(Pageable pageable) {
         LocalDateTime currentDate = LocalDateTime.now();
         return eventDTOMapper
@@ -270,15 +261,11 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
-     * Retrieves a list of events based on their review status, sorted by creation
-     * date in ascending order.
+     * Find a list of EventHomeDto objects by a given venue ID and pageable information.
      *
-     * @param reviewStatus The review status of the events to retrieve (e.g.,
-     *                     "approved", "pending", "rejected").
-     * @return A list of {@link EventDisplayDto} objects representing events with
-     *         the specified review status, sorted by creation date in ascending
-     *         order.
-     * @see EventDisplayDto
+     * @param venueId   The unique identifier of the venue.
+     * @param pageable  Pageable object for pagination and sorting.
+     * @return A list of EventHomeDto objects representing events at the specified venue.
      */
     @Override
     public List<EventHomeDto> findEventsByVenue(Integer venueId, Pageable pageable) {

@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.ticketcategory;
 
+import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.model.TicketCategory;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +8,7 @@ import java.util.function.Function;
 
 /**
  * A mapper class for converting TicketCategory entities to TicketCategoryDisplayDto objects.
+ * {@link TicketCategoryDisplayDto} DTOs and performing updates on ticket category entities.
  */
 @Service
 public class TicketCategoryDisplayDtoMapper implements Function<TicketCategory, TicketCategoryDisplayDto> {

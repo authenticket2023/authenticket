@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.venue;
 
+import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.model.Venue;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +8,7 @@ import java.util.function.Function;
 
 /**
  * This class is responsible for mapping between Venue and VenueDisplayDto.
+ *  {@link VenueDisplayDto} DTOs and performing updates on venue entities.
  */
 
 @Service

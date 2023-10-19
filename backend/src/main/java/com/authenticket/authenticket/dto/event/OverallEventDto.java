@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A data transfer object (DTO) representing an overall event.
+ * A DTO representing an overall event.
  */
 public record OverallEventDto(
         /**

@@ -2,6 +2,7 @@ package com.authenticket.authenticket.dto.eventOrganiser;
 
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
+import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.model.EventOrganiser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * A mapper class responsible for mapping between EventOrganiser entities and EventOrganiserDisplayDto objects.
+ * {@link EventOrganiserDisplayDto} DTOs and performing updates on event organiser entities.
  */
 @Service
 public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOrganiserDisplayDto> {

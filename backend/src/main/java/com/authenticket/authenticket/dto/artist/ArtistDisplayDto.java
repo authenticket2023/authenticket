@@ -3,8 +3,7 @@ package com.authenticket.authenticket.dto.artist;
 import java.time.LocalDateTime;
 
 /**
- * Represents a Data Transfer Object (DTO) for displaying artist information.
- * This DTO includes essential details about an artist.
+ * Represents a DTO for displaying artist information.
  */
 public record ArtistDisplayDto(
         /**

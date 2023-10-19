@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.ticket;
 
+import com.authenticket.authenticket.dto.section.SectionDisplayDto;
 import com.authenticket.authenticket.model.Ticket;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 
 /**
  * Service for mapping Ticket entities to TicketDisplayDto.
+ * {@link TicketDisplayDto} DTOs and performing updates on ticket entities.
  */
 @Service
 public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto> {

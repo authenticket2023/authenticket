@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.eventticketcategory;
 
+import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto;
 import com.authenticket.authenticket.model.TicketPricing;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 /**
  * This class provides mapping functionality for Event Ticket Category related objects.
+ * {@link EventTicketCategoryDisplayDto} DTOs and performing updates on event ticket category entities.
  */
 @Service
 public class EventTicketCategoryDtoMapper implements Function<TicketPricing, EventTicketCategoryDisplayDto> {

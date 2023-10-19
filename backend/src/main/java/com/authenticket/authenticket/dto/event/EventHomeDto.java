@@ -3,7 +3,7 @@ package com.authenticket.authenticket.dto.event;
 import java.time.LocalDateTime;
 
 /**
- * A data transfer object (DTO) representing event information for display on the home page.
+ * A DTO representing event information for display on the home page.
  */
 public record EventHomeDto(
         /**

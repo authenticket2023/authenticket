@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * A data transfer object (DTO) representing event information for admin display purposes.
+ * A DTO representing event information for admin display purposes.
  */
 public record EventAdminDisplayDto(
         /**

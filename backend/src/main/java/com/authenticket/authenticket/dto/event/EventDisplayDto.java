@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * A data transfer object (DTO) representing event information for display purposes.
+ * A DTO representing event information for display purposes.
  */
 public record EventDisplayDto(
         /**

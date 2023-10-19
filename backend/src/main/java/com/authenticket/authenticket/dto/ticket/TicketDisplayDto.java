@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.dto.ticket;
 
 /**
- * Data Transfer Object (DTO) for displaying ticket information.
+ * A DTO for displaying ticket information.
  */
 public record TicketDisplayDto(
         /**

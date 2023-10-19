@@ -4,6 +4,9 @@ import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a DTO for displaying event organiser information.
+ */
 public record EventOrganiserDisplayDto(
         /**
          * The unique identifier of the event organizer.

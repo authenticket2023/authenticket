@@ -5,7 +5,7 @@ import com.authenticket.authenticket.model.User;
 import java.time.LocalDate;
 
 /**
- * A data transfer object (DTO) used for updating order information.
+ * A DTO used for updating order information.
  */
 public record OrderUpdateDto(
         /**

@@ -7,7 +7,7 @@ import com.authenticket.authenticket.model.Admin;
 import java.time.LocalDateTime;
 
 /**
- * A data transfer object (DTO) for updating event information.
+ * A DTO for updating event information.
  */
 public record EventUpdateDto(
         /**

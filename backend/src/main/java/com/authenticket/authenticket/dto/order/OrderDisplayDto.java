@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 /**
- * A data transfer object (DTO) representing an order with its details.
+ * A DTO representing an order with its details.
  */
 public record OrderDisplayDto(
         /**

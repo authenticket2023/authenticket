@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.dto.eventticketcategory;
 
 /**
- * A data transfer object (DTO) for updating Event Ticket Category information.
+ * A DTO for updating Event Ticket Category information.
  */
 public record EventTicketCategoryUpdateDto(
         /**

@@ -3,8 +3,7 @@ package com.authenticket.authenticket.dto.admin;
 import java.time.LocalDateTime;
 
 /**
- * A Data Transfer Object (DTO) representing an admin user for display purposes.
- * This DTO includes basic information about an admin user.
+ * A DTO representing an admin user for display purposes.
  */
 public record AdminDisplayDto(
         /**

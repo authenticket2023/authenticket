@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.dto.ticketcategory;
 
 /**
- * A data transfer object (DTO) for updating TicketCategory entities.
+ * A DTO for updating TicketCategory entities.
  */
 public record TicketCategoryUpdateDto(
         /**

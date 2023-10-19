@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.dto.section;
 
 /**
- * Data Transfer Object (DTO) for Section ticket details.
+ * A DTO for Section ticket details.
  */
 public record SectionTicketDetailsDto(
         /**

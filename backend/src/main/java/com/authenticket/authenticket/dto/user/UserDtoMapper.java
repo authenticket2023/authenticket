@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.user;
 
+import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,8 +9,8 @@ import java.util.function.Function;
 
 /**
  * This class is responsible for mapping between User and UserDisplayDto/UserFullDisplayDto.
+ *  {@link UserDisplayDto} DTOs and performing updates on user entities.
  */
-
 @Service
 public class UserDtoMapper implements Function<User, UserDisplayDto> {
     private final PasswordEncoder passwordEncoder;

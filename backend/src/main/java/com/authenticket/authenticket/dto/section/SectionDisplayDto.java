@@ -1,7 +1,7 @@
 package com.authenticket.authenticket.dto.section;
 
 /**
- * A data transfer object (DTO) representing a section of a venue, typically used for seating arrangements.
+ * A DTO representing a section of a venue, typically used for seating arrangements.
  */
 public record SectionDisplayDto(
         /**

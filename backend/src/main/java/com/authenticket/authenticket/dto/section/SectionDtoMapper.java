@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.dto.section;
 
+import com.authenticket.authenticket.dto.order.OrderDisplayDto;
 import com.authenticket.authenticket.model.Section;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 /**
  * A service class for mapping and processing Section DTOs.
+ * {@link SectionDisplayDto} DTOs and performing updates on section entities.
  */
 @Service
 public class SectionDtoMapper implements Function<Section, SectionDisplayDto> {

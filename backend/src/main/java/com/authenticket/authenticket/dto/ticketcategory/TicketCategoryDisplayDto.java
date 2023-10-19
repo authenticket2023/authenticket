@@ -1,7 +1,8 @@
 package com.authenticket.authenticket.dto.ticketcategory;
 
+
 /**
- * Represents the unique identifier for the ticket category.
+ * Represents a DTO for displaying ticket categories.
  */
 public record TicketCategoryDisplayDto(
         /**
@@ -12,5 +13,5 @@ public record TicketCategoryDisplayDto(
         /**
          * The name of the ticket category.
          */
-         String categoryName) {
+        String categoryName) {
 }

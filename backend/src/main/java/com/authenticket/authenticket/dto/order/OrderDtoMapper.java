@@ -1,6 +1,7 @@
 package com.authenticket.authenticket.dto.order;
 
 import com.authenticket.authenticket.dto.event.EventDisplayDto;
+import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 /**
  * A mapper class for converting Order entities to OrderDisplayDto objects.
+ * {@link OrderDisplayDto} DTOs and performing updates on order entities.
  */
 @Service
 public class OrderDtoMapper implements Function<Order, OrderDisplayDto> {
