@@ -2,7 +2,7 @@ package com.authenticket.authenticket.service.impl;
 
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
-import com.authenticket.authenticket.exception.ApiRequestException;
+import com.authenticket.authenticket.exception.InvalidRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
@@ -87,7 +87,7 @@ public class TicketServiceImpl implements TicketService {
             return ticketDisplayDtoOptional.get();
         }
 
-        throw new ApiRequestException("Ticket not found");
+        throw new NonExistentException("Ticket", ticketId);
     }
 
     /**
@@ -106,7 +106,7 @@ public class TicketServiceImpl implements TicketService {
                     .map(ticketDisplayDtoMapper)
                     .collect(Collectors.toList());
         }
-        throw new ApiRequestException("Order not found");
+        throw new NonExistentException("Order", orderId);
     }
 
     /**
@@ -366,7 +366,7 @@ public class TicketServiceImpl implements TicketService {
 
             if (!setOfSeats.isEmpty()) {
                 for (Integer seatNo : setOfSeats) {
-                    Ticket newTicket = new Ticket(null, ticketPricing, section, i + 1, seatNo, null, null);
+                    Ticket newTicket = new Ticket(null, ticketPricing, section, i + 1, seatNo, null, null, false);
                     ticketList.add(newTicket);
                 }
                 //save to db
@@ -590,5 +590,24 @@ public class TicketServiceImpl implements TicketService {
         int sold = ticketRepository.countTicketsByOrder_Event(event);
 
         return sold < totalSeats;
+    }
+
+    /**
+     * Sets the check-in status for a ticket with the specified ID.
+     *
+     * @param ticketId   The unique identifier of the ticket to update.
+     * @param checkedIn  A boolean flag indicating whether the ticket is checked in or not.
+     *                   Use `true` to mark the ticket as checked in, or `false` to mark it as not checked in.
+     * @throws NonExistentException if the ticket with the given ID does not exist in the repository.
+     */
+    @Override
+    public void setCheckIn(Integer ticketId, Boolean checkedIn) {
+        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+        if (ticketOptional.isEmpty()) {
+            throw new NonExistentException("Ticket", ticketId);
+        }
+        Ticket ticket = ticketOptional.get();
+        ticket.setCheckedIn(checkedIn);
+        ticketRepository.save(ticket);
     }
 }

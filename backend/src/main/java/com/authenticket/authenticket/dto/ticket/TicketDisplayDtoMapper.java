@@ -35,7 +35,8 @@ public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto
                 ticket.getRowNo(),
                 ticket.getSeatNo(),
                 ticket.getTicketHolder(),
-                orderId);
+                orderId,
+                ticket.getCheckedIn());
     }
 
     /**
@@ -53,7 +54,8 @@ public class TicketDisplayDtoMapper implements Function<Ticket, TicketDisplayDto
                 (Integer) obj[4],
                 (Integer) obj[5],
                 (String) obj[6],
-                (Integer) obj[7]
+                (Integer) obj[7],
+                (Boolean) obj[8]
         );
     }
 

@@ -164,7 +164,7 @@ public class TicketController extends Utility {
             }
         }
 
-        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder, order);
+        Ticket ticket = new Ticket(null, ticketPricing, section, rowNo, seatNo, ticketHolder, order, false);
 
         Ticket savedTicket = ticketService.saveTicket(ticket);
         return ResponseEntity.ok(generateApiResponse(savedTicket, "Tickets created successfully"));
