@@ -364,6 +364,11 @@ export const NavbarOrganiser = () => {
     const handleCheckinOrganiser = () => {
         navigate('/CheckinOrganiser');
     }
+
+    const handleQRCheckinOrganiser = () => {
+        navigate('/QRCheckinOrganiser');
+    }
+
     const linkStyle = {
         textDecoration: 'none',
         color: 'black'
@@ -410,6 +415,7 @@ export const NavbarOrganiser = () => {
                             <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 0, display: 'block', color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} >Home</Button>
                             <Button key='Event' href={'/EventOrganiser'} sx={{ my: 0, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
                             <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 0, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Checkin</Button>
+                            <Button key='QRCheckin' onClick={handleQRCheckinOrganiser} sx={{ my: 0, color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >QR</Button>
                             <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 0, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
                         </Menu>
                     </Box>
@@ -436,6 +442,7 @@ export const NavbarOrganiser = () => {
                         <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 2, color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
                         <Button key='Event' href={'/EventOrganiser'} sx={{ my: 2, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
                         <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Checkin</Button>
+                        <Button key='QRCheckin' onClick={handleQRCheckinOrganiser} sx={{ my: 2, color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >QR</Button>
                         <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 2, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
                     </Box>
 
@@ -473,6 +480,9 @@ export const NavbarOrganiser = () => {
                             </MenuItem>
                             <MenuItem key='Checkin' onClick={handleCheckinOrganiser}>
                                 <Typography sx={{ color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Checkin</Typography>
+                            </MenuItem>
+                            <MenuItem key='QRCheckin' onClick={handleQRCheckinOrganiser}>
+                                <Typography sx={{ color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">QR</Typography>
                             </MenuItem>
                             <MenuItem key='FAQ'>
                                 <a href='/FAQOrganiser' style={linkStyle}>

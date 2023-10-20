@@ -4,7 +4,7 @@ import FaceDetection from '@mediapipe/face_detection';
 import { Camera } from '@mediapipe/camera_utils';
 import { NavbarOrganiser } from '../../Navbar';
 import { Navigate } from 'react-router-dom';
-import { Alert, Box, Button, FormControl, Grid, ImageList, ImageListItem, InputLabel, MenuItem, Select, Snackbar, Typography } from '@mui/material';
+import { Alert, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 
 const width = 500;
