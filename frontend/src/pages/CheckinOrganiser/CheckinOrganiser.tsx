@@ -41,7 +41,7 @@ export const CheckinOrganiser = (): JSX.Element => {
     const [fetched, setFetched]: any = React.useState(false);
     const [eventList, setEventList]: any = React.useState([]);
     const [eventID, setEventID]: any = useState(null);
-    //retrieve venue from DB
+    //retrieve event under the current organiser from DB
     const eventFetcher = async () => {
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/event-organiser/events/${organiserId}`, {
@@ -69,7 +69,6 @@ export const CheckinOrganiser = (): JSX.Element => {
     };
 
     const handleEvent = (event: any) => {
-        console.log(event.target.value);
         setEventID(event.target.value);
     };
 

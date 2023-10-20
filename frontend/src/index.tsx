@@ -26,6 +26,7 @@ import { CancelPage } from './pages/TicketPurchase/CancelPage';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
+import { OrderOrganiser } from './pages/OrderOrganiser';
 import { OrganiserSignup } from './pages/OrganiserSignup';
 import { OrganiserLogin } from './pages/OrganiserLogin';
 import { CheckinOrganiser } from './pages/CheckinOrganiser';
@@ -58,6 +59,7 @@ root.render(
 			<Route path="/*" element={<Page404 />} />
 			<Route path="/HomeOrganiser" element={<HomeOrganiser />} />
 			<Route path="/EventOrganiser" element={<EventOrganiser />} />
+			<Route path="/OrderOrganiser" element={<OrderOrganiser />} />
 			<Route path="/CheckinOrganiser" element={<CheckinOrganiser />} />
 			<Route path="/QRCheckinOrganiser" element={<QRCheckinOrganiser />} />
 			<Route path="/HomeAdmin" element={<HomeAdmin />} />

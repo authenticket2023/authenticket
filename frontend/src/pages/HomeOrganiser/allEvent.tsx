@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box, Typography, LinearProgress, Modal, Avatar, Grid, TextField, FormControlLabel,
-    Checkbox, FormControl, InputLabel, MenuItem, Select,
-    Switch, FormGroup, Button, ListItemText, OutlinedInput, Snackbar, Alert, IconButton, InputAdornment,
-    Dialog, DialogActions, DialogTitle, DialogContentText, DialogContent,
+    Box, Typography, LinearProgress, Modal, Snackbar, Alert,
 } from '@mui/material';
 import MUIDataTable from "mui-datatables";
 import UpdateEvent from './updateEvent';
@@ -58,25 +55,43 @@ export function AllEvent() {
         {
             name: "Description",
             options: {
-                customBodyRender: (value: string) => <span>{value.length < 15 ? value : value.slice(0, 15) + '....'}</span>
+                customBodyRender: (value: string) => <Typography>{value.length < 15 ? value : value.slice(0, 15) + '....'}</Typography>
             }
-        }, "Event Type", 
+        },
+        {
+            name: "Event Type",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value}</Typography>
+            }
+        },
         {
             name: "Event Date",
             options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+                customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
             }
         },
         {
             name: "Ticket Sale Date",
             options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+                customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
+            }
+        },
+        {
+            name: "Checkin Method",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value ? 'Facial' : 'QR Code'}</Typography>
+            }
+        },
+        {
+            name: "Presale",
+            options: {
+                customBodyRender: (value: any) => <Typography>{value ? 'Yes' : 'No'}</Typography>
             }
         },
         {
             name: "Submission Date",
             options: {
-                customBodyRender: (value: any) => <span>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</span>
+                customBodyRender: (value: any) => <Typography>{new Date(value).toLocaleString('en-us', { year: "numeric", month: "short", day: "numeric", hourCycle: "h24", hour: "numeric", minute: "numeric" })}</Typography>
             }
         },
         {
@@ -84,9 +99,9 @@ export function AllEvent() {
             options: {
                 customBodyRender: (value: string) => {
                     return (
-                        <span>
+                        <Typography>
                             {value === "" ? "NO REMARKS YET" : value.length < 15 ? value : value.slice(0, 15) + '....'}
-                        </span>
+                        </Typography>
                     )
                 }
             }
@@ -162,10 +177,10 @@ export function AllEvent() {
                     const fetchData: any = [];
                     data.forEach((event: any) => {
                         let reviewRemarks = event.reviewRemarks !== null ? event.reviewRemarks : "";
-                        const row = [event.eventId, event.eventName, event.eventDescription,event.eventType.eventTypeName,
-                        event.eventDate, event.ticketSaleDate, event.createdAt,
+                        const row = [event.eventId, event.eventName, event.eventDescription, event.eventType.eventTypeName,
+                        event.eventDate, event.ticketSaleDate, event.isEnhanced, event.hasPresale, event.createdAt,
                             reviewRemarks, event.reviewStatus,
-                            event.deletedAt]
+                        event.deletedAt]
                         fetchData.push(row)
                     });
                     setAllEventData(fetchData);

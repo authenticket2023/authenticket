@@ -414,6 +414,7 @@ export const NavbarOrganiser = () => {
                         >
                             <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 0, display: 'block', color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} >Home</Button>
                             <Button key='Event' href={'/EventOrganiser'} sx={{ my: 0, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
+                            <Button key='Order' href={'/OrderOrganiser'} sx={{ my: 0, color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Order</Button>
                             <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 0, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Checkin</Button>
                             <Button key='QRCheckin' onClick={handleQRCheckinOrganiser} sx={{ my: 0, color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >QR</Button>
                             <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 0, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
@@ -441,6 +442,7 @@ export const NavbarOrganiser = () => {
                     <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml: 4, display: { xs: 'none', md: 'flex' } }}>
                         <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 2, color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
                         <Button key='Event' href={'/EventOrganiser'} sx={{ my: 2, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
+                        <Button key='Order' href={'/OrderOrganiser'} sx={{ my: 2, color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Order</Button>
                         <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Checkin</Button>
                         <Button key='QRCheckin' onClick={handleQRCheckinOrganiser} sx={{ my: 2, color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >QR</Button>
                         <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 2, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
@@ -476,6 +478,11 @@ export const NavbarOrganiser = () => {
                             <MenuItem key='Event'>
                                 <a href='/EventOrganiser' style={linkStyle}>
                                     <Typography sx={{ color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
+                                </a>
+                            </MenuItem>
+                            <MenuItem key='Order'>
+                                <a href='/OrderOrganiser' style={linkStyle}>
+                                    <Typography sx={{ color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Order</Typography>
                                 </a>
                             </MenuItem>
                             <MenuItem key='Checkin' onClick={handleCheckinOrganiser}>
