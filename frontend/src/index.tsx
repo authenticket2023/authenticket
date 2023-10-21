@@ -26,9 +26,12 @@ import { CancelPage } from './pages/TicketPurchase/CancelPage';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
+import { OrderOrganiser } from './pages/OrderOrganiser';
 import { OrganiserSignup } from './pages/OrganiserSignup';
 import { OrganiserLogin } from './pages/OrganiserLogin';
 import { CheckinOrganiser } from './pages/CheckinOrganiser';
+import { QRCheckinOrganiser } from './pages/QRCheckinOrganiser';
+import { FAQOrganiser } from './pages/FAQOrganiser';
 //for admin user
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
@@ -56,7 +59,9 @@ root.render(
 			<Route path="/*" element={<Page404 />} />
 			<Route path="/HomeOrganiser" element={<HomeOrganiser />} />
 			<Route path="/EventOrganiser" element={<EventOrganiser />} />
+			<Route path="/OrderOrganiser" element={<OrderOrganiser />} />
 			<Route path="/CheckinOrganiser" element={<CheckinOrganiser />} />
+			<Route path="/QRCheckinOrganiser" element={<QRCheckinOrganiser />} />
 			<Route path="/HomeAdmin" element={<HomeAdmin />} />
 			<Route path="/EventAdmin" element={<EventAdmin />} />
 			<Route path="/VenueAdmin" element={<VenueAdmin />} />
@@ -69,6 +74,7 @@ root.render(
 			<Route path="/TicketPurchase/:eventId" element={<TicketPurchase />} />
 			<Route path="/success/:orderId" element={<SuccessPage />} />
 			<Route path="/cancel/:orderId" element={<CancelPage />} />
+			<Route path="/FAQOrganiser" element={<FAQOrganiser />} />
 		</Routes>
 	</BrowserRouter>);
 

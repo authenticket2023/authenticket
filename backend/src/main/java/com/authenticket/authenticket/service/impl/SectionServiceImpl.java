@@ -21,6 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * This class provides the implementation of the `SectionService` interface, which manages event sections and seat assignments.
+ */
 
 @Service
 public class SectionServiceImpl implements SectionService {
@@ -40,12 +43,24 @@ public class SectionServiceImpl implements SectionService {
 
     }
 
-
+    /**
+     * Save a section.
+     *
+     * @param section The section to save.
+     * @return The saved section.
+     */
     @Override
     public Section saveSection(Section section) {
         return sectionRepository.save(section);
     }
 
+    /**
+     * Get the current seat matrix for a specific event and section.
+     *
+     * @param event   The event for which to get the seat matrix.
+     * @param section The section for which to get the seat matrix.
+     * @return A two-dimensional array representing the seat matrix where 0 indicates an unoccupied seat and 1 indicates an occupied seat.
+     */
     @Override
     public int[][] getCurrentSeatMatrix(Event event, Section section) {
         //getting dimensions of section
@@ -75,6 +90,14 @@ public class SectionServiceImpl implements SectionService {
 
         return seatMatrix;
     }
+
+    /**
+     * Find section ticket details for a specific event and section.
+     *
+     * @param event   The event for which to retrieve section ticket details.
+     * @param section The section for which to retrieve ticket details.
+     * @return A list of `SectionTicketDetailsDto` containing ticket details for the given event and section.
+     */
 
     @Override
     public List<SectionTicketDetailsDto> findSectionDetail(Event event, Section section){

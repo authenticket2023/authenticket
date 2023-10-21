@@ -23,6 +23,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * This class provides the implementation of the `AuthenticationService` interface, which handles user authentication, registration, and confirmation, as well as admin and event organiser authentication and registration.
+ */
+
 @Service
 public class AuthenticationServiceImpl extends Utility implements AuthenticationService {
 
@@ -83,13 +87,18 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         this.adminDtoMapper = adminDtoMapper;
     }
 
-    //user
+    /**
+     * Register a new user and send an email for confirmation.
+     *
+     * @param request The user registration request.
+     * @throws AlreadyExistsException if the user already exists or is awaiting verification.
+     */
     @Override
     public void userRegister(User request) {
         var existingUser = userRepository.findByEmail(request.getEmail());
         var existingAdmin = adminRepository.findByEmail(request.getEmail());
         var existingOrg = organiserRepository.findByEmail(request.getEmail());
-        var jwtToken = jwtServiceImpl.generateToken(request);
+        var jwtToken = jwtServiceImpl.generateUserToken(request);
         String redirectUrl = frontendUrl + "/Login";
         String link = backendUrl +"/api/v2/auth/user-register/confirm?token=" + jwtToken + "&redirect=" + redirectUrl;
 
@@ -104,6 +113,14 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         emailServiceImpl.send(request.getEmail(), EmailServiceImpl.buildActivationEmail(request.getName(), link), "Confirm your email");
     }
 
+    /**
+     * Authenticate a user using their email and password.
+     *
+     * @param email The user's email.
+     * @param password The user's password.
+     * @return An authentication response containing a token and user details.
+     * @throws UsernameNotFoundException if the user does not exist.
+     */
     @Override
     public AuthenticationUserResponse userAuthenticate(String email, String password){
             authenticationManager.authenticate(
@@ -115,7 +132,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-        var jwtToken = jwtServiceImpl.generateToken(user);
+        var jwtToken = jwtServiceImpl.generateUserToken(user);
 
         return AuthenticationUserResponse.builder()
                 .token(jwtToken)
@@ -123,6 +140,13 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
                 .build();
     }
 
+    /**
+     * Confirm a user's registration using a confirmation token.
+     *
+     * @param token The confirmation token.
+     * @return An authentication response containing a token and user details.
+     * @throws AwaitingVerificationException if the token is expired or the email is already confirmed.
+     */
     @Override
     public AuthenticationUserResponse confirmUserToken(String token) {
         if (jwtServiceImpl.isTokenExpired(token)) {
@@ -139,13 +163,19 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         userRepository.enableAppUser(email);
 
-        var jwtToken = jwtServiceImpl.generateToken(user);
+        var jwtToken = jwtServiceImpl.generateUserToken(user);
         return AuthenticationUserResponse.builder()
                 .token(jwtToken)
                 .userDetails(userDTOMapper.apply(user))
                 .build();
     }
 
+    /**
+     * Register a new event organiser.
+     *
+     * @param request The event organiser registration request.
+     * @throws AlreadyExistsException if the event organiser already exists or is awaiting approval.
+     */
     @Override
     public void orgRegister (EventOrganiser request){
 
@@ -163,6 +193,14 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         organiserRepository.save(request);
     }
 
+    /**
+     * Authenticate an event organiser using their email and password.
+     *
+     * @param email The event organiser's email.
+     * @param password The event organiser's password.
+     * @return An authentication response containing a token and event organiser details.
+     * @throws UsernameNotFoundException if the event organiser does not exist.
+     */
     @Override
     public AuthenticationOrgResponse orgAuthenticate(String email, String password){
         authenticationManager.authenticate(
@@ -174,7 +212,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         var eventOrg = organiserRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Event Organiser does not exist"));
-        var jwtToken = jwtServiceImpl.generateToken(eventOrg);
+        var jwtToken = jwtServiceImpl.generateUserToken(eventOrg);
         System.out.println(jwtToken);
         return AuthenticationOrgResponse.builder()
                 .token(jwtToken)
@@ -182,6 +220,12 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
                 .build();
     }
 
+    /**
+     * Register a new admin.
+     *
+     * @param request The admin registration request.
+     * @throws AlreadyExistsException if the admin already exists.
+     */
     @Override
     public void adminRegister (Admin request){
 
@@ -195,6 +239,14 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         adminRepository.save(request);
     }
 
+    /**
+     * Authenticate an admin using their email and password.
+     *
+     * @param email The admin's email.
+     * @param password The admin's password.
+     * @return An authentication response containing a token and admin details.
+     * @throws UsernameNotFoundException if the admin does not exist.
+     */
     @Override
     public AuthenticationAdminResponse adminAuthenticate(String email, String password){
         authenticationManager.authenticate(
@@ -206,7 +258,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         var admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Admin does not exist"));
-        var jwtToken = jwtServiceImpl.generateToken(admin);
+        var jwtToken = jwtServiceImpl.generateUserToken(admin);
 
         return AuthenticationAdminResponse.builder()
                 .token(jwtToken)

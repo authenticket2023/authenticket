@@ -23,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 
+/**This is the user controller class and the base path for this controller's endpoint is api/v2/user.*/
+
 @RestController
 @CrossOrigin(
         origins = {
@@ -57,6 +59,11 @@ public class UserController extends Utility {
         return "test successful";
     }
 
+    /**
+     * Retrieves a list of all user profiles.
+     *
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of UserFullDisplayDto objects.
+     */
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllUser() {
         List<UserFullDisplayDto> userList = userService.findAllUser();
@@ -69,8 +76,13 @@ public class UserController extends Utility {
         }
     }
 
+    /**
+     * Retrieves events of interest to a specific user.
+     *
+     * @param userId The ID of the user for whom events of interest are to be retrieved.
+     * @return A ResponseEntity containing a GeneralApiResponse with a list of Event objects or an error message.
+     */
     @GetMapping("/interested-events")
-
     public ResponseEntity<GeneralApiResponse<Object>> findEventsOfInterestToUser(@RequestParam("userId") Integer userId) {
         Optional<User> userOptional = userService.findUserById(userId);
         if (userOptional.isEmpty()) {
@@ -81,6 +93,12 @@ public class UserController extends Utility {
         return ResponseEntity.ok(generateApiResponse(events, "User has indicated interest for " + events.size() + " events."));
     }
 
+    /**
+     * Retrieves a user profile by their ID.
+     *
+     * @param userId The ID of the user profile to retrieve.
+     * @return A ResponseEntity containing a GeneralApiResponse with the UserFullDisplayDto or an error message.
+     */
     @GetMapping("/{userId}")
     public ResponseEntity<GeneralApiResponse<Object>> findUserById(@PathVariable("userId") Integer userId) {
         Optional<UserFullDisplayDto> userDisplayDto = userService.findById(userId);
@@ -91,6 +109,13 @@ public class UserController extends Utility {
                 .orElseGet(() -> ResponseEntity.status(400).body(generateApiResponse(null, "User does not exist")));
     }
 
+    /**
+     * Updates a user's profile information.
+     *
+     * @param newUser The new user profile information.
+     * @param request The HttpServletRequest containing the request information.
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated UserDisplayDto or an error message.
+     */
     @PutMapping
     public ResponseEntity<GeneralApiResponse<Object>> updateUser(@RequestBody User newUser,
                                                                  @NonNull HttpServletRequest request) {
@@ -107,6 +132,12 @@ public class UserController extends Utility {
         return ResponseEntity.status(404).body(generateApiResponse(null, "User does not exist"));
     }
 
+    /**
+     * Deletes a user by their ID.
+     *
+     * @param userId The ID of the user to be deleted.
+     * @return A ResponseEntity containing a GeneralApiResponse indicating the success of the deletion.
+     */
     @PutMapping("/delete/{userId}")
     public ResponseEntity<GeneralApiResponse<Object>> deleteUser(@PathVariable("userId") Integer userId) {
         userService.deleteUser(userId);
@@ -114,6 +145,14 @@ public class UserController extends Utility {
 
     }
 
+    /**
+     * Updates a user's profile image.
+     *
+     * @param profileImage The MultipartFile containing the new profile image.
+     * @param imageName The name of the image.
+     * @param request The HttpServletRequest containing the request information.
+     * @return A ResponseEntity containing a GeneralApiResponse with the updated UserDisplayDto or an error message.
+     */
     @PutMapping("/image")
     public ResponseEntity<GeneralApiResponse<Object>> updateProfileImage(@RequestParam("profileImage") MultipartFile profileImage,
                                                                          @RequestParam("imageName") String imageName,

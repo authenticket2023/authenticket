@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 
 import java.time.ZonedDateTime;
 
+/**
+ * A simple data class representing an API exception message.
+ */
 @Data
 @AllArgsConstructor
 public class ApiException {

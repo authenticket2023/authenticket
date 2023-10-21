@@ -71,6 +71,12 @@ public class OrderServiceImpl implements OrderService {
         this.pdfGenerator = pdfGenerator;
     }
 
+    /**
+     * Retrieves an order by its unique identifier.
+     *
+     * @param orderId The unique identifier of the order to retrieve.
+     * @return An OrderDisplayDto containing information about the order if found, or null if no order with the given ID exists.
+     */
     @Override
     public OrderDisplayDto findById(Integer orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -82,19 +88,29 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
+    /**
+     * Retrieves a list of orders associated with a specific user.
+     *
+     * @param userId    The unique identifier of the user whose orders are to be retrieved.
+     * @param pageable  Pagination and sorting information for the result list.
+     * @return A list of OrderDisplayDto containing information about the user's orders, as paginated by the provided pageable, or throws a NonExistentException if no user with the given ID is found.
+     * @throws NonExistentException if the user with the specified ID does not exist.
+     */
     @Override
     public List<OrderDisplayDto> findAllOrderByUserId(Integer userId, Pageable pageable) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             Page<Order> orderHistory = orderRepository.findByUser(userOptional.get(), pageable);
-//                .stream()
-//                .map(orderDtoMapper)
-//                .collect(Collectors.toList());
             return orderDtoMapper.mapOrderHistoryDto(orderHistory.getContent());
         }
         throw new NonExistentException("User", userId);
     }
 
+    /**
+     * Retrieves a list of all orders in the system.
+     *
+     * @return A list of OrderDisplayDto containing information about all orders in the system.
+     */
     @Override
     public List<OrderDisplayDto> findAllOrder() {
         return orderRepository.findAll()
@@ -103,6 +119,12 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a UserDisplayDto by searching for an Order using its identifier.
+     *
+     * @param orderId The identifier of the Order.
+     * @return A UserDisplayDto representing the purchaser of the specified Order.
+     */
     @Override
     public UserDisplayDto findUserByOrderId(Integer orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
@@ -114,6 +136,12 @@ public class OrderServiceImpl implements OrderService {
         return null;
     }
 
+    /**
+     * Saves an Order and schedules a task to check its payment status after 10 minutes.
+     *
+     * @param order The Order to be saved.
+     * @return The saved Order.
+     */
     @Override
     public Order saveOrder(Order order) {
 
@@ -129,6 +157,12 @@ public class OrderServiceImpl implements OrderService {
         return savedOrder;
     }
 
+    /**
+     * Updates an existing Order with the information provided in the OrderUpdateDto.
+     *
+     * @param orderUpdateDto The data for updating the Order.
+     * @return The updated Order.
+     */
     @Override
     public Order updateOrder(OrderUpdateDto orderUpdateDto) {
         Optional<Order> orderOptional = orderRepository.findById(orderUpdateDto.orderId());
@@ -143,6 +177,13 @@ public class OrderServiceImpl implements OrderService {
         throw new NonExistentException("Order", orderUpdateDto.orderId());
     }
 
+    /**
+     * Adds a Ticket to an existing Order by linking the Ticket and Order together.
+     *
+     * @param ticketId The identifier of the Ticket to add to the Order.
+     * @param orderId  The identifier of the Order to which the Ticket will be added.
+     * @return An OrderDisplayDto representing the updated Order.
+     */
     @Override
     public OrderDisplayDto addTicketToOrder(Integer ticketId, Integer orderId) {
         Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
@@ -184,6 +225,13 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * Removes a Ticket from an existing Order by updating the Order to no longer include the Ticket.
+     *
+     * @param ticketId The identifier of the Ticket to remove from the Order.
+     * @param orderId  The identifier of the Order from which the Ticket will be removed.
+     * @return An OrderDisplayDto representing the updated Order.
+     */
     @Override
     public OrderDisplayDto removeTicketInOrder(Integer ticketId, Integer orderId) {
         Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
@@ -195,10 +243,6 @@ public class OrderServiceImpl implements OrderService {
             order.removeTicket(ticketId);
             order.setUpdatedAt(LocalDateTime.now());
             orderRepository.save(order);
-
-//            ticket.setOrder(null);
-//            ticket.setTicketHolder(null);
-//            ticket.setDeletedAt(LocalDateTime.now());
             ticketRepository.deleteById(ticketId);
 
             return orderDtoMapper.apply(order);
@@ -209,6 +253,11 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * Checks the payment status of the given Order and takes appropriate actions if the payment status is "Processing."
+     *
+     * @param order The Order to check.
+     */
     @Override
     public void checkOrderPaymentStatus(Order order) {
         Order realTimeOrder = orderRepository.findById(order.getOrderId()).orElse(null);
@@ -224,6 +273,11 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    /**
+     * Cancels an Order by updating its status, marking it as "CANCELLED," and removing linked tickets.
+     *
+     * @param order The Order to be canceled.
+     */
     @Override
     public void cancelOrder(Order order){
         //updating status to cancelled
@@ -238,6 +292,11 @@ public class OrderServiceImpl implements OrderService {
         ticketRepository.deleteAllInBatch(ticketSet);
     }
 
+    /**
+     * Cancels a list of orders in a batch process.
+     *
+     * @param orderList A list of orders to be canceled.
+     */
     @Override
     public void cancelAllOrder(List<Order> orderList) {
         // Updating the status of all orders to "CANCELLED"
@@ -255,16 +314,36 @@ public class OrderServiceImpl implements OrderService {
         ticketRepository.deleteAllInBatch(ticketsToRemove);
     }
 
+    /**
+     * Generates a PDF for a specific order's ticket QR code.
+     *
+     * @return An InputStreamResource containing the generated PDF.
+     * @throws FileNotFoundException if the file is not found.
+     * @throws DocumentException    if there is a document-related exception.
+     */
     public InputStreamResource test() throws FileNotFoundException, DocumentException {
         Order order = orderRepository.findById(1).orElse(null);
-        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0]);
+        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0], LocalDateTime.now().plusMinutes(30));
     }
 
+    /**
+     * Generates a PDF containing order details for a specific order.
+     *
+     * @return An InputStreamResource containing the generated PDF.
+     * @throws FileNotFoundException if the file is not found.
+     * @throws DocumentException    if there is a document-related exception.
+     */
     public InputStreamResource test2()  throws FileNotFoundException, DocumentException {
         Order order = orderRepository.findById(1).orElse(null);
         return pdfGenerator.generateOrderDetails(order);
     }
 
+    /**
+     * Completes an Order by updating its status to "SUCCESS" and generates PDFs for the order and its linked tickets.
+     *
+     * @param order The Order to be marked as "SUCCESS."
+     * @return The updated Order.
+     */
     @Override
     public Order completeOrder(Order order) {
         //updating status to success
@@ -278,7 +357,7 @@ public class OrderServiceImpl implements OrderService {
             FileNameRecord orderPdf = new FileNameRecord("Order_" + order.getOrderId() + ".pdf", pdfGenerator.generateOrderDetails(order));
             pdfList.add(orderPdf);
             for (Ticket t : order.getTicketSet()){
-                FileNameRecord ticketPdf = new FileNameRecord("Ticket_" + t.getTicketId() + ".pdf", pdfGenerator.generateTicketQRCode(t));
+                FileNameRecord ticketPdf = new FileNameRecord("Ticket_" + t.getTicketId() + ".pdf", pdfGenerator.generateTicketQRCode(t, order.getEvent().getEventDate().plusDays(1)));
                 pdfList.add(ticketPdf);
             }
             emailService.send(user.getEmail(), "Order Completed", "Dear " + user.getName() + ", \nThank you for your order, please refer to the documents attached for the event.", pdfList);
@@ -289,13 +368,21 @@ public class OrderServiceImpl implements OrderService {
         return updatedOrder;
     }
 
+    /**
+     * Removes an Order by its ID.
+     *
+     * @param orderId The ID of the Order to be removed.
+     */
     @Override
     public void removeOrder(Integer orderId) {
         orderRepository.deleteOrderById(orderId);
     }
 
+    /**
+     * Schedules a task to cancel all processing orders that have expired every 12 hours.
+     * Processing orders that have been created for more than 10 minutes are considered expired.
+     */
     @Override
-    // cancel all processing orders that have expired every 12 hours
     @Scheduled(fixedRate = 12 * 60 * 60 * 1000) // 12 hours in milliseconds
     public void scheduleCancelProcessingOrder() {
         LocalDateTime currentTime = LocalDateTime.now();
@@ -311,6 +398,13 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    /**
+     * Retrieves a list of OrderDisplayDto objects for all orders associated with a specific event.
+     *
+     * @param pageable The pageable object to control pagination.
+     * @param eventId  The ID of the associated event.
+     * @return A list of OrderDisplayDto objects for the specified event.
+     */
     @Override
     public List<OrderDisplayDto> findAllOrderByEventId(Pageable pageable, Integer eventId){
         List<OrderDisplayDto> orderDisplayDtoList =orderDtoMapper.map(orderRepository.findAllByEventEventId(eventId,pageable));
