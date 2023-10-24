@@ -8,9 +8,9 @@ on:
  
 jobs:
   #build, test, push to dockerhub and deploy for backend
-  working-directory: backend
   build:
     runs-on: ubuntu-latest
+    working-directory: backend
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 17
