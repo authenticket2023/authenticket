@@ -9,7 +9,7 @@ on:
 jobs:
   #build, test, push to dockerhub and deploy for backend
   build:
-    runs-on: amazoncorretto:17-alpine-jdk
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 17
@@ -25,12 +25,13 @@ jobs:
       working-directory: backend
       run: mvn test
     - name: Build & Push Docker image
+      working-directory: backend
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: authen2023/authenticket-backend
         tags: latest
         registry: docker.io
-        dockerfile: ./backend/Dockerfile
+        dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
