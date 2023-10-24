@@ -8,7 +8,7 @@ COPY target/AuthenTicket-0.0.1-SNAPSHOT.jar /AuthenTicket-0.0.1-SNAPSHOT.jar
 ENV TZ="Asia/Singapore"
 
 # Copy the icon.png file from your local file system to the container
-COPY src/main/resources/static/img/icon.png src/main/resources/static/img/icon.png
+# COPY backend/src/main/resources/static/img/icon.png src/main/resources/static/img/icon.png
 
 # Expose port 8080 for your application
 EXPOSE 8080
