@@ -3,7 +3,7 @@ name: Authenticket Frontend Workflow
 on:
  push:
     branches:
-      - 'cicd/backend'
+      - main
  workflow_dispatch:
  
 jobs:
