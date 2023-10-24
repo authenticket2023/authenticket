@@ -1,5 +1,6 @@
 name: Authenticket Backend Workflow
 
+working-directory: backend
 on:
  push:
     branches:
@@ -10,7 +11,6 @@ jobs:
   #build, test, push to dockerhub and deploy for backend
   build:
     runs-on: ubuntu-latest
-    working-directory: backend
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 17
