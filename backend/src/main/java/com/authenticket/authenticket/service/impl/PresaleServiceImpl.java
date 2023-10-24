@@ -191,7 +191,6 @@ public class PresaleServiceImpl implements PresaleService {
     private void sendUserAlert(PresaleInterest presaleInterest) {
         Event event = presaleInterest.getEvent();
         User user = presaleInterest.getUser();
-        System.out.println("Sending email to: " + user.getName());
         emailService.send(user.getEmail(), EmailServiceImpl.buildEarlyTicketSaleNotificationEmail(presaleInterest.getUser().getName(), event.getEventName(), apiUrl + "/EventDetails/" + event.getEventId(), event.getTicketSaleDate().format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy HH:mm:ss a"))), "Ticket Presale Notification");
 
         presaleInterest.setEmailed(true);
