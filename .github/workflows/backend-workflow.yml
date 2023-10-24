@@ -1,6 +1,5 @@
 name: Authenticket Backend Workflow
 
-working-directory: backend
 on:
  push:
     branches:
@@ -34,7 +33,3 @@ jobs:
         dockerfile: ./backend/Dockerfile.ci
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    
-
-   
-    
