@@ -9,7 +9,7 @@ on:
 jobs:
   #build, test, push to dockerhub and deploy for backend
   build:
-    runs-on: ubuntu-latest
+    runs-on: amazoncorretto:17-alpine-jdk
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 17
