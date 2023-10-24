@@ -27,7 +27,7 @@ jobs:
     - name: Build & Push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
-        path: backend
+        working-directory: backend
         image: authen2023/authenticket-backend
         tags: latest
         registry: docker.io
