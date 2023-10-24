@@ -141,6 +141,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>authenticket-backend</finalName>
 	</build>
 
 </project>
