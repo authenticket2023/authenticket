@@ -8,6 +8,7 @@ on:
  
 jobs:
   #build, test, push to dockerhub and deploy for backend
+  working-directory: backend
   build:
     runs-on: ubuntu-latest
     steps:
@@ -19,10 +20,10 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build Backend
-      working-directory: backend
+      # working-directory: backend
       run: mvn clean install
     - name: Junits Testing
-      working-directory: backend
+      # working-directory: backend
       run: mvn test
     - name: Build & Push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
