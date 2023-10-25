@@ -1,0 +1,35 @@
+name: Authenticket Backend Workflow
+
+on:
+ push:
+    branches:
+      - Dev
+ workflow_dispatch:
+ 
+jobs:
+  #build, test, push to dockerhub and deploy for backend
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build Backend
+      working-directory: backend
+      run: mvn clean install
+    - name: Junits Testing
+      working-directory: backend
+      run: mvn test
+    - name: Build & Push Docker image
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: authen2023/authenticket-backend
+        tags: latest
+        registry: docker.io
+        dockerfile: ./backend/Dockerfile.ci
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}

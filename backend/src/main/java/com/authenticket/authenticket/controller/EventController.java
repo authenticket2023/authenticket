@@ -3,8 +3,10 @@ package com.authenticket.authenticket.controller;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
 import com.authenticket.authenticket.dto.event.*;
+import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.dto.section.SectionTicketDetailsDto;
+import com.authenticket.authenticket.exception.InvalidRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
@@ -58,6 +60,8 @@ public class EventController extends Utility {
     private final TicketService ticketService;
 
     private final QueueService queueService;
+  
+    private final JwtService jwtService;
 
     private static final int PRESALE_HOURS = 24;
 
@@ -73,7 +77,8 @@ public class EventController extends Utility {
             UserRepository userRepository,
             TaskScheduler taskScheduler,
                            TicketService ticketService,
-                           QueueService queueService) {
+                           QueueService queueService,
+                           JwtService jwtService) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
         this.eventRepository = eventRepository;
@@ -86,6 +91,7 @@ public class EventController extends Utility {
         this.taskScheduler = taskScheduler;
         this.ticketService = ticketService;
         this.queueService = queueService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/public/event/test")
@@ -979,7 +985,7 @@ public class EventController extends Utility {
             throw new IllegalArgumentException("Event '" + event.getEventName() + "' does not have a presale period");
         }
         if (!event.getHasPresaleUsers()) {
-            throw new IllegalStateException("Users have yet to be selected");
+            throw new InvalidRequestException("Users have yet to be selected");
         }
 
         return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true),
@@ -1054,5 +1060,42 @@ public class EventController extends Utility {
 
         queueService.removeFromQueue(user, event);
         return ResponseEntity.ok(generateApiResponse(null, "Removed from queue"));
+      
+    /**
+     * Handles the check-in process for event tickets based on a JWT token.
+     *
+     * @param token    The JWT token provided in the request query parameters.
+     * @param request  The HTTP request object containing information about the request.
+     * @return A ResponseEntity containing a GeneralApiResponse with ticket details on success.
+     * @throws InvalidRequestException if the token is expired or has an invalid role.
+     * @throws IllegalArgumentException if the ticket ID is not valid, or the ticket does not correspond to the event by the organiser.
+     */
+    @PutMapping("/event/valid-qr")
+    public ResponseEntity<GeneralApiResponse<Object>> getQR(@RequestParam("token")String token,
+                                                            @NonNull HttpServletRequest request) {
+        EventOrganiser organiser = retrieveOrganiserFromRequest(request);
+
+        if (jwtService.isTokenExpired(token)) {
+            throw new InvalidRequestException("Ticket has expired");
+        }
+
+        if (!"ticket".equals(jwtService.extractRole(token))) {
+            throw new InvalidRequestException("Token role is not valid");
+        }
+
+        try {
+            Integer ticketId = Integer.parseInt(jwtService.extractUsername(token));
+            TicketDisplayDto dto = ticketService.findTicketById(ticketId);
+            if (!eventRepository.existsEventByEventIdAndOrganiser(dto.eventId(), organiser)) {
+                throw new IllegalArgumentException("Ticket does not correspond to event by organiser");
+            }
+            if (dto.checkedIn()) {
+                throw new InvalidRequestException("User already checked in");
+            }
+            ticketService.setCheckIn(ticketId, true);
+            return ResponseEntity.ok(generateApiResponse(dto, "Returned ticket details"));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Ticket ID for QR is not valid.");
+        }
     }
 }

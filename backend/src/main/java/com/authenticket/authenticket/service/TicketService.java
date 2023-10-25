@@ -34,4 +34,5 @@ public interface TicketService {
     Integer getMaxConsecutiveSeatsForSection(Integer eventId, String sectionId);
     Boolean getEventHasTickets(Event event);
     Integer getNumberOfTicketsPurchaseable(Event event, User user);
+    void setCheckIn(Integer ticketId, Boolean checkedIn);
 }

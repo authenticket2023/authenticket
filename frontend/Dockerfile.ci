@@ -5,13 +5,13 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copies package.json and package-lock.json to Docker environment
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Installs all node packages
 RUN npm install --legacy-peer-deps
 
 # Copies everything over to Docker environment
-COPY . .
+COPY frontend/. .
 
 # Build for production.
 RUN npm run build

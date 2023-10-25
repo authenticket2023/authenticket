@@ -1,20 +1,21 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import logo from '../images/logo(orange).png';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import MenuIcon from "@mui/icons-material/Menu";
+import Container from "@mui/material/Container";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import logo from "../images/logo(orange).png";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import { Popover } from "@mui/material";
+import Grid from "@mui/material/Grid";
 
 export const NavbarNotLoggedIn = () => {
     let navigate = useNavigate();
@@ -147,184 +148,308 @@ export const NavbarNotLoggedIn = () => {
     );
 }
 
+
 export const NavbarLoggedIn = () => {
-    let navigate = useNavigate();
+  let navigate = useNavigate();
 
-    const { pathname } = useLocation();
+  const { pathname } = useLocation();
 
-    const isTabActive = (path: any) => {
-        return pathname === path;
-    };
+  const isTabActive = (path: any) => {
+    return pathname === path;
+  };
 
-    let profileImage: any = window.localStorage.getItem('profileImage');
-    const profileImageSrc = `${process.env.REACT_APP_S3_URL}/user_profile_images/${profileImage}`;
+  let profileImage: any = window.localStorage.getItem("profileImage");
+  const profileImageSrc = `${process.env.REACT_APP_S3_URL}/user_profile_images/${profileImage}`;
 
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
 
-    //for navbar icon
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
-    };
+  const openUser = Boolean(anchorElUser);
+  const id = openUser ? "simple-popover" : undefined;
 
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
+  //for navbar icon
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
 
-    const handledLogout = () => {
-        setAnchorElUser(null);
-        sessionStorage.clear();
-        localStorage.clear();
-        navigate('/logIn');
-        window.location.reload();
-    };
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
 
-    const handleHome = () => {
-        navigate('/');
-    }
+  const handledLogout = () => {
+    setAnchorElUser(null);
+    sessionStorage.clear();
+    localStorage.clear();
+    navigate("/logIn");
+    window.location.reload();
+  };
 
-    const handleEvents = () => {
-        navigate('/Event');
-    }
+  const handleProfile = () => {
+    navigate("/Profile");
+  };
+  const handleHome = () => {
+    navigate("/");
+  };
 
-    const handleVenues = () => {
-        navigate('/Venue');
-    }
+  const handleEvents = () => {
+    navigate("/Event");
+  };
 
-    const handleFAQ = () => {
-        navigate('/FAQ');
-    }
+  const handleVenues = () => {
+    navigate("/Venue");
+  };
 
-    const handleLogin = () => {
-        navigate('/Login');
-    }
+  const handleFAQ = () => {
+    navigate("/FAQ");
+  };
 
-    return (
-        <AppBar position="sticky" style={{ background: '#000000' }} >
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <Link to="/Home">
-                        <img src={logo} alt="Logo" width={60} height={40} style={{ marginLeft: 20, marginRight: -8 }}></img>
-                    </Link>
-                    {/* for hamburger bar => dont know why bg color not working */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none', backgroundColor: 'black' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                            }}
-                        >
-                            <Button key='Home' onClick={handleHome} sx={{ my: 0, color: isTabActive('/Home') ? '#FF5C35' : 'black', display: 'block' }} >Home</Button>
-                            <Button key='Event' onClick={handleEvents} sx={{ my: 0, color: isTabActive('/Event') ? '#FF5C35' : 'black', display: 'block' }} >Events</Button>
-                            <Button key='Venue' onClick={handleVenues} sx={{ my: 0, color: isTabActive('/Venue') ? '#FF5C35' : 'black', display: 'block' }} >Venues</Button>
-                            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: isTabActive('/FAQ') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
-                            <Button key='Login' onClick={handleLogin} sx={{ my: 0, color: 'black', display: 'block' }} >Log In</Button>
-                        </Menu>
-                    </Box>
+  const handleLogin = () => {
+    navigate("/Login");
+  };
 
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href=""
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'Roboto',
-                            fontWeight: 700,
-                            letterSpacing: 0,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
+  return (
+    <AppBar position="sticky" style={{ background: "#000000" }}>
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <Link to="/Home">
+            <img
+              src={logo}
+              alt="Logo"
+              width={60}
+              height={40}
+              style={{ marginLeft: 20, marginRight: -8 }}
+            ></img>
+          </Link>
+          {/* for hamburger bar => dont know why bg color not working */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "flex", md: "none", backgroundColor: "black" },
+            }}
+          >
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{
+                display: { xs: "block", md: "none" },
+              }}
+            >
+              <Button
+                key="Home"
+                onClick={handleHome}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/Home") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Home
+              </Button>
+              <Button
+                key="Event"
+                onClick={handleEvents}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/Event") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Events
+              </Button>
+              <Button
+                key="Venue"
+                onClick={handleVenues}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/Venue") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Venues
+              </Button>
+              <Button
+                key="FAQ"
+                onClick={handleFAQ}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/FAQ") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                FAQ
+              </Button>
+              <Button
+                key="Login"
+                onClick={handleLogin}
+                sx={{ my: 0, color: "black", display: "block" }}
+              >
+                Log In
+              </Button>
+            </Menu>
+          </Box>
+
+          <Typography
+            variant="h5"
+            noWrap
+            component="a"
+            href=""
+            sx={{
+              mr: 2,
+              display: { xs: "flex", md: "none" },
+              flexGrow: 1,
+              fontFamily: "Roboto",
+              fontWeight: 700,
+              letterSpacing: 0,
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            AuthenTicket
+          </Typography>
+
+          <Box
+            justifyContent="left"
+            alignItems="left"
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+          >
+            <Button
+              key="Home"
+              onClick={handleHome}
+              sx={{
+                my: 2,
+                ml: 4,
+                color: isTabActive("/Home") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Home
+            </Button>
+            <Button
+              key="Event"
+              onClick={handleEvents}
+              sx={{
+                my: 2,
+                color: isTabActive("/Event") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Events
+            </Button>
+            <Button
+              key="Venue"
+              onClick={handleVenues}
+              sx={{
+                my: 2,
+                color: isTabActive("/Venue") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Venues
+            </Button>
+            <Button
+              key="FAQ"
+              onClick={handleFAQ}
+              sx={{
+                my: 2,
+                color: isTabActive("/FAQ") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              FAQ
+            </Button>
+          </Box>
+
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open Profile">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src={profileImageSrc} />
+              </IconButton>
+            </Tooltip>
+            <Popover
+              id={id}
+              open={openUser}
+              anchorEl={anchorElUser}
+              onClose={handleCloseUserMenu}
+              anchorOrigin={{
+                vertical: 55,
+                horizontal: "left",
+              }}
+              onClick= {handleProfile}
+            >
+              <Box
+                height={100}
+                width={300}
+                bgcolor={"black"}
+                padding={2}
+              >
+                <Avatar sizes="large" alt="Remy Sharp" src={profileImageSrc} sx={{ width: 75, height: 75 }} />
+              </Box>
+              <Box bgcolor={'black'} paddingBottom={1} paddingTop = {1}>
+                <Grid container justifyContent={'flex-end'}>
+                  <Grid item xs = {6}>
+                    <Button
+                      variant="outlined"
+                      onClick={handleProfile}
+                      sx={{ color: "orange", borderColor: "orange" }}
                     >
-                        AuthenTicket
-                    </Typography>
+                      View Profile
+                    </Button>
+                  </Grid>
+                  <Grid item xs = {5}>
+                    <Button
+                      variant="outlined"
+                      onClick={handledLogout}
+                      sx={{ color: "orange", borderColor: "orange" }}
+                    >
 
-                    <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHome} sx={{ my: 2, ml: 4, color: isTabActive('/Home') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
-                        <Button key='Event' onClick={handleEvents} sx={{ my: 2, color: isTabActive('/Event') ? '#FF5C35' : 'white', display: 'block' }} >Events</Button>
-                        <Button key='Venue' onClick={handleVenues} sx={{ my: 2, color: isTabActive('/Venue') ? '#FF5C35' : 'white', display: 'block' }} >Venues</Button>
-                        <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: isTabActive('/FAQ') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
-                    </Box>
-
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src={profileImageSrc} />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            <MenuItem key='Home' onClick={handleHome}>
-                                <Typography sx={{ color: isTabActive('/Home') ? '#FF5C35' : 'black' }} textAlign="center">Home</Typography>
-                            </MenuItem>
-                            <MenuItem key='Event' onClick={handleEvents}>
-                                <Typography sx={{ color: isTabActive('/Event') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
-                            </MenuItem>
-                            <MenuItem key='Venue' onClick={handleVenues}>
-                                <Typography sx={{ color: isTabActive('/Venue') ? '#FF5C35' : 'black' }} textAlign="center">Venue</Typography>
-                            </MenuItem>
-                            <MenuItem key='FAQ' onClick={handleFAQ}>
-                                <Typography sx={{ color: isTabActive('/FAQ') ? '#FF5C35' : 'black' }} textAlign="center">FAQ</Typography>
-                            </MenuItem>
-                            <MenuItem key='Logout' onClick={handledLogout}>
-                                <Typography textAlign="center">Log out</Typography>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
-
-                </Toolbar>
-            </Container>
-        </AppBar>
-    );
-}
+                      Log Out
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Popover>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
+  );
+};
 
 export const NavbarOrganiser = () => {
+
     let navigate = useNavigate();
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -364,6 +489,11 @@ export const NavbarOrganiser = () => {
     const handleCheckinOrganiser = () => {
         navigate('/CheckinOrganiser');
     }
+
+    const handleQRCheckinOrganiser = () => {
+        navigate('/QRCheckinOrganiser');
+    }
+
     const linkStyle = {
         textDecoration: 'none',
         color: 'black'
@@ -409,7 +539,9 @@ export const NavbarOrganiser = () => {
                         >
                             <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 0, display: 'block', color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} >Home</Button>
                             <Button key='Event' href={'/EventOrganiser'} sx={{ my: 0, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
+                            <Button key='Order' href={'/OrderOrganiser'} sx={{ my: 0, color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Order</Button>
                             <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 0, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Checkin</Button>
+                            <Button key='QRCheckin' onClick={handleQRCheckinOrganiser} sx={{ my: 0, color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >QR</Button>
                             <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 0, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
                         </Menu>
                     </Box>
@@ -435,7 +567,9 @@ export const NavbarOrganiser = () => {
                     <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml: 4, display: { xs: 'none', md: 'flex' } }}>
                         <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 2, color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
                         <Button key='Event' href={'/EventOrganiser'} sx={{ my: 2, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
+                        <Button key='Order' href={'/OrderOrganiser'} sx={{ my: 2, color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Order</Button>
                         <Button key='Checkin' onClick={handleCheckinOrganiser} sx={{ my: 2, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Checkin</Button>
+                        <Button key='QRCheckin' onClick={handleQRCheckinOrganiser} sx={{ my: 2, color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >QR</Button>
                         <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 2, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
                     </Box>
 
@@ -471,8 +605,16 @@ export const NavbarOrganiser = () => {
                                     <Typography sx={{ color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
                                 </a>
                             </MenuItem>
+                            <MenuItem key='Order'>
+                                <a href='/OrderOrganiser' style={linkStyle}>
+                                    <Typography sx={{ color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Order</Typography>
+                                </a>
+                            </MenuItem>
                             <MenuItem key='Checkin' onClick={handleCheckinOrganiser}>
                                 <Typography sx={{ color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Checkin</Typography>
+                            </MenuItem>
+                            <MenuItem key='QRCheckin' onClick={handleQRCheckinOrganiser}>
+                                <Typography sx={{ color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">QR</Typography>
                             </MenuItem>
                             <MenuItem key='FAQ'>
                                 <a href='/FAQOrganiser' style={linkStyle}>
@@ -491,167 +633,289 @@ export const NavbarOrganiser = () => {
 }
 
 export const NavbarAdmin = () => {
-    let navigate = useNavigate();
-    const { pathname } = useLocation();
+  let navigate = useNavigate();
+  const { pathname } = useLocation();
 
-    const isTabActive = (path: any) => {
-        return pathname === path;
-    };
+  const isTabActive = (path: any) => {
+    return pathname === path;
+  };
 
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
 
-    const profileImageSrc = `https://authenticket.s3.ap-southeast-1.amazonaws.com/logo.png`;
+  const profileImageSrc = `https://authenticket.s3.ap-southeast-1.amazonaws.com/logo.png`;
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget);
-    };
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
 
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
 
-    const handledLogout = () => {
-        setAnchorElUser(null);
-        sessionStorage.clear();
-        localStorage.clear();
-        navigate('/logIn');
-    };
+  const handledLogout = () => {
+    setAnchorElUser(null);
+    sessionStorage.clear();
+    localStorage.clear();
+    navigate("/logIn");
+  };
 
-    const handleHomeAdmin = () => {
-        navigate('/HomeAdmin');
-    }
+  const handleHomeAdmin = () => {
+    navigate("/HomeAdmin");
+  };
 
-    const handleArtistAdmin = () => {
-        navigate('/ArtistAdmin');
-    }
+  const handleArtistAdmin = () => {
+    navigate("/ArtistAdmin");
+  };
 
-    const handleEventAdmin = () => {
-        navigate('/EventAdmin');
-    }
+  const handleEventAdmin = () => {
+    navigate("/EventAdmin");
+  };
 
-    const handleVenueAdmin = () => {
-        navigate('/VenueAdmin');
-    }
+  const handleVenueAdmin = () => {
+    navigate("/VenueAdmin");
+  };
 
-    return (
-        <AppBar position="sticky" style={{ background: '#000000' }} >
-            <Container maxWidth="xl">
-                <Toolbar disableGutters>
-                    <Link to="/HomeAdmin">
-                        <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
-                    </Link>
+  return (
+    <AppBar position="sticky" style={{ background: "#000000" }}>
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <Link to="/HomeAdmin">
+            <img
+              src={logo}
+              alt="Logo"
+              width={50}
+              height={50}
+              style={{ marginLeft: 5, marginRight: 8 }}
+            ></img>
+          </Link>
 
-                    {/* for hamburger bar */}
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                            }}
-                        >
-                            <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 0, color: isTabActive('/HomeAdmin') ? '#FF5C35' : 'black', display: 'block' }} >Home</Button>
-                            <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 0, color: isTabActive('/ArtistAdmin') ? '#FF5C35' :  'black', display: 'block' }} >Artist</Button>
-                            <Button key='Event' onClick={handleEventAdmin} sx={{ my: 0, color: isTabActive('/EventAdmin') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
-                            <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0, color: isTabActive('/VenueAdmin') ? '#FF5C35' : 'black', display: 'block' }} >Venue</Button>
-                        </Menu>
-                    </Box>
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href=""
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'Roboto',
-                            fontWeight: 700,
-                            letterSpacing: 0,
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        AuthenTicket
-                    </Typography>
+          {/* for hamburger bar */}
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "left",
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{
+                display: { xs: "block", md: "none" },
+              }}
+            >
+              <Button
+                key="Home"
+                onClick={handleHomeAdmin}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/HomeAdmin") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Home
+              </Button>
+              <Button
+                key="Artist"
+                onClick={handleArtistAdmin}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/ArtistAdmin") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Artist
+              </Button>
+              <Button
+                key="Event"
+                onClick={handleEventAdmin}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/EventAdmin") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Event
+              </Button>
+              <Button
+                key="Venue"
+                onClick={handleVenueAdmin}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/VenueAdmin") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Venue
+              </Button>
+            </Menu>
+          </Box>
+          <Typography
+            variant="h5"
+            noWrap
+            component="a"
+            href=""
+            sx={{
+              mr: 2,
+              display: { xs: "flex", md: "none" },
+              flexGrow: 1,
+              fontFamily: "Roboto",
+              fontWeight: 700,
+              letterSpacing: 0,
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            AuthenTicket
+          </Typography>
 
-                    <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml: 4, display: { xs: 'none', md: 'flex' } }}>
-                        <Button key='Home' onClick={handleHomeAdmin} sx={{ my: 2, color: isTabActive('/HomeAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
-                        <Button key='Artist' onClick={handleArtistAdmin} sx={{ my: 2, color: isTabActive('/ArtistAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Artist</Button>
-                        <Button key='Event' onClick={handleEventAdmin} sx={{ my: 2, color: isTabActive('/EventAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
-                        <Button key='Venue' onClick={handleVenueAdmin} sx={{ my: 0,color: isTabActive('/VenueAdmin') ? '#FF5C35' : 'white', display: 'block' }} >Venue</Button>
-                    </Box>
+          <Box
+            justifyContent="left"
+            alignItems="left"
+            sx={{ flexGrow: 1, ml: 4, display: { xs: "none", md: "flex" } }}
+          >
+            <Button
+              key="Home"
+              onClick={handleHomeAdmin}
+              sx={{
+                my: 2,
+                color: isTabActive("/HomeAdmin") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Home
+            </Button>
+            <Button
+              key="Artist"
+              onClick={handleArtistAdmin}
+              sx={{
+                my: 2,
+                color: isTabActive("/ArtistAdmin") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Artist
+            </Button>
+            <Button
+              key="Event"
+              onClick={handleEventAdmin}
+              sx={{
+                my: 2,
+                color: isTabActive("/EventAdmin") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Event
+            </Button>
+            <Button
+              key="Venue"
+              onClick={handleVenueAdmin}
+              sx={{
+                my: 0,
+                color: isTabActive("/VenueAdmin") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Venue
+            </Button>
+          </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src={profileImageSrc} />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            <MenuItem key='Home' onClick={handleHomeAdmin}>
-                                <Typography sx={{ color: isTabActive('/HomeAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Home</Typography>
-                            </MenuItem>
-                            <MenuItem key='Artist' onClick={handleArtistAdmin}>
-                                <Typography sx={{ color: isTabActive('/ArtistAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Artist</Typography>
-                            </MenuItem>
-                            <MenuItem key='Event' onClick={handleEventAdmin}>
-                                <Typography sx={{ color: isTabActive('/EventAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
-                            </MenuItem>
-                            <MenuItem key='Venue' onClick={handleVenueAdmin}>
-                                <Typography sx={{ color: isTabActive('/VenueAdmin') ? '#FF5C35' : 'black' }} textAlign="center">Venue</Typography>
-                            </MenuItem>
-                            <MenuItem key='Logout' onClick={handledLogout}>
-                                <Typography textAlign="center">Log out</Typography>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
-                </Toolbar>
-            </Container>
-        </AppBar>
-    );
-}
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src={profileImageSrc} />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              <MenuItem key="Home" onClick={handleHomeAdmin}>
+                <Typography
+                  sx={{
+                    color: isTabActive("/HomeAdmin") ? "#FF5C35" : "black",
+                  }}
+                  textAlign="center"
+                >
+                  Home
+                </Typography>
+              </MenuItem>
+              <MenuItem key="Artist" onClick={handleArtistAdmin}>
+                <Typography
+                  sx={{
+                    color: isTabActive("/ArtistAdmin") ? "#FF5C35" : "black",
+                  }}
+                  textAlign="center"
+                >
+                  Artist
+                </Typography>
+              </MenuItem>
+              <MenuItem key="Event" onClick={handleEventAdmin}>
+                <Typography
+                  sx={{
+                    color: isTabActive("/EventAdmin") ? "#FF5C35" : "black",
+                  }}
+                  textAlign="center"
+                >
+                  Event
+                </Typography>
+              </MenuItem>
+              <MenuItem key="Venue" onClick={handleVenueAdmin}>
+                <Typography
+                  sx={{
+                    color: isTabActive("/VenueAdmin") ? "#FF5C35" : "black",
+                  }}
+                  textAlign="center"
+                >
+                  Venue
+                </Typography>
+              </MenuItem>
+              <MenuItem key="Logout" onClick={handledLogout}>
+                <Typography textAlign="center">Log out</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
+  );
+};

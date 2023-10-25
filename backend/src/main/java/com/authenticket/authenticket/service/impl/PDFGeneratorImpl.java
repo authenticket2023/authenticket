@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 import java.util.TreeSet;
 /**
  * This class implements the PDFGenerator interface and provides methods to generate PDF documents
@@ -318,7 +319,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
      * @throws ApiRequestException If a documentation error occurs, an IOException is encountered, or a WriterException is thrown.
      */
     @Override
-    public InputStreamResource generateTicketQRCode(Ticket ticket) {
+    public InputStreamResource generateTicketQRCode(Ticket ticket, LocalDateTime expirationDate) {
         try {
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -377,7 +378,7 @@ public class PDFGeneratorImpl implements PDFGenerator {
             p.setIndentationLeft(30f);
             document.add(p);
 
-            image = Image.getInstance(qrCodeGenerator.getQRCode(jwtService.generateToken(ticket),350, 300));
+            image = Image.getInstance(qrCodeGenerator.getQRCode(jwtService.generateTicketToken(ticket, expirationDate),350, 300));
             image.scaleAbsolute(300, 300);
             image.setAlignment(Element.ALIGN_CENTER);
             document.add(image);

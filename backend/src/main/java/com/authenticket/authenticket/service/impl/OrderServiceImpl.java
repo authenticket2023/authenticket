@@ -329,7 +329,7 @@ public class OrderServiceImpl implements OrderService {
      */
     public InputStreamResource test() throws FileNotFoundException, DocumentException {
         Order order = orderRepository.findById(1).orElse(null);
-        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0]);
+        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0], LocalDateTime.now().plusMinutes(30));
     }
 
     /**
@@ -363,7 +363,7 @@ public class OrderServiceImpl implements OrderService {
             FileNameRecord orderPdf = new FileNameRecord("Order_" + order.getOrderId() + ".pdf", pdfGenerator.generateOrderDetails(order));
             pdfList.add(orderPdf);
             for (Ticket t : order.getTicketSet()){
-                FileNameRecord ticketPdf = new FileNameRecord("Ticket_" + t.getTicketId() + ".pdf", pdfGenerator.generateTicketQRCode(t));
+                FileNameRecord ticketPdf = new FileNameRecord("Ticket_" + t.getTicketId() + ".pdf", pdfGenerator.generateTicketQRCode(t, order.getEvent().getEventDate().plusDays(1)));
                 pdfList.add(ticketPdf);
             }
             emailService.send(user.getEmail(), "Order Completed", "Dear " + user.getName() + ", \nThank you for your order, please refer to the documents attached for the event.", pdfList);

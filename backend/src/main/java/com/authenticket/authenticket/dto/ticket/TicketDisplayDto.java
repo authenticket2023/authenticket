@@ -42,7 +42,12 @@ public record TicketDisplayDto(
         /**
          * The identifier of the associated order.
          */
-        Integer orderId
+        Integer orderId,
+
+        /**
+         * A flag indicating whether the ticket has been checked in.
+         */
+        Boolean checkedIn
 ) {
 }
 
