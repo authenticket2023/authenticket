@@ -59,22 +59,25 @@ public class EventController extends Utility {
 
     private final TicketService ticketService;
 
+    private final QueueService queueService;
+  
     private final JwtService jwtService;
 
     private static final int PRESALE_HOURS = 24;
 
     @Autowired
     public EventController(EventServiceImpl eventService,
-                           AmazonS3Service amazonS3Service,
-                           EventRepository eventRepository,
-                           ArtistRepository artistRepository,
-                           VenueRepository venueRepository,
-                           EventTypeRepository eventTypeRepository,
-                           EventDtoMapper eventDtoMapper,
-                           PresaleService presaleService,
-                           UserRepository userRepository,
-                           TaskScheduler taskScheduler,
+            AmazonS3Service amazonS3Service,
+            EventRepository eventRepository,
+            ArtistRepository artistRepository,
+            VenueRepository venueRepository,
+            EventTypeRepository eventTypeRepository,
+            EventDtoMapper eventDtoMapper,
+            PresaleService presaleService,
+            UserRepository userRepository,
+            TaskScheduler taskScheduler,
                            TicketService ticketService,
+                           QueueService queueService,
                            JwtService jwtService) {
         this.eventService = eventService;
         this.amazonS3Service = amazonS3Service;
@@ -87,6 +90,7 @@ public class EventController extends Utility {
         this.userRepository = userRepository;
         this.taskScheduler = taskScheduler;
         this.ticketService = ticketService;
+        this.queueService = queueService;
         this.jwtService = jwtService;
     }
 
@@ -986,6 +990,110 @@ public class EventController extends Utility {
 
         return ResponseEntity.ok(generateApiResponse(presaleService.findUsersSelectedForEvent(event, true),
                 "Returned list of users allowed in presale"));
+    }
+
+    /**
+     * Retrieves the number of tickets a user is allowed to purchase for a specific event.
+     *
+     * @param eventId   The ID of the event for which to retrieve the number of purchaseable tickets.
+     * @param request   The HTTP servlet request.
+     * @return A response containing the number of purchaseable tickets for the event.
+     */
+    @GetMapping("/event/purchaseable-tickets")
+    public ResponseEntity<GeneralApiResponse<Object>> getNumberOfPurchaseableTickets(@RequestParam("eventId") Integer eventId,
+                                                                                     @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        return ResponseEntity.ok(generateApiResponse(ticketService.getNumberOfTicketsPurchaseable(event, user), "Returned number of tickets user can purchase"));
+    }
+
+    /**
+     * Retrieves the queue position of a user for a specific event.
+     *
+     * @param eventId   The ID of the event for which to retrieve the queue position.
+     * @param request   The HTTP servlet request.
+     * @return A response containing the user's queue position.
+     */
+    @GetMapping("/event/queue-position")
+    public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(@RequestParam("eventId") Integer eventId,
+                                                                       @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        return ResponseEntity.ok(generateApiResponse(queueService.getPosition(user, event), "Returned queue number"));
+    }
+
+    /**
+     * Retrieves the total number of users in the queue for a specific event.
+     *
+     * @param eventId   The ID of the event for which to retrieve the queue total.
+     * @return A response containing the total number of users in the queue.
+     */
+    @GetMapping("/event/queue-total")
+    public ResponseEntity<GeneralApiResponse<Object>> getQueuePosition(@RequestParam("eventId") Integer eventId) {
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        return ResponseEntity.ok(generateApiResponse(queueService.getTotalInQueue(event), "Returned number of users in queue"));
+    }
+
+    /**
+     * Enters the user into the queue for a specific event.
+     *
+     * @param eventId   The ID of the event for which the user is entering the queue.
+     * @param request   The HTTP servlet request.
+     * @return A response indicating that the user has been added to the queue and their queue position.
+     */
+    @PutMapping("/event/enter-queue")
+    public ResponseEntity<GeneralApiResponse<Object>> enterQueue(@RequestParam("eventId") Integer eventId,
+                                                                 @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        queueService.addToQueue(user, event);
+        return ResponseEntity.status(201).body(generateApiResponse(queueService.getPosition(user, event), "Added to queue and returned queue number"));
+    }
+
+    /**
+     * Removes the user from the queue for a specific event.
+     *
+     * @param eventId   The ID of the event for which the user is leaving the queue.
+     * @param request   The HTTP servlet request.
+     * @return A response indicating that the user has been removed from the queue.
+     */
+    @PutMapping("/event/leave-queue")
+    public ResponseEntity<GeneralApiResponse<Object>> leaveQueue(@RequestParam("eventId") Integer eventId,
+                                                                 @NonNull HttpServletRequest request) {
+        User user = retrieveUserFromRequest(request);
+
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            throw new NonExistentException("Event", eventId);
+        }
+        Event event = eventOptional.get();
+
+        queueService.removeFromQueue(user, event);
+        return ResponseEntity.ok(generateApiResponse(null, "Removed from queue"));
     }
 
     /**

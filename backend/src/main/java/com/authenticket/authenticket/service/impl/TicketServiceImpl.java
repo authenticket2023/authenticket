@@ -6,6 +6,7 @@ import com.authenticket.authenticket.exception.InvalidRequestException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.*;
+import com.authenticket.authenticket.service.PresaleService;
 import com.authenticket.authenticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -592,6 +593,11 @@ public class TicketServiceImpl implements TicketService {
         return sold < totalSeats;
     }
 
+    @Override
+    public Integer getNumberOfTicketsPurchaseable(Event event, User user) {
+        return PresaleService.MAX_TICKETS_SOLD_PER_USER - ticketRepository.countAllByOrder_EventAndOrder_User(event, user);
+    }
+  
     /**
      * Sets the check-in status for a ticket with the specified ID.
      *

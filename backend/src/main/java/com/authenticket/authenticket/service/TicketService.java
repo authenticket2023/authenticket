@@ -4,6 +4,7 @@ import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.Section;
 import com.authenticket.authenticket.model.Ticket;
+import com.authenticket.authenticket.model.User;
 
 
 import java.util.List;
@@ -32,5 +33,6 @@ public interface TicketService {
     Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section);
     Integer getMaxConsecutiveSeatsForSection(Integer eventId, String sectionId);
     Boolean getEventHasTickets(Event event);
+    Integer getNumberOfTicketsPurchaseable(Event event, User user);
     void setCheckIn(Integer ticketId, Boolean checkedIn);
 }
