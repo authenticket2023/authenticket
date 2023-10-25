@@ -10,10 +10,8 @@ import com.authenticket.authenticket.repository.QueueRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.VenueRepository;
 import com.authenticket.authenticket.service.QueueService;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -21,15 +19,15 @@ import java.util.Optional;
  * Service implementation for managing the queue of users purchasing tickets for events.
  */
 @Service
-public class QueueImpl implements QueueService {
+public class QueueServiceImpl implements QueueService {
 
     private final QueueRepository queueRepository;
     private final VenueRepository venueRepository;
     private final TicketRepository ticketRepository;
 
-    public QueueImpl(QueueRepository queueRepository,
-                     VenueRepository venueRepository,
-                     TicketRepository ticketRepository) {
+    public QueueServiceImpl(QueueRepository queueRepository,
+                            VenueRepository venueRepository,
+                            TicketRepository ticketRepository) {
         this.queueRepository = queueRepository;
         this.venueRepository = venueRepository;
         this.ticketRepository = ticketRepository;
