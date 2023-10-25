@@ -376,7 +376,6 @@ public class OrderServiceImpl implements OrderService {
             queueService.removeFromQueue(user, order.getEvent());
         } catch (NonExistentException e) {
             // ignore if presale, as presale does not need queue
-//            order.getEvent().getTicketSaleDate()
         }
         return updatedOrder;
     }
