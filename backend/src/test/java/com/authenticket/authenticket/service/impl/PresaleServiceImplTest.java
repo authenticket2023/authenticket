@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -119,16 +120,25 @@ class PresaleServiceImplTest {
                 .eventName("Test Event")
                 .build();
 
-        PresaleInterest presaleInterest = PresaleInterest.builder()
-                .user(user)
-                .event(event)
-                .isSelected(false)
-                .emailed(false)
+        assertDoesNotThrow(() -> underTest.setPresaleInterest(user, event, false, false));
+    }
+
+    @Test
+    public void testSetPresaleInterest_AlreadyExistsException() {
+        User user = User.builder()
+                .userId(99)
+                .name("UpdatedGeorgia")
+                .email("test@example.com")
+                .password("update")
                 .build();
 
-        EventUserId eventUserId = new EventUserId(user, event);
+        Event event = Event.builder()
+                .eventId(99)
+                .eventName("Test Event")
+                .build();
 
-        assertDoesNotThrow(() -> underTest.setPresaleInterest(user, event, false, false));
+        when(presaleInterestRepository.findById(any(EventUserId.class))).thenReturn(Optional.of(new PresaleInterest()));
+        assertThrows(AlreadyExistsException.class, () -> underTest.setPresaleInterest(user, event, false, false));
     }
 
     @Test
@@ -152,16 +162,12 @@ class PresaleServiceImplTest {
                 .hasPresale(true)
                 .hasPresaleUsers(true)
                 .organiser(new EventOrganiser())
-                .venue(new Venue())
+                .venue(Venue.builder().venueId(1).build())
                 .eventType(new EventType())
                 .artists(artists)
                 .build();
-        List<User> users = new ArrayList<>();
-        User user1 = new User();
-        User user2 = new User();
-        users.add(user1);
-        users.add(user2);
 
+        when(venueRepository.findNoOfSeatsByVenue(1)).thenReturn(5);
         when(presaleInterestRepository.findAllByEvent(event)).thenReturn(Arrays.asList(new PresaleInterest(), new PresaleInterest()));
 
         assertDoesNotThrow(() -> underTest.selectPresaleUsersForEvent(event));
@@ -208,12 +214,10 @@ class PresaleServiceImplTest {
                 .build();
 
         List<PresaleInterest> presaleInterestList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            presaleInterestList.add(presaleInterest);
-        }
+        presaleInterestList.add(presaleInterest);
 
         when(presaleInterestRepository.findAllByIsSelectedTrueAndEmailedFalse()).thenReturn(presaleInterestList);
 
-        assertThrows(IllegalStateException.class, () ->underTest.sendScheduledEmails());
+        assertThrows(IllegalStateException.class, () -> underTest.sendScheduledEmails());
     }
 }

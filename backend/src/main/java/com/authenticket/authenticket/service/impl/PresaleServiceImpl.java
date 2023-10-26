@@ -25,8 +25,6 @@ import java.util.Random;
 @Service
 public class PresaleServiceImpl implements PresaleService {
 
-    private final UserRepository userRepository;
-
     private final VenueRepository venueRepository;
 
     private final EventRepository eventRepository;
@@ -44,7 +42,6 @@ public class PresaleServiceImpl implements PresaleService {
                               PresaleInterestRepository presaleInterestRepository,
                               VenueRepository venueRepository,
                               EmailService emailService) {
-        this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.presaleInterestRepository = presaleInterestRepository;
         this.venueRepository = venueRepository;
