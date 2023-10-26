@@ -266,18 +266,18 @@ export const NavbarNotLoggedIn = () => {
   );
 };
 
-let name: any = window.localStorage.getItem("username");
-let bday: any = window.localStorage.getItem("dob");
 
 export const NavbarLoggedIn = () => {
   let navigate = useNavigate();
-
+  
   const { pathname } = useLocation();
-
+  
   const isTabActive = (path: any) => {
     return pathname === path;
   };
-
+  
+  let name: any = window.localStorage.getItem("username");
+  let email: any = window.localStorage.getItem("email");
   let profileImage: any = window.localStorage.getItem("profileImage");
   const profileImageSrc = `${process.env.REACT_APP_S3_URL}/user_profile_images/${profileImage}`;
 
@@ -527,10 +527,9 @@ export const NavbarLoggedIn = () => {
                 vertical: 55,
                 horizontal: "left",
               }}
-              onClick={handleProfile}
               elevation={2}
             >
-              <Box sx={{ border: 1, borderColor: "grey.300", borderRadius: 1 }} paddingBottom={1}>
+              <Box onClick={handleProfile} sx={{ border: 1, borderColor: "grey.300", borderRadius: 1 }} paddingBottom={1}>
                 <Box height={100} width={300} padding={2}>
                   <Grid container>
                     <Grid item xs={4}>
@@ -550,9 +549,9 @@ export const NavbarLoggedIn = () => {
                             textTransform: "capitalize",
                           }}
                         >
-                          {name}
+                        {name}
                         </Typography>
-                        <Typography color={"grey"}>Birthday: {bday}</Typography>
+                        <Typography color={"grey"}>{email}</Typography>
                         <Stack direction="row" spacing={2}>
                         <LinkMUI color={'#FF5C35'} onClick={handleProfile} sx={{display:'flex', justifyContent:'flex-end'}}> View Profile </LinkMUI>
                         <LinkMUI color={'#FF5C35'} onClick={handledLogout} sx={{display:'flex', justifyContent:'flex-end'}}> Log Out </LinkMUI>
