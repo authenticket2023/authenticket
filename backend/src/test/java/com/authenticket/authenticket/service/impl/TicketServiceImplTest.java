@@ -9,6 +9,7 @@ import com.authenticket.authenticket.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -41,11 +42,13 @@ class TicketServiceImplTest {
     @Mock
     private VenueRepository venueRepository;
 
+    @InjectMocks
+    TicketDisplayDtoMapper ticketDisplayDtoMapper;
+
     private TicketServiceImpl underTest;
 
     @BeforeEach
     void setUp() {
-        TicketDisplayDtoMapper ticketDisplayDtoMapper = new TicketDisplayDtoMapper();
         underTest = new TicketServiceImpl(
                 eventRepository,
                 ticketRepository,

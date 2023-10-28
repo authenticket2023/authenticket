@@ -29,9 +29,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PDFGeneratorImplTest {
     @Mock
-    private QRCodeGenerator qrCodeGenerator;
+    private QRCodeGeneratorImpl qrCodeGenerator;
     @Mock
-    private JwtService jwtService;
+    private JwtServiceImpl jwtService;
 
     private PDFGeneratorImpl underTest;
 

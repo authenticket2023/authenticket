@@ -17,6 +17,7 @@ import com.authenticket.authenticket.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -71,11 +72,13 @@ class EventServiceImplTest {
     @Mock
     private OrderRepository orderRepository;
 
+    @InjectMocks
+    TicketDisplayDtoMapper ticketDisplayDtoMapper;
+
     private EventServiceImpl underTest;
 
     @BeforeEach
     void setUp() {
-        TicketDisplayDtoMapper ticketDisplayDtoMapper = new TicketDisplayDtoMapper();
         TicketServiceImpl ticketService = new TicketServiceImpl(
                 eventRepository,
                 ticketRepository,

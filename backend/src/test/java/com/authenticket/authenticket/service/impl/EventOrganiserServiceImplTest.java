@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -38,7 +39,11 @@ class EventOrganiserServiceImplTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private AmazonS3Service amazonS3Service;
-    @InjectMocks
+
+    @Mock
+    private JavaMailSenderImpl javaMailSender;
+
+    @Mock
     private EmailServiceImpl emailService;
 
     private EventOrganiserServiceImpl underTest;
@@ -47,6 +52,7 @@ class EventOrganiserServiceImplTest {
     void setUp(){
         AdminDtoMapper adminDtoMapper = new AdminDtoMapper(passwordEncoder);
         EventOrganiserDtoMapper eventOrganiserDtoMapper = new EventOrganiserDtoMapper(passwordEncoder, adminDtoMapper);
+        emailService = new EmailServiceImpl(javaMailSender);
         underTest = new EventOrganiserServiceImpl(
                 eventOrganiserRepository,
                 eventRepository,

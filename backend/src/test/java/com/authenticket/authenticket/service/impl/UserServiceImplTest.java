@@ -29,14 +29,14 @@ import static org.mockito.Mockito.*;
 class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    UserDtoMapper userDtoMapper;
 
     private UserServiceImpl underTest;
 
     @BeforeEach
     void setUp(){
-        UserDtoMapper userDtoMapper = new UserDtoMapper(passwordEncoder);
         underTest = new UserServiceImpl(userRepository, userDtoMapper);
     }
 
