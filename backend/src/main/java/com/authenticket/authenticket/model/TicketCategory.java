@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;

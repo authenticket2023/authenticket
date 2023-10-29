@@ -6,7 +6,6 @@ import com.authenticket.authenticket.model.Section;
 import com.authenticket.authenticket.model.Ticket;
 import com.authenticket.authenticket.model.User;
 
-
 import java.util.List;
 
 public interface TicketService {

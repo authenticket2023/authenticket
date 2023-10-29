@@ -165,7 +165,6 @@ class EventOrganiserServiceImplTest {
         // Assert that the savedEventOrganiser is not null and has the expected values
         assertNotNull(savedEventOrganiser);
         assertEquals(savedEventOrganiser, eventOrg);
-        // Add more assertions as needed
     }
 
     @Test
@@ -205,7 +204,6 @@ class EventOrganiserServiceImplTest {
 
         // Assert that the result is not null and contains the expected values
         assertNotNull(result);
-        // Add more assertions as needed
     }
 
     @Test
@@ -270,7 +268,6 @@ class EventOrganiserServiceImplTest {
 
         // Assert that the result is not null and contains the expected values
         assertNotNull(result);
-        // Add more assertions as needed
     }
 
     @Test
@@ -296,7 +293,6 @@ class EventOrganiserServiceImplTest {
 
         // Assert that the result is not null and contains the expected values
         assertNull(result);
-        // Add more assertions as needed
     }
 
     @Test

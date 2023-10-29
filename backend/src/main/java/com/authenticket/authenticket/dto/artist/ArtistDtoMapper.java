@@ -3,7 +3,6 @@ package com.authenticket.authenticket.dto.artist;
 import com.authenticket.authenticket.model.Artist;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;

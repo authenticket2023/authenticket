@@ -1,11 +1,9 @@
 package com.authenticket.authenticket.exception.handler;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.exception.ApiException;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.service.Utility;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,9 +12,6 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 /**
  * This class serves as an exception handler for various exceptions that may occur in the API.

@@ -2,9 +2,6 @@ package com.authenticket.authenticket.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
-
-import java.time.ZonedDateTime;
 
 /**
  * A simple data class representing an API exception message.

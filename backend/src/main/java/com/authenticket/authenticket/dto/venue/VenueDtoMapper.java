@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.dto.venue;
 
-import com.authenticket.authenticket.dto.user.UserDisplayDto;
 import com.authenticket.authenticket.model.Venue;
 import org.springframework.stereotype.Service;
 

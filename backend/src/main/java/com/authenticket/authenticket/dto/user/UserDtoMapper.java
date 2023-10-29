@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.dto.user;
 
-import com.authenticket.authenticket.dto.ticketcategory.TicketCategoryDisplayDto;
 import com.authenticket.authenticket.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -192,8 +192,6 @@ class PDFGeneratorImplTest {
                 .build();
         // Set other necessary properties for ticket
 
-// Create a sample order for testing
-
         // Sample JWT token
         String jwtToken = "SampleJWTToken";
 

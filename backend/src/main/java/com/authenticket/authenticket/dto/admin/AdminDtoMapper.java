@@ -1,13 +1,6 @@
 package com.authenticket.authenticket.dto.admin;
 
-import com.authenticket.authenticket.dto.artist.ArtistDtoMapper;
-import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
-import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
-import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Admin;
-import com.authenticket.authenticket.repository.AdminRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

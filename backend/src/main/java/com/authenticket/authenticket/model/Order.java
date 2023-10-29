@@ -1,12 +1,10 @@
 package com.authenticket.authenticket.model;
 
-import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**

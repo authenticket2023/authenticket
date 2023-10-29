@@ -1,8 +1,5 @@
 package com.authenticket.authenticket.repository;
 
-import com.authenticket.authenticket.dto.order.OrderDisplayDto;
-import com.authenticket.authenticket.model.Admin;
-import com.authenticket.authenticket.model.FeaturedEvent;
 import com.authenticket.authenticket.model.Order;
 import com.authenticket.authenticket.model.User;
 import jakarta.transaction.Transactional;
@@ -15,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
