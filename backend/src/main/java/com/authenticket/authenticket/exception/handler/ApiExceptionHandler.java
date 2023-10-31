@@ -64,7 +64,7 @@ public class ApiExceptionHandler extends Utility {
     @ExceptionHandler({InsufficientAuthenticationException.class})
     public ResponseEntity<Object> handleInsufficientAuthentication(Exception ex) {
         //Create payload to send inside response entity containing exception details
-        HttpStatus status = HttpStatus.FORBIDDEN;
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         ApiException apiException = new ApiException(
                 "Access denied! Insufficient authentication to access this resource."
