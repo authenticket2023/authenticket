@@ -80,12 +80,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDisplayDto findById(Integer orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-            OrderDisplayDto orderDisplayDto = orderDtoMapper.apply(order);
-            return orderDisplayDto;
-        }
-        return null;
+        return orderOptional.map(orderDtoMapper).orElse(null);
     }
 
     /**
