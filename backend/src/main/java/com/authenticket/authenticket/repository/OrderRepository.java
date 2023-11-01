@@ -36,8 +36,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "DELETE FROM dev.ticket WHERE order_id = :orderId ; " +
-            "DELETE FROM dev.order WHERE order_id = :orderId", nativeQuery = true)
+    @Query(nativeQuery = true,
+            value = "DELETE FROM dev.ticket WHERE order_id = :orderId ; " +
+            "DELETE FROM dev.order WHERE order_id = :orderId")
     void deleteOrderById(@Param("orderId") Integer orderId);
 
     List<Order> findAllByOrderStatus(String orderStatus);
