@@ -72,64 +72,6 @@ public class OrderController extends Utility {
     }
 
     /**
-     * Retrieves a test PDF document and sends it as a response to the client.
-     *
-     * @return A ResponseEntity containing the PDF document as a byte array and the necessary headers
-     * to trigger a download on the client-side.
-     *
-     * @throws RuntimeException If there's an error during the document retrieval, a runtime exception
-     * is thrown to indicate the failure.
-     */
-    @GetMapping("/test-pdf")
-    public ResponseEntity<?> testPDF() {
-        // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
-        try {
-
-            byte[] contents = orderService.test().getContentAsByteArray();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            // Here you have to set the actual filename of your pdf
-            String filename = "output.pdf";
-            headers.setContentDispositionFormData(filename, filename);
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
-            return response;
-        } catch (DocumentException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Retrieves a second test PDF document and sends it as a response to the client.
-     *
-     * @return A ResponseEntity containing the PDF document as a byte array and the necessary headers
-     * to trigger a download on the client-side.
-     *
-     * @throws RuntimeException If there's an error during the document retrieval, a runtime exception
-     * is thrown to indicate the failure.
-     */
-    @GetMapping("/test-pdf2")
-    public ResponseEntity<?> testPDF2() {
-        // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
-        try {
-
-            byte[] contents = orderService.test2().getContentAsByteArray();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            // Here you have to set the actual filename of your pdf
-            String filename = "output.pdf";
-            headers.setContentDispositionFormData(filename, filename);
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
-            return response;
-        } catch (DocumentException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Retrieves an order by its unique identifier and returns it as an HTTP response.
      *
      * @param orderId The unique identifier of the order to retrieve.

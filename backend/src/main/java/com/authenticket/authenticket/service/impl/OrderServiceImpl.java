@@ -305,31 +305,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * Generates a PDF for a specific order's ticket QR code.
-     *
-     * @return An InputStreamResource containing the generated PDF.
-     * @throws FileNotFoundException if the file is not found.
-     * @throws DocumentException    if there is a document-related exception.
-     */
-    public InputStreamResource test() throws FileNotFoundException, DocumentException {
-        Order order = orderRepository.findById(1).orElse(null);
-        assert order != null;
-        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0]);
-    }
-
-    /**
-     * Generates a PDF containing order details for a specific order.
-     *
-     * @return An InputStreamResource containing the generated PDF.
-     * @throws FileNotFoundException if the file is not found.
-     * @throws DocumentException    if there is a document-related exception.
-     */
-    public InputStreamResource test2()  throws FileNotFoundException, DocumentException {
-        Order order = orderRepository.findById(1).orElse(null);
-        return pdfGenerator.generateOrderDetails(order);
-    }
-
-    /**
      * Completes an Order by updating its status to "SUCCESS" and generates PDFs for the order and its linked tickets.
      *
      * @param order The Order to be marked as "SUCCESS."
