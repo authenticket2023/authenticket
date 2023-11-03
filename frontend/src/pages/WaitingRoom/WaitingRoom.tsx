@@ -64,8 +64,10 @@ export const WaitingRoom = () => {
                 if (response.status == 200) {
                     const apiResponse = await response.json();
                     // if the position is 0 or less than 0, mean it is current user's turn, redirect to ticket purchase page
-                    if (apiResponse.data <= 0) {
+                    if (apiResponse.data == 0) {
                         navigate(`/TicketPurchase/${eventId}`);
+                    } else if (apiResponse.data == -1) {
+                        navigate(`/EventDetails/${eventId}`);
                     }
                     setQueuePosition(apiResponse.data);
                 }
