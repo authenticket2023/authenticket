@@ -1,5 +1,5 @@
 # from base image node
-FROM --platform=linux/arm64 node:18-alpine
+FROM node:18-alpine
 
 # set working directory
 WORKDIR /app
