@@ -22,11 +22,6 @@ import java.util.stream.Collectors;
 @Service
 public class TicketServiceImpl implements TicketService {
 
-    private final TicketCategoryRepository ticketCategoryRepository;
-
-
-    private final UserRepository userRepository;
-
     private final EventRepository eventRepository;
 
     private final TicketPricingRepository ticketPricingRepository;
@@ -41,18 +36,13 @@ public class TicketServiceImpl implements TicketService {
     private final VenueRepository venueRepository;
 
     @Autowired
-
-    public TicketServiceImpl(TicketCategoryRepository ticketCategoryRepository,
-                             UserRepository userRepository,
-                             EventRepository eventRepository,
+    public TicketServiceImpl(EventRepository eventRepository,
                              TicketRepository ticketRepository,
                              TicketDisplayDtoMapper ticketDisplayDtoMapper,
                              SectionRepository sectionRepository,
                              TicketPricingRepository ticketPricingRepository,
                              OrderRepository orderRepository,
                              VenueRepository venueRepository) {
-        this.ticketCategoryRepository = ticketCategoryRepository;
-        this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.ticketRepository = ticketRepository;
         this.orderRepository = orderRepository;
@@ -83,9 +73,9 @@ public class TicketServiceImpl implements TicketService {
      */
     @Override
     public TicketDisplayDto findTicketById(Integer ticketId) {
-        Optional<TicketDisplayDto> ticketDisplayDtoOptional = ticketRepository.findById(ticketId).map(ticketDisplayDtoMapper);
-        if (ticketDisplayDtoOptional.isPresent()) {
-            return ticketDisplayDtoOptional.get();
+        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+        if(ticketOptional.isPresent()){
+            return ticketDisplayDtoMapper.apply(ticketOptional.get());
         }
 
         throw new NonExistentException("Ticket", ticketId);
@@ -250,8 +240,8 @@ public class TicketServiceImpl implements TicketService {
      * @param section The `Section` entity.
      * @return A 2D array representing the seat matrix.
      */
-    @Override
-    public int[][] getCurrentSeatMatrix(Event event, Section section) {
+
+    private int[][] getCurrentSeatMatrix(Event event, Section section) {
         //getting dimensions of section
         Integer rowNo = section.getNoOfRows();
         Integer colNo = section.getNoOfSeatsPerRow();
@@ -287,8 +277,7 @@ public class TicketServiceImpl implements TicketService {
      * @param newTicketsList     A list of newly assigned tickets.
      * @return The updated 2D array representing the seat matrix.
      */
-    @Override
-    public int[][] getNewSeatMatrix(int[][] currentSeatMatrix, List<Ticket> newTicketsList) {
+    private int[][] getNewSeatMatrix(int[][] currentSeatMatrix, List<Ticket> newTicketsList) {
 
         //empty seats = 0, occupied seats = 1, newly occupied seats = 2
         for (Ticket ticket : newTicketsList) {
@@ -323,8 +312,8 @@ public class TicketServiceImpl implements TicketService {
     * @throws NotFoundException If the consecutive seats of the specified count are not found.
     * @throws NonExistentException If there are issues with the event or section.
     */
-    @Override
-    public List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount) throws NotFoundException, NonExistentException {
+
+    private List<Ticket> findConsecutiveSeatsOf(Event event, Section section, Integer ticketCount) throws NotFoundException, NonExistentException {
         //getting dimensions of section
         Integer rowNo = section.getNoOfRows();
         Integer colNo = section.getNoOfSeatsPerRow();
@@ -413,8 +402,7 @@ public class TicketServiceImpl implements TicketService {
      * @param availableSeatsArrayForRow An array of available seats in a row.
      * @return A list of lists containing consecutive groups of seat numbers.
      */
-    @Override
-    public List<List<Integer>> findConsecutiveGroups(int[] availableSeatsArrayForRow) {
+    private List<List<Integer>> findConsecutiveGroups(int[] availableSeatsArrayForRow) {
         List<List<Integer>> consecutiveGroups = new ArrayList<>();
         if (availableSeatsArrayForRow.length == 0) {
             return consecutiveGroups;
@@ -448,8 +436,7 @@ public class TicketServiceImpl implements TicketService {
      * @param n The number of seats to select in the subset.
      * @return A list of selected seat numbers.
      */
-    @Override
-    public List<Integer> getRandomSubsetOfSeats(List<List<Integer>> consecutiveGroupsOfSeats, int n) {
+    private List<Integer> getRandomSubsetOfSeats(List<List<Integer>> consecutiveGroupsOfSeats, int n) {
         List<List<Integer>> validGroups = new ArrayList<>();
 
         // Filter groups with length >= n
@@ -483,8 +470,7 @@ public class TicketServiceImpl implements TicketService {
      * @param section The section in the venue.
      * @return The number of available seats in the section.
      */
-    @Override
-    public Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section) {
+    private Integer getNoOfAvailableSeatsBySectionForEvent(Event event, Section section) {
         if (ticketRepository.findNoOfAvailableTicketsBySectionAndEvent(event.getEventId(), section.getSectionId()) == null) {
             return section.getNoOfRows() * section.getNoOfSeatsPerRow();
         }

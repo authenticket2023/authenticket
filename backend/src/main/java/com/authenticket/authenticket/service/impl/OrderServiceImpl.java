@@ -86,12 +86,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDisplayDto findById(Integer orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-            OrderDisplayDto orderDisplayDto = orderDtoMapper.apply(order);
-            return orderDisplayDto;
-        }
-        return null;
+        return orderOptional.map(orderDtoMapper).orElse(null);
     }
 
     /**
@@ -200,7 +195,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = orderOptional.get();
             String ticketHolder = ticket.getTicketHolder();
             if (ticket.getOrder() != null) {
-                if (!ticket.getOrder().equals(order)) {
+                if (!ticket.getOrder().getOrderId().equals(orderId)) {
                     throw new AlreadyExistsException("Ticket already linked to any another order");
                 } else {
                     throw new AlreadyExistsException("Ticket already linked to this order");
@@ -218,11 +213,9 @@ public class OrderServiceImpl implements OrderService {
             order.addTicket(ticket);
             order.setUpdatedAt(LocalDateTime.now());
             orderRepository.save(order);
-
             ticket.setOrder(order);
             ticket.setUpdatedAt(LocalDateTime.now());
             ticketRepository.save(ticket);
-
             return orderDtoMapper.apply(order);
         } else if (ticketOptional.isEmpty()) {
             throw new NonExistentException("Ticket does not exist");
@@ -250,7 +243,6 @@ public class OrderServiceImpl implements OrderService {
             order.setUpdatedAt(LocalDateTime.now());
             orderRepository.save(order);
             ticketRepository.deleteById(ticketId);
-
             return orderDtoMapper.apply(order);
         } else if (ticketOptional.isEmpty()) {
             throw new NonExistentException("Ticket does not exist");
@@ -294,7 +286,6 @@ public class OrderServiceImpl implements OrderService {
 
         //removing linked tickets
         List<Ticket> ticketSet = ticketRepository.findAllByOrder(order);
-
         ticketRepository.deleteAllInBatch(ticketSet);
     }
 
@@ -303,8 +294,7 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param orderList A list of orders to be canceled.
      */
-    @Override
-    public void cancelAllOrder(List<Order> orderList) {
+    private void cancelAllOrder(List<Order> orderList) {
         // Updating the status of all orders to "CANCELLED"
         for (Order order : orderList) {
 //            order.setTicketSet(new HashSet<>());
@@ -321,30 +311,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * Generates a PDF for a specific order's ticket QR code.
-     *
-     * @return An InputStreamResource containing the generated PDF.
-     * @throws FileNotFoundException if the file is not found.
-     * @throws DocumentException    if there is a document-related exception.
-     */
-    public InputStreamResource test() throws FileNotFoundException, DocumentException {
-        Order order = orderRepository.findById(1).orElse(null);
-        return pdfGenerator.generateTicketQRCode((Ticket)order.getTicketSet().toArray()[0], LocalDateTime.now().plusMinutes(30));
-    }
 
-    /**
-     * Generates a PDF containing order details for a specific order.
-     *
-     * @return An InputStreamResource containing the generated PDF.
-     * @throws FileNotFoundException if the file is not found.
-     * @throws DocumentException    if there is a document-related exception.
-     */
-    public InputStreamResource test2()  throws FileNotFoundException, DocumentException {
-        Order order = orderRepository.findById(1).orElse(null);
-        return pdfGenerator.generateOrderDetails(order);
-    }
-
-    /**
      * Completes an Order by updating its status to "SUCCESS" and generates PDFs for the order and its linked tickets.
      *
      * @param order The Order to be marked as "SUCCESS."
