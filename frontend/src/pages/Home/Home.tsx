@@ -269,31 +269,6 @@ export const Home = () => {
     );
   };
 
-  const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.5),
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.common.white, 0.6),
-    },
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "100%",
-    },
-  }));
-
-  const SearchIconWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }));
-
   const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: "black",
     "& .MuiInputBase-input": {
@@ -547,6 +522,7 @@ export const Home = () => {
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
                 backgroundImage: `url(${backgroundImage})`,
+                height: '250px'
               }}
             >
               <Box
@@ -575,12 +551,18 @@ export const Home = () => {
                     }}
                   >
                     <br />
-                    <br />
                     <Typography
                       component="h1"
                       variant="h3"
                       color="inherit"
                       align="center"
+                      style={{
+                        whiteSpace:'nowrap',
+                        overflow:'hidden',
+                        width:'100%',
+                        fontSize:'45px',
+                        fontWeight:'500'
+                      }}
                     >
                       Unlock Unforgettable Experiences
                     </Typography>
@@ -593,19 +575,6 @@ export const Home = () => {
                     >
                       your gateway to premier event adventures
                     </Typography>
-                    <br />
-                    <br />
-                    <br />
-                    <Search>
-                      <SearchIconWrapper>
-                        <SearchIcon sx={{ color: "#3b3b3b" }} />
-                      </SearchIconWrapper>
-                      <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ "aria-label": "search" }}
-                        fullWidth
-                      />
-                    </Search>
                     <br />
                     <br />
                     <br />

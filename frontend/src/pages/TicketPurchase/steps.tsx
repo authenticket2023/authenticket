@@ -15,7 +15,9 @@ export function SelectSeats(props: any) {
     }, []);
 
     //set variables
+    const colorArray = ['#E5E23D', '#D74A50', '#30A1D3', '#E08D24', '#5BB443'];
     const [quantity, setQuantity] = React.useState('');
+    const [maxConsecutiveSeats, setMaxConsecutiveSeats] = React.useState(0);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertType, setAlertType]: any = useState('info');
     const [alertMsg, setAlertMsg] = useState('');
@@ -23,50 +25,12 @@ export function SelectSeats(props: any) {
         setOpenSnackbar(false);
     };
 
-    const handleChange = (event: SelectChangeEvent) => {
-        const newQuantity = event.target.value as string;
-        setQuantity(newQuantity);
-        props.onQuantityChange(newQuantity);
-        // props.onSelectedSection(selectedSection);
-
-        // Find the selected section
-        const selectedSectionData = props.sectionDetails.find(
-            (item: { sectionId: undefined; }) => item.sectionId === selectedSection
-        );
-
-        // Check if the selectedSectionData exists
-        if (selectedSectionData) {
-            const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
-
-            // Error message if the ticket order is bigger than the max consecutive seats
-            if (parseInt(quantity) > maxConsecutiveSeats) {
-            setOpenSnackbar(true);
-            setAlertType('warning');
-            setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
-            }
-        }
-    };
-
     const handleSeats = () => {
 
-        // // Find the selected section
-        // const selectedSectionData = sectionDetails.find(
-        //     (item) => item.sectionId === selectedSection
-        // );
-
-        // // Check if the selectedSectionData exists
-        // if (selectedSectionData) {
-        //     const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
-
-        //     // Error message if the ticket order is bigger than the max consecutive seats
-        //     if (parseInt(quantity) > maxConsecutiveSeats) {
-        //     setOpenSnackbar(true);
-        //     setAlertType('warning');
-        //     setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
-        //     } else {
-        //         props.handleComplete();
-        //     }
-        // }
+        //check if the section is sold out or if maxConsecutiveSeats == 0
+        const maxConsecutiveSeats = props.sectionDetails
+        ? props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats
+        : 0;
 
         //check if a section is chosen before proceedign to the next page
         if (!selectedSection) {
@@ -80,26 +44,34 @@ export function SelectSeats(props: any) {
             setOpenSnackbar(true);
             setAlertType('error');
             setAlertMsg('Please select a quantity before proceeding.');
+        } else if (maxConsecutiveSeats == 0) {
+            //check if section is sold out
+            // Show an error message
+            setOpenSnackbar(true);
+            setAlertType('error');
+            setAlertMsg('Section sold out. Please select a different section.');
         } else {
             // If a section has been selected, proceed to the next step
             props.onSelectedSection(selectedSection);
             props.handleComplete();
         }
-    }
 
-    // console.log(props.eventDetails.venue.venueId)
-    // console.log(quantity);
-    // console.log(props.selectedSection);
+    }
     
     return (
         <div style={{display:'flex', justifyContent:'center', flexDirection:'column', alignItems:'center'}}>
             <div>
                 <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection}/>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:675, marginTop:-457}}>
-                Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Unknown') : 'Loading...'}
+            </div>
+            <div>
+                <Typography style={{marginLeft:520, marginTop:-450, font:'roboto', fontWeight:500, fontSize:'16px'}}>
+                    Price: ${props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...') : 'Loading...'}
+                </Typography>
+                <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:520, marginTop:0}}>
+                    Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Loading...') : 'Loading...'}
                 </Typography>
             </div>
-            <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:25}}>
+            <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:-375}}>
                 <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
                     Ticket Quantity
                 </Typography>
@@ -112,14 +84,13 @@ export function SelectSeats(props: any) {
                         value={quantity}
                         label="Quantity"
                         displayEmpty
-                        onChange={handleChange}
                         style={{fontSize:'13px'}}
                         >
-                            <MenuItem value={1}>1</MenuItem>
-                            <MenuItem value={2}>2</MenuItem>
-                            <MenuItem value={3}>3</MenuItem>
-                            <MenuItem value={4}>4</MenuItem>
-                            <MenuItem value={5}>5</MenuItem>
+                            {Array.from({ length: props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats): 6 }, (_, index) => (
+                                <MenuItem key={index + 1} value={index + 1}>
+                                {index + 1}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
                 </Box>
@@ -141,6 +112,31 @@ export function SelectSeats(props: any) {
                 }}>
                 Confirm Seats
             </Button>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <Grid item xs={8}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} >
+                        <Typography style={{ font: 'Roboto', fontWeight: 500, fontSize: '18px' }}>
+                          Ticket Pricing
+                        </Typography>
+                      </Grid>
+                      {props.categoryDetails.map((cat: any) => (
+                        <Grid item key={cat.categoryId} xs={6} display='flex' flexDirection='row'> {/* xs={6} makes each item take up half the row */}
+                          <div style={{ background: colorArray[cat.categoryId - 1], height: '20px', width: '20px', borderRadius: '5px' }} />
+                          <Typography style={{ color: 'black', marginLeft: 10 }}>
+                            {cat.categoryName} - ${cat.price}
+                          </Typography>
+                        </Grid>
+                      ))}
+
+                    </Grid>
+
+                  </Grid>
 
             <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
