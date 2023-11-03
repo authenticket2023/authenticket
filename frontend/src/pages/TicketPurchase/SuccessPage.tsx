@@ -51,25 +51,25 @@ interface CompletedOrder {
 }
 
 interface EnteredData {
-    images: File[];
-    names: string[];
-    sectionID: string;
-    row: string;
-    seat: string;
-  }
+  images: File[];
+  names: string[];
+  sectionID: string;
+  row: string;
+  seat: string;
+}
 
 export const SuccessPage: React.FC = (): JSX.Element => {
   // Set parameters
   const { orderId } = useParams<{ orderId: string }>();
-//   const { enteredData } = useParams<EnteredData>();
+  //   const { enteredData } = useParams<EnteredData>();
 
-    type Params = 'images' | 'names' | 'sectionID' | 'row' | 'seat';
-   const params = useParams<Params>();
-   const images = params.images ? JSON.parse(params.images) as File[] : [];
-   const names = params.names ? JSON.parse(params.names) as string[] : [];
-   const sectionID = params.sectionID;
-   const row = params.row;
-   const seat = params.seat;
+  type Params = 'images' | 'names' | 'sectionID' | 'row' | 'seat';
+  const params = useParams<Params>();
+  const images = params.images ? JSON.parse(params.images) as File[] : [];
+  const names = params.names ? JSON.parse(params.names) as string[] : [];
+  const sectionID = params.sectionID;
+  const row = params.row;
+  const seat = params.seat;
 
 
 
@@ -101,7 +101,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
           setCompletedOrder(data.event);
 
           //only do submitFace if event is enhanced
-          if(completedOrder?.isEnhanced){
+          if (completedOrder?.isEnhanced) {
             submitFace();
           }
         } else {
@@ -141,22 +141,22 @@ export const SuccessPage: React.FC = (): JSX.Element => {
   };
 
   // Call backend API for face
-const submitFace = async () => {
+  const submitFace = async () => {
     // Create order
     const formData = new FormData();
     formData.append('eventID', String(completedOrder?.eventId));
-  
+
     // Check if orderSummary and its ticketSet are defined
     if (orderSummary && orderSummary.ticketSet) {
       // Iterate through ticketSet
       orderSummary.ticketSet.forEach((ticket, index) => {
         const { sectionId, rowNo, seatNo } = ticket;
-  
+
         // Check if corresponding image and name exist
         if (images[index] && names[index]) {
           // Append the image using 'image' + (index + 1) as the key
           formData.append(`image${index + 1}`, images[index]);
-  
+
           // Append the info using 'info' + (index + 1) as the key
           const info = `${names[index]},${sectionId},${rowNo},${seatNo}`;
           formData.append(`info${index + 1}`, info);
@@ -167,32 +167,55 @@ const submitFace = async () => {
 
         //call backend
         fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facial-creation`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            method: 'POST',
-            body: formData
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          method: 'POST',
+          body: formData
         })
-            .then(async (response) => {
-                if (response.status == 200 || response.status == 201) {
-                    // Parse the JSON response
-                    const responseData = await response.json();
-                    // Access the orderId from the response data
-                    const orderId = responseData.data.orderId;
+          .then(async (response) => {
+            if (response.status == 200 || response.status == 201) {
+              // Parse the JSON response
+              const responseData = await response.json();
+              // Access the orderId from the response data
+              const orderId = responseData.data.orderId;
 
-                } else {
+            } else {
 
-                }
-            })
-            .catch((err) => {
-                //if transaction faile, enable clickable
-                window.alert(err);
-            })
+            }
+          })
+          .catch((err) => {
+            //if transaction faile, enable clickable
+            window.alert(err);
+          })
 
       });
     }
 
   };
+
+  //leave queue
+  const leaveQueue = async (eventId: any) => {
+    const formData = new FormData();
+    formData.append('eventId', eventId);
+    // //calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/leave-queue`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      method: 'PUT',
+      body: formData
+    })
+      .then(async (response) => {
+        if (response.status == 200) {
+          const apiResponse = await response.json();
+          console.log(apiResponse.message);
+        }
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  }
 
   return (
     <div>
