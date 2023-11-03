@@ -35,7 +35,6 @@ class ArtistServiceImplTest {
 
     @InjectMocks
     private ArtistDtoMapper artistDtoMapper;
-
     private ArtistServiceImpl underTest;
 
     @BeforeEach

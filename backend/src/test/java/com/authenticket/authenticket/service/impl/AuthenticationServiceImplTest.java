@@ -59,17 +59,11 @@ class AuthenticationServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
-    private UserDtoMapper userDtoMapper;
-
-    @InjectMocks
-    private AdminDtoMapper adminDtoMapper;
-
-    @InjectMocks
-    private EventOrganiserDtoMapper eventOrgDtoMapper;
-
     @BeforeEach
     void setUp(){
+        UserDtoMapper userDtoMapper = new UserDtoMapper(passwordEncoder);
+        AdminDtoMapper adminDtoMapper = new AdminDtoMapper(passwordEncoder);
+        EventOrganiserDtoMapper eventOrgDtoMapper = new EventOrganiserDtoMapper(passwordEncoder, adminDtoMapper);
         jwtServiceImpl = new JwtServiceImpl();
         emailServiceImpl = new EmailServiceImpl(mailSender);
         underTest = new AuthenticationServiceImpl(

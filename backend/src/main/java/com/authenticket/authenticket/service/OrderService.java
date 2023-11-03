@@ -33,6 +33,7 @@ public interface OrderService {
     void checkOrderPaymentStatus(Order order);
     void removeOrder(Integer orderId);
     void cancelOrder(Order order);
+    void cancelAllOrder(List<Order> orderList);
     Order completeOrder(Order order);
     void scheduleCancelProcessingOrder();
 
