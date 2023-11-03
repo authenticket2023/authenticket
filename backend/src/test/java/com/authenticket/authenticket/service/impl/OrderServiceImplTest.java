@@ -14,6 +14,7 @@ import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
 import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.PDFGenerator;
+import com.authenticket.authenticket.service.QueueService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -60,6 +61,9 @@ public class OrderServiceImplTest {
     private QRCodeGeneratorImpl qrCodeGenerator;
 
     @InjectMocks
+    private QueueServiceImpl queueService;
+
+    @InjectMocks
     private JwtServiceImpl jwtService;
 
     private OrderServiceImpl underTest;
@@ -79,7 +83,8 @@ public class OrderServiceImplTest {
                 ticketRepository,
                 taskScheduler,
                 emailService,
-                pdfGenerator);
+                pdfGenerator,
+                queueService);
     }
 
     @Test
@@ -343,6 +348,7 @@ public class OrderServiceImplTest {
                 .seatNo(20)
                 .ticketHolder("John Doe")
                 .order(order)
+                .checkedIn(Boolean.FALSE)
                 .build();
 
 
@@ -365,7 +371,8 @@ public class OrderServiceImplTest {
                 ticket.getRowNo(),
                 ticket.getSeatNo(),
                 ticket.getTicketHolder(),
-                ticket.getOrder().getOrderId()
+                ticket.getOrder().getOrderId(),
+                ticket.getCheckedIn()
         );
         ticketDisplayDtos.add(ticketDisplayDto);
 
@@ -896,6 +903,7 @@ public class OrderServiceImplTest {
                 .seatNo(20)
                 .ticketHolder("John Doe")
                 .order(order)
+                .checkedIn(Boolean.FALSE)
                 .build();
 
         UserDisplayDto userDisplayDto = new UserDisplayDto(
@@ -915,7 +923,8 @@ public class OrderServiceImplTest {
                 ticket.getRowNo(),
                 ticket.getSeatNo(),
                 ticket.getTicketHolder(),
-                ticket.getOrder().getOrderId()
+                ticket.getOrder().getOrderId(),
+                ticket.getCheckedIn()
         );
         ticketDisplayDtos.add(ticketDisplayDto);
 
@@ -1087,6 +1096,7 @@ public class OrderServiceImplTest {
                 .seatNo(20)
                 .ticketHolder("John Doe")
                 .order(order)
+                .checkedIn(Boolean.FALSE)
                 .build();
 
         UserDisplayDto userDisplayDto = new UserDisplayDto(
@@ -1106,7 +1116,8 @@ public class OrderServiceImplTest {
                 ticket.getRowNo(),
                 ticket.getSeatNo(),
                 ticket.getTicketHolder(),
-                ticket.getOrder().getOrderId()
+                ticket.getOrder().getOrderId(),
+                ticket.getCheckedIn()
         );
         ticketDisplayDtos.add(ticketDisplayDto);
 
