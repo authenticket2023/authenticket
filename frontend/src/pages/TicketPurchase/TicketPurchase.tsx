@@ -27,10 +27,10 @@ export const TicketPurchase: React.FC = (): JSX.Element => {
   };
 
   const token = window.localStorage.getItem('accessToken');
-  //enter queue
+  //check queue position if not 0 redirect to waiting room 
   const checkQueuePosition = async (eventId: any) => {
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/queue-position?eventId=${eventId}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/queue-position?eventId=${eventId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -40,7 +40,6 @@ export const TicketPurchase: React.FC = (): JSX.Element => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           if (apiResponse.data > 0) {
-            console.log(apiResponse.data + "-- redirect to waiting room")
             navigate(`/WaitingRoom/${eventId}`);
           }
         }
@@ -63,10 +62,9 @@ export const TicketPurchase: React.FC = (): JSX.Element => {
       body: formData
     })
       .then(async (response) => {
-        if (response.status == 200) {
+        if (response.status == 201 || response.status == 200) {
           const apiResponse = await response.json();
           if (apiResponse.data > 0)
-            console.log(apiResponse.data + "-- redirect to waiting room")
             navigate(`/WaitingRoom/${eventId}`);
         }
       })
@@ -105,8 +103,10 @@ export const TicketPurchase: React.FC = (): JSX.Element => {
           const categoryArray = arr.sort((a: { categoryId: number; }, b: { categoryId: number; }) => a.categoryId - b.categoryId);
           setCategoryDetails(categoryArray);
           //call enter queue method and check queue
+
           enterQueue(eventId);
           checkQueuePosition(eventId);
+          
         } else {
 
         }
