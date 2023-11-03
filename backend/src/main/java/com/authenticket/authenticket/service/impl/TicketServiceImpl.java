@@ -111,45 +111,6 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.save(ticket);
     }
 
-//    public Ticket updateTicket(TicketUpdateDto ticketUpdateDto) {
-//        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketUpdateDto.ticketId());
-//
-//        if (ticketOptional.isPresent()) {
-//            Ticket existingTicket = ticketOptional.get();
-//            ticketDisplayDtoMapper.update(ticketUpdateDto, existingTicket);
-//            ticketRepository.save(existingTicket);
-//            return existingTicket;
-//        }
-//
-//        throw new NonExistentException("Error Updating Ticket: Ticket not found");
-//    }
-//
-//
-//    public void deleteTicket(Integer ticketId) {
-//        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
-//
-//        if (ticketOptional.isPresent()) {
-//            Ticket ticket = ticketOptional.get();
-//            if (ticket.getDeletedAt() != null) {
-//                throw new AlreadyDeletedException("Ticket already deleted");
-//            }
-//
-//            ticket.setDeletedAt(LocalDateTime.now());
-//            ticketRepository.save(ticket);
-//        } else {
-//            throw new NonExistentException("Ticket does not exist");
-//        }
-//    }
-//
-//    public void removeTicket(Integer ticketId) {
-//        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
-//
-//        if (ticketOptional.isPresent()) {
-//            ticketRepository.deleteById(ticketId);
-//        } else {
-//            throw new NonExistentException("Ticket does not exist");
-//        }
-//    }
 
     /**
      * Allocate seats for a specified number of tickets in a section for an event.
