@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -29,6 +31,18 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    /**
+     * Extracts the user role from a JWT token.
+     *
+     * @param token The JWT token from which to extract the user role.
+     * @return The user role contained in the token.
+     */
+    @Override
+    public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return (String) claims.get("role");
     }
 
     /**
@@ -51,19 +65,8 @@ public class JwtServiceImpl implements JwtService {
      * @return The generated JWT token.
      */
     @Override
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
-    }
-
-    /**
-     * Generates a JWT token for a user based on their ticket.
-     *
-     * @param ticket The ticket for whom the token is generated.
-     * @return The generated JWT token.
-     */
-    @Override
-    public String generateToken(Ticket ticket) {
-        return generateToken(new HashMap<>(), ticket);
+    public String generateUserToken(UserDetails userDetails){
+        return generateUserToken(new HashMap<>(), userDetails);
     }
 
     /**
@@ -74,7 +77,7 @@ public class JwtServiceImpl implements JwtService {
      * @return The generated JWT token.
      */
     @Override
-    public String generateToken(
+    public String generateUserToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ){
@@ -89,19 +92,21 @@ public class JwtServiceImpl implements JwtService {
     }
 
     /**
-     * Generates a JWT token for a ticket holder based on a Ticket object and optional extra claims.
+     * Generates a JWT token for a given ticket with a specified expiration date.
      *
-     * @param extraClaims Additional claims to include in the token.
-     * @param ticket The Ticket object for which the token is generated.
-     * @return The generated JWT token.
+     * @param ticket          The ticket for which the token is generated.
+     * @param expirationDate  The date and time when the token will expire.
+     * @return A JWT representing the ticket with the specified expiration date.
      */
     @Override
-    public String generateToken(Map<String, Object> extraClaims, Ticket ticket) {
+    public String generateTicketToken(Ticket ticket, LocalDateTime expirationDate) {
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
-                .setSubject(ticket.getTicketHolder())
+                .claim("role", "ticket")
+                .claim("event", ticket.getOrder().getEvent().getEventName())
+                .setSubject(ticket.getTicketId().toString())
                 .setIssuedAt(new Date(Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis()))
+                .setExpiration(Timestamp.valueOf(expirationDate))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -127,7 +132,11 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public boolean isTokenExpired(String token){
-        return extractExpiration(token).before(new Date());
+        Date expirationDate = extractExpiration(token);
+        if (expirationDate == null) {
+            return false;
+        }
+        return expirationDate.before(new Date());
     }
 
     /**

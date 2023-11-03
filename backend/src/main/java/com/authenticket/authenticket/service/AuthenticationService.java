@@ -7,7 +7,6 @@ import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.User;
 
-
 public interface AuthenticationService {
     void userRegister(User request);
     AuthenticationUserResponse userAuthenticate(String email, String password);

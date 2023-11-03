@@ -19,6 +19,7 @@ import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.EmailService;
 import com.authenticket.authenticket.service.OrderService;
 import com.authenticket.authenticket.service.PDFGenerator;
+import com.authenticket.authenticket.service.QueueService;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -53,6 +54,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final PDFGenerator pdfGenerator;
 
+    private final QueueService queueService;
+
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
                             UserRepository userRepository,
@@ -60,7 +63,9 @@ public class OrderServiceImpl implements OrderService {
                             TicketDisplayDtoMapper ticketDisplayDtoMapper,
                             TicketRepository ticketRepository,
                             TaskScheduler taskScheduler,
-                            EmailService emailService, PDFGenerator pdfGenerator) {
+                            EmailService emailService,
+                            PDFGenerator pdfGenerator,
+                            QueueService queueService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderDtoMapper = orderDtoMapper;
@@ -69,6 +74,7 @@ public class OrderServiceImpl implements OrderService {
         this.taskScheduler = taskScheduler;
         this.emailService = emailService;
         this.pdfGenerator = pdfGenerator;
+        this.queueService = queueService;
     }
 
     /**
@@ -305,6 +311,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+
      * Completes an Order by updating its status to "SUCCESS" and generates PDFs for the order and its linked tickets.
      *
      * @param order The Order to be marked as "SUCCESS."
@@ -323,13 +330,19 @@ public class OrderServiceImpl implements OrderService {
             FileNameRecord orderPdf = new FileNameRecord("Order_" + order.getOrderId() + ".pdf", pdfGenerator.generateOrderDetails(order));
             pdfList.add(orderPdf);
             for (Ticket t : order.getTicketSet()){
-                FileNameRecord ticketPdf = new FileNameRecord("Ticket_" + t.getTicketId() + ".pdf", pdfGenerator.generateTicketQRCode(t));
+                FileNameRecord ticketPdf = new FileNameRecord("Ticket_" + t.getTicketId() + ".pdf", pdfGenerator.generateTicketQRCode(t, order.getEvent().getEventDate().plusDays(1)));
                 pdfList.add(ticketPdf);
             }
             emailService.send(user.getEmail(), "Order Completed", "Dear " + user.getName() + ", \nThank you for your order, please refer to the documents attached for the event.", pdfList);
         } catch (Exception e) {
             e.printStackTrace();
             throw new ApiRequestException(e.getMessage());
+        }
+
+        try {
+            queueService.removeFromQueue(user, order.getEvent());
+        } catch (NonExistentException e) {
+            // ignore if presale, as presale does not need queue
         }
         return updatedOrder;
     }

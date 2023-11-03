@@ -25,8 +25,6 @@ import java.util.Random;
 @Service
 public class PresaleServiceImpl implements PresaleService {
 
-    private final UserRepository userRepository;
-
     private final VenueRepository venueRepository;
 
     private final EventRepository eventRepository;
@@ -44,7 +42,6 @@ public class PresaleServiceImpl implements PresaleService {
                               PresaleInterestRepository presaleInterestRepository,
                               VenueRepository venueRepository,
                               EmailService emailService) {
-        this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.presaleInterestRepository = presaleInterestRepository;
         this.venueRepository = venueRepository;
@@ -191,7 +188,6 @@ public class PresaleServiceImpl implements PresaleService {
     private void sendUserAlert(PresaleInterest presaleInterest) {
         Event event = presaleInterest.getEvent();
         User user = presaleInterest.getUser();
-        System.out.println("Sending email to: " + user.getName());
         emailService.send(user.getEmail(), EmailServiceImpl.buildEarlyTicketSaleNotificationEmail(presaleInterest.getUser().getName(), event.getEventName(), apiUrl + "/EventDetails/" + event.getEventId(), event.getTicketSaleDate().format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy HH:mm:ss a"))), "Ticket Presale Notification");
 
         presaleInterest.setEmailed(true);

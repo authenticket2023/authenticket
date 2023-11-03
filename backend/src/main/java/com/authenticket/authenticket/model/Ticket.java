@@ -75,6 +75,12 @@ public class Ticket extends BaseEntity implements Comparable<Ticket> {
     private Order order;
 
     /**
+     * A flag indicating whether the ticket has been checked in.
+     */
+    @Column(name = "checked_in")
+    private Boolean checkedIn;
+
+    /**
      * Computes the hash code for the ticket based on its unique identifier.
      *
      * @return The hash code for the ticket.

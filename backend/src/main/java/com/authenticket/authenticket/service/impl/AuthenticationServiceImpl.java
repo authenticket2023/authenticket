@@ -98,7 +98,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
         var existingUser = userRepository.findByEmail(request.getEmail());
         var existingAdmin = adminRepository.findByEmail(request.getEmail());
         var existingOrg = organiserRepository.findByEmail(request.getEmail());
-        var jwtToken = jwtServiceImpl.generateToken(request);
+        var jwtToken = jwtServiceImpl.generateUserToken(request);
         String redirectUrl = frontendUrl + "/Login";
         String link = backendUrl +"/api/v2/auth/user-register/confirm?token=" + jwtToken + "&redirect=" + redirectUrl;
 
@@ -132,7 +132,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
-        var jwtToken = jwtServiceImpl.generateToken(user);
+        var jwtToken = jwtServiceImpl.generateUserToken(user);
 
         return AuthenticationUserResponse.builder()
                 .token(jwtToken)
@@ -163,7 +163,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         userRepository.enableAppUser(email);
 
-        var jwtToken = jwtServiceImpl.generateToken(user);
+        var jwtToken = jwtServiceImpl.generateUserToken(user);
         return AuthenticationUserResponse.builder()
                 .token(jwtToken)
                 .userDetails(userDTOMapper.apply(user))
@@ -212,7 +212,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         var eventOrg = organiserRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Event Organiser does not exist"));
-        var jwtToken = jwtServiceImpl.generateToken(eventOrg);
+        var jwtToken = jwtServiceImpl.generateUserToken(eventOrg);
         System.out.println(jwtToken);
         return AuthenticationOrgResponse.builder()
                 .token(jwtToken)
@@ -258,7 +258,7 @@ public class AuthenticationServiceImpl extends Utility implements Authentication
 
         var admin = adminRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Admin does not exist"));
-        var jwtToken = jwtServiceImpl.generateToken(admin);
+        var jwtToken = jwtServiceImpl.generateUserToken(admin);
 
         return AuthenticationAdminResponse.builder()
                 .token(jwtToken)

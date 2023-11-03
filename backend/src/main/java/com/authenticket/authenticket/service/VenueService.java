@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.service;
 
-import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
 import com.authenticket.authenticket.model.Venue;
 
 import java.util.List;

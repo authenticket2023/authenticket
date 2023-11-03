@@ -9,6 +9,7 @@ import com.authenticket.authenticket.model.Event;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.UserRepository;
 import com.authenticket.authenticket.service.PresaleService;
+import com.authenticket.authenticket.service.QueueService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import com.authenticket.authenticket.service.impl.UserServiceImpl;
@@ -45,13 +46,19 @@ public class UserController extends Utility {
     private final AmazonS3ServiceImpl amazonS3Service;
 
     private final PresaleService presaleService;
+    private final QueueService queueService;
 
     @Autowired
-    public UserController(UserRepository userRepository, UserServiceImpl userService, AmazonS3ServiceImpl amazonS3Service, PresaleService presaleService) {
+    public UserController(UserRepository userRepository,
+                          UserServiceImpl userService,
+                          AmazonS3ServiceImpl amazonS3Service,
+                          PresaleService presaleService,
+                          QueueService queueService) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.amazonS3Service = amazonS3Service;
         this.presaleService = presaleService;
+        this.queueService = queueService;
     }
 
     @GetMapping("/test")

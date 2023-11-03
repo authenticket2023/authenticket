@@ -2,7 +2,6 @@ package com.authenticket.authenticket.dto.eventOrganiser;
 
 import com.authenticket.authenticket.dto.admin.AdminDisplayDto;
 import com.authenticket.authenticket.dto.admin.AdminDtoMapper;
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
 import com.authenticket.authenticket.model.EventOrganiser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

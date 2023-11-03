@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.service.impl;
 
-import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;

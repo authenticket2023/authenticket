@@ -1,6 +1,5 @@
 package com.authenticket.authenticket.exception.handler;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.exception.ApiException;
 import com.authenticket.authenticket.exception.ApiRequestException;
 import com.authenticket.authenticket.service.Utility;
@@ -13,9 +12,6 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 /**
  * This class serves as an exception handler for various exceptions that may occur in the API.
@@ -52,7 +48,6 @@ public class ApiExceptionHandler extends Utility {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
 
-        ex.printStackTrace();
         ApiException apiException = new ApiException(
                 "Access denied"
         );
@@ -69,8 +64,8 @@ public class ApiExceptionHandler extends Utility {
     @ExceptionHandler({InsufficientAuthenticationException.class})
     public ResponseEntity<Object> handleInsufficientAuthentication(Exception ex) {
         //Create payload to send inside response entity containing exception details
-        HttpStatus status = HttpStatus.FORBIDDEN;
-        ex.printStackTrace();
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
         ApiException apiException = new ApiException(
                 "Access denied! Insufficient authentication to access this resource."
         );
@@ -85,11 +80,18 @@ public class ApiExceptionHandler extends Utility {
      * @return A ResponseEntity containing an ApiException with an appropriate message and a FORBIDDEN status code.
      */
     @ExceptionHandler({ExpiredJwtException.class})
-    public ResponseEntity<Object> handleExpiredJwtException(Exception ex) {
+    public ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException ex) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.FORBIDDEN;
 
-        ex.printStackTrace();
+        if ("ticket".equals(ex.getClaims().get("role"))) {
+            ApiException apiException = new ApiException(
+                    "Event '" + ex.getClaims().get("event") + "' is over."
+            );
+            status = HttpStatus.BAD_REQUEST;
+
+            return new ResponseEntity<>(apiException, status);
+        }
         ApiException apiException = new ApiException(
                 "Token expired. Please log in again."
         );
@@ -112,8 +114,6 @@ public class ApiExceptionHandler extends Utility {
                 "Something went wrong: " + e.getMessage()
         );
 
-        e.printStackTrace();
-
         return new ResponseEntity<>(apiException, status);
     }
 
@@ -125,6 +125,28 @@ public class ApiExceptionHandler extends Utility {
      */
     @ExceptionHandler(value = {ApiRequestException.class})
     public ResponseEntity<Object> handleApiRequestException(ApiRequestException e) {
+        //Create payload to send inside response entity containing exception details
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        ApiException apiException = new ApiException(
+                e.getMessage()
+        );
+
+        return new ResponseEntity<>(apiException, status);
+    }
+
+    /**
+     * Exception handler method for handling IllegalArgumentExceptions.
+     *
+     * This method is responsible for capturing and handling IllegalArgumentExceptions,
+     * returning an appropriate ResponseEntity with error details in the response payload.
+     *
+     * @param e The IllegalArgumentException to be handled.
+     * @return A ResponseEntity containing an ApiException with the error message and a
+     *         status code indicating a bad request (HTTP 400).
+     */
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.BAD_REQUEST;
 

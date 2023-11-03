@@ -120,7 +120,6 @@ class SectionServiceImplTest {
 
         // Assert
         // Perform assertions on seatMatrix based on your expectations
-        // Example: assertEquals(expectedValue, actualValue);
         verify(ticketRepository).findAllByTicketPricingEventEventIdAndSectionSectionId(event.getEventId(), section.getSectionId());
     }
 
@@ -175,7 +174,6 @@ class SectionServiceImplTest {
 
         // Assert
         // Perform assertions on the result based on your expectations
-        // Example: assertEquals(expectedValue, actualValue);
         verify(ticketRepository).findTicketDetailsForSection(event.getEventId(), section.getSectionId());
     }
 }
