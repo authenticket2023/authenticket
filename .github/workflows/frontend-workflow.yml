@@ -15,10 +15,9 @@ jobs:
     - name: Build & Push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
-        arch: armv7
-        distro: ubuntu-latest
         image: authen2023/authenticket-frontend
         tags: latest
+        platforms: linux/arm64
         registry: docker.io
         dockerfile: ./frontend/Dockerfile.ci
         username: ${{ secrets.DOCKER_USERNAME }}
