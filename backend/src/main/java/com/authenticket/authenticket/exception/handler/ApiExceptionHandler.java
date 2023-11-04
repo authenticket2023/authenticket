@@ -12,6 +12,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 /**
  * This class serves as an exception handler for various exceptions that may occur in the API.
@@ -62,12 +63,12 @@ public class ApiExceptionHandler extends Utility {
      * @return A ResponseEntity containing an ApiException with an appropriate message and a FORBIDDEN status code.
      */
     @ExceptionHandler({InsufficientAuthenticationException.class})
-    public ResponseEntity<Object> handleInsufficientAuthentication(Exception ex) {
+    public ResponseEntity<Object> handleInsufficientAuthentication(InsufficientAuthenticationException ex) {
         //Create payload to send inside response entity containing exception details
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         ApiException apiException = new ApiException(
-                "Access denied! Insufficient authentication to access this resource."
+                "Access denied! Please log in with a valid account and try again"
         );
 
         return new ResponseEntity<>(apiException, status);
@@ -108,7 +109,7 @@ public class ApiExceptionHandler extends Utility {
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleException(Exception e) {
         //Create payload to send inside response entity containing exception details
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ApiException apiException = new ApiException(
                 "Something went wrong: " + e.getMessage()
