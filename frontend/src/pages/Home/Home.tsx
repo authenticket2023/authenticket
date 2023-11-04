@@ -23,6 +23,7 @@ import { async } from "q";
 import { CardActionArea } from "@mui/material";
 import { Link } from 'react-router-dom';
 import backgroundImage from '../../images/backgroundImage.png';
+import { Footer } from "../../Footer/Footer";
 
 export const Home = () => {
 
@@ -612,7 +613,9 @@ export const Home = () => {
           </Grid>
         </Box>
         : null}
+        <Footer>
 
+        </Footer>
     </>
   );
 };
