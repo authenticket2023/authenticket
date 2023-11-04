@@ -111,7 +111,7 @@ export function SelectSeats(props: any) {
                         displayEmpty
                         style={{fontSize:'13px'}}
                         >
-                            {Array.from({ length: props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats): 6 }, (_, index) => (
+                            {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
                                 <MenuItem key={index + 1} value={index + 1}>
                                 {index + 1}
                                 </MenuItem>
