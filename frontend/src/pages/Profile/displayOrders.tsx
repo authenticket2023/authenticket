@@ -9,6 +9,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { styled } from "@mui/material/styles";
 import Collapse from "@mui/material/Collapse";
 import CardContent from "@mui/material/CardContent";
+import { format } from 'date-fns';
 
 interface orderInfo {
   order: {
@@ -54,6 +55,16 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 function compareTicketId(a: any, b: any) {
   return a.ticketId - b.ticketId;
+}
+
+function formatDateTime(dateString: string): string {
+  const date = new Date(dateString);
+  return format(date, "dd MMMM yyyy, h:mm a");
+}
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return format(date, "dd MMMM yyyy");
 }
 
 function DisplayTicket(props: ticketInfo) {
@@ -109,7 +120,7 @@ export default function DisplayOrder(props: orderInfo) {
               variant="subtitle1"
               sx={{ color: "grey", fontSize: 14 }}
             >
-              Event Date: {props.order.eventDate}
+              Event Date: {formatDateTime(props.order.eventDate)}
             </Typography>
             <Typography
               variant="subtitle1"
@@ -121,7 +132,7 @@ export default function DisplayOrder(props: orderInfo) {
               variant="subtitle1"
               sx={{ color: "grey", fontSize: 14 }}
             >
-              Purchased Date: {props.order.purchaseDate}
+              Purchased Date: {formatDate(props.order.purchaseDate)}
             </Typography>
             <Typography
               variant="subtitle1"

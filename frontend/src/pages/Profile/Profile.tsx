@@ -13,6 +13,12 @@ import {
   Snackbar,
 } from "@mui/material";
 import DisplayOrder from "./displayOrders";
+import { format } from 'date-fns';
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return format(date, "dd MMMM yyyy");
+}
 
 export const Profile = () => {
   
@@ -138,7 +144,7 @@ export const Profile = () => {
                       {name}
                     </Typography>
                     <Typography color={"grey"}>Email: <u>{email}</u></Typography>
-                    <Typography color={"grey"}>Birthday: {bday}</Typography>
+                    <Typography color={"grey"}>Birthday: {formatDate(bday)}</Typography>
                   </Box>
                 </Grid>
               </Grid>
