@@ -747,10 +747,6 @@ export const NavbarAdmin = () => {
     navigate("/EventAdmin");
   };
 
-  const handleVenueAdmin = () => {
-    navigate("/VenueAdmin");
-  };
-
   return (
     <AppBar position="sticky" style={{ background: "#000000" }}>
       <Container maxWidth="xl">
@@ -828,17 +824,6 @@ export const NavbarAdmin = () => {
               >
                 Event
               </Button>
-              <Button
-                key="Venue"
-                onClick={handleVenueAdmin}
-                sx={{
-                  my: 0,
-                  color: isTabActive("/VenueAdmin") ? "#FF5C35" : "black",
-                  display: "block",
-                }}
-              >
-                Venue
-              </Button>
             </Menu>
           </Box>
           <Typography
@@ -898,17 +883,6 @@ export const NavbarAdmin = () => {
             >
               Event
             </Button>
-            <Button
-              key="Venue"
-              onClick={handleVenueAdmin}
-              sx={{
-                my: 0,
-                color: isTabActive("/VenueAdmin") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              Venue
-            </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -961,16 +935,6 @@ export const NavbarAdmin = () => {
                   textAlign="center"
                 >
                   Event
-                </Typography>
-              </MenuItem>
-              <MenuItem key="Venue" onClick={handleVenueAdmin}>
-                <Typography
-                  sx={{
-                    color: isTabActive("/VenueAdmin") ? "#FF5C35" : "black",
-                  }}
-                  textAlign="center"
-                >
-                  Venue
                 </Typography>
               </MenuItem>
               <MenuItem key="Logout" onClick={handledLogout}>

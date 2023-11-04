@@ -37,7 +37,6 @@ import { FAQOrganiser } from './pages/FAQOrganiser';
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
 import { ArtistAdmin } from './pages/ArtistAdmin';
-import { VenueAdmin } from './pages/VenueAdmin';
 import { AdminLogin } from './pages/AdminLogin';
 
 const container: any = document.getElementById('root');
@@ -65,7 +64,6 @@ root.render(
 			<Route path="/QRCheckinOrganiser" element={<QRCheckinOrganiser />} />
 			<Route path="/HomeAdmin" element={<HomeAdmin />} />
 			<Route path="/EventAdmin" element={<EventAdmin />} />
-			<Route path="/VenueAdmin" element={<VenueAdmin />} />
 			<Route path="/ArtistAdmin" element={<ArtistAdmin />} />
 			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
 			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
