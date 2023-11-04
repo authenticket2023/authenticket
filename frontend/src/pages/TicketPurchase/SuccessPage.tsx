@@ -98,6 +98,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
           console.log('Order completed');
           const apiResponse = await response.json();
           const data = apiResponse.data;
+          console.log(apiResponse)
           setCompletedOrder(data.event);
 
           //only do submitFace if event is enhanced
@@ -115,7 +116,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
 
   // Call backend API to get order summary
   const orderInfo = async (orderId: any) => {
-    console.log('hello');
+
     // Calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_URL}/order/${orderId}`, {
       headers: {
@@ -129,7 +130,6 @@ export const SuccessPage: React.FC = (): JSX.Element => {
           const apiResponse = await response.json();
           const data = apiResponse.data;
           setOrderSummary(data);
-          console.log(data);
           // Set purchaserInfo and ticketSet as needed
         } else {
           // Handle error or pass to parent component
@@ -142,6 +142,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
 
   // Call backend API for face
   const submitFace = async () => {
+    console.log("face")
     // Create order
     const formData = new FormData();
     formData.append('eventID', String(completedOrder?.eventId));
@@ -185,7 +186,6 @@ export const SuccessPage: React.FC = (): JSX.Element => {
             }
           })
           .catch((err) => {
-            //if transaction faile, enable clickable
             window.alert(err);
           })
 
@@ -193,29 +193,6 @@ export const SuccessPage: React.FC = (): JSX.Element => {
     }
 
   };
-
-  //leave queue
-  const leaveQueue = async (eventId: any) => {
-    const formData = new FormData();
-    formData.append('eventId', eventId);
-    // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/leave-queue`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      method: 'PUT',
-      body: formData
-    })
-      .then(async (response) => {
-        if (response.status == 200) {
-          const apiResponse = await response.json();
-          console.log(apiResponse.message);
-        }
-      })
-      .catch((err) => {
-        window.alert(err);
-      });
-  }
 
   return (
     <div>

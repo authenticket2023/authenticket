@@ -1,10 +1,8 @@
-import { BorderColor } from '@mui/icons-material';
 import {
-    Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel, SelectChangeEvent, Snackbar, Alert
+    Box, Button, TextField, Typography, Grid, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Snackbar, Alert
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { SGStad } from '../../utility/seatMap/SeatMap';
-import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
 
 export function SelectSeats(props: any) {
@@ -51,8 +49,8 @@ export function SelectSeats(props: any) {
     const handleSeats = () => {
         //check if the section is sold out or if maxConsecutiveSeats == 0
         const maxConsecutiveSeats = props.sectionDetails
-        ? props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats
-        : 0;
+            ? props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats
+            : 0;
 
 
         //check if a section is chosen before proceedign to the next page
@@ -80,39 +78,45 @@ export function SelectSeats(props: any) {
         }
 
     }
-    
+
     return (
         <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
             <div>
-                <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection}/>
+                <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
             </div>
             <div>
                 <Typography style={{marginLeft:520, marginTop:-450, font:'roboto', fontWeight:500, fontSize:'16px'}}>
-                    Price: ${props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...') : 'Loading...'}
+                    Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
+                    {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...')}
                 </Typography>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:520, marginTop:0}}>
+                {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
+                    Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
+                        props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...'
+                    ) : 'Loading...'}
+                </Typography> */}
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 520, marginTop: 0 }}>
                     Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Loading...') : 'Loading...'}
                 </Typography>
             </div>
-            <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:-375}}>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+            <div style={{ background: '#F8F8F8', height: '110px', width: '300px', borderRadius: '8px', alignContent: 'left', marginLeft: 650, marginTop: -375 }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
                     Ticket Quantity
                 </Typography>
                 <Box sx={{ minWidth: 120, marginLeft: 2 }}>
                     <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                         <InputLabel id="demo-select-small-label">Quantity</InputLabel>
                         <Select
-                        labelId="demo-select-small-label"
-                        id="demo-select-small"
-                        value={quantity}
-                        label="Quantity"
-                        onChange={handleChange}
-                        displayEmpty
-                        style={{fontSize:'13px'}}
+                            labelId="demo-select-small-label"
+                            id="demo-select-small"
+                            value={quantity}
+                            label="Quantity"
+                            onChange={handleChange}
+                            displayEmpty
+                            style={{ fontSize: '13px' }}
                         >
                             {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
                                 <MenuItem key={index + 1} value={index + 1}>
-                                {index + 1}
+                                    {index + 1}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -136,31 +140,31 @@ export function SelectSeats(props: any) {
                 }}>
                 Confirm Seats
             </Button>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
             <Grid item xs={8}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} >
+                <Grid container spacing={2}>
+                    <Grid item xs={12} >
                         <Typography style={{ font: 'Roboto', fontWeight: 500, fontSize: '18px' }}>
-                          Ticket Pricing
+                            Ticket Pricing
                         </Typography>
-                      </Grid>
-                      {props.categoryDetails.map((cat: any) => (
-                        <Grid item key={cat.categoryId} xs={6} display='flex' flexDirection='row'> {/* xs={6} makes each item take up half the row */}
-                          <div style={{ background: colorArray[cat.categoryId - 1], height: '20px', width: '20px', borderRadius: '5px' }} />
-                          <Typography style={{ color: 'black', marginLeft: 10 }}>
-                            {cat.categoryName} - ${cat.price}
-                          </Typography>
-                        </Grid>
-                      ))}
-
                     </Grid>
+                    {props.categoryDetails.map((cat: any) => (
+                        <Grid item key={cat.categoryId} xs={6} display='flex' flexDirection='row'> {/* xs={6} makes each item take up half the row */}
+                            <div style={{ background: colorArray[cat.categoryId - 1], height: '20px', width: '20px', borderRadius: '5px' }} />
+                            <Typography style={{ color: 'black', marginLeft: 10 }}>
+                                {cat.categoryName} - ${cat.price}
+                            </Typography>
+                        </Grid>
+                    ))}
 
-                  </Grid>
+                </Grid>
+
+            </Grid>
 
             <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>

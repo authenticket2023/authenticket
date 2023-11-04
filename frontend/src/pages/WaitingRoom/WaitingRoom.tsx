@@ -142,7 +142,6 @@ export const WaitingRoom = () => {
 
     }, [eventId]);
 
-
     return (
         <Box
             sx={{
@@ -194,7 +193,7 @@ export const WaitingRoom = () => {
                         ml: '5%',
                         mr: '5%',
                     }}>
-                        <BorderLinearProgress variant="determinate" value={((totalQueue - queuePosition) / totalQueue) * 100 + 1} />
+                        <BorderLinearProgress variant="determinate" value={100 - (queuePosition  * 5)} />
                     </Grid>
                     <Grid item xs={12} sm={12} sx={{
                         display: 'relative',
@@ -209,7 +208,7 @@ export const WaitingRoom = () => {
                             Your number in line : <span style={{ color: 'green', fontWeight: 'bold' }}>{queuePosition}</span>
                         </Typography>
                         <Typography variant='body1' sx={{ textAlign: 'left', mt:2}}>
-                            Number of people in the queue : <span style={{ color: 'green', fontWeight: 'bold' }}>{totalQueue}</span>
+                            Number of people in line : <span style={{ color: 'green', fontWeight: 'bold' }}>{totalQueue}</span>
                         </Typography>
                         <Typography variant='body1' sx={{ textAlign: 'left', mt: 2 }}>
                             Your estimated wait time is : <span style={{ color: 'green', fontWeight: 'bold' }}>{queuePosition  * 5} minutes </span>
