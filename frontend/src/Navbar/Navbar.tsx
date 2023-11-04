@@ -18,6 +18,8 @@ import { Popover } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import LinkMUI from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import QrCodeIcon from '@mui/icons-material/QrCode';
+import PersonIcon from '@mui/icons-material/Person';
 
 export const NavbarNotLoggedIn = () => {
   let navigate = useNavigate();
@@ -34,7 +36,12 @@ export const NavbarNotLoggedIn = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -42,26 +49,45 @@ export const NavbarNotLoggedIn = () => {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
 
   const handleHome = () => {
     navigate("/");
   };
+  const handleHome = () => {
+    navigate('/');
+  }
 
   const handleEvents = () => {
     navigate("/Event");
   };
+  const handleEvents = () => {
+    navigate('/Event');
+  }
 
   const handleVenues = () => {
     navigate("/Venue");
   };
+  const handleVenues = () => {
+    navigate('/Venue');
+  }
 
   const handleFAQ = () => {
     navigate("/FAQ");
   };
+  const handleFAQ = () => {
+    navigate('/FAQ');
+  }
 
   const handleLogin = () => {
     navigate("/Login");
   };
+  const handleLogin = () => {
+    navigate('/Login');
+  }
+
 
   return (
     <AppBar position="sticky" style={{ background: "#000000" }}>
@@ -172,13 +198,13 @@ export const NavbarNotLoggedIn = () => {
             href=""
             sx={{
               mr: 2,
-              display: { xs: "flex", md: "none" },
+              display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: "Roboto",
+              fontFamily: 'Roboto',
               fontWeight: 700,
               letterSpacing: 0,
-              color: "inherit",
-              textDecoration: "none",
+              color: 'inherit',
+              textDecoration: 'none',
             }}
           >
             AuthenTicket
@@ -512,10 +538,13 @@ export const NavbarLoggedIn = () => {
             </Button>
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, display:'flex', alignItems:'center' }}>
+            <Typography style={{ fontSize:'14px', marginRight:12 }}>
+              {username || ''}
+            </Typography>
             <Tooltip title="Open Profile">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src={profileImageSrc} />
+                <Avatar alt={username || ''} src={profileImageSrc} />
               </IconButton>
             </Tooltip>
             <Popover
@@ -578,6 +607,9 @@ export const NavbarOrganiser = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElCheckIn, setAnchorElCheckIn] = React.useState<null | HTMLElement>(null);
 
   const { pathname } = useLocation();
 
@@ -585,7 +617,7 @@ export const NavbarOrganiser = () => {
     return pathname === path;
   };
 
-  let profileImage: any = window.localStorage.getItem("profileImage");
+  let profileImage: any = window.localStorage.getItem('profileImage');
   const profileImageSrc = `${process.env.REACT_APP_S3_URL}/event_organiser_profile/${profileImage}`;
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -607,38 +639,42 @@ export const NavbarOrganiser = () => {
     setAnchorElUser(null);
     sessionStorage.clear();
     localStorage.clear();
-    navigate("/logIn");
+    navigate('/logIn');
   };
 
   const handleCheckinOrganiser = () => {
-    navigate("/CheckinOrganiser");
-  };
+    navigate('/CheckinOrganiser');
+    setAnchorElCheckIn(null);
+
+  }
 
   const handleQRCheckinOrganiser = () => {
-    navigate("/QRCheckinOrganiser");
+    navigate('/QRCheckinOrganiser');
+    setAnchorElCheckIn(null);
+  }
+
+  const handleCheckIn = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElCheckIn(event.currentTarget);
+  };
+  const handleCloseCheckIn = () => {
+    setAnchorElCheckIn(null);
   };
 
   const linkStyle = {
-    textDecoration: "none",
-    color: "black",
+    textDecoration: 'none',
+    color: 'black'
   };
 
   return (
-    <AppBar position="sticky" style={{ background: "#000000" }}>
+    <AppBar position="sticky" style={{ background: '#000000' }} >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <a href="/HomeOrganiser">
-            <img
-              src={logo}
-              alt="Logo"
-              width={50}
-              height={50}
-              style={{ marginLeft: 5, marginRight: 8 }}
-            ></img>
+            <img src={logo} alt="Logo" width={50} height={50} style={{ marginLeft: 5, marginRight: 8 }}></img>
           </a>
 
           {/* for hamburger bar */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -653,88 +689,26 @@ export const NavbarOrganiser = () => {
               id="menu-appbar"
               anchorEl={anchorElNav}
               anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
+                vertical: 'bottom',
+                horizontal: 'left',
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
+                vertical: 'top',
+                horizontal: 'left',
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: "block", md: "none" },
+                display: { xs: 'block', md: 'none' },
               }}
             >
-              <Button
-                key="Home"
-                href={"/HomeOrganiser"}
-                sx={{
-                  my: 0,
-                  display: "block",
-                  color: isTabActive("/HomeOrganiser") ? "#FF5C35" : "black",
-                }}
-              >
-                Home
-              </Button>
-              <Button
-                key="Event"
-                href={"/EventOrganiser"}
-                sx={{
-                  my: 0,
-                  color: isTabActive("/EventOrganiser") ? "#FF5C35" : "black",
-                  display: "block",
-                }}
-              >
-                Event
-              </Button>
-              <Button
-                key="Order"
-                href={"/OrderOrganiser"}
-                sx={{
-                  my: 0,
-                  color: isTabActive("/OrderOrganiser") ? "#FF5C35" : "black",
-                  display: "block",
-                }}
-              >
-                Order
-              </Button>
-              <Button
-                key="Checkin"
-                onClick={handleCheckinOrganiser}
-                sx={{
-                  my: 0,
-                  color: isTabActive("/CheckinOrganiser") ? "#FF5C35" : "black",
-                  display: "block",
-                }}
-              >
-                Checkin
-              </Button>
-              <Button
-                key="QRCheckin"
-                onClick={handleQRCheckinOrganiser}
-                sx={{
-                  my: 0,
-                  color: isTabActive("/QRCheckinOrganiser")
-                    ? "#FF5C35"
-                    : "black",
-                  display: "block",
-                }}
-              >
-                QR
-              </Button>
-              <Button
-                key="FAQ"
-                href={"/FAQOrganiser"}
-                sx={{
-                  my: 0,
-                  color: isTabActive("/FAQOrganiser") ? "#FF5C35" : "black",
-                  display: "block",
-                }}
-              >
-                FAQ
-              </Button>
+              <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 0, display: 'block', color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} >Home</Button>
+              <Button key='Event' href={'/EventOrganiser'} sx={{ my: 0, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Event</Button>
+              <Button key='Order' href={'/OrderOrganiser'} sx={{ my: 0, color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Order</Button>
+              <Button key='Checkin' href={'/CheckinOrganiser'} sx={{ my: 0, color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >Checkin</Button>
+              <Button key='QRCheckin' href={'/QRCheckinOrganiser'} sx={{ my: 0, color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >QR</Button>
+              <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 0, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
             </Menu>
           </Box>
           <Typography
@@ -744,90 +718,26 @@ export const NavbarOrganiser = () => {
             href=""
             sx={{
               mr: 2,
-              display: { xs: "flex", md: "none" },
+              display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: "Roboto",
+              fontFamily: 'Roboto',
               fontWeight: 700,
               letterSpacing: 0,
-              color: "inherit",
-              textDecoration: "none",
+              color: 'inherit',
+              textDecoration: 'none',
             }}
           >
             AuthenTicket
           </Typography>
 
-          <Box
-            justifyContent="left"
-            alignItems="left"
-            sx={{ flexGrow: 1, ml: 4, display: { xs: "none", md: "flex" } }}
-          >
-            <Button
-              key="Home"
-              href={"/HomeOrganiser"}
-              sx={{
-                my: 2,
-                color: isTabActive("/HomeOrganiser") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              Home
-            </Button>
-            <Button
-              key="Event"
-              href={"/EventOrganiser"}
-              sx={{
-                my: 2,
-                color: isTabActive("/EventOrganiser") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              Event
-            </Button>
-            <Button
-              key="Order"
-              href={"/OrderOrganiser"}
-              sx={{
-                my: 2,
-                color: isTabActive("/OrderOrganiser") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              Order
-            </Button>
-            <Button
-              key="Checkin"
-              onClick={handleCheckinOrganiser}
-              sx={{
-                my: 2,
-                color: isTabActive("/CheckinOrganiser") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              Checkin
-            </Button>
-            <Button
-              key="QRCheckin"
-              onClick={handleQRCheckinOrganiser}
-              sx={{
-                my: 2,
-                color: isTabActive("/QRCheckinOrganiser") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              QR
-            </Button>
-            <Button
-              key="FAQ"
-              href={"/FAQOrganiser"}
-              sx={{
-                my: 2,
-                color: isTabActive("/FAQOrganiser") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              FAQ
-            </Button>
+          <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, ml: 4, display: { xs: 'none', md: 'flex' } }}>
+            <Button key='Home' href={'/HomeOrganiser'} sx={{ my: 2, color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
+            <Button key='Event' href={'/EventOrganiser'} sx={{ my: 2, color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Event</Button>
+            <Button key='Order' href={'/OrderOrganiser'} sx={{ my: 2, color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Order</Button>
+            <Button key='Checkin' onClick={handleCheckIn} sx={{ my: 2, color: isTabActive('/CheckinOrganiser') || isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >Checkin</Button>
+            <Button key='FAQ' href={'/FAQOrganiser'} sx={{ my: 2, color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
           </Box>
+
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
@@ -836,109 +746,96 @@ export const NavbarOrganiser = () => {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: "45px" }}
+              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem key="Home">
-                <a href="/HomeOrganiser" style={linkStyle}>
-                  <Typography
-                    sx={{
-                      color: isTabActive("/HomeOrganiser")
-                        ? "#FF5C35"
-                        : "black",
-                    }}
-                    textAlign="center"
-                  >
-                    Home
-                  </Typography>
-                </a>
-              </MenuItem>
-              <MenuItem key="Event">
-                <a href="/EventOrganiser" style={linkStyle}>
-                  <Typography
-                    sx={{
-                      color: isTabActive("/EventOrganiser")
-                        ? "#FF5C35"
-                        : "black",
-                    }}
-                    textAlign="center"
-                  >
-                    Event
-                  </Typography>
-                </a>
-              </MenuItem>
-              <MenuItem key="Order">
-                <a href="/OrderOrganiser" style={linkStyle}>
-                  <Typography
-                    sx={{
-                      color: isTabActive("/OrderOrganiser")
-                        ? "#FF5C35"
-                        : "black",
-                    }}
-                    textAlign="center"
-                  >
-                    Order
-                  </Typography>
-                </a>
-              </MenuItem>
-              <MenuItem key="Checkin" onClick={handleCheckinOrganiser}>
-                <Typography
-                  sx={{
-                    color: isTabActive("/CheckinOrganiser")
-                      ? "#FF5C35"
-                      : "black",
-                  }}
-                  textAlign="center"
-                >
-                  Checkin
-                </Typography>
-              </MenuItem>
-              <MenuItem key="QRCheckin" onClick={handleQRCheckinOrganiser}>
-                <Typography
-                  sx={{
-                    color: isTabActive("/QRCheckinOrganiser")
-                      ? "#FF5C35"
-                      : "black",
-                  }}
-                  textAlign="center"
-                >
-                  QR
-                </Typography>
-              </MenuItem>
-              <MenuItem key="FAQ">
-                <a href="/FAQOrganiser" style={linkStyle}>
-                  <Typography
-                    sx={{
-                      color: isTabActive("/FAQOrganiser") ? "#FF5C35" : "black",
-                    }}
-                    textAlign="center"
-                  >
-                    FAQ
-                  </Typography>
-                </a>
-              </MenuItem>
-              <MenuItem key="Logout" onClick={handledLogout}>
+              <a href='/HomeOrganiser' style={linkStyle}>
+                <MenuItem key='Home'>
+                  <Typography sx={{ color: isTabActive('/HomeOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Home</Typography>
+                </MenuItem>
+              </a>
+
+              <a href='/EventOrganiser' style={linkStyle}>
+                <MenuItem key='Event'>
+                  <Typography sx={{ color: isTabActive('/EventOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Event</Typography>
+                </MenuItem>
+              </a>
+              <a href='/OrderOrganiser' style={linkStyle}>
+                <MenuItem key='Order'>
+                  <Typography sx={{ color: isTabActive('/OrderOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Order</Typography>
+
+                </MenuItem>
+              </a>
+              <a href='/CheckinOrganiser' style={linkStyle}>
+                <MenuItem key='Checkin'>
+                  <Typography sx={{ color: isTabActive('/CheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">Checkin</Typography>
+                </MenuItem>
+              </a>
+              <a href='/QRCheckinOrganiser' style={linkStyle}>
+                <MenuItem key='QRCheckin'>
+                  <Typography sx={{ color: isTabActive('/QRCheckinOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">QR Code</Typography>
+                </MenuItem>
+              </a>
+              <a href='/FAQOrganiser' style={linkStyle}>
+                <MenuItem key='FAQ'>
+                  <Typography sx={{ color: isTabActive('/FAQOrganiser') ? '#FF5C35' : 'black' }} textAlign="center">FAQ</Typography>
+                </MenuItem>
+              </a>
+              <MenuItem key='Logout' onClick={handledLogout}>
                 <Typography textAlign="center">Log out</Typography>
               </MenuItem>
             </Menu>
           </Box>
+
+          {/* check in dropdown  */}
+          <Menu
+            anchorEl={anchorElCheckIn}
+            open={Boolean(anchorElCheckIn)}
+            onClose={handleCloseCheckIn}
+            onClick={handleCloseCheckIn}
+            PaperProps={{
+              elevation: 0,
+              sx: {
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                mt: 1.5,
+                '& .MuiAvatar-root': {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+
+              },
+            }}
+            transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={handleCheckinOrganiser}>
+              <PersonIcon sx={{ marginRight: 2 }} /> Face
+            </MenuItem>
+
+            <MenuItem onClick={handleQRCheckinOrganiser}>
+              <QrCodeIcon sx={{ marginRight: 2 }} /> QR
+            </MenuItem></Menu>
+
         </Toolbar>
       </Container>
     </AppBar>
   );
-};  
+}
 
 export const NavbarAdmin = () => {
   let navigate = useNavigate();

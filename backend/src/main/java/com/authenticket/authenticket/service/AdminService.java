@@ -11,6 +11,4 @@ public interface AdminService {
     Optional<AdminDisplayDto> findAdminById(Integer adminId);
     Admin saveAdmin(Admin admin);
     AdminDisplayDto updateAdmin(Admin newAdmin);
-
-    //would include verifying registering of EventOrganiser
 }

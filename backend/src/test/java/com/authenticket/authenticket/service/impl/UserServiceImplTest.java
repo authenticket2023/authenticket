@@ -37,6 +37,7 @@ class UserServiceImplTest {
     @BeforeEach
     void setUp(){
         UserDtoMapper userDtoMapper = new UserDtoMapper(passwordEncoder);
+
         underTest = new UserServiceImpl(userRepository, userDtoMapper);
     }
 
@@ -163,7 +164,7 @@ class UserServiceImplTest {
                 .userId(userId)
                 .name("GeorgiaTest")
                 .email(email)
-                .password("password1")
+                .password("update")
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)

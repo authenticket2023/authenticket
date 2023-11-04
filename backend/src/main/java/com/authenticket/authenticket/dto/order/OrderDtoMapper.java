@@ -1,7 +1,5 @@
 package com.authenticket.authenticket.dto.order;
 
-import com.authenticket.authenticket.dto.event.EventDisplayDto;
-import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDto;
 import com.authenticket.authenticket.dto.ticket.TicketDisplayDtoMapper;
 import com.authenticket.authenticket.dto.user.UserDtoMapper;

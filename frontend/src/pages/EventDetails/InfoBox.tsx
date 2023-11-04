@@ -35,6 +35,8 @@ export const InfoBox = (props: any) => {
   const [preSaleStatus, setPreSaleStatus] = useState(true);
   const [isSelectedForPreSale, setIsSelectedForPreSale] = useState(true);
   const [availableTicket, setAvailableTicket] = useState(true);
+  const [pastEvent, setPastEvent] = useState(false);
+
 
   // Get today's date and time
   // Create a Date object for the eventDate
@@ -198,7 +200,7 @@ export const InfoBox = (props: any) => {
 
 
   const handleBuyTicket = () => {
-    if(token != null) {
+    if (token != null) {
       navigate(`/TicketPurchase/${props.eventId}`);
     } else {
       setOpenSnackbar(true);
@@ -225,6 +227,10 @@ export const InfoBox = (props: any) => {
   };
 
   useEffect(() => {
+    const eventDate: any = new Date(props.eventDate);
+    if (today > eventDate) {
+      setPastEvent(true);
+    }
     //check if the event is presale event
     loadIsPresaleEvent();
 
@@ -328,7 +334,7 @@ export const InfoBox = (props: any) => {
             }
           </Button>
         )}
-        {(isPresaleEvent && isOneDayBeforeSaleDate && isTodayAfterSaleDate) && (
+        {(isPresaleEvent && isOneDayBeforeSaleDate && isTodayAfterSaleDate && !pastEvent) && (
           <Button
             variant="contained"
             style={{
@@ -359,7 +365,7 @@ export const InfoBox = (props: any) => {
             Stay tuned
           </Button>
         )}
-        {(!isPresaleEvent && isTodayAfterSaleDate) && (
+        {(!isPresaleEvent && isTodayAfterSaleDate && !pastEvent) && (
           <Button
             variant="contained"
             style={{
@@ -372,6 +378,22 @@ export const InfoBox = (props: any) => {
             disabled={!availableTicket}
           >
             {availableTicket ? 'Buy Tickets' : 'Sold out'}
+          </Button>
+        )}
+
+        {/* for past event*/}
+        {(pastEvent) && (
+          <Button
+            variant="contained"
+            style={{
+              backgroundColor: 'grey',
+              color: 'white',
+              width: '250px',
+              marginTop: 8
+            }}
+            disabled={true}
+          >
+            Event is over
           </Button>
         )}
 

@@ -1,7 +1,5 @@
 package com.authenticket.authenticket.repository;
 
-import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.EventType;
 import com.authenticket.authenticket.model.Section;
 import com.authenticket.authenticket.model.VenueSectionId;
 import org.springframework.data.jpa.repository.JpaRepository;

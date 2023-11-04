@@ -10,6 +10,7 @@ import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.repository.OrderRepository;
 import com.authenticket.authenticket.repository.TicketRepository;
+import com.authenticket.authenticket.service.QueueService;
 import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.OrderServiceImpl;
 import com.authenticket.authenticket.service.impl.TicketServiceImpl;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,7 @@ public class OrderController extends Utility {
     private final TicketServiceImpl ticketService;
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
+    private final QueueService queueService;
 
     @Autowired
     public OrderController(OrderServiceImpl orderService,
@@ -57,13 +60,15 @@ public class OrderController extends Utility {
                            OrderDtoMapper orderDtoMapper,
                            TicketServiceImpl ticketService,
                            TicketRepository ticketRepository,
-                           EventRepository eventRepository) {
+                           EventRepository eventRepository,
+                           QueueService queueService) {
         this.orderService = orderService;
         this.orderRepository = orderRepository;
         this.orderDtoMapper = orderDtoMapper;
         this.ticketService = ticketService;
         this.ticketRepository = ticketRepository;
         this.eventRepository = eventRepository;
+        this.queueService = queueService;
     }
 
     @GetMapping("/test")
@@ -72,64 +77,7 @@ public class OrderController extends Utility {
     }
 
     /**
-     * Retrieves a test PDF document and sends it as a response to the client.
-     *
-     * @return A ResponseEntity containing the PDF document as a byte array and the necessary headers
-     * to trigger a download on the client-side.
-     *
-     * @throws RuntimeException If there's an error during the document retrieval, a runtime exception
-     * is thrown to indicate the failure.
-     */
-    @GetMapping("/test-pdf")
-    public ResponseEntity<?> testPDF() {
-        // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
-        try {
 
-            byte[] contents = orderService.test().getContentAsByteArray();
-            ticketService.setCheckIn(1, false);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            // Here you have to set the actual filename of your pdf
-            String filename = "output.pdf";
-            headers.setContentDispositionFormData(filename, filename);
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
-            return response;
-        } catch (DocumentException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Retrieves a second test PDF document and sends it as a response to the client.
-     *
-     * @return A ResponseEntity containing the PDF document as a byte array and the necessary headers
-     * to trigger a download on the client-side.
-     *
-     * @throws RuntimeException If there's an error during the document retrieval, a runtime exception
-     * is thrown to indicate the failure.
-     */
-    @GetMapping("/test-pdf2")
-    public ResponseEntity<?> testPDF2() {
-        // retrieve contents of "C:/tmp/report.pdf" that were written in showHelp
-        try {
-
-            byte[] contents = orderService.test2().getContentAsByteArray();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            // Here you have to set the actual filename of your pdf
-            String filename = "output.pdf";
-            headers.setContentDispositionFormData(filename, filename);
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-            ResponseEntity<byte[]> response = new ResponseEntity<>(contents, headers, HttpStatus.OK);
-            return response;
-        } catch (DocumentException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Retrieves an order by its unique identifier and returns it as an HTTP response.
      *
      * @param orderId The unique identifier of the order to retrieve.
@@ -257,6 +205,11 @@ public class OrderController extends Utility {
         checkIfEventExistsAndIsApprovedAndNotDeleted(eventId);
 
         Event event = eventRepository.findById(eventId).orElse(null);
+
+        // throw exception if not a presale order but still in queue
+        if (LocalDateTime.now().isAfter(event.getTicketSaleDate()) && !queueService.canPurchase(purchaser, event)) {
+            throw new IllegalStateException("Cannot purchase while still queuing");
+        }
 
         //check that ticket holder list is correct first
         List<String> ticketHolderList = new ArrayList<>();
@@ -422,10 +375,11 @@ public class OrderController extends Utility {
             throw new NonExistentException("Order does not exist");
         }
 
-        orderService.completeOrder(orderRepository.findById(orderId).get());
+        Order completedOrder = orderService.completeOrder(orderRepository.findById(orderId).get());
+        OrderDisplayDto orderDisplayDto = orderDtoMapper.apply(completedOrder);
 
 
-        return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
+        return ResponseEntity.ok(generateApiResponse(orderDisplayDto, "Order completed successfully"));
     }
 
     /**

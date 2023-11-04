@@ -1,5 +1,5 @@
 # Use the Amazon Corretto 17 image as the base image
-FROM amazoncorretto:17-alpine-jdk
+FROM --platform=linux/arm64 amazoncorretto:17-alpine-jdk
 
 # Copy the JAR file from your project's target directory to the container
 COPY target/AuthenTicket-0.0.1-SNAPSHOT.jar /AuthenTicket-0.0.1-SNAPSHOT.jar

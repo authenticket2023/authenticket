@@ -22,7 +22,7 @@ import BearCarousel, {
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
 import { Link } from 'react-router-dom';
-import backgroundImage from '../../images/backgroundImage.png';
+import backgroundImage from '../../images/backgroundImage-2.png';
 
 export const Home = () => {
 
@@ -268,31 +268,6 @@ export const Home = () => {
       />
     );
   };
-
-  const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.5),
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.common.white, 0.6),
-    },
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "100%",
-    },
-  }));
-
-  const SearchIconWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }));
 
   const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: "black",
@@ -547,6 +522,7 @@ export const Home = () => {
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
                 backgroundImage: `url(${backgroundImage})`,
+                height: '250px'
               }}
             >
               <Box
@@ -574,13 +550,18 @@ export const Home = () => {
                       pr: { md: 0 },
                     }}
                   >
-                    <br />
-                    <br />
                     <Typography
                       component="h1"
                       variant="h3"
                       color="inherit"
                       align="center"
+                      style={{
+                        whiteSpace:'nowrap',
+                        overflow:'hidden',
+                        width:'100%',
+                        fontSize:'45px',
+                        fontWeight:'500'
+                      }}
                     >
                       Unlock Unforgettable Experiences
                     </Typography>
@@ -590,22 +571,12 @@ export const Home = () => {
                       color="inherit"
                       gutterBottom
                       align="center"
+                      style={{
+                        fontWeight:'400'
+                      }}
                     >
                       your gateway to premier event adventures
                     </Typography>
-                    <br />
-                    <br />
-                    <br />
-                    <Search>
-                      <SearchIconWrapper>
-                        <SearchIcon sx={{ color: "#3b3b3b" }} />
-                      </SearchIconWrapper>
-                      <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ "aria-label": "search" }}
-                        fullWidth
-                      />
-                    </Search>
                     <br />
                     <br />
                     <br />
@@ -614,7 +585,7 @@ export const Home = () => {
               </Grid>
             </Paper>
           </div>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             Best Sellers
           </Typography>
           <Grid container>
@@ -622,7 +593,7 @@ export const Home = () => {
               <BestSellersCarousell />
             </Grid>
           </Grid>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             New on AuthenTicket
           </Typography>
           <Grid container>
@@ -633,7 +604,7 @@ export const Home = () => {
           <Box bgcolor="#FF5C35" marginTop={12} >
              <CustomBanner></CustomBanner>
           </Box>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             Recently Added
           </Typography>
           <Grid container>

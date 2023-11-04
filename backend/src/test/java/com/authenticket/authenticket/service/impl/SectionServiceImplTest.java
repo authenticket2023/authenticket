@@ -43,7 +43,13 @@ class SectionServiceImplTest {
     @Test
     public void testSaveSection() {
         // Arrange
-        Section section = new Section(/* Initialize section properties */);
+        Section section = Section.builder()
+                .sectionId("TestSection1")
+                .venue(new Venue()) // Set the Venue, you may need to create a helper for Venue as well
+                .ticketCategory(new TicketCategory()) // Set the TicketCategory, you may need to create a helper for TicketCategory as well
+                .noOfRows(10)
+                .noOfSeatsPerRow(20)
+                .build();
         when(sectionRepository.save(section)).thenReturn(section);
 
         // Act
@@ -114,7 +120,6 @@ class SectionServiceImplTest {
 
         // Assert
         // Perform assertions on seatMatrix based on your expectations
-        // Example: assertEquals(expectedValue, actualValue);
         verify(ticketRepository).findAllByTicketPricingEventEventIdAndSectionSectionId(event.getEventId(), section.getSectionId());
     }
 
@@ -169,7 +174,6 @@ class SectionServiceImplTest {
 
         // Assert
         // Perform assertions on the result based on your expectations
-        // Example: assertEquals(expectedValue, actualValue);
         verify(ticketRepository).findTicketDetailsForSection(event.getEventId(), section.getSectionId());
     }
 }

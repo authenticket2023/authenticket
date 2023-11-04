@@ -84,14 +84,6 @@ export const EventOrganiser = () => {
     const [facialCheckIn, setFacialCheckIn]: any = useState(true);
     const [presale, setPresale]: any = useState(true);
 
-    //to be remove
-    const [ticketNumberVIP, setTicketNumberVIP] = useState(100);
-    const [ticketNumberCat1, setTicketNumberCat1] = useState(100);
-    const [ticketNumberCat2, setTicketNumberCat2] = useState(100);
-    const [ticketNumberCat3, setTicketNumberCat3] = useState(100);
-    const [ticketNumberCat4, setTicketNumberCat4] = useState(100);
-
-
     //for venue & artist
     const [venue, setVenue] = useState('');
     const [artistList, setartistList] = useState<string[]>([]);

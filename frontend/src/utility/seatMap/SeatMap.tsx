@@ -41,7 +41,7 @@ export function SGStad(props: any) {
       {props.id === 1 ?<StarTheatre onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 2 ? <CTSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : props.id === 3 ? <SgStadSVG onClick={handleSectionClick} style={{ width:'650px'}}/> : null}
       {/* <SgStadSVG onClick={handleSectionClick}/>
       <CTSVG onClick={handleSectionClick}/> */}
-      <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', display:'flex', flexDirection:'column', marginTop:125, marginLeft:0}}>
+      <div style={{background:'#F8F8F8', height:'140px', width:'300px', borderRadius:'8px', alignContent:'left', display:'flex', flexDirection:'column', marginTop:125, marginLeft:0}}>
         <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
           You have selected
         </Typography>
