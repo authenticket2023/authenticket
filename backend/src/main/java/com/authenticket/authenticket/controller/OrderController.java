@@ -375,10 +375,11 @@ public class OrderController extends Utility {
             throw new NonExistentException("Order does not exist");
         }
 
-        orderService.completeOrder(orderRepository.findById(orderId).get());
+        Order completedOrder = orderService.completeOrder(orderRepository.findById(orderId).get());
+        OrderDisplayDto orderDisplayDto = orderDtoMapper.apply(completedOrder);
 
 
-        return ResponseEntity.ok(generateApiResponse(null, "Order completed successfully"));
+        return ResponseEntity.ok(generateApiResponse(orderDisplayDto, "Order completed successfully"));
     }
 
     /**
