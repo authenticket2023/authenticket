@@ -125,17 +125,23 @@ public class EventOrganiserServiceImpl extends Utility implements EventOrganiser
      *         Organisers that match the specified review status.
      */
     @Override
+    public List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status) {
+        return eventOrganiserDtoMapper
+                .map(eventOrganiserRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(status));
+    }
+
+    /**
+     * Retrieves a list of current events that have been approved and organized by the specified organiser.
+     *
+     * @param organiserId The unique identifier of the organiser for whom to find events.
+     * @return A list of {@link Event} objects representing current events organized by the organiser.
+     */
+    @Override
     public List<Event> findAllCurrentEventsByOrganiser(Integer organiserId) {
         LocalDateTime currentDate = LocalDateTime.now();
         List<Event> eventList = eventRepository.findAllByReviewStatusAndOrganiserOrganiserIdAndEventDateIsAfterAndDeletedAtIsNullOrderByEventDateAsc(Event.ReviewStatus.APPROVED.getStatusValue(), organiserId,currentDate);
 
         return eventList;
-    }
-
-    @Override
-    public List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status) {
-        return eventOrganiserDtoMapper
-                .map(eventOrganiserRepository.findAllByReviewStatusAndDeletedAtIsNullOrderByCreatedAtAsc(status));
     }
 
     /**

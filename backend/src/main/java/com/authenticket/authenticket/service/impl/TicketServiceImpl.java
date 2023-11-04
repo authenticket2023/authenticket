@@ -540,6 +540,13 @@ public class TicketServiceImpl implements TicketService {
         return sold < totalSeats;
     }
 
+    /**
+     * Calculates the number of tickets that a user can still purchase for a specific event.
+     *
+     * @param event The event for which the ticket availability is checked.
+     * @param user The user for whom the ticket purchase limit is calculated.
+     * @return The number of tickets that the user can still purchase for the given event.
+     */
     @Override
     public Integer getNumberOfTicketsPurchaseable(Event event, User user) {
         return PresaleService.MAX_TICKETS_SOLD_PER_USER - ticketRepository.countAllByOrder_EventAndOrder_User(event, user);
