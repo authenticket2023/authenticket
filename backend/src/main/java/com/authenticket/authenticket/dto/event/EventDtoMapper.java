@@ -49,7 +49,6 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
      *
      * @param eventOrganiserDtoMapper              The mapper for converting EventOrganiser entities to DTOs.
      * @param eventTicketCategoryDisplayDtoMapper  The mapper for converting EventTicketCategory entities to DTOs.
-     * @param venueDtoMapper                       The mapper for converting Venue entities to DTOs.
      * @param artistDtoMapper                      The mapper for converting Artist entities to DTOs.
      * @param adminDtoMapper                       The mapper for converting Admin entities to DTOs.
      * @param eventRepository                      The repository for Event entities.
@@ -59,9 +58,11 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
     @Autowired
     public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper,
                           EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper,
-                          VenueDtoMapper venueDtoMapper, ArtistDtoMapper artistDtoMapper,
-                          AdminDtoMapper adminDtoMapper, EventRepository eventRepository,
-                          VenueRepository venueRepository, TicketRepository ticketRepository) {
+                          ArtistDtoMapper artistDtoMapper,
+                          AdminDtoMapper adminDtoMapper,
+                          EventRepository eventRepository,
+                          VenueRepository venueRepository,
+                          TicketRepository ticketRepository) {
         this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
         this.eventTicketCategoryDisplayDtoMapper = eventTicketCategoryDisplayDtoMapper;
         this.artistDtoMapper = artistDtoMapper;
