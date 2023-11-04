@@ -613,9 +613,7 @@ export const Home = () => {
           </Grid>
         </Box>
         : null}
-        <Footer>
-
-        </Footer>
+        <Footer/>
     </>
   );
 };
