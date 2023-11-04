@@ -25,6 +25,30 @@ export function SelectSeats(props: any) {
         setOpenSnackbar(false);
     };
 
+    const handleChange = (event: SelectChangeEvent) => {
+        const newQuantity = event.target.value as string;
+        setQuantity(newQuantity);
+        props.onQuantityChange(newQuantity);
+        // props.onSelectedSection(selectedSection);
+
+        // Find the selected section
+        const selectedSectionData = props.sectionDetails.find(
+            (item: { sectionId: undefined; }) => item.sectionId === selectedSection
+        );
+
+        // Check if the selectedSectionData exists
+        if (selectedSectionData) {
+            const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
+
+            // Error message if the ticket order is bigger than the max consecutive seats
+            if (parseInt(quantity) > maxConsecutiveSeats) {
+            setOpenSnackbar(true);
+            setAlertType('warning');
+            setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
+            }
+        }
+    };
+
     const handleSeats = () => {
 
         //check if the section is sold out or if maxConsecutiveSeats == 0
@@ -83,6 +107,7 @@ export function SelectSeats(props: any) {
                         id="demo-select-small"
                         value={quantity}
                         label="Quantity"
+                        onChange={handleChange}
                         displayEmpty
                         style={{fontSize:'13px'}}
                         >

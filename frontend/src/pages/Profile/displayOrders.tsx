@@ -4,6 +4,7 @@ import { Grid } from "@mui/material";
 import Card from "@mui/material/Card";
 import { CardActionArea } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { format } from 'date-fns';
 
 interface orderInfo {
   order: {
@@ -56,6 +57,11 @@ function DisplayTicket(props: ticketInfo) {
   );
 }
 
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return format(date, "dd MMMM yyyy, h:mm a");
+}
+
 export default function DisplayOrder(props: orderInfo) {
   return (
     <Card
@@ -72,7 +78,7 @@ export default function DisplayOrder(props: orderInfo) {
           Order ID: {props.order.orderId}
         </Typography>
         <Typography variant="subtitle1" sx={{ color: "grey", fontSize: 14 }}>
-          Event Date: {props.order.eventDate}
+          Event Date: {formatDate(props.order.eventDate)}
         </Typography>
         <Typography variant="subtitle1" sx={{ color: "grey", fontSize: 14 }}>
           Location: {props.order.venueName}
