@@ -36,19 +36,11 @@ export const NavbarNotLoggedIn = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
@@ -56,37 +48,27 @@ export const NavbarNotLoggedIn = () => {
   const handleHome = () => {
     navigate("/");
   };
-  const handleHome = () => {
-    navigate('/');
-  }
+
 
   const handleEvents = () => {
     navigate("/Event");
   };
-  const handleEvents = () => {
-    navigate('/Event');
-  }
+
 
   const handleVenues = () => {
     navigate("/Venue");
   };
-  const handleVenues = () => {
-    navigate('/Venue');
-  }
+
 
   const handleFAQ = () => {
     navigate("/FAQ");
   };
-  const handleFAQ = () => {
-    navigate('/FAQ');
-  }
+
 
   const handleLogin = () => {
     navigate("/Login");
   };
-  const handleLogin = () => {
-    navigate('/Login');
-  }
+
 
 
   return (
@@ -540,11 +522,11 @@ export const NavbarLoggedIn = () => {
 
           <Box sx={{ flexGrow: 0, display:'flex', alignItems:'center' }}>
             <Typography style={{ fontSize:'14px', marginRight:12 }}>
-              {username || ''}
+              {name || ''}
             </Typography>
             <Tooltip title="Open Profile">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={username || ''} src={profileImageSrc} />
+                <Avatar alt={name || ''} src={profileImageSrc} />
               </IconButton>
             </Tooltip>
             <Popover
@@ -607,8 +589,6 @@ export const NavbarOrganiser = () => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [anchorElCheckIn, setAnchorElCheckIn] = React.useState<null | HTMLElement>(null);
 
   const { pathname } = useLocation();
