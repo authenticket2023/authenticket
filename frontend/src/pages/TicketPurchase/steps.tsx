@@ -581,7 +581,7 @@ export function Confirmation(props: any) {
                 },
             ]
         }
-        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/payment/create-checkout-session`, {
             method: "Post",
             headers: {
                 "Content-Type": "application/json"
@@ -779,7 +779,7 @@ export function ConfirmationFace(props: any) {
                 },
             ]
         }
-        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/payment/create-checkout-session`, {
             method: "Post",
             headers: {
                 "Content-Type": "application/json"
