@@ -130,7 +130,7 @@ export const Profile = () => {
               <Grid container>
                 <Grid paddingLeft={2} item>
                   <Avatar
-                    alt="Brian Lim"
+                    alt={name || ''}
                     src={profileImageSrc}
                     sx={{ width: 75, height: 75 }}
                   />
