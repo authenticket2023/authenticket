@@ -404,20 +404,6 @@ export function EnterDetailsFace(props: any) {
                         <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                             <div>
                                 {sectionImages[sectionIndex] && sectionImages[sectionIndex].some((file) => file !== null) && (
-                                    // <ImageList sx={{ width: '45px', height: '45px', borderRadius:'100%'}} cols={1} rowHeight={250}>
-                                    //     {sectionImages[sectionIndex].map((file, index) => (
-                                    //         file !== null && (
-                                    //             <ImageListItem key={index}>
-                                    //                 <img
-                                    //                     src={`${URL.createObjectURL(file)}?w=575&h=250&fit=crop&auto=format`}
-                                    //                     srcSet={`${URL.createObjectURL(file)}`}
-                                    //                     alt={`Selected ${index + 1}`}
-                                    //                     loading="lazy"
-                                    //                 />
-                                    //             </ImageListItem>
-                                    //         )
-                                    //     ))}
-                                    // </ImageList>
                                     <Stack sx={{ width: '45px', height: '45px', borderRadius:'100%'}} direction='column' spacing={2}>
                                         {sectionImages[sectionIndex].map((file, index) => (
                                             file !== null && (
@@ -883,17 +869,21 @@ export function ConfirmationFace(props: any) {
     }
 
     return (
-        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop: 50 }}>
-            <Grid item style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'center', display: 'flex', alignItems: 'center', marginRight: 5, flexDirection: 'column' }}>
+        <Grid>
+            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft:380, marginTop:40 }}>
+                Attendee Details
+            </Typography>
+        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop:6 }}>
+            <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
                 {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
-                    <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'center', display: 'flex', alignItems: 'center', marginRight: 5 }}>
+                    <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginRight: 5 }}>
                         <img
                             src={URL.createObjectURL(image)}
                             alt={`Image ${index}`}
-                            style={{ width: '45px', height: '45px', borderRadius: '100%' }}
+                            style={{ width: '70px', height: '70px', borderRadius: '100%', marginLeft:40, marginTop:30 }}
                         />
                         {names[index] !== null && names[index] !== undefined && (
-                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10 }}>
+                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems:'center', marginTop:47 }}>
                                 {names[index]}
                             </Typography>
                         )}
@@ -960,6 +950,7 @@ export function ConfirmationFace(props: any) {
                     {alertMsg}
                 </Alert>
             </Snackbar>
+        </Grid>
         </Grid>
     )
 }

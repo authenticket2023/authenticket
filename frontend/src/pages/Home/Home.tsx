@@ -22,7 +22,7 @@ import BearCarousel, {
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
 import { Link } from 'react-router-dom';
-import backgroundImage from '../../images/backgroundImage.png';
+import backgroundImage from '../../images/backgroundImage-2.png';
 
 export const Home = () => {
 
@@ -550,7 +550,6 @@ export const Home = () => {
                       pr: { md: 0 },
                     }}
                   >
-                    <br />
                     <Typography
                       component="h1"
                       variant="h3"
@@ -572,6 +571,9 @@ export const Home = () => {
                       color="inherit"
                       gutterBottom
                       align="center"
+                      style={{
+                        fontWeight:'400'
+                      }}
                     >
                       your gateway to premier event adventures
                     </Typography>
@@ -583,7 +585,7 @@ export const Home = () => {
               </Grid>
             </Paper>
           </div>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             Best Sellers
           </Typography>
           <Grid container>
@@ -591,7 +593,7 @@ export const Home = () => {
               <BestSellersCarousell />
             </Grid>
           </Grid>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             New on AuthenTicket
           </Typography>
           <Grid container>
@@ -602,7 +604,7 @@ export const Home = () => {
           <Box bgcolor="#FF5C35" marginTop={12} >
              <CustomBanner></CustomBanner>
           </Box>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             Recently Added
           </Typography>
           <Grid container>

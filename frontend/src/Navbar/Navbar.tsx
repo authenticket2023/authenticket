@@ -155,6 +155,7 @@ export const NavbarLoggedIn = () => {
   let navigate = useNavigate();
 
   const { pathname } = useLocation();
+  const username = window.localStorage.getItem("username");
 
   const isTabActive = (path: any) => {
     return pathname === path;
@@ -394,10 +395,13 @@ export const NavbarLoggedIn = () => {
             </Button>
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, display:'flex', alignItems:'center' }}>
+            <Typography style={{ fontSize:'14px', marginRight:12 }}>
+              {username || ''}
+            </Typography>
             <Tooltip title="Open Profile">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src={profileImageSrc} />
+                <Avatar alt={username || ''} src={profileImageSrc} />
               </IconButton>
             </Tooltip>
             <Popover
@@ -416,8 +420,16 @@ export const NavbarLoggedIn = () => {
                 width={300}
                 bgcolor={"black"}
                 padding={2}
+                style={{
+                  display:'flex',
+                  flexDirection:'row',
+                  alignItems: 'center'
+                }}
               >
-                <Avatar sizes="large" alt="Remy Sharp" src={profileImageSrc} sx={{ width: 75, height: 75 }} />
+                <Avatar sizes="large" alt={username || ''} src={profileImageSrc} sx={{ width: 75, height: 75 }} />
+                <Typography style={{color:'white', alignItems:'center', justifyContent:'center', marginLeft:15}}>
+                  {username || ''}
+                </Typography>
               </Box>
               <Box bgcolor={'black'} paddingBottom={1} paddingTop={1}>
                 <Grid container justifyContent={'flex-end'}>
@@ -425,7 +437,7 @@ export const NavbarLoggedIn = () => {
                     <Button
                       variant="outlined"
                       onClick={handleProfile}
-                      sx={{ color: "orange", borderColor: "orange" }}
+                      sx={{ color: "#FF5C35", borderColor: "#FF5C35" }}
                     >
                       View Profile
                     </Button>
@@ -434,7 +446,7 @@ export const NavbarLoggedIn = () => {
                     <Button
                       variant="outlined"
                       onClick={handledLogout}
-                      sx={{ color: "orange", borderColor: "orange" }}
+                      sx={{ color: "#FF5C35", borderColor: "#FF5C35" }}
                     >
 
                       Log Out
