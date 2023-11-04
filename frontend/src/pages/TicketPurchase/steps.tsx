@@ -1,5 +1,5 @@
 import {
-    Box, Button, TextField, Typography, Grid, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Snackbar, Alert
+    Box, Button, TextField, Typography, Grid, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Snackbar, Alert, Stack
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { SGStad } from '../../utility/seatMap/SeatMap';
@@ -36,6 +36,7 @@ export function SelectSeats(props: any) {
         // Check if the selectedSectionData exists
         if (selectedSectionData) {
             const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
+            setMaxConsecutiveSeats(maxConsecutiveSeats);
 
             // Error message if the ticket order is bigger than the max consecutive seats
             if (parseInt(quantity) > maxConsecutiveSeats) {
@@ -51,7 +52,6 @@ export function SelectSeats(props: any) {
         const maxConsecutiveSeats = props.sectionDetails
             ? props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats
             : 0;
-
 
         //check if a section is chosen before proceedign to the next page
         if (!selectedSection) {
@@ -87,7 +87,7 @@ export function SelectSeats(props: any) {
             <div>
                 <Typography style={{marginLeft:520, marginTop:-450, font:'roboto', fontWeight:500, fontSize:'16px'}}>
                     Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
-                    {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...')}
+                    {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'Loading...')}
                 </Typography>
                 {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
                     Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
@@ -404,7 +404,21 @@ export function EnterDetailsFace(props: any) {
                         <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                             <div>
                                 {sectionImages[sectionIndex] && sectionImages[sectionIndex].some((file) => file !== null) && (
-                                    <ImageList sx={{ width: '45px', height: '45px', borderRadius: '100%' }} cols={1} rowHeight={250}>
+                                    // <ImageList sx={{ width: '45px', height: '45px', borderRadius:'100%'}} cols={1} rowHeight={250}>
+                                    //     {sectionImages[sectionIndex].map((file, index) => (
+                                    //         file !== null && (
+                                    //             <ImageListItem key={index}>
+                                    //                 <img
+                                    //                     src={`${URL.createObjectURL(file)}?w=575&h=250&fit=crop&auto=format`}
+                                    //                     srcSet={`${URL.createObjectURL(file)}`}
+                                    //                     alt={`Selected ${index + 1}`}
+                                    //                     loading="lazy"
+                                    //                 />
+                                    //             </ImageListItem>
+                                    //         )
+                                    //     ))}
+                                    // </ImageList>
+                                    <Stack sx={{ width: '45px', height: '45px', borderRadius:'100%'}} direction='column' spacing={2}>
                                         {sectionImages[sectionIndex].map((file, index) => (
                                             file !== null && (
                                                 <ImageListItem key={index}>
@@ -413,14 +427,49 @@ export function EnterDetailsFace(props: any) {
                                                         srcSet={`${URL.createObjectURL(file)}`}
                                                         alt={`Selected ${index + 1}`}
                                                         loading="lazy"
+                                                        style={{
+                                                            borderRadius:'100%',
+                                                            height:'55px',
+                                                            width:'55px',
+                                                            marginLeft:45, 
+                                                            marginTop:15, 
+                                                            marginBottom:30
+                                                        }}
                                                     />
                                                 </ImageListItem>
                                             )
                                         ))}
-                                    </ImageList>
-                                )}
+                                    </Stack>
+                                    )}
+                                <br/>
+                                <Button
+                                variant="outlined"
+                                component="label"
+                                sx={{
+                                    fontSize: '10px',
+                                    border: '1px solid #FF5C35',
+                                    borderRadius: '8px',
+                                    color: '#FF5C35',
+                                    ":hover": {
+                                        bgcolor: "#FF5C35",
+                                        color: 'white',
+                                    },
+                                    marginLeft: 3,
+                                    marginTop: 2, 
+                                    marginBottom:2
+                                }}
+                                size="small"
+                            >
+                                Upload Image
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={(event) => handleFileChange(event, sectionIndex)}
+                                    accept="image/*"
+                                />
+                            </Button>
                             </div>
-                            <Button
+                            {/* <Button
                                 variant="outlined"
                                 component="label"
                                 sx={{
@@ -444,7 +493,7 @@ export function EnterDetailsFace(props: any) {
                                     onChange={(event) => handleFileChange(event, sectionIndex)}
                                     accept="image/*"
                                 />
-                            </Button>
+                            </Button> */}
                             <TextField
                                 label="Name"
                                 id="outlined-size-small"
