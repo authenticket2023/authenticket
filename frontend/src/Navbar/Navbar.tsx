@@ -564,8 +564,8 @@ export const NavbarLoggedIn = () => {
                         </Typography>
                         <Typography color={"grey"}>{email}</Typography>
                         <Stack direction="row" spacing={2}>
-                        <LinkMUI color={'#FF5C35'} onClick={handleProfile} sx={{display:'flex', justifyContent:'flex-end'}}> View Profile </LinkMUI>
-                        <LinkMUI color={'#FF5C35'} onClick={handledLogout} sx={{display:'flex', justifyContent:'flex-end'}}> Log Out </LinkMUI>
+                        <LinkMUI color={'#FF5C35'} onClick={handleProfile} sx={{display:'flex', justifyContent:'flex-end', cursor: 'pointer'}}> View Profile </LinkMUI>
+                        <LinkMUI color={'#FF5C35'} onClick={handledLogout} sx={{display:'flex', justifyContent:'flex-end',cursor: 'pointer'}}> Log Out </LinkMUI>
                         </Stack>
                       </Box>
                     </Grid>
