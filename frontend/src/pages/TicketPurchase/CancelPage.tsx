@@ -9,16 +9,19 @@ export const CancelPage: React.FC = (): JSX.Element => {
   const { orderId } = useParams<{ orderId: string }>();
 
   const token = window.localStorage.getItem('accessToken');
-  const email : any = window.localStorage.getItem('email');
+  const email: any = window.localStorage.getItem('email');
   const ticketMetadataJSON: any = window.localStorage.getItem('ticketSetMetadata');
   const ticketsetMetadata = JSON.parse(ticketMetadataJSON);
 
   useEffect(() => {
     cancelOrder(orderId);
     //calling backend to remove facial record
-    ticketsetMetadata.forEach((metadata: any, index: any)=> {
-      removeFacialRecords(metadata.eventId, metadata.label);
-    });
+    if (ticketsetMetadata != null) {
+      ticketsetMetadata.forEach((metadata: any, index: any) => {
+        removeFacialRecords(metadata.eventId, metadata.label);
+      });
+      leaveQueue(ticketsetMetadata[0].eventId);
+    }
   }, []);
 
   //call backend to cancel order
@@ -31,11 +34,23 @@ export const CancelPage: React.FC = (): JSX.Element => {
       },
       method: 'PUT',
     })
-      .then(async (response) => {
-        if (response.status === 200) {
-          console.log('Order canceled!');
-        }
-      })
+      .catch((err) => {
+        window.alert(err);
+      });
+  };
+
+  //call backend to cancel order
+  const leaveQueue = async (eventId: any) => {
+    const formData = new FormData();
+    formData.append('eventId', eventId);
+    // Calling backend API
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/event/leave-queue`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      method: 'PUT',
+      body: formData,
+    })
       .catch((err) => {
         window.alert(err);
       });
