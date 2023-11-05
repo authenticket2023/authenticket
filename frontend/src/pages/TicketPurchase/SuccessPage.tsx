@@ -50,28 +50,12 @@ interface CompletedOrder {
   };
 }
 
-interface EnteredData {
-  images: File[];
-  names: string[];
-  sectionID: string;
-  row: string;
-  seat: string;
-}
-
 export const SuccessPage: React.FC = (): JSX.Element => {
   // Set parameters
   const { orderId } = useParams<{ orderId: string }>();
-  //   const { enteredData } = useParams<EnteredData>();
 
   type Params = 'images' | 'names' | 'sectionID' | 'row' | 'seat';
   const params = useParams<Params>();
-  const images = params.images ? JSON.parse(params.images) as File[] : [];
-  const names = params.names ? JSON.parse(params.names) as string[] : [];
-  const sectionID = params.sectionID;
-  const row = params.row;
-  const seat = params.seat;
-
-
 
   useEffect(() => {
     completeOrder(orderId);
@@ -79,9 +63,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
   }, []);
 
   const token = window.localStorage.getItem('accessToken');
-  const currUserEmail: any = window.localStorage.getItem('email');
   const [orderSummary, setOrderSummary] = useState<OrderSummary | undefined>();
-  const [completedOrder, setCompletedOrder] = useState<CompletedOrder | undefined>();
 
   // Call backend to complete order
   const completeOrder = async (orderId: any) => {
@@ -97,9 +79,6 @@ export const SuccessPage: React.FC = (): JSX.Element => {
         if (response.status === 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          setCompletedOrder(data.event);
-        } else {
-          // Handle error or pass to parent component
         }
       })
       .catch((err) => {

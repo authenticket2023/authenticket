@@ -855,7 +855,7 @@ export function ConfirmationFace(props: any) {
                             props.handleComplete();
 
                             // Call makeRequest after successful order creation
-                            // await makeRequest(orderId);
+                            await makeRequest(orderId);
 
                         } else {
                             const eventResponse = await response.json();
