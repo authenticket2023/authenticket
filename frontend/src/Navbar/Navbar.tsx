@@ -16,6 +16,8 @@ import logo from "../images/logo(orange).png";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { Popover } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import LinkMUI from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import PersonIcon from '@mui/icons-material/Person';
 
@@ -28,8 +30,12 @@ export const NavbarNotLoggedIn = () => {
     return pathname === path;
   };
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -40,35 +46,51 @@ export const NavbarNotLoggedIn = () => {
   };
 
   const handleHome = () => {
-    navigate('/');
-  }
+    navigate("/");
+  };
+
 
   const handleEvents = () => {
-    navigate('/Event');
-  }
+    navigate("/Event");
+  };
+
 
   const handleVenues = () => {
-    navigate('/Venue');
-  }
+    navigate("/Venue");
+  };
+
 
   const handleFAQ = () => {
-    navigate('/FAQ');
-  }
+    navigate("/FAQ");
+  };
+
 
   const handleLogin = () => {
-    navigate('/Login');
-  }
+    navigate("/Login");
+  };
+
 
 
   return (
-    <AppBar position="sticky" style={{ background: '#000000' }} >
+    <AppBar position="sticky" style={{ background: "#000000" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Link to="/Home">
-            <img src={logo} alt="Logo" width={60} height={40} style={{ marginLeft: 20, marginRight: -8 }}></img>
+            <img
+              src={logo}
+              alt="Logo"
+              width={60}
+              height={40}
+              style={{ marginLeft: 20, marginRight: -8 }}
+            ></img>
           </Link>
           {/* for hamburger bar => dont know why bg color not working */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none', backgroundColor: 'black' } }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "flex", md: "none", backgroundColor: "black" },
+            }}
+          >
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -83,25 +105,71 @@ export const NavbarNotLoggedIn = () => {
               id="menu-appbar"
               anchorEl={anchorElNav}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: "bottom",
+                horizontal: "left",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
+                vertical: "top",
+                horizontal: "left",
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' },
+                display: { xs: "block", md: "none" },
               }}
             >
-              <Button key='Home' onClick={handleHome} sx={{ my: 0, color: isTabActive('/Home') ? '#FF5C35' : 'black', display: 'block' }} >Home</Button>
-              <Button key='Event' onClick={handleEvents} sx={{ my: 0, color: isTabActive('/Event') ? '#FF5C35' : 'black', display: 'block' }} >Events</Button>
-              <Button key='Venue' onClick={handleVenues} sx={{ my: 0, color: isTabActive('/Venue') ? '#FF5C35' : 'black', display: 'block' }} >Venues</Button>
-              <Button key='FAQ' onClick={handleFAQ} sx={{ my: 0, color: isTabActive('/FAQ') ? '#FF5C35' : 'black', display: 'block' }} >FAQ</Button>
-              <Button key='Login' onClick={handleLogin} sx={{ my: 0, color: 'black', display: 'block' }} >Log In</Button>
+              <Button
+                key="Home"
+                onClick={handleHome}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/Home") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Home
+              </Button>
+              <Button
+                key="Event"
+                onClick={handleEvents}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/Event") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Events
+              </Button>
+              <Button
+                key="Venue"
+                onClick={handleVenues}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/Venue") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                Venues
+              </Button>
+              <Button
+                key="FAQ"
+                onClick={handleFAQ}
+                sx={{
+                  my: 0,
+                  color: isTabActive("/FAQ") ? "#FF5C35" : "black",
+                  display: "block",
+                }}
+              >
+                FAQ
+              </Button>
+              <Button
+                key="Login"
+                onClick={handleLogin}
+                sx={{ my: 0, color: "black", display: "block" }}
+              >
+                Log In
+              </Button>
             </Menu>
           </Box>
 
@@ -124,43 +192,100 @@ export const NavbarNotLoggedIn = () => {
             AuthenTicket
           </Typography>
 
-          <Box justifyContent="left" alignItems="left" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Button key='Home' onClick={handleHome} sx={{ my: 2, ml: 4, color: isTabActive('/Home') ? '#FF5C35' : 'white', display: 'block' }} >Home</Button>
-            <Button key='Event' onClick={handleEvents} sx={{ my: 2, color: isTabActive('/Event') ? '#FF5C35' : 'white', display: 'block' }} >Events</Button>
-            <Button key='Venue' onClick={handleVenues} sx={{ my: 2, color: isTabActive('/Venue') ? '#FF5C35' : 'white', display: 'block' }} >Venues</Button>
-            <Button key='FAQ' onClick={handleFAQ} sx={{ my: 2, color: isTabActive('/FAQ') ? '#FF5C35' : 'white', display: 'block' }} >FAQ</Button>
+          <Box
+            justifyContent="left"
+            alignItems="left"
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}
+          >
+            <Button
+              key="Home"
+              onClick={handleHome}
+              sx={{
+                my: 2,
+                ml: 4,
+                color: isTabActive("/Home") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Home
+            </Button>
+            <Button
+              key="Event"
+              onClick={handleEvents}
+              sx={{
+                my: 2,
+                color: isTabActive("/Event") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Events
+            </Button>
+            <Button
+              key="Venue"
+              onClick={handleVenues}
+              sx={{
+                my: 2,
+                color: isTabActive("/Venue") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              Venues
+            </Button>
+            <Button
+              key="FAQ"
+              onClick={handleFAQ}
+              sx={{
+                my: 2,
+                color: isTabActive("/FAQ") ? "#FF5C35" : "white",
+                display: "block",
+              }}
+            >
+              FAQ
+            </Button>
           </Box>
 
-          <Box justifyContent="right" alignItems="right" sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, marginRight: 5 }}>
-            <IconButton type="button" onClick={handleLogin} sx={{
-              p: '5px', color: 'white', border: '1px solid',
-              borderColor: 'white',
-              borderRadius: 15,
-            }}>
+          <Box
+            justifyContent="right"
+            alignItems="right"
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              marginRight: 5,
+            }}
+          >
+            <IconButton
+              type="button"
+              onClick={handleLogin}
+              sx={{
+                p: "5px",
+                color: "white",
+                border: "1px solid",
+                borderColor: "white",
+                borderRadius: 15,
+              }}
+            >
               <AccountCircleOutlinedIcon sx={{ mr: 1, ml: 1 }} />
-              <Typography sx={{ mr: 1 }}>
-                LOGIN
-              </Typography>
+              <Typography sx={{ mr: 1 }}>LOGIN</Typography>
             </IconButton>
           </Box>
-
         </Toolbar>
       </Container>
     </AppBar>
   );
-}
+};
 
 
 export const NavbarLoggedIn = () => {
   let navigate = useNavigate();
-
+  
   const { pathname } = useLocation();
-  const username = window.localStorage.getItem("username");
-
+  
   const isTabActive = (path: any) => {
     return pathname === path;
   };
-
+  
+  let name: any = window.localStorage.getItem("username");
+  let email: any = window.localStorage.getItem("email");
   let profileImage: any = window.localStorage.getItem("profileImage");
   const profileImageSrc = `${process.env.REACT_APP_S3_URL}/user_profile_images/${profileImage}`;
 
@@ -397,11 +522,11 @@ export const NavbarLoggedIn = () => {
 
           <Box sx={{ flexGrow: 0, display:'flex', alignItems:'center' }}>
             <Typography style={{ fontSize:'14px', marginRight:12 }}>
-              {username || ''}
+              {name || ''}
             </Typography>
             <Tooltip title="Open Profile">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={username || ''} src={profileImageSrc} />
+                <Avatar alt={name || ''} src={profileImageSrc} />
               </IconButton>
             </Tooltip>
             <Popover
@@ -413,46 +538,39 @@ export const NavbarLoggedIn = () => {
                 vertical: 55,
                 horizontal: "left",
               }}
-              onClick={handleProfile}
+              elevation={2}
             >
-              <Box
-                height={100}
-                width={300}
-                bgcolor={"black"}
-                padding={2}
-                style={{
-                  display:'flex',
-                  flexDirection:'row',
-                  alignItems: 'center'
-                }}
-              >
-                <Avatar sizes="large" alt={username || ''} src={profileImageSrc} sx={{ width: 75, height: 75 }} />
-                <Typography style={{color:'white', alignItems:'center', justifyContent:'center', marginLeft:15}}>
-                  {username || ''}
-                </Typography>
-              </Box>
-              <Box bgcolor={'black'} paddingBottom={1} paddingTop={1}>
-                <Grid container justifyContent={'flex-end'}>
-                  <Grid item xs={6}>
-                    <Button
-                      variant="outlined"
-                      onClick={handleProfile}
-                      sx={{ color: "#FF5C35", borderColor: "#FF5C35" }}
-                    >
-                      View Profile
-                    </Button>
+              <Box onClick={handleProfile} sx={{ border: 1, borderColor: "grey.300", borderRadius: 1 }} paddingBottom={1}>
+                <Box height={100} width={300} padding={2}>
+                  <Grid container>
+                    <Grid item xs={4}>
+                      <Avatar
+                        sizes="large"
+                        alt="Remy Sharp"
+                        src={profileImageSrc}
+                        sx={{ width: 75, height: 75 }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Box>
+                        <Typography
+                          variant="h5"
+                          sx={{
+                            fontWeight: "bold",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                        {name}
+                        </Typography>
+                        <Typography color={"grey"}>{email}</Typography>
+                        <Stack direction="row" spacing={2}>
+                        <LinkMUI color={'#FF5C35'} onClick={handleProfile} sx={{display:'flex', justifyContent:'flex-end', cursor: 'pointer'}}> View Profile </LinkMUI>
+                        <LinkMUI color={'#FF5C35'} onClick={handledLogout} sx={{display:'flex', justifyContent:'flex-end',cursor: 'pointer'}}> Log Out </LinkMUI>
+                        </Stack>
+                      </Box>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={5}>
-                    <Button
-                      variant="outlined"
-                      onClick={handledLogout}
-                      sx={{ color: "#FF5C35", borderColor: "#FF5C35" }}
-                    >
-
-                      Log Out
-                    </Button>
-                  </Grid>
-                </Grid>
+                </Box>
               </Box>
             </Popover>
           </Box>
@@ -463,11 +581,14 @@ export const NavbarLoggedIn = () => {
 };
 
 export const NavbarOrganiser = () => {
-
   let navigate = useNavigate();
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
   const [anchorElCheckIn, setAnchorElCheckIn] = React.useState<null | HTMLElement>(null);
 
   const { pathname } = useLocation();
@@ -747,10 +868,6 @@ export const NavbarAdmin = () => {
     navigate("/EventAdmin");
   };
 
-  const handleVenueAdmin = () => {
-    navigate("/VenueAdmin");
-  };
-
   return (
     <AppBar position="sticky" style={{ background: "#000000" }}>
       <Container maxWidth="xl">
@@ -828,17 +945,6 @@ export const NavbarAdmin = () => {
               >
                 Event
               </Button>
-              <Button
-                key="Venue"
-                onClick={handleVenueAdmin}
-                sx={{
-                  my: 0,
-                  color: isTabActive("/VenueAdmin") ? "#FF5C35" : "black",
-                  display: "block",
-                }}
-              >
-                Venue
-              </Button>
             </Menu>
           </Box>
           <Typography
@@ -898,17 +1004,6 @@ export const NavbarAdmin = () => {
             >
               Event
             </Button>
-            <Button
-              key="Venue"
-              onClick={handleVenueAdmin}
-              sx={{
-                my: 0,
-                color: isTabActive("/VenueAdmin") ? "#FF5C35" : "white",
-                display: "block",
-              }}
-            >
-              Venue
-            </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -961,16 +1056,6 @@ export const NavbarAdmin = () => {
                   textAlign="center"
                 >
                   Event
-                </Typography>
-              </MenuItem>
-              <MenuItem key="Venue" onClick={handleVenueAdmin}>
-                <Typography
-                  sx={{
-                    color: isTabActive("/VenueAdmin") ? "#FF5C35" : "black",
-                  }}
-                  textAlign="center"
-                >
-                  Venue
                 </Typography>
               </MenuItem>
               <MenuItem key="Logout" onClick={handledLogout}>
