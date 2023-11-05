@@ -44,7 +44,7 @@ export const CheckinOrganiser = (): JSX.Element => {
     //retrieve event under the current organiser from DB
     const eventFetcher = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/event/enhanced`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/event-organiser/events/${organiserId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',

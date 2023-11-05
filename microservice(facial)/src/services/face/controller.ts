@@ -14,9 +14,9 @@ const FormData = require('form-data');
 const crypto = require('crypto');
 const algorithm = 'aes-256-cbc'; //Using AES encryption
 
-// encryption_key and IV
-const iv = 'b26f905e15f3ee690c0df4e9dac0e0ca';
-const encryption_key = 'f5f79a2729f9b661c6d6bcf2a520ddd1203010ec4d2984f387d32eef0f868f4d';
+// get encryption_key and IV from env variables
+const iv = process.env.INIT_VECTOR || '';
+const encryption_key = process.env.ENCRYPTION_KEY || '';
 //need to convert to Buffer for Initialization Vector(IV) and key
 const bufferIV = Buffer.from(iv, 'hex');
 const bufferKey = Buffer.from(encryption_key, 'hex');

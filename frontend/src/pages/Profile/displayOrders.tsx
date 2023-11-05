@@ -4,11 +4,6 @@ import { Grid } from "@mui/material";
 import Card from "@mui/material/Card";
 import { CardActionArea } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import IconButton, { IconButtonProps } from "@mui/material/IconButton";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { styled } from "@mui/material/styles";
-import Collapse from "@mui/material/Collapse";
-import CardContent from "@mui/material/CardContent";
 import { format } from 'date-fns';
 
 interface orderInfo {
@@ -38,33 +33,8 @@ interface ticketInfo {
   index: number;
 }
 
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean;
-}
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }: { theme: any; expand: any }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
 function compareTicketId(a: any, b: any) {
   return a.ticketId - b.ticketId;
-}
-
-function formatDateTime(dateString: string): string {
-  const date = new Date(dateString);
-  return format(date, "dd MMMM yyyy, h:mm a");
-}
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return format(date, "dd MMMM yyyy");
 }
 
 function DisplayTicket(props: ticketInfo) {
@@ -88,92 +58,45 @@ function DisplayTicket(props: ticketInfo) {
 }
 
 export default function DisplayOrder(props: orderInfo) {
-  const [expanded, setExpanded] = React.useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
   return (
     <Card
       variant="outlined"
       elevation={0}
-      sx={{ borderColor: "grey", borderRadius: 3 }}
+      sx={{ borderColor: "grey", borderRadius: 3, height: 390}}
     >
-      <Box margin={3} marginBottom={2} paddingBottom={2} borderBottom={1} borderColor="grey">
-        <Grid container>
-          <Grid item xs={8}>
-            <Typography
-              marginBottom={1}
-              variant="h5"
-              sx={{ fontWeight: "bold" }}
-            >
-              {" "}
-              {props.order.eventName}{" "}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: "grey", fontSize: 14 }}
-            >
-              Order ID: {props.order.orderId}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: "grey", fontSize: 14 }}
-            >
-              Event Date: {formatDateTime(props.order.eventDate)}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: "grey", fontSize: 14 }}
-            >
-              Location: {props.order.venueName}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: "grey", fontSize: 14 }}
-            >
-              Purchased Date: {formatDate(props.order.purchaseDate)}
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: "grey", fontSize: 14 }}
-            >
-              Number of Tickets: {props.order.ticketSet.length}
-            </Typography>
-          </Grid>
-          <Grid item xs = {4}>
-            <Box sx={{display: 'flex', justifyContent:'flex-end'}}>
-
-            <ExpandMore
-              expand={expanded}
-              onClick={handleExpandClick}
-              aria-expanded={expanded}
-              aria-label="show more"
-              >
-              <ExpandMoreIcon />
-            </ExpandMore>
-              </Box>
-          </Grid>
-        </Grid>
+      <Box margin={3} paddingBottom={2} borderBottom={1} borderColor="grey">
+        <Typography marginBottom={1} variant="h5" sx={{ fontWeight: "bold" }}>
+          {" "}
+          {props.order.eventName}{" "}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ color: "grey", fontSize: 14 }}>
+          Order ID: {props.order.orderId}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ color: "grey", fontSize: 14 }}>
+          Event Date: {props.order.eventDate}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ color: "grey", fontSize: 14 }}>
+          Location: {props.order.venueName}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ color: "grey", fontSize: 14 }}>
+          Purchased Date: {props.order.purchaseDate}
+        </Typography>
+        <Typography variant="subtitle1" sx={{ color: "grey", fontSize: 14 }}>
+          Number of Tickets: {props.order.ticketSet.length}
+        </Typography>
       </Box>
-
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent >
-          <Typography marginBottom={2} sx={{ color: "grey", fontSize: 14 }}>
-            Ticket Information:
-          </Typography>
-          {props.order.ticketSet
-            .sort(compareTicketId)
-            .map((ticketInfo: any, index: number) => (
-              <React.Fragment key={index}>
-                <DisplayTicket
-                  ticket={ticketInfo}
-                  index={index}
-                ></DisplayTicket>
-              </React.Fragment>
-            ))}
-        </CardContent>
-      </Collapse>
+      <Box margin={3}>
+        <Typography marginBottom={2} sx={{ color: "grey", fontSize: 14 }}>
+          Ticket Information:
+        </Typography>
+        {props.order.ticketSet
+          .sort(compareTicketId)
+          .map((ticketInfo: any, index: number) => (
+            <React.Fragment key={index}>
+              <DisplayTicket ticket={ticketInfo} index={index}></DisplayTicket>
+            </React.Fragment>
+          ))}
+      </Box>
     </Card>
   );
 }

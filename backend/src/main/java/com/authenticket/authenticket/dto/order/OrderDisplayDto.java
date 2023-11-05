@@ -59,12 +59,7 @@ public record OrderDisplayDto(
         /**
          * The set of tickets included in the order, represented as TicketDisplayDto objects.
          */
-        Set<TicketDisplayDto> ticketSet,
-
-        /**
-         * Boolean field to indicate if event is enhanced
-         */
-        Boolean isEnhanced
+        Set<TicketDisplayDto> ticketSet
 ) {
 }
 

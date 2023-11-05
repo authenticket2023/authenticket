@@ -149,7 +149,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
               maxHeight: '400px',
               display: 'flex',
               flexDirection: 'column',
-              backgroundImage: `url('${process.env.REACT_APP_S3_URL}/event_images/${eventDetails.eventImage}')`,
+              backgroundImage: `url('https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${eventDetails.eventImage}')`,
               backgroundSize: '100% 100%',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',

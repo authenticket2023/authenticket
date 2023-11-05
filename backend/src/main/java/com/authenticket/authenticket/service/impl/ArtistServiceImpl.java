@@ -40,7 +40,7 @@ public class ArtistServiceImpl implements ArtistService {
      */
     @Override
     public List<ArtistDisplayDto> findAllArtists() {
-        return artistRepository.findAllByDeletedAtIsNull()
+        return artistRepository.findAll()
                 .stream()
                 .map(artistDtoMapper)
                 .collect(Collectors.toList());

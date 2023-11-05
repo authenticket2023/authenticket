@@ -1,6 +1,6 @@
 import {
     Box, Typography, Modal,
-    Grid, Button, ListItemText, CardMedia, TextareaAutosize, TextField, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemAvatar, Avatar
+    Grid, Button, ListItemText, CardMedia, TextareaAutosize, TextField, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Sheet } from '@mui/joy';
@@ -132,7 +132,7 @@ export default function UpdateEvent(props: any) {
                 props.setAlertMsg("error fetching data!!!");
             } else {
                 const data = await response.json();
-                setEventTypeList(data['data'].sort((a: any, b: any) => a.eventTypeId - b.eventTypeId));
+                setEventTypeList(data['data'].sort((a:any, b:any) => a.eventTypeId - b.eventTypeId));
             }
         } catch (err) {
             window.alert(err);
@@ -164,7 +164,7 @@ export default function UpdateEvent(props: any) {
             } else {
                 const data = await response.json();
                 console.log(data)
-                setArtistList(data['data'].sort((a: any, b: any) => a.artistId - b.artistId));
+                setArtistList(data['data'].sort((a:any, b:any) => a.artistId - b.artistId));
             }
         } catch (err) {
             window.alert(err);
@@ -217,7 +217,7 @@ export default function UpdateEvent(props: any) {
         setSelectedFile(file);
     };
 
-    const updateArtists = async () => {
+    const updateArtists =async () => {
         let artistIdString = '';
         //change selected artists ID into '1,2,3,4' format
         selectedArtistList.map((item: any) => {
@@ -258,12 +258,12 @@ export default function UpdateEvent(props: any) {
                 props.setReload(true);
                 window.alert(err);
             });
-
+        
     }
 
     //update event details
     const updateEventStatus = async () => {
-
+      
         if (!(dayjs(eventDate).isAfter(dayjs(currentDateTime)) && dayjs(saleDate).isAfter(dayjs(currentDateTime)))) {
             //show alert msg
             props.setOpenSnackbar(true);
@@ -438,9 +438,6 @@ export default function UpdateEvent(props: any) {
                                                     <MenuItem key={data?.artistId} value={data?.artistId}>
                                                         <Checkbox checked={selectedArtistList.indexOf(data.artistId) > -1} />
                                                         <ListItemText primary={data?.artistName} />
-                                                        <ListItemAvatar>
-                                                            <Avatar src={`${process.env.REACT_APP_S3_URL}/artists/${data?.artistImage}`} alt={data?.artistName} />
-                                                        </ListItemAvatar>
                                                     </MenuItem>
                                                 ))}
                                             </Select>

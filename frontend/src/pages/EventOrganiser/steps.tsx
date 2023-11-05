@@ -1,5 +1,5 @@
 import {
-    Box, Button, TextField, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, Switch, FormControlLabel, ListItemAvatar, Avatar
+    Box, Button, TextField, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, Switch, FormControlLabel
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import BasicDatePicker from '../../utility/dateElement';
@@ -354,9 +354,9 @@ export function VenueArtist(props: any) {
                     </Grid>
 
                     <Grid container>
-                        {props.venue == '1' ? <TSTSVG /> : null}
-                        {props.venue == '2' ? <CTSVG /> : null}
-                        {props.venue == '3' ? <SNSSVG /> : null}
+                        { props.venue == '1' ? <TSTSVG/> : null}
+                        { props.venue == '2' ? <CTSVG/> : null}
+                        { props.venue == '3' ? <SNSSVG/> : null}
                     </Grid>
                     {/* Ticket Price */}
                     <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
@@ -461,9 +461,6 @@ export function VenueArtist(props: any) {
                                         <MenuItem key={data?.artistId} value={data?.artistId}>
                                             <Checkbox checked={props.artistList.indexOf(data.artistId) > -1} />
                                             <ListItemText primary={data?.artistName} />
-                                            <ListItemAvatar>
-                                                <Avatar src={`${process.env.REACT_APP_S3_URL}/artists/${data?.artistImage}`} alt={data?.artistName} />
-                                            </ListItemAvatar>
                                         </MenuItem>
                                     ))}
                                 </Select>
