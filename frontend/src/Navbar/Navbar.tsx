@@ -526,7 +526,7 @@ export const NavbarLoggedIn = () => {
             </Typography>
             <Tooltip title="Open Profile">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={name || ''} src={profileImageSrc} />
+                <Avatar alt={name.toUpperCase() || ''} src={profileImageSrc} />
               </IconButton>
             </Tooltip>
             <Popover
@@ -546,7 +546,7 @@ export const NavbarLoggedIn = () => {
                     <Grid item xs={4}>
                       <Avatar
                         sizes="large"
-                        alt="Remy Sharp"
+                        alt={name.toUpperCase() || ''}
                         src={profileImageSrc}
                         sx={{ width: 75, height: 75 }}
                       />

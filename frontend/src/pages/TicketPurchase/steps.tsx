@@ -31,7 +31,7 @@ export function SelectSeats(props: any) {
         // Find the selected section
         const selectedSectionData = props.sectionDetails.find(
             (item: { sectionId: undefined; }) => item.sectionId === selectedSection
-        );
+        )
 
         // Check if the selectedSectionData exists
         if (selectedSectionData) {
@@ -113,6 +113,7 @@ export function SelectSeats(props: any) {
                             onChange={handleChange}
                             displayEmpty
                             style={{ fontSize: '13px' }}
+                            disabled={props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status === "Sold Out" || !selectedSection}
                         >
                             {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
                                 <MenuItem key={index + 1} value={index + 1}>
@@ -165,7 +166,11 @@ export function SelectSeats(props: any) {
                 </Grid>
 
             </Grid>
-
+                {/* <Snackbar open={props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status === "Sold Out" || !selectedSection} autoHideDuration={4000} onClose={handleSnackbarClose}>
+                    <Alert onClose={handleSnackbarClose} severity={'error'} sx={{ width: '100%' }}>
+                    {'Section sold out. Please select a different section.'}
+                    </Alert>
+                </Snackbar> */}
             <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
                     {alertMsg}
@@ -530,8 +535,6 @@ export function EnterDetailsFace(props: any) {
 
 
 export function Confirmation(props: any) {
-    // console.log(props.quantity);
-    // console.log(props.eventDetails);
 
     const userId = window.localStorage.getItem('id');
     const token = window.localStorage.getItem('accessToken');
@@ -553,8 +556,7 @@ export function Confirmation(props: any) {
     const [isClicked, setIsClicked] = useState(false);
 
     const catPrice = props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
-    const itemSubtotal = catPrice * props.quantity;
-    // console.log(props.quantity);
+    const itemSubtotal = catPrice * props.quantity;;
     const orderTotal = itemSubtotal + 5;
 
     const delay = (ms: number) => new Promise(
@@ -604,7 +606,6 @@ export function Confirmation(props: any) {
         if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
-            console.log("hello");
 
             //call backend to create order
             const formData = new FormData();
@@ -740,8 +741,6 @@ export function ConfirmationFace(props: any) {
 
     const userId = window.localStorage.getItem('id');
     const token = window.localStorage.getItem('accessToken');
-    // console.log(userId);
-    // console.log(token);
 
     useEffect(() => {
     }, []);
@@ -799,7 +798,6 @@ export function ConfirmationFace(props: any) {
 
     const catPrice = props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
     const itemSubtotal = catPrice * props.quantity;
-    // console.log(props.quantity);
     const orderTotal = itemSubtotal + 5;
 
     const delay = (ms: number) => new Promise(
@@ -812,7 +810,6 @@ export function ConfirmationFace(props: any) {
         if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
-            console.log("hello");
 
             //call backend to create order
             const formData = new FormData();

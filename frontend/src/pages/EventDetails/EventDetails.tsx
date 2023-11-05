@@ -171,6 +171,7 @@ export const EventDetails: React.FC = (): JSX.Element => {
               <Button
                 variant="outlined"
                 style={{
+                  cursor: 'default',
                   backgroundColor: 'black',
                   borderColor: '#FF5C35',
                   color: '#FF5C35',
