@@ -354,9 +354,6 @@ export const PurchaseStepsFace = (props: any) => {
                 const apiResponse = await response.json();
                 const data = apiResponse.data;
                 setSectionDetails(data);
-  
-              } else {
-                //passing to parent component
               }
             })
             .catch((err) => {
