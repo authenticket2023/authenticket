@@ -85,7 +85,7 @@ export function SelectSeats(props: any) {
                 <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
             </div>
             <div>
-                <Typography style={{marginLeft:520, marginTop:-450, font:'roboto', fontWeight:500, fontSize:'16px'}}>
+                <Typography style={{ marginLeft: 520, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px' }}>
                     Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
                     {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'Loading...')}
                 </Typography>
@@ -404,7 +404,7 @@ export function EnterDetailsFace(props: any) {
                         <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                             <div>
                                 {sectionImages[sectionIndex] && sectionImages[sectionIndex].some((file) => file !== null) && (
-                                    <Stack sx={{ width: '45px', height: '45px', borderRadius:'100%'}} direction='column' spacing={2}>
+                                    <Stack sx={{ width: '45px', height: '45px', borderRadius: '100%' }} direction='column' spacing={2}>
                                         {sectionImages[sectionIndex].map((file, index) => (
                                             file !== null && (
                                                 <ImageListItem key={index}>
@@ -414,46 +414,46 @@ export function EnterDetailsFace(props: any) {
                                                         alt={`Selected ${index + 1}`}
                                                         loading="lazy"
                                                         style={{
-                                                            borderRadius:'100%',
-                                                            height:'55px',
-                                                            width:'55px',
-                                                            marginLeft:45, 
-                                                            marginTop:15, 
-                                                            marginBottom:30
+                                                            borderRadius: '100%',
+                                                            height: '55px',
+                                                            width: '55px',
+                                                            marginLeft: 45,
+                                                            marginTop: 15,
+                                                            marginBottom: 30
                                                         }}
                                                     />
                                                 </ImageListItem>
                                             )
                                         ))}
                                     </Stack>
-                                    )}
-                                <br/>
+                                )}
+                                <br />
                                 <Button
-                                variant="outlined"
-                                component="label"
-                                sx={{
-                                    fontSize: '10px',
-                                    border: '1px solid #FF5C35',
-                                    borderRadius: '8px',
-                                    color: '#FF5C35',
-                                    ":hover": {
-                                        bgcolor: "#FF5C35",
-                                        color: 'white',
-                                    },
-                                    marginLeft: 3,
-                                    marginTop: 2, 
-                                    marginBottom:2
-                                }}
-                                size="small"
-                            >
-                                Upload Image
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={(event) => handleFileChange(event, sectionIndex)}
-                                    accept="image/*"
-                                />
-                            </Button>
+                                    variant="outlined"
+                                    component="label"
+                                    sx={{
+                                        fontSize: '10px',
+                                        border: '1px solid #FF5C35',
+                                        borderRadius: '8px',
+                                        color: '#FF5C35',
+                                        ":hover": {
+                                            bgcolor: "#FF5C35",
+                                            color: 'white',
+                                        },
+                                        marginLeft: 3,
+                                        marginTop: 2,
+                                        marginBottom: 2
+                                    }}
+                                    size="small"
+                                >
+                                    Upload Image
+                                    <input
+                                        type="file"
+                                        hidden
+                                        onChange={(event) => handleFileChange(event, sectionIndex)}
+                                        accept="image/*"
+                                    />
+                                </Button>
                             </div>
                             {/* <Button
                                 variant="outlined"
@@ -812,7 +812,7 @@ export function ConfirmationFace(props: any) {
         if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
-            console.log("hello");
+            console.log("create order");
 
             //call backend to create order
             const formData = new FormData();
@@ -837,6 +837,14 @@ export function ConfirmationFace(props: any) {
                             const responseData = await response.json();
                             // Access the orderId from the response data
                             const orderId = responseData.data.orderId;
+                            const ticketSet = responseData.data.ticketSet;
+
+                            // Storing metadata in local storage, will be used for cancel order to remove the facial record in the database
+                            const ticketSetMetadata = ticketSet.map((entry : any) => ({
+                                eventId: entry.eventId,
+                                label: `${entry.ticketHolder}(${entry.sectionId}-${entry.rowNo}-${entry.seatNo})`,
+                            }));
+                            localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
 
                             setOpenSnackbar(true);
                             setAlertType('success');
@@ -870,87 +878,87 @@ export function ConfirmationFace(props: any) {
 
     return (
         <Grid>
-            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft:380, marginTop:40 }}>
+            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 380, marginTop: 40 }}>
                 Attendee Details
             </Typography>
-        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop:6 }}>
-            <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
-                {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
-                    <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginRight: 5 }}>
-                        <img
-                            src={URL.createObjectURL(image)}
-                            alt={`Image ${index}`}
-                            style={{ width: '70px', height: '70px', borderRadius: '100%', marginLeft:40, marginTop:30 }}
-                        />
-                        {names[index] !== null && names[index] !== undefined && (
-                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems:'center', marginTop:47 }}>
-                                {names[index]}
-                            </Typography>
-                        )}
-                    </Grid>
-                ))}
+            <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop: 6 }}>
+                <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
+                    {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
+                        <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginRight: 5 }}>
+                            <img
+                                src={URL.createObjectURL(image)}
+                                alt={`Image ${index}`}
+                                style={{ width: '70px', height: '70px', borderRadius: '100%', marginLeft: 40, marginTop: 30 }}
+                            />
+                            {names[index] !== null && names[index] !== undefined && (
+                                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems: 'center', marginTop: 47 }}>
+                                    {names[index]}
+                                </Typography>
+                            )}
+                        </Grid>
+                    ))}
+                </Grid>
+                <Grid item style={{ background: '#F8F8F8', height: '210px', width: '300px', borderRadius: '8px', marginLeft: 5 }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
+                        Summary
+                    </Typography>
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
+                            Items Subtotal:
+                        </Typography>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
+                            ${itemSubtotal}
+                        </Typography>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, color: '#888888' }}>
+                            Section {props.selectedSection}
+                        </Typography>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 165, color: '#888888' }}>
+                            x{props.quantity}
+                        </Typography>
+                    </div>
+                    <div style={{ marginTop: 20, display: 'flex', flexDirection: 'row' }}>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
+                            Booking Fee:
+                        </Typography>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
+                            $5.00
+                        </Typography>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
+                            Order Total:
+                        </Typography>
+                        <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 120, marginTop: 18 }}>
+                            ${orderTotal}
+                        </Typography>
+                    </div>
+                    <Button variant="outlined" onClick={handleConfirmation}
+                        sx={{
+                            border: '1px solid #FF5C35',
+                            borderRadius: '8px',
+                            color: '#FF5C35',
+                            height: 39.5,
+                            width: 300,
+                            marginLeft: 0,
+                            marginTop: 4.5,
+                            ":hover": {
+                                bgcolor: "#FF5C35",
+                                color: 'white',
+                                BorderColor: '#FF5C35'
+                            }
+                        }}
+                    >
+                        Confirm Order
+                    </Button>
+                </Grid>
+                <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+                    <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+                        {alertMsg}
+                    </Alert>
+                </Snackbar>
             </Grid>
-            <Grid item style={{ background: '#F8F8F8', height: '210px', width: '300px', borderRadius: '8px', marginLeft: 5 }}>
-                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
-                    Summary
-                </Typography>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
-                        Items Subtotal:
-                    </Typography>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
-                        ${itemSubtotal}
-                    </Typography>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, color: '#888888' }}>
-                        Section {props.selectedSection}
-                    </Typography>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 165, color: '#888888' }}>
-                        x{props.quantity}
-                    </Typography>
-                </div>
-                <div style={{ marginTop: 20, display: 'flex', flexDirection: 'row' }}>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
-                        Booking Fee:
-                    </Typography>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
-                        $5.00
-                    </Typography>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
-                        Order Total:
-                    </Typography>
-                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 120, marginTop: 18 }}>
-                        ${orderTotal}
-                    </Typography>
-                </div>
-                <Button variant="outlined" onClick={handleConfirmation}
-                    sx={{
-                        border: '1px solid #FF5C35',
-                        borderRadius: '8px',
-                        color: '#FF5C35',
-                        height: 39.5,
-                        width: 300,
-                        marginLeft: 0,
-                        marginTop: 4.5,
-                        ":hover": {
-                            bgcolor: "#FF5C35",
-                            color: 'white',
-                            BorderColor: '#FF5C35'
-                        }
-                    }}
-                >
-                    Confirm Order
-                </Button>
-            </Grid>
-            <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
-                    {alertMsg}
-                </Alert>
-            </Snackbar>
-        </Grid>
         </Grid>
     )
 }
