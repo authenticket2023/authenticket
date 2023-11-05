@@ -21,9 +21,23 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Create secrets.properties
+      - name: Set up Secrets as Environment Variables
         run: |
-          echo "${{ secrets.SECRETS_PROPERTIES }}" > backend/src/main/resources/secrets.properties
+          echo "AUTHENTICKET_SECRET_KEY=${{ secrets.AUTHENTICKET_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_DATABASE_ID=${{ secrets.AUTHENTICKET_DATABASE_ID }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_FRONTEND_DEV_URL=${{ secrets.AUTHENTICKET_FRONTEND_DEV_URL }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_FRONTEND_PRODUCTION_URL=${{ secrets.AUTHENTICKET_FRONTEND_PRODUCTION_URL }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_BACKEND_DEV_URL=${{ secrets.AUTHENTICKET_BACKEND_DEV_URL }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_BACKEND_PRODUCTION_URL=${{ secrets.AUTHENTICKET_BACKEND_PRODUCTION_URL }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_LOADBALANCER_URL=${{ secrets.AUTHENTICKET_LOADBALANCER_URL }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_S3_BUCKET_NAME=${{ secrets.AUTHENTICKET_S3_BUCKET_NAME }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_SMTP_USERNAME=${{ secrets.AUTHENTICKET_SMTP_USERNAME }}" >> $GITHUB_ENV
+          echo "AUTHENTICKET_SMTP_PASSWORD=${{ secrets.AUTHENTICKET_SMTP_PASSWORD }}" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> $GITHUB_ENV
+          echo "CLOUD_AWS_CREDENTIALS_ACCESS_KEY=${{ secrets.CLOUD_AWS_CREDENTIALS_ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "CLOUD_AWS_CREDENTIALS_SECRET_KEY=${{ secrets.CLOUD_AWS_CREDENTIALS_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "CLOUD_AWS_REGION_STATIC=${{ secrets.CLOUD_AWS_REGION_STATIC }}" >> $GITHUB_ENV
 
       - name: Build Backend
         working-directory: backend
