@@ -41,7 +41,6 @@ export const CancelPage: React.FC = (): JSX.Element => {
       });
   };
 
-
   //call backend to delete facial record
   const removeFacialRecords = async (eventId: any, label: any) => {
     const formData = new FormData();

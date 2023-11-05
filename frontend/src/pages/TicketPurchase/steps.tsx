@@ -740,8 +740,7 @@ export function ConfirmationFace(props: any) {
 
     const userId = window.localStorage.getItem('id');
     const token = window.localStorage.getItem('accessToken');
-    // console.log(userId);
-    // console.log(token);
+    const email: any = window.localStorage.getItem('email');
 
     useEffect(() => {
     }, []);
@@ -840,12 +839,15 @@ export function ConfirmationFace(props: any) {
                             const ticketSet = responseData.data.ticketSet;
 
                             // Storing metadata in local storage, will be used for cancel order to remove the facial record in the database
-                            const ticketSetMetadata = ticketSet.map((entry : any) => ({
+                            const ticketSetMetadata = ticketSet.map((entry: any) => ({
                                 eventId: entry.eventId,
                                 label: `${entry.ticketHolder}(${entry.sectionId}-${entry.rowNo}-${entry.seatNo})`,
+                                labelForCreation: `${entry.ticketHolder},${entry.sectionId},${entry.rowNo},${entry.seatNo}`,
                             }));
                             localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
-
+                            console.log(ticketSetMetadata);
+                            console.log(responseData);
+                            createFacialRecords(ticketSetMetadata, responseData.data.eventId);
                             setOpenSnackbar(true);
                             setAlertType('success');
                             setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
@@ -853,7 +855,7 @@ export function ConfirmationFace(props: any) {
                             props.handleComplete();
 
                             // Call makeRequest after successful order creation
-                            await makeRequest(orderId);
+                            // await makeRequest(orderId);
 
                         } else {
                             const eventResponse = await response.json();
@@ -876,6 +878,41 @@ export function ConfirmationFace(props: any) {
         }
     }
 
+    // Call backend API to create facial info
+    const createFacialRecords = async (ticketSet: any, eventId: any) => {
+        const formData = new FormData();
+        formData.append('eventID', eventId);
+        // Iterate through ticketSet
+        ticketSet.forEach((ticket: any, index: any) => {
+            // Check if corresponding image and name exist
+            // Append the image using 'image' + (index + 1) as the key
+            formData.append(`image${index + 1}`, images[index]);
+            // Append the info using 'info' + (index + 1) as the key
+            formData.append(`info${index + 1}`, ticket.labelForCreation);
+            //add in email for facial api to verify the token
+        });
+        formData.append('email', email);
+         //call backend
+         fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facial-creation`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'POST',
+            body: formData
+        })
+            .then(async (response) => {
+                if (response.status == 200 || response.status == 201) {
+                    const responseData = await response.json();
+                    console.log(responseData)
+                }else {
+                    const responseData = await response.json();
+                    console.log(responseData)
+                }
+            })
+            .catch((err) => {
+                window.alert(err);
+            })
+    }
     return (
         <Grid>
             <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 380, marginTop: 40 }}>
