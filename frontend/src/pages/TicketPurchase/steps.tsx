@@ -91,7 +91,7 @@ export function SelectSeats(props: any) {
                 <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
             </div>
             <div>
-                <Typography style={{marginLeft:520, marginTop:-450, font:'roboto', fontWeight:500, fontSize:'16px'}}>
+                <Typography style={{ marginLeft: 520, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px' }}>
                     Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
                     {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'Loading...')}
                 </Typography>
@@ -415,7 +415,7 @@ export function EnterDetailsFace(props: any) {
                         <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                             <div>
                                 {sectionImages[sectionIndex] && sectionImages[sectionIndex].some((file) => file !== null) && (
-                                    <Stack sx={{ width: '45px', height: '45px', borderRadius:'100%'}} direction='column' spacing={2}>
+                                    <Stack sx={{ width: '45px', height: '45px', borderRadius: '100%' }} direction='column' spacing={2}>
                                         {sectionImages[sectionIndex].map((file, index) => (
                                             file !== null && (
                                                 <ImageListItem key={index}>
@@ -425,46 +425,46 @@ export function EnterDetailsFace(props: any) {
                                                         alt={`Selected ${index + 1}`}
                                                         loading="lazy"
                                                         style={{
-                                                            borderRadius:'100%',
-                                                            height:'55px',
-                                                            width:'55px',
-                                                            marginLeft:45, 
-                                                            marginTop:15, 
-                                                            marginBottom:30
+                                                            borderRadius: '100%',
+                                                            height: '55px',
+                                                            width: '55px',
+                                                            marginLeft: 45,
+                                                            marginTop: 15,
+                                                            marginBottom: 30
                                                         }}
                                                     />
                                                 </ImageListItem>
                                             )
                                         ))}
                                     </Stack>
-                                    )}
-                                <br/>
+                                )}
+                                <br />
                                 <Button
-                                variant="outlined"
-                                component="label"
-                                sx={{
-                                    fontSize: '10px',
-                                    border: '1px solid #FF5C35',
-                                    borderRadius: '8px',
-                                    color: '#FF5C35',
-                                    ":hover": {
-                                        bgcolor: "#FF5C35",
-                                        color: 'white',
-                                    },
-                                    marginLeft: 3,
-                                    marginTop: 2, 
-                                    marginBottom:2
-                                }}
-                                size="small"
-                            >
-                                Upload Image
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={(event) => handleFileChange(event, sectionIndex)}
-                                    accept="image/*"
-                                />
-                            </Button>
+                                    variant="outlined"
+                                    component="label"
+                                    sx={{
+                                        fontSize: '10px',
+                                        border: '1px solid #FF5C35',
+                                        borderRadius: '8px',
+                                        color: '#FF5C35',
+                                        ":hover": {
+                                            bgcolor: "#FF5C35",
+                                            color: 'white',
+                                        },
+                                        marginLeft: 3,
+                                        marginTop: 2,
+                                        marginBottom: 2
+                                    }}
+                                    size="small"
+                                >
+                                    Upload Image
+                                    <input
+                                        type="file"
+                                        hidden
+                                        onChange={(event) => handleFileChange(event, sectionIndex)}
+                                        accept="image/*"
+                                    />
+                                </Button>
                             </div>
                             <TextField
                                 label="Name"
@@ -722,6 +722,8 @@ export function ConfirmationFace(props: any) {
 
     const userId = window.localStorage.getItem('id');
     const token = window.localStorage.getItem('accessToken');
+    const email: any = window.localStorage.getItem('email');
+
 
     useEffect(() => {
     }, []);
@@ -815,7 +817,18 @@ export function ConfirmationFace(props: any) {
                             const responseData = await response.json();
                             // Access the orderId from the response data
                             const orderId = responseData.data.orderId;
+                            const ticketSet = responseData.data.ticketSet;
 
+                            // Storing metadata in local storage, will be used for cancel order to remove the facial record in the database
+                            const ticketSetMetadata = ticketSet.map((entry: any) => ({
+                                eventId: entry.eventId,
+                                label: `${entry.ticketHolder}(${entry.sectionId}-${entry.rowNo}-${entry.seatNo})`,
+                                labelForCreation: `${entry.ticketHolder},${entry.sectionId},${entry.rowNo},${entry.seatNo}`,
+                            }));
+                            localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
+                            console.log(ticketSetMetadata);
+                            console.log(responseData);
+                            createFacialRecords(ticketSetMetadata, responseData.data.eventId);
                             setOpenSnackbar(true);
                             setAlertType('success');
                             setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
@@ -846,9 +859,44 @@ export function ConfirmationFace(props: any) {
         }
     }
 
+    // Call backend API to create facial info
+    const createFacialRecords = async (ticketSet: any, eventId: any) => {
+        const formData = new FormData();
+        formData.append('eventID', eventId);
+        // Iterate through ticketSet
+        ticketSet.forEach((ticket: any, index: any) => {
+            // Check if corresponding image and name exist
+            // Append the image using 'image' + (index + 1) as the key
+            formData.append(`image${index + 1}`, images[index]);
+            // Append the info using 'info' + (index + 1) as the key
+            formData.append(`info${index + 1}`, ticket.labelForCreation);
+            //add in email for facial api to verify the token
+        });
+        formData.append('email', email);
+         //call backend
+         fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facial-creation`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'POST',
+            body: formData
+        })
+            .then(async (response) => {
+                if (response.status == 200 || response.status == 201) {
+                    const responseData = await response.json();
+                    console.log(responseData)
+                }else {
+                    const responseData = await response.json();
+                    console.log(responseData)
+                }
+            })
+            .catch((err) => {
+                window.alert(err);
+            })
+    }
     return (
         <Grid>
-            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft:380, marginTop:40 }}>
+            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 380, marginTop: 40 }}>
                 Attendee Details
             </Typography>
             <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop: 6 }}>
