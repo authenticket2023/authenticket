@@ -23,14 +23,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +46,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @WebMvcTest(VenueController.class)
-@ExtendWith(SpringExtension.class)
 @ComponentScan("com.authenticket.authenticket")
 public class VenueControllerIntegrationTest {
 
@@ -52,45 +57,13 @@ public class VenueControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
-    @MockBean
-    private VenueRepository venueRepository;
-    @MockBean
-    private UserRepository userRepository;
-    @MockBean
-    private AdminRepository adminRepository;
-    @MockBean
-    private EventOrganiserRepository eventOrganiserRepository;
-    @MockBean
-    private EventOrganiserServiceImpl eventOrganiserService;
-    @MockBean
-    private EventServiceImpl eventService;
     @MockBean
     private AmazonS3ServiceImpl amazonS3Service;
     @MockBean
-    private EventTypeRepository eventTypeRepository;
-    @MockBean
-    private EventRepository eventRepository;
-    @MockBean
-    private ArtistRepository artistRepository;
-    @MockBean
-    private JavaMailSenderImpl javaMailSender;
-    @MockBean
-    private TicketRepository ticketRepository;
-    @MockBean
-    private PresaleInterestRepository presaleInterestRepository;
-    @MockBean
-    private SectionRepository sectionRepository;
-    @MockBean
-    private TicketPricingRepository ticketPricingRepository;
-    @MockBean
-    private OrderRepository orderRepository;
-    @MockBean
-    private QueueRepository queueRepository;
-    @MockBean
-    private TicketCategoryRepository ticketCategoryRepository;
+    private VenueRepository venueRepository;
     @MockBean
     private VenueServiceImpl venueService;
+
     @BeforeEach
     public void setUp() {
         // Define your mock behavior here using given(...) and when(...)
@@ -140,7 +113,7 @@ public class VenueControllerIntegrationTest {
         given(venueService.saveVenue(any())).willReturn(savedVenue);
 
         MockMultipartFile imageFile = new MockMultipartFile("venueImage", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "Some data".getBytes());
-
+        given(amazonS3Service.uploadFile(imageFile, "test.jpg", "jpg")).willReturn("ok");
         mockMvc.perform(multipart("/api/v2/venue")
                         .file(imageFile)
                         .param("venueName", "Test Venue")
@@ -168,14 +141,32 @@ public class VenueControllerIntegrationTest {
 
         MockMultipartFile imageFile = new MockMultipartFile("venueImage", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "Some data".getBytes());
 
-        mockMvc.perform(multipart("/api/v2/venue")
-                        .file(imageFile)
-                        .param("venueId", "1")
-                        .param("venueName", "Updated Venue Name")
-                        .param("venueLocation", "Updated Venue Location")
-                        .param("venueDescription", "Updated Venue Description")
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.multipart("/api/v2/venue");
+        builder.with(new RequestPostProcessor() {
+            @Override
+            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                request.setMethod("PUT");
+                request.addParameter("venueId", "1");
+                request.addParameter("venueName", "Updated Venue Name");
+                request.addParameter("venueLocation", "Updated Venue Location");
+                request.addParameter("venueDescription", "Updated Venue Description");
+                return request;
+            }
+        });
+
+        mockMvc.perform(builder.file(imageFile))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Venue updated successfully"));
+                .andExpect(jsonPath("$.data.venueId").value(1))
+                .andExpect(jsonPath("$.message").value("Venue updated successfully."));
+//        mockMvc.perform(multipart("/api/v2/venue")
+//                        .file(imageFile)
+//                        .param("venueId", "1")
+//                        .param("venueName", "Updated Venue Name")
+//                        .param("venueLocation", "Updated Venue Location")
+//                        .param("venueDescription", "Updated Venue Description")
+//                        .contentType(MediaType.MULTIPART_FORM_DATA))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.message").value("Venue updated successfully"));
     }
 }
