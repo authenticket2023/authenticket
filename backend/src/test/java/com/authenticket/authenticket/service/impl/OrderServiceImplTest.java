@@ -282,7 +282,8 @@ public class OrderServiceImplTest {
                         user.getProfileImage(),
                         "USER"
                 ),
-                new HashSet<>()
+                new HashSet<>(),
+                true
         ));
 
         // Act
@@ -386,7 +387,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                false
         ));
 
         when(orderRepository.findById(order.getOrderId())).thenReturn(Optional.of(order));
@@ -941,7 +943,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                false
         ));
 
         when(ticketRepository.findById(ticket.getTicketId())).thenReturn(Optional.of(ticket));
@@ -1134,7 +1137,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                false
         ));
 
         when(orderRepository.findById(order.getOrderId())).thenReturn(Optional.of(order));
@@ -1425,7 +1429,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                true
         ));
         expectedOrderDisplayDtos.add(new OrderDisplayDto(
                 order.getOrderId(),
@@ -1437,7 +1442,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                true
         ));
 
         orders.add(order);

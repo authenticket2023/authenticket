@@ -5,24 +5,20 @@ import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDisplayDto
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserDtoMapper;
 import com.authenticket.authenticket.dto.eventOrganiser.EventOrganiserUpdateDto;
 import com.authenticket.authenticket.exception.NonExistentException;
-import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.EventOrganiser;
+import com.authenticket.authenticket.model.*;
 import com.authenticket.authenticket.repository.EventOrganiserRepository;
 import com.authenticket.authenticket.repository.EventRepository;
 import com.authenticket.authenticket.service.AmazonS3Service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -364,5 +360,63 @@ class EventOrganiserServiceImplTest {
 
         // Assert that a NonExistentException is thrown
         assertThrows(NonExistentException.class, () -> underTest.deleteEventOrganiser(organiserId));
+    }
+
+    @Test
+    public void testFindAllCurrentEventsByOrganiser() {
+        int organiserId = 1;
+
+        Set<Artist> artists = new HashSet<>();
+        artists.add(new Artist());
+        artists.add(new Artist());
+
+        List<Event> eventList = new ArrayList<>();
+
+        EventOrganiser eventOrg = EventOrganiser
+                .builder()
+                .organiserId(organiserId)
+                .name("TestGeorgia")
+                .email("testOrg@example.com")
+                .password("password")
+                .description("description")
+                .logoImage(null)
+                .enabled(true)
+                .admin(null)
+                .reviewStatus("status")
+                .reviewRemarks("remarks")
+                .events(eventList)
+                .build();
+
+        Event event = Event.builder()
+                .eventId(99)
+                .eventName("Test Event")
+                .eventDescription("A test event description.")
+                .eventDate(LocalDateTime.of(2023, 11, 2, 10, 0))
+                .otherEventInfo("Additional event info.")
+                .eventImage("event-image.jpg")
+                .ticketSaleDate(LocalDateTime.now().plusDays(7))
+                .reviewedBy(new Admin())
+                .reviewStatus(Event.ReviewStatus.PENDING.getStatusValue())
+                .reviewRemarks("Review remarks")
+                .isEnhanced(true)
+                .hasPresale(true)
+                .hasPresaleUsers(true)
+                .organiser(eventOrg)
+                .venue(new Venue())
+                .eventType(new EventType())
+                .artists(artists)
+                .build();
+
+        eventList.add(event);
+
+        when(eventRepository.findAllByReviewStatusAndOrganiserOrganiserIdAndEventDateIsAfterAndDeletedAtIsNullOrderByEventDateAsc(
+                eq(Event.ReviewStatus.APPROVED.getStatusValue()), eq(organiserId), any(LocalDateTime.class)))
+                .thenReturn(eventList);
+
+        List<Event> result = underTest.findAllCurrentEventsByOrganiser(organiserId);
+
+        // Verify that only "Event 1" (in the future) is returned
+        assertEquals(1, result.size());
+        assertEquals(event.getEventName(), result.get(0).getEventName());
     }
 }

@@ -200,7 +200,7 @@ class TicketServiceImplTest {
     }
 
     @Test
-    public void testAllocateSeats() {
+    public void testAllocateSeatsWithIllegalArgument() {
         // Create test data for Event, Venue, Section
 
         Venue venue = Venue.builder()
@@ -617,4 +617,60 @@ class TicketServiceImplTest {
         verify(ticketRepository, never()).countByTicketPricingEventEventIdAndSectionSectionIdAndRowNo(any(), any(), any());
     }
 
+    @Test
+    void testGetNumberOfTicketsPurchaseable() {
+        // Mock an Event object
+        Event mockEvent = new Event();
+        mockEvent.setEventId(1);
+
+        // Mock a User object
+        User mockUser = new User();
+        mockUser.setUserId(1);
+
+        // Mock the behavior of the ticketRepository.countAllByOrder_EventAndOrder_User method
+        when(ticketRepository.countAllByOrder_EventAndOrder_User(mockEvent, mockUser)).thenReturn(2);
+
+        // Set the maximum allowed tickets per user
+        int maxTicketsPerUser = 5;
+
+        // Call the method you want to test
+        int numberOfTicketsPurchaseable = underTest.getNumberOfTicketsPurchaseable(mockEvent, mockUser);
+
+        // Verify that the countAllByOrder_EventAndOrder_User method was called with the correct arguments
+        verify(ticketRepository, times(1)).countAllByOrder_EventAndOrder_User(mockEvent, mockUser);
+
+        // Verify that the result is correct
+        assertEquals(maxTicketsPerUser - 2, numberOfTicketsPurchaseable);
+    }
+
+    @Test
+    void testSetCheckIn() {
+        // Mock a Ticket object
+        Ticket mockTicket = new Ticket();
+        mockTicket.setTicketId(1);
+
+        // Mock the behavior of the ticketRepository.findById method
+        when(ticketRepository.findById(1)).thenReturn(Optional.of(mockTicket));
+
+        // Call the method you want to test
+        underTest.setCheckIn(1, true);
+
+        // Verify that the save method of the repository was called
+        verify(ticketRepository, times(1)).save(mockTicket);
+
+        // Verify that the checkedIn property was set to true
+        assertTrue(mockTicket.getCheckedIn());
+    }
+
+    @Test
+    void testSetCheckInNonExistent() {
+        // Mock the behavior of the ticketRepository.findById method
+        when(ticketRepository.findById(1)).thenReturn(Optional.empty());
+
+        // Call the method you want to test and expect an exception
+        assertThrows(NonExistentException.class, () -> underTest.setCheckIn(1, true));
+
+        // Verify that the save method of the repository was not called
+        verify(ticketRepository, never()).save(any());
+    }
 }
