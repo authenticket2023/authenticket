@@ -15,7 +15,7 @@ export function SelectSeats(props: any) {
     //set variables
     const colorArray = ['#E5E23D', '#D74A50', '#30A1D3', '#E08D24', '#5BB443'];
     const [quantity, setQuantity] = React.useState('');
-    const [maxConsecutiveSeats, setMaxConsecutiveSeats] = React.useState(0);
+    const [maxConsecutiveSeats, setMaxConsecutiveSeats] = React.useState(1);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertType, setAlertType]: any = useState('info');
     const [alertMsg, setAlertMsg] = useState('');
@@ -65,7 +65,13 @@ export function SelectSeats(props: any) {
             setOpenSnackbar(true);
             setAlertType('error');
             setAlertMsg('Please select a quantity before proceeding.');
-        } else if (maxConsecutiveSeats == 0) {
+        } else if (parseInt(quantity) > maxConsecutiveSeats) {
+            //check amount selected is more than maxConsecutiveSeats
+            // Show an error message
+            setOpenSnackbar(true);
+            setAlertType('error');
+            setAlertMsg('Quantity selected is more than what is available. Please pick a different quantity or section.');
+        }else if (maxConsecutiveSeats == 0) {
             //check if section is sold out
             // Show an error message
             setOpenSnackbar(true);
@@ -105,22 +111,22 @@ export function SelectSeats(props: any) {
                 <Box sx={{ minWidth: 120, marginLeft: 2 }}>
                     <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                         <InputLabel id="demo-select-small-label">Quantity</InputLabel>
-                        <Select
-                            labelId="demo-select-small-label"
-                            id="demo-select-small"
-                            value={quantity}
-                            label="Quantity"
-                            onChange={handleChange}
-                            displayEmpty
-                            style={{ fontSize: '13px' }}
-                            disabled={props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status === "Sold Out" || !selectedSection}
-                        >
-                            {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
-                                <MenuItem key={index + 1} value={index + 1}>
-                                    {index + 1}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                            <Select
+                                labelId="demo-select-small-label"
+                                id="demo-select-small"
+                                value={quantity}
+                                label="Quantity"
+                                onChange={handleChange}
+                                displayEmpty
+                                style={{ fontSize: '13px' }}
+                                disabled={props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status === "Sold Out" || !selectedSection}
+                            >
+                                {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
+                                    <MenuItem key={index + 1} value={index + 1}>
+                                        {index + 1}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                     </FormControl>
                 </Box>
             </div>
@@ -460,31 +466,6 @@ export function EnterDetailsFace(props: any) {
                                 />
                             </Button>
                             </div>
-                            {/* <Button
-                                variant="outlined"
-                                component="label"
-                                sx={{
-                                    fontSize: '10px',
-                                    border: '1px solid #FF5C35',
-                                    borderRadius: '8px',
-                                    color: '#FF5C35',
-                                    ":hover": {
-                                        bgcolor: "#FF5C35",
-                                        color: 'white',
-                                    },
-                                    marginLeft: 3,
-                                    marginTop: 9
-                                }}
-                                size="small"
-                            >
-                                Upload Image
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={(event) => handleFileChange(event, sectionIndex)}
-                                    accept="image/*"
-                                />
-                            </Button> */}
                             <TextField
                                 label="Name"
                                 id="outlined-size-small"
@@ -583,7 +564,7 @@ export function Confirmation(props: any) {
                 },
             ]
         }
-        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+        const response = await fetch(`${process.env.REACT_APP_PAYMENT_URL}/payment/create-checkout-session`, {
             method: "Post",
             headers: {
                 "Content-Type": "application/json"
@@ -778,7 +759,7 @@ export function ConfirmationFace(props: any) {
                 },
             ]
         }
-        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+        const response = await fetch(`${process.env.REACT_APP_PAYMENT_URL}/payment/create-checkout-session`, {
             method: "Post",
             headers: {
                 "Content-Type": "application/json"
@@ -870,23 +851,25 @@ export function ConfirmationFace(props: any) {
             <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft:380, marginTop:40 }}>
                 Attendee Details
             </Typography>
-        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop:6 }}>
-            <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
-                {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
-                    <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginRight: 5 }}>
+            <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop: 6 }}>
+                <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
+                    {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
+                    <Grid item key={index} style={{ background: '#F8F8F8', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginBottom: 10 }}>
+                        <div style={{ width: '70px', height: '70px', borderRadius: '100%', overflow: 'hidden', margin: 10 }}>
                         <img
                             src={URL.createObjectURL(image)}
                             alt={`Image ${index}`}
-                            style={{ width: '70px', height: '70px', borderRadius: '100%', marginLeft:40, marginTop:30 }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
+                        </div>
                         {names[index] !== null && names[index] !== undefined && (
-                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems:'center', marginTop:47 }}>
-                                {names[index]}
-                            </Typography>
+                        <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems: 'center', marginTop: 28 }}>
+                            {names[index]}
+                        </Typography>
                         )}
                     </Grid>
-                ))}
-            </Grid>
+                    ))}
+                </Grid>
             <Grid item style={{ background: '#F8F8F8', height: '210px', width: '300px', borderRadius: '8px', marginLeft: 5 }}>
                 <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
                     Summary
