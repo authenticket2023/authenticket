@@ -1430,7 +1430,7 @@ public class OrderServiceImplTest {
                 order.getOrderStatus(),
                 userDisplayDto,
                 ticketDisplayDtos,
-                false
+                true
         ));
         expectedOrderDisplayDtos.add(new OrderDisplayDto(
                 order.getOrderId(),
