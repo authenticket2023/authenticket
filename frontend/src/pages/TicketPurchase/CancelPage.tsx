@@ -68,7 +68,36 @@ export const CancelPage: React.FC = (): JSX.Element => {
           <Navigate to={`/cancel/${orderId}`} /> : <Navigate to="/Forbidden" />
       }
       <NavbarLoggedIn />
-      <Grid
+      <Grid style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Grid style={{ background: '#F8F8F8', height: '300px', width: '650px', borderRadius: '8px', marginTop:75, display: 'flex', flexDirection:'column', alignItems: 'center'}}>
+          <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '26px', marginTop:75}}>
+            Order Cancelled
+          </Typography>
+          <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '16px', marginTop:5 }}>
+            Your ticket purchase did not go through. 
+          </Typography>
+          <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '16px', }}>
+            Please return to the event page to purchase the tickets.
+          </Typography>
+          <Button variant="outlined" href={`/Event`}
+                sx={{
+                    border: '1px solid #FF5C35',
+                    borderRadius: '8px',
+                    color: '#FF5C35',
+                    height: 39.5,
+                    width: 295,
+                    marginTop: 2,
+                    ":hover": {
+                        bgcolor: "#FF5C35",
+                        color: 'white',
+                        BorderColor: '#FF5C35'
+                    }
+                }}>
+            Return to Event
+          </Button>
+        </Grid>
+      </Grid>
+      {/* <Grid
         container
         sx={{
           justifyContent: "center", alignItems: "center", position: 'relative',
@@ -94,7 +123,7 @@ export const CancelPage: React.FC = (): JSX.Element => {
             Return to Event
           </Button>
         </Grid>
-      </Grid>
+      </Grid> */}
     </>
   )
 }
