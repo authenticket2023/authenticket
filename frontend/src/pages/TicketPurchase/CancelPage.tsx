@@ -14,13 +14,17 @@ export const CancelPage: React.FC = (): JSX.Element => {
 
   useEffect(() => {
     cancelOrder(orderId);
-    //calling backend to remove facial record
+    //to leave the queue
     if (ticketsetMetadata != null) {
+      leaveQueue(ticketsetMetadata[0].eventId);
+    }
+    //calling backend to remove facial record
+    if (ticketsetMetadata[0].label != null) {
       ticketsetMetadata.forEach((metadata: any, index: any) => {
         removeFacialRecords(metadata.eventId, metadata.label);
       });
-      leaveQueue(ticketsetMetadata[0].eventId);
     }
+  
   }, []);
 
   //call backend to cancel order

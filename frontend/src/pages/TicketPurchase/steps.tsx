@@ -615,8 +615,6 @@ export function Confirmation(props: any) {
                         const ticketSet = responseData.data.ticketSet;
                         const ticketSetMetadata = ticketSet.map((entry: any) => ({
                             eventId: entry.eventId,
-                            label: `${entry.ticketHolder}(${entry.sectionId}-${entry.rowNo}-${entry.seatNo})`,
-                            labelForCreation: `${entry.ticketHolder},${entry.sectionId},${entry.rowNo},${entry.seatNo}`,
                         }));
                         localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
 
