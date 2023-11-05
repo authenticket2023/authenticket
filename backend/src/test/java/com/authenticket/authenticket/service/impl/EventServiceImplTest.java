@@ -977,6 +977,64 @@ class EventServiceImplTest {
     }
 
     @Test
+    public void testUpdateTicketPricingSuccess() {
+        // Arrange
+        Integer catId = 1;
+        Integer eventId = 2;
+        Double price = 100.0;
+
+        Set<Artist> artists = new HashSet<>();
+        artists.add(new Artist());
+        artists.add(new Artist());
+
+        Event event = Event.builder()
+                .eventId(eventId)
+                .eventName("Test Event")
+                .eventDescription("A test event description.")
+                .eventDate(LocalDateTime.now())
+                .otherEventInfo("Additional event info.")
+                .eventImage("event-image.jpg")
+                .ticketSaleDate(LocalDateTime.now().plusDays(7))
+                .reviewedBy(new Admin())
+                .reviewStatus(Event.ReviewStatus.PENDING.getStatusValue())
+                .reviewRemarks("Review remarks")
+                .isEnhanced(true)
+                .hasPresale(true)
+                .hasPresaleUsers(true)
+                .organiser(new EventOrganiser())
+                .venue(new Venue())
+                .eventType(new EventType())
+                .artists(artists)
+                .ticketPricingSet(null)
+                .build();
+
+        TicketCategory category = TicketCategory.builder()
+                .categoryId(catId) // Set the category ID
+                .categoryName("General Admission") // Set the category name
+                .build();
+
+        Set<TicketPricing> ticketPricingSet = new HashSet<>();
+        TicketPricing ticketPricing = TicketPricing.builder()
+                .cat(category)
+                .event(event)
+                .price(price)
+                .build();
+        ticketPricingSet.add(ticketPricing);
+
+        event.setTicketPricingSet(ticketPricingSet);
+
+        // Mock the behavior of your repositories
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(ticketCategoryRepository.findById(catId)).thenReturn(Optional.of(category));
+        when(ticketPricingRepository.findById(any(EventTicketCategoryId.class)))
+                .thenReturn(Optional.of(ticketPricing));
+
+        underTest.updateTicketPricing(catId, eventId, price);
+
+        assertEquals(price, ticketPricing.getPrice());
+    }
+
+    @Test
     public void testUpdateTicketPricingWhenCategoryNotExists() {
         // Arrange
         Integer catId = 1;
@@ -1101,60 +1159,65 @@ class EventServiceImplTest {
         verify(eventRepository, never()).save(any());
     }
 
-//    @Test
-//    public void testRemoveTicketCategory() {
-//        // Create some test data
-//        Integer catId = 1;
-//        Integer eventId = 2;
-//        Double price = 100.0;
-//
-//        Set<Artist> artists = new HashSet<>();
-//        artists.add(new Artist());
-//        artists.add(new Artist());
-//
-//        Event event = Event.builder()
-//                .eventId(eventId)
-//                .eventName("Test Event")
-//                .eventDescription("A test event description.")
-//                .eventDate(LocalDateTime.now())
-//                .otherEventInfo("Additional event info.")
-//                .eventImage("event-image.jpg")
-//                .ticketSaleDate(LocalDateTime.now().plusDays(7))
-//                .reviewedBy(new Admin())
-//                .reviewStatus(Event.ReviewStatus.PENDING.getStatusValue())
-//                .reviewRemarks("Review remarks")
-//                .isEnhanced(true)
-//                .hasPresale(true)
-//                .hasPresaleUsers(true)
-//                .organiser(new EventOrganiser())
-//                .venue(new Venue())
-//                .eventType(new EventType())
-//                .artists(artists)
-//                .build();
-//
-//        TicketCategory category = TicketCategory.builder()
-//                .categoryId(catId) // Set the category ID
-//                .categoryName("General Admission") // Set the category name
-//                .build();
-//
-//        TicketPricing ticketPricing = TicketPricing.builder()
-//                .cat(category)
-//                .event(event)
-//                .price(price)
-//                .build();
-//
-//        // Mock the behavior of your repositories
-//        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-//        when(ticketCategoryRepository.findById(catId)).thenReturn(Optional.of(category));
-//        when(ticketPricingRepository.findById(new EventTicketCategoryId(category, event)))
-//                .thenReturn(Optional.of(ticketPricing));
-//
-//        // Call the method you want to test
-//        EventDisplayDto result = underTest.removeTicketCategory(catId, eventId);
-//
-//        // Assertions to check the result
-//        assertNotNull(result);
-//    }
+    @Test
+    public void testRemoveTicketCategory() {
+        // Create some test data
+        Integer catId = 1;
+        Integer eventId = 2;
+        Double price = 100.0;
+
+        Set<Artist> artists = new HashSet<>();
+        artists.add(new Artist());
+        artists.add(new Artist());
+
+        Event event = Event.builder()
+                .eventId(eventId)
+                .eventName("Test Event")
+                .eventDescription("A test event description.")
+                .eventDate(LocalDateTime.now())
+                .otherEventInfo("Additional event info.")
+                .eventImage("event-image.jpg")
+                .ticketSaleDate(LocalDateTime.now().plusDays(7))
+                .reviewedBy(new Admin())
+                .reviewStatus(Event.ReviewStatus.PENDING.getStatusValue())
+                .reviewRemarks("Review remarks")
+                .isEnhanced(true)
+                .hasPresale(true)
+                .hasPresaleUsers(true)
+                .organiser(new EventOrganiser())
+                .venue(new Venue())
+                .eventType(new EventType())
+                .artists(artists)
+                .ticketPricingSet(null)
+                .build();
+
+        TicketCategory category = TicketCategory.builder()
+                .categoryId(catId) // Set the category ID
+                .categoryName("General Admission") // Set the category name
+                .build();
+
+        Set<TicketPricing> ticketPricingSet = new HashSet<>();
+        TicketPricing ticketPricing = TicketPricing.builder()
+                .cat(category)
+                .event(event)
+                .price(price)
+                .build();
+        ticketPricingSet.add(ticketPricing);
+
+        event.setTicketPricingSet(ticketPricingSet);
+
+        // Mock the behavior of your repositories
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(ticketCategoryRepository.findById(catId)).thenReturn(Optional.of(category));
+        when(ticketPricingRepository.findById(any(EventTicketCategoryId.class)))
+                .thenReturn(Optional.of(ticketPricing));
+
+        // Call the method you want to test
+        EventDisplayDto result = underTest.removeTicketCategory(catId, eventId);
+
+        // Assertions to check the result
+        assertNotNull(result);
+    }
 
     @Test
     public void testRemoveTicketCategoryNonExistentCategory() {
@@ -1168,6 +1231,12 @@ class EventServiceImplTest {
 
     @Test
     public void testRemoveTicketCategoryNonExistentEvent() {
+        TicketCategory category = TicketCategory.builder()
+                .categoryId(2) // Set the category ID
+                .categoryName("General Admission") // Set the category name
+                .build();
+
+        when(ticketCategoryRepository.findById(2)).thenReturn(Optional.of(category));
         when(eventRepository.findById(1)).thenReturn(Optional.empty());
 
         // Assert that the NonExistentException is thrown for a non-existent event

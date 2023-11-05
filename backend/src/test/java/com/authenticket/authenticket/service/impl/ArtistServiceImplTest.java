@@ -48,8 +48,8 @@ class ArtistServiceImplTest {
         List<Artist> artistList = new ArrayList<>();
         // Mock the behavior of the artistRepository to return a list of artists
         when(artistRepository.findAllByDeletedAtIsNull()).thenReturn(artistList);
-
         List<ArtistDisplayDto> result = underTest.findAllArtists();
+
 
         // Assert that the artistList is not null and contains expected elements
         assertNotNull(result);
