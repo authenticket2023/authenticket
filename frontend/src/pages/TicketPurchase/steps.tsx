@@ -612,6 +612,13 @@ export function Confirmation(props: any) {
                         const responseData = await response.json();
                         // Access the orderId from the response data
                         const orderId = responseData.data.orderId;
+                        const ticketSet = responseData.data.ticketSet;
+                        const ticketSetMetadata = ticketSet.map((entry: any) => ({
+                            eventId: entry.eventId,
+                            label: `${entry.ticketHolder}(${entry.sectionId}-${entry.rowNo}-${entry.seatNo})`,
+                            labelForCreation: `${entry.ticketHolder},${entry.sectionId},${entry.rowNo},${entry.seatNo}`,
+                        }));
+                        localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
 
                         setOpenSnackbar(true);
                         setAlertType('success');
@@ -826,8 +833,6 @@ export function ConfirmationFace(props: any) {
                                 labelForCreation: `${entry.ticketHolder},${entry.sectionId},${entry.rowNo},${entry.seatNo}`,
                             }));
                             localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
-                            console.log(ticketSetMetadata);
-                            console.log(responseData);
                             createFacialRecords(ticketSetMetadata, responseData.data.eventId);
                             setOpenSnackbar(true);
                             setAlertType('success');
