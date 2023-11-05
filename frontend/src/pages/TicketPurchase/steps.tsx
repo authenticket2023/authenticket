@@ -604,7 +604,6 @@ export function Confirmation(props: any) {
         if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
-            console.log("hello");
 
             //call backend to create order
             const formData = new FormData();
