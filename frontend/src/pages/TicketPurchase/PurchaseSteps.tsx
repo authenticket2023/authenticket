@@ -122,7 +122,6 @@ export const PurchaseSteps = (props: any) => {
               if (response.status == 200) {
                 const apiResponse = await response.json();
                 const data = apiResponse.data;
-                console.log(data);
                 setSectionDetails(data);
   
               } else {
@@ -354,7 +353,6 @@ export const PurchaseStepsFace = (props: any) => {
               if (response.status == 200) {
                 const apiResponse = await response.json();
                 const data = apiResponse.data;
-                console.log(data);
                 setSectionDetails(data);
   
               } else {

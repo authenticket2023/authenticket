@@ -23,6 +23,7 @@ import { EventDetails } from './pages/EventDetails';
 import { TicketPurchase } from './pages/TicketPurchase';
 import { SuccessPage } from './pages/TicketPurchase/SuccessPage';
 import { CancelPage } from './pages/TicketPurchase/CancelPage';
+import { WaitingRoom } from './pages/WaitingRoom/WaitingRoom';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
@@ -36,7 +37,6 @@ import { FAQOrganiser } from './pages/FAQOrganiser';
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
 import { ArtistAdmin } from './pages/ArtistAdmin';
-import { VenueAdmin } from './pages/VenueAdmin';
 import { AdminLogin } from './pages/AdminLogin';
 
 const container: any = document.getElementById('root');
@@ -64,12 +64,12 @@ root.render(
 			<Route path="/QRCheckinOrganiser" element={<QRCheckinOrganiser />} />
 			<Route path="/HomeAdmin" element={<HomeAdmin />} />
 			<Route path="/EventAdmin" element={<EventAdmin />} />
-			<Route path="/VenueAdmin" element={<VenueAdmin />} />
 			<Route path="/ArtistAdmin" element={<ArtistAdmin />} />
 			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
 			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
 			<Route path="/AdminLogin" element={<AdminLogin />} />
 			<Route path="/EventDetails/:eventId" element={<EventDetails />} />
+			<Route path="/WaitingRoom/:eventId" element={<WaitingRoom />} />
 			<Route path="/VenueDetails/:venueId" element={<VenueDetails />} />
 			<Route path="/TicketPurchase/:eventId" element={<TicketPurchase />} />
 			<Route path="/success/:orderId" element={<SuccessPage />} />

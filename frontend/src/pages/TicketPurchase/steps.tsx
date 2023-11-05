@@ -1,10 +1,8 @@
-import { BorderColor } from '@mui/icons-material';
 import {
-    Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, FormGroup, Switch, FormControlLabel, SelectChangeEvent, Snackbar, Alert
+    Box, Button, TextField, Typography, Grid, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Snackbar, Alert, Stack
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { SGStad } from '../../utility/seatMap/SeatMap';
-import {Elements} from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
 
 export function SelectSeats(props: any) {
@@ -25,12 +23,35 @@ export function SelectSeats(props: any) {
         setOpenSnackbar(false);
     };
 
-    const handleSeats = () => {
+    const handleChange = (event: SelectChangeEvent) => {
+        const newQuantity = event.target.value as string;
+        setQuantity(newQuantity);
+        props.onQuantityChange(newQuantity);
 
+        // Find the selected section
+        const selectedSectionData = props.sectionDetails.find(
+            (item: { sectionId: undefined; }) => item.sectionId === selectedSection
+        );
+
+        // Check if the selectedSectionData exists
+        if (selectedSectionData) {
+            const maxConsecutiveSeats = selectedSectionData.maxConsecutiveSeats;
+            setMaxConsecutiveSeats(maxConsecutiveSeats);
+
+            // Error message if the ticket order is bigger than the max consecutive seats
+            if (parseInt(quantity) > maxConsecutiveSeats) {
+                setOpenSnackbar(true);
+                setAlertType('warning');
+                setAlertMsg(`Maximum consecutive seats in this section is ${maxConsecutiveSeats}`);
+            }
+        }
+    };
+
+    const handleSeats = () => {
         //check if the section is sold out or if maxConsecutiveSeats == 0
         const maxConsecutiveSeats = props.sectionDetails
-        ? props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats
-        : 0;
+            ? props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats
+            : 0;
 
         //check if a section is chosen before proceedign to the next page
         if (!selectedSection) {
@@ -57,38 +78,45 @@ export function SelectSeats(props: any) {
         }
 
     }
-    
+
     return (
-        <div style={{display:'flex', justifyContent:'center', flexDirection:'column', alignItems:'center'}}>
+        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
             <div>
-                <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection}/>
+                <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
             </div>
             <div>
                 <Typography style={{marginLeft:520, marginTop:-450, font:'roboto', fontWeight:500, fontSize:'16px'}}>
-                    Price: ${props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...') : 'Loading...'}
+                    Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
+                    {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'Loading...')}
                 </Typography>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'16px', marginLeft:520, marginTop:0}}>
+                {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
+                    Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
+                        props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...'
+                    ) : 'Loading...'}
+                </Typography> */}
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 520, marginTop: 0 }}>
                     Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Loading...') : 'Loading...'}
                 </Typography>
             </div>
-            <div style={{background:'#F8F8F8', height:'110px', width:'300px', borderRadius:'8px', alignContent:'left', marginLeft:650, marginTop:-375}}>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+            <div style={{ background: '#F8F8F8', height: '110px', width: '300px', borderRadius: '8px', alignContent: 'left', marginLeft: 650, marginTop: -375 }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
                     Ticket Quantity
                 </Typography>
-                <Box sx={{ minWidth: 120, marginLeft:2 }}>
+                <Box sx={{ minWidth: 120, marginLeft: 2 }}>
                     <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                         <InputLabel id="demo-select-small-label">Quantity</InputLabel>
                         <Select
-                        labelId="demo-select-small-label"
-                        id="demo-select-small"
-                        value={quantity}
-                        label="Quantity"
-                        displayEmpty
-                        style={{fontSize:'13px'}}
+                            labelId="demo-select-small-label"
+                            id="demo-select-small"
+                            value={quantity}
+                            label="Quantity"
+                            onChange={handleChange}
+                            displayEmpty
+                            style={{ fontSize: '13px' }}
                         >
-                            {Array.from({ length: props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats): 6 }, (_, index) => (
+                            {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
                                 <MenuItem key={index + 1} value={index + 1}>
-                                {index + 1}
+                                    {index + 1}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -97,49 +125,49 @@ export function SelectSeats(props: any) {
             </div>
             <Button variant="outlined" onClick={handleSeats}
                 sx={{
-                    border:'1px solid #FF5C35', 
-                    borderRadius:'8px',
-                    color:'#FF5C35',
+                    border: '1px solid #FF5C35',
+                    borderRadius: '8px',
+                    color: '#FF5C35',
                     height: 39.5,
                     width: 295,
-                    marginLeft:81.5,
-                    marginTop:1,
+                    marginLeft: 81.5,
+                    marginTop: 1,
                     ":hover": {
                         bgcolor: "#FF5C35",
-                        color:'white',
-                        BorderColor:'#FF5C35'
+                        color: 'white',
+                        BorderColor: '#FF5C35'
                     }
                 }}>
                 Confirm Seats
             </Button>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
             <Grid item xs={8}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} >
+                <Grid container spacing={2}>
+                    <Grid item xs={12} >
                         <Typography style={{ font: 'Roboto', fontWeight: 500, fontSize: '18px' }}>
-                          Ticket Pricing
+                            Ticket Pricing
                         </Typography>
-                      </Grid>
-                      {props.categoryDetails.map((cat: any) => (
-                        <Grid item key={cat.categoryId} xs={6} display='flex' flexDirection='row'> {/* xs={6} makes each item take up half the row */}
-                          <div style={{ background: colorArray[cat.categoryId - 1], height: '20px', width: '20px', borderRadius: '5px' }} />
-                          <Typography style={{ color: 'black', marginLeft: 10 }}>
-                            {cat.categoryName} - ${cat.price}
-                          </Typography>
-                        </Grid>
-                      ))}
-
                     </Grid>
+                    {props.categoryDetails.map((cat: any) => (
+                        <Grid item key={cat.categoryId} xs={6} display='flex' flexDirection='row'> {/* xs={6} makes each item take up half the row */}
+                            <div style={{ background: colorArray[cat.categoryId - 1], height: '20px', width: '20px', borderRadius: '5px' }} />
+                            <Typography style={{ color: 'black', marginLeft: 10 }}>
+                                {cat.categoryName} - ${cat.price}
+                            </Typography>
+                        </Grid>
+                    ))}
 
-                  </Grid>
+                </Grid>
+
+            </Grid>
 
             <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
                     {alertMsg}
                 </Alert>
             </Snackbar>
@@ -163,7 +191,7 @@ export function EnterDetails(props: any) {
     const delay = (ms: number) => new Promise(
         resolve => setTimeout(resolve, ms)
     );
-  
+
     useEffect(() => {
     }, []);
 
@@ -172,8 +200,8 @@ export function EnterDetails(props: any) {
         const updatedTextFieldValues = [...textFieldValues];
         updatedTextFieldValues[sectionIndex] = event.target.value;
         setTextFieldValues(updatedTextFieldValues);
-      };
-      
+    };
+
     const handleConfirm = (event: React.FormEvent) => {
         event.preventDefault();
 
@@ -182,73 +210,73 @@ export function EnterDetails(props: any) {
 
         // Call the parent's function to update the state
         props.updateEnteredData(names);
-    
+
         // Check if any TextField is empty
         if (textFieldValues.some((value) => value.trim() === '')) {
-          // Show an alert message if any TextField is empty
-          setOpenSnackbar(true);
-          setAlertType('error');
-          setAlertMsg('Please fill in all the name fields!');
+            // Show an alert message if any TextField is empty
+            setOpenSnackbar(true);
+            setAlertType('error');
+            setAlertMsg('Please fill in all the name fields!');
         } else {
-          props.handleComplete();
+            props.handleComplete();
         }
-      };
-  
-    return (
-      <form onSubmit={handleConfirm}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 0, marginTop: 35, marginRight: 420, marginBottom: 3 }}>
-            Attendee Details
-          </Typography>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {Array.from({ length: props.quantity }).map((_, sectionIndex) => (
-              <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection:'row', height:'90px' }}>
-                <TextField
-                    label="Name"
-                    id="outlined-size-small"
-                    defaultValue=""
-                    size="small"
-                    style={{
-                        width:'160px', 
-                        height:'20px', 
-                        fontSize:'14px',
-                        marginLeft:45, 
-                        marginBottom:15
-                    }}
-                    value={textFieldValues[sectionIndex]} // Set the value of the TextField
-                    onChange={(e) => handleTextFieldChange(e, sectionIndex)} // Handle changes
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-        <Button variant='outlined' onClick={handleConfirm}
-            sx={{
-                border:'1px solid #FF5C35', 
-                borderRadius:'8px',
-                color:'#FF5C35',
-                height: 34,
-                width: 200,
-                marginLeft:107,
-                marginTop:1,
-                ":hover": {
-                    bgcolor: "#FF5C35",
-                    color:'white',
-                    BorderColor:'#FF5C35'
-                }
-            }}
-        >
-            Confirm Details
-        </Button>
+    };
 
-        <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-            <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
-                {alertMsg}
-            </Alert>
-        </Snackbar>
-      </form>
+    return (
+        <form onSubmit={handleConfirm}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 0, marginTop: 35, marginRight: 420, marginBottom: 3 }}>
+                    Attendee Details
+                </Typography>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {Array.from({ length: props.quantity }).map((_, sectionIndex) => (
+                        <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection: 'row', height: '90px' }}>
+                            <TextField
+                                label="Name"
+                                id="outlined-size-small"
+                                defaultValue=""
+                                size="small"
+                                style={{
+                                    width: '160px',
+                                    height: '20px',
+                                    fontSize: '14px',
+                                    marginLeft: 45,
+                                    marginBottom: 15
+                                }}
+                                value={textFieldValues[sectionIndex]} // Set the value of the TextField
+                                onChange={(e) => handleTextFieldChange(e, sectionIndex)} // Handle changes
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+            <Button variant='outlined' onClick={handleConfirm}
+                sx={{
+                    border: '1px solid #FF5C35',
+                    borderRadius: '8px',
+                    color: '#FF5C35',
+                    height: 34,
+                    width: 200,
+                    marginLeft: 107,
+                    marginTop: 1,
+                    ":hover": {
+                        bgcolor: "#FF5C35",
+                        color: 'white',
+                        BorderColor: '#FF5C35'
+                    }
+                }}
+            >
+                Confirm Details
+            </Button>
+
+            <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
+        </form>
     )
-  }
+}
 
 
 export function EnterDetailsFace(props: any) {
@@ -269,25 +297,25 @@ export function EnterDetailsFace(props: any) {
     const delay = (ms: number) => new Promise(
         resolve => setTimeout(resolve, ms)
     );
-  
+
     useEffect(() => {
-      // Initialize sectionImages and fileUploaded arrays based on props.quantity
-      const initialImages: Array<Array<File | null>> = [];
-      const initialFileUploaded: boolean[] = [];
-  
-      for (let i = 0; i < props.quantity; i++) {
-        initialImages.push([null]);
-        initialFileUploaded.push(false);
-      }
-  
-      setSectionImages(initialImages);
-      setFileUploaded(initialFileUploaded);
+        // Initialize sectionImages and fileUploaded arrays based on props.quantity
+        const initialImages: Array<Array<File | null>> = [];
+        const initialFileUploaded: boolean[] = [];
+
+        for (let i = 0; i < props.quantity; i++) {
+            initialImages.push([null]);
+            initialFileUploaded.push(false);
+        }
+
+        setSectionImages(initialImages);
+        setFileUploaded(initialFileUploaded);
     }, [props.quantity]);
-  
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, sectionIndex: number) => {
         const files = event.target.files;
         //call method to check if a valid image has been given
-        if(files && files.length > 0){
+        if (files && files.length > 0) {
             const formData = new FormData();
             const file = files[0];
             formData.append('image', file);
@@ -302,7 +330,7 @@ export function EnterDetailsFace(props: any) {
                 body: formData
             })
                 .then(async (response) => {
-                    if (response.status == 200 ) {
+                    if (response.status == 200) {
                         const eventResponse = await response.json();
                         setOpenSnackbar(true);
                         setAlertType('success');
@@ -312,13 +340,13 @@ export function EnterDetailsFace(props: any) {
                             const updatedImages = [...sectionImages];
                             updatedImages[sectionIndex] = Array.from(files);
                             setSectionImages(updatedImages);
-                    
+
                             // Mark the section as having uploaded files
                             const updatedFileUploaded = [...fileUploaded];
                             updatedFileUploaded[sectionIndex] = true;
                             setFileUploaded(updatedFileUploaded);
                         }
-                
+
                     } else {
                         const eventResponse = await response.json();
                         setOpenSnackbar(true);
@@ -337,8 +365,8 @@ export function EnterDetailsFace(props: any) {
         const updatedTextFieldValues = [...textFieldValues];
         updatedTextFieldValues[sectionIndex] = event.target.value;
         setTextFieldValues(updatedTextFieldValues);
-      };
-      
+    };
+
     const handleConfirm = (event: React.FormEvent) => {
         event.preventDefault();
 
@@ -348,7 +376,7 @@ export function EnterDetailsFace(props: any) {
 
         // Call the parent's function to update the state
         props.updateEnteredData(images, names);
-    
+
         // Check if any TextField is empty
         if (fileUploaded.some((uploaded) => !uploaded)) {
             // Show alert message if not all sections have uploaded files
@@ -356,115 +384,150 @@ export function EnterDetailsFace(props: any) {
             setAlertType('error');
             setAlertMsg('Upload an image for each attendee!!!');
         } else if (textFieldValues.some((value) => value.trim() === '')) {
-          // Show an alert message if any TextField is empty
-          setOpenSnackbar(true);
-          setAlertType('error');
-          setAlertMsg('Please fill in all the name fields!');
+            // Show an alert message if any TextField is empty
+            setOpenSnackbar(true);
+            setAlertType('error');
+            setAlertMsg('Please fill in all the name fields!');
         } else {
-          props.handleComplete();
+            props.handleComplete();
         }
-      };
-  
+    };
+
     return (
-      <form onSubmit={handleConfirm}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-          <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 0, marginTop: 35, marginRight: 420, marginBottom: 3 }}>
-            Attendee Details
-          </Typography>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {Array.from({ length: props.quantity }).map((_, sectionIndex) => (
-              <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection:'row' }}>
-                <div>
-                  {sectionImages[sectionIndex] && sectionImages[sectionIndex].some((file) => file !== null) && (
-                    <ImageList sx={{ width: '45px', height: '45px', borderRadius: '100%' }} cols={1} rowHeight={250}>
-                      {sectionImages[sectionIndex].map((file, index) => (
-                        file !== null && (
-                          <ImageListItem key={index}>
-                            <img
-                              src={`${URL.createObjectURL(file)}?w=575&h=250&fit=crop&auto=format`}
-                              srcSet={`${URL.createObjectURL(file)}`}
-                              alt={`Selected ${index + 1}`}
-                              loading="lazy"
+        <form onSubmit={handleConfirm}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 0, marginTop: 35, marginRight: 420, marginBottom: 3 }}>
+                    Attendee Details
+                </Typography>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {Array.from({ length: props.quantity }).map((_, sectionIndex) => (
+                        <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+                            <div>
+                                {sectionImages[sectionIndex] && sectionImages[sectionIndex].some((file) => file !== null) && (
+                                    <Stack sx={{ width: '45px', height: '45px', borderRadius:'100%'}} direction='column' spacing={2}>
+                                        {sectionImages[sectionIndex].map((file, index) => (
+                                            file !== null && (
+                                                <ImageListItem key={index}>
+                                                    <img
+                                                        src={`${URL.createObjectURL(file)}?w=575&h=250&fit=crop&auto=format`}
+                                                        srcSet={`${URL.createObjectURL(file)}`}
+                                                        alt={`Selected ${index + 1}`}
+                                                        loading="lazy"
+                                                        style={{
+                                                            borderRadius:'100%',
+                                                            height:'55px',
+                                                            width:'55px',
+                                                            marginLeft:45, 
+                                                            marginTop:15, 
+                                                            marginBottom:30
+                                                        }}
+                                                    />
+                                                </ImageListItem>
+                                            )
+                                        ))}
+                                    </Stack>
+                                    )}
+                                <br/>
+                                <Button
+                                variant="outlined"
+                                component="label"
+                                sx={{
+                                    fontSize: '10px',
+                                    border: '1px solid #FF5C35',
+                                    borderRadius: '8px',
+                                    color: '#FF5C35',
+                                    ":hover": {
+                                        bgcolor: "#FF5C35",
+                                        color: 'white',
+                                    },
+                                    marginLeft: 3,
+                                    marginTop: 2, 
+                                    marginBottom:2
+                                }}
+                                size="small"
+                            >
+                                Upload Image
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={(event) => handleFileChange(event, sectionIndex)}
+                                    accept="image/*"
+                                />
+                            </Button>
+                            </div>
+                            {/* <Button
+                                variant="outlined"
+                                component="label"
+                                sx={{
+                                    fontSize: '10px',
+                                    border: '1px solid #FF5C35',
+                                    borderRadius: '8px',
+                                    color: '#FF5C35',
+                                    ":hover": {
+                                        bgcolor: "#FF5C35",
+                                        color: 'white',
+                                    },
+                                    marginLeft: 3,
+                                    marginTop: 9
+                                }}
+                                size="small"
+                            >
+                                Upload Image
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={(event) => handleFileChange(event, sectionIndex)}
+                                    accept="image/*"
+                                />
+                            </Button> */}
+                            <TextField
+                                label="Name"
+                                id="outlined-size-small"
+                                defaultValue=""
+                                size="small"
+                                style={{
+                                    width: '160px',
+                                    height: '20px',
+                                    fontSize: '14px',
+                                    marginLeft: 45,
+                                    marginBottom: 15
+                                }}
+                                value={textFieldValues[sectionIndex]} // Set the value of the TextField
+                                onChange={(e) => handleTextFieldChange(e, sectionIndex)} // Handle changes
                             />
-                          </ImageListItem>
-                        )
-                      ))}
-                    </ImageList>
-                  )}
+                        </div>
+                    ))}
                 </div>
-                <Button
-                  variant="outlined"
-                  component="label"
-                  sx={{
-                    fontSize: '10px',
+            </div>
+            <Button variant='outlined' onClick={handleConfirm}
+                sx={{
                     border: '1px solid #FF5C35',
                     borderRadius: '8px',
                     color: '#FF5C35',
+                    height: 34,
+                    width: 200,
+                    marginLeft: 107,
+                    marginTop: 1,
                     ":hover": {
-                      bgcolor: "#FF5C35",
-                      color: 'white',
-                    },
-                    marginLeft: 3,
-                    marginTop: 9
-                  }}
-                  size="small"
-                >
-                  Upload Image
-                  <input
-                    type="file"
-                    hidden
-                    onChange={(event) => handleFileChange(event, sectionIndex)}
-                    accept="image/*"
-                  />
-                </Button>
-                <TextField
-                    label="Name"
-                    id="outlined-size-small"
-                    defaultValue=""
-                    size="small"
-                    style={{
-                        width:'160px', 
-                        height:'20px', 
-                        fontSize:'14px',
-                        marginLeft:45, 
-                        marginBottom:15
-                    }}
-                    value={textFieldValues[sectionIndex]} // Set the value of the TextField
-                    onChange={(e) => handleTextFieldChange(e, sectionIndex)} // Handle changes
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-        <Button variant='outlined' onClick={handleConfirm}
-            sx={{
-                border:'1px solid #FF5C35', 
-                borderRadius:'8px',
-                color:'#FF5C35',
-                height: 34,
-                width: 200,
-                marginLeft:107,
-                marginTop:1,
-                ":hover": {
-                    bgcolor: "#FF5C35",
-                    color:'white',
-                    BorderColor:'#FF5C35'
-                }
-            }}
-        >
-            Confirm Details
-        </Button>
+                        bgcolor: "#FF5C35",
+                        color: 'white',
+                        BorderColor: '#FF5C35'
+                    }
+                }}
+            >
+                Confirm Details
+            </Button>
 
-        <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-            <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
-                {alertMsg}
-            </Alert>
-        </Snackbar>
-      </form>
+            <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
+                    {alertMsg}
+                </Alert>
+            </Snackbar>
+        </form>
     )
-  }
-  
-  
+}
+
+
 
 export function Confirmation(props: any) {
     // console.log(props.quantity);
@@ -505,18 +568,18 @@ export function Confirmation(props: any) {
             orderId: orderId, // Add orderId to the body
             products: [
                 {
-                     id: 1,
-                     name: `Section ${props.selectedSection}`,
-                     price: catPrice,
-                     quantity:  props.quantity
-                 },
-                 {
-                     id: 2,
-                     name: "Booking Fee",
-                     price: 5,
-                     quantity: 1
-                 },
-             ]
+                    id: 1,
+                    name: `Section ${props.selectedSection}`,
+                    price: catPrice,
+                    quantity: props.quantity
+                },
+                {
+                    id: 2,
+                    name: "Booking Fee",
+                    price: 5,
+                    quantity: 1
+                },
+            ]
         }
         const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
             method: "Post",
@@ -537,8 +600,8 @@ export function Confirmation(props: any) {
     }
 
     const handleConfirmation = async () => {
-         //create order
-         if(!isClicked){
+        //create order
+        if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
             console.log("hello");
@@ -561,7 +624,7 @@ export function Confirmation(props: any) {
                         method: 'POST',
                         body: formData,
                     });
-            
+
                     if (response.status === 200 || response.status === 201) {
                         // Parse the JSON response
                         const responseData = await response.json();
@@ -594,70 +657,70 @@ export function Confirmation(props: any) {
     }
 
     return (
-        <Grid style={{display:'flex', justifyContent:'center', flexDirection:'row', marginTop:50}}>
-            <Grid item style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 5, flexDirection:'column' }}>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>
+        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop: 50 }}>
+            <Grid item style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 5, flexDirection: 'column' }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
                     Attendees
                 </Typography>
                 {names.map((name: string | null | undefined, index: number) => ( // Use index as a number
                     <Grid item key={index} style={{ background: '#F8F8F8', height: '50px', width: '450px', borderRadius: '8px', display: 'flex', alignItems: 'center', marginRight: 5 }}>
                         {name !== null && name !== undefined && (
-                            <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
+                            <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
                                 {name}
                             </Typography>
                         )}
                     </Grid>
                 ))}
             </Grid>
-            <Grid item style={{background:'#F8F8F8', height:'210px', width:'300px', borderRadius:'8px', marginLeft:5}}>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>
+            <Grid item style={{ background: '#F8F8F8', height: '210px', width: '300px', borderRadius: '8px', marginLeft: 5 }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
                     Summary
                 </Typography>
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
                         Items Subtotal:
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:120, marginTop:0}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
                         ${itemSubtotal}
                     </Typography>
                 </div>
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, color:'#888888'}}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, color: '#888888' }}>
                         Section {props.selectedSection}
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:165, color:'#888888'}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 165, color: '#888888' }}>
                         x{props.quantity}
                     </Typography>
                 </div>
-                <div style={{marginTop:20, display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
-                        Booking Fee: 
+                <div style={{ marginTop: 20, display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
+                        Booking Fee:
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:120, marginTop:0}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
                         $5.00
                     </Typography>
                 </div>
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
                         Order Total:
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:120, marginTop:18}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 120, marginTop: 18 }}>
                         ${orderTotal}
                     </Typography>
                 </div>
                 <Button variant="outlined" onClick={handleConfirmation}
                     sx={{
-                        border:'1px solid #FF5C35', 
-                        borderRadius:'8px',
-                        color:'#FF5C35',
+                        border: '1px solid #FF5C35',
+                        borderRadius: '8px',
+                        color: '#FF5C35',
                         height: 39.5,
                         width: 300,
-                        marginLeft:0,
-                        marginTop:4.5,
+                        marginLeft: 0,
+                        marginTop: 4.5,
                         ":hover": {
                             bgcolor: "#FF5C35",
-                            color:'white',
-                            BorderColor:'#FF5C35'
+                            color: 'white',
+                            BorderColor: '#FF5C35'
                         }
                     }}
                 >
@@ -665,7 +728,7 @@ export function Confirmation(props: any) {
                 </Button>
             </Grid>
             <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
                     {alertMsg}
                 </Alert>
             </Snackbar>
@@ -702,11 +765,11 @@ export function ConfirmationFace(props: any) {
             orderId: orderId, // Add orderId to the body
             enteredData: props.enteredData,
             products: [
-               {
+                {
                     id: 1,
                     name: `Section ${props.selectedSection}`,
                     price: catPrice,
-                    quantity:  props.quantity
+                    quantity: props.quantity
                 },
                 {
                     id: 2,
@@ -744,9 +807,9 @@ export function ConfirmationFace(props: any) {
     );
 
     const handleConfirmation = () => {
-        
+
         //create order
-        if(!isClicked){
+        if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
             console.log("hello");
@@ -783,7 +846,7 @@ export function ConfirmationFace(props: any) {
 
                             // Call makeRequest after successful order creation
                             await makeRequest(orderId);
-                           
+
                         } else {
                             const eventResponse = await response.json();
                             setOpenSnackbar(true);
@@ -806,72 +869,76 @@ export function ConfirmationFace(props: any) {
     }
 
     return (
-        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop: 50 }}>
-            <Grid item style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'center', display: 'flex', alignItems: 'center', marginRight: 5, flexDirection:'column' }}>
+        <Grid>
+            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft:380, marginTop:40 }}>
+                Attendee Details
+            </Typography>
+        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop:6 }}>
+            <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
                 {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
-                    <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'center', display: 'flex', alignItems: 'center', marginRight: 5 }}>
+                    <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginRight: 5 }}>
                         <img
                             src={URL.createObjectURL(image)}
                             alt={`Image ${index}`}
-                            style={{ width:'45px', height:'45px', borderRadius:'100%' }}
+                            style={{ width: '70px', height: '70px', borderRadius: '100%', marginLeft:40, marginTop:30 }}
                         />
                         {names[index] !== null && names[index] !== undefined && (
-                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10 }}>
+                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems:'center', marginTop:47 }}>
                                 {names[index]}
                             </Typography>
                         )}
                     </Grid>
                 ))}
             </Grid>
-            <Grid item style={{background:'#F8F8F8', height:'210px', width:'300px', borderRadius:'8px', marginLeft:5}}>
-                <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:24}}>
+            <Grid item style={{ background: '#F8F8F8', height: '210px', width: '300px', borderRadius: '8px', marginLeft: 5 }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
                     Summary
                 </Typography>
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
                         Items Subtotal:
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:120, marginTop:0}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
                         ${itemSubtotal}
                     </Typography>
                 </div>
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, color:'#888888'}}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, color: '#888888' }}>
                         Section {props.selectedSection}
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:165, color:'#888888'}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 165, color: '#888888' }}>
                         x{props.quantity}
                     </Typography>
                 </div>
-                <div style={{marginTop:20, display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:25, marginTop:0}}>
-                        Booking Fee: 
+                <div style={{ marginTop: 20, display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
+                        Booking Fee:
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:400, fontSize:'15px', marginLeft:120, marginTop:0}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
                         $5.00
                     </Typography>
                 </div>
-                <div style={{display:'flex', flexDirection:'row'}}>
-                    <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:25, marginTop:18}}>
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
                         Order Total:
                     </Typography>
-                    <Typography style={{font:'roboto', fontWeight:500, fontSize:'18px', marginLeft:120, marginTop:18}}>
+                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 120, marginTop: 18 }}>
                         ${orderTotal}
                     </Typography>
                 </div>
                 <Button variant="outlined" onClick={handleConfirmation}
                     sx={{
-                        border:'1px solid #FF5C35', 
-                        borderRadius:'8px',
-                        color:'#FF5C35',
+                        border: '1px solid #FF5C35',
+                        borderRadius: '8px',
+                        color: '#FF5C35',
                         height: 39.5,
                         width: 300,
-                        marginLeft:0,
-                        marginTop:4.5,
+                        marginLeft: 0,
+                        marginTop: 4.5,
                         ":hover": {
                             bgcolor: "#FF5C35",
-                            color:'white',
-                            BorderColor:'#FF5C35'
+                            color: 'white',
+                            BorderColor: '#FF5C35'
                         }
                     }}
                 >
@@ -879,10 +946,11 @@ export function ConfirmationFace(props: any) {
                 </Button>
             </Grid>
             <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={handleSnackbarClose}>
-                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width:'100%' }}>
+                <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
                     {alertMsg}
                 </Alert>
             </Snackbar>
+        </Grid>
         </Grid>
     )
 }
@@ -890,5 +958,5 @@ export function ConfirmationFace(props: any) {
 export function Payment(props: any) {
     return (
         <div></div>
-    ) 
+    )
 }
