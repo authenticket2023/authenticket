@@ -71,10 +71,8 @@ export const SuccessPage: React.FC = (): JSX.Element => {
   }, []);
 
   const token = window.localStorage.getItem('accessToken');
-  const [completedOrder, setCompletedOrder] = useState<CompletedOrder | undefined>();
   const [summaryLoaded, setLoaded]: any = useState(false)
-  const [orderSummary, setOrderSummary] = useState<OrderSummary | undefined>();
-
+  const [orderSummary, setOrderSummary] : any = useState<OrderSummary | undefined>();
 
   // Call backend to complete order
   const completeOrder = async (orderId: any) => {
