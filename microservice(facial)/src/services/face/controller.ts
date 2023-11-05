@@ -300,3 +300,41 @@ export const checkImage = async (req: any, res: any, next: NextFunction) => {
     }
 
 };
+
+// delete elderly profile
+export const deleteFacialInfo = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        // get token from req
+        const token =
+            req.headers.authorization && req.headers.authorization.split(" ")[1];
+        const { email,eventId, label } = req.body;
+
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
+        const facialRecord = await FaceModel.findOne({ eventID: eventId,label: label });
+        if (facialRecord == null) {
+            return res
+                .status(400)
+                .json({ message: `No such facial record for event ID: ${eventId} with label(${label}) in the Database, make sure you pass in the correct event ID and label!` });
+        }
+
+        try {
+            //remove from Face and Elderly table
+            await FaceModel.deleteOne({ eventID: eventId,label: label });
+            res.status(200).send({ message: `Facial label : ${label} deleted successfully!` });
+        } catch (error) {
+            res.status(400).json({ error: "Delete fail, please try again later!" });
+        }
+
+
+    } catch (error) {
+        res.status(400).json({ error, message: "Make sure your request body is correct" });
+    }
+
+};
