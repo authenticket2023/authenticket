@@ -95,16 +95,9 @@ export const SuccessPage: React.FC = (): JSX.Element => {
     })
       .then(async (response) => {
         if (response.status === 200) {
-          console.log('Order completed');
           const apiResponse = await response.json();
           const data = apiResponse.data;
-          console.log(apiResponse)
           setCompletedOrder(data.event);
-
-          //only do submitFace if event is enhanced
-          if (completedOrder?.isEnhanced) {
-            submitFace();
-          }
         } else {
           // Handle error or pass to parent component
         }
@@ -116,7 +109,6 @@ export const SuccessPage: React.FC = (): JSX.Element => {
 
   // Call backend API to get order summary
   const orderInfo = async (orderId: any) => {
-
     // Calling backend API
     fetch(`${process.env.REACT_APP_BACKEND_URL}/order/${orderId}`, {
       headers: {
@@ -131,67 +123,11 @@ export const SuccessPage: React.FC = (): JSX.Element => {
           const data = apiResponse.data;
           setOrderSummary(data);
           // Set purchaserInfo and ticketSet as needed
-        } else {
-          // Handle error or pass to parent component
         }
       })
       .catch((err) => {
         window.alert(err);
       });
-  };
-
-  // Call backend API for face
-  const submitFace = async () => {
-    console.log("face")
-    // Create order
-    const formData = new FormData();
-    formData.append('eventID', String(completedOrder?.eventId));
-
-    // Check if orderSummary and its ticketSet are defined
-    if (orderSummary && orderSummary.ticketSet) {
-      // Iterate through ticketSet
-      orderSummary.ticketSet.forEach((ticket, index) => {
-        const { sectionId, rowNo, seatNo } = ticket;
-
-        // Check if corresponding image and name exist
-        if (images[index] && names[index]) {
-          // Append the image using 'image' + (index + 1) as the key
-          formData.append(`image${index + 1}`, images[index]);
-
-          // Append the info using 'info' + (index + 1) as the key
-          const info = `${names[index]},${sectionId},${rowNo},${seatNo}`;
-          formData.append(`info${index + 1}`, info);
-        }
-
-        //add in email for facial api to verify the token
-        formData.append('email', currUserEmail);
-
-        //call backend
-        fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facial-creation`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-          method: 'POST',
-          body: formData
-        })
-          .then(async (response) => {
-            if (response.status == 200 || response.status == 201) {
-              // Parse the JSON response
-              const responseData = await response.json();
-              // Access the orderId from the response data
-              const orderId = responseData.data.orderId;
-
-            } else {
-
-            }
-          })
-          .catch((err) => {
-            window.alert(err);
-          })
-
-      });
-    }
-
   };
 
   return (
