@@ -65,7 +65,8 @@ public class OrderDtoMapper implements Function<Order, OrderDisplayDto> {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDtoMapper.apply(order.getUser()),
-                ticketSet
+                ticketSet,
+                event.getIsEnhanced()
         );
     }
 
