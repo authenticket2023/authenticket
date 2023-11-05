@@ -21,12 +21,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Set environment variables from secrets
+      - name: Create secrets.properties
         run: |
-          echo "$SECRETS_PROPERTIES" > .env
-          echo "spring.config.import=optional:file:.env" >> .env
-        env:
-          SECRETS_PROPERTIES: ${{ secrets.SECRETS_PROPERTIES }}
+          echo "${{ secrets.SECRETS_PROPERTIES }}" > backend/src/main/resources/secrets.properties
 
       - name: Build Backend
         working-directory: backend
