@@ -26,6 +26,5 @@ jobs:
           --push .
       env:
         DOCKER_CLI_AGGREGATE: 1
-      secrets:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
