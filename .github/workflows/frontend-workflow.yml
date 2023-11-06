@@ -3,38 +3,6 @@ name: Authenticket Frontend Workflow
 on:
   push:
     branches:
-      - CI-test
-  workflow_dispatch:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Setup Docker Buildx
-      run: docker buildx create --use
-
-    - name: Build & Push Docker image
-      run: |
-        docker buildx build \
-          --file ./frontend/Dockerfile.ci \
-          --tag authen2023/authenticket-frontend:test-arm64 \
-          --platform linux/arm64 \
-          --push .
-      env:
-        DOCKER_CLI_AGGREGATE: 1
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-
-name: Authenticket Frontend Workflow
-
-on:
-  push:
-    branches:
       - main
 
 jobs:
