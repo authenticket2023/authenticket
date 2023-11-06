@@ -52,6 +52,7 @@ interface CompletedOrder {
   };
 }
 
+
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return format(date, "dd MMMM yyyy");
@@ -59,20 +60,15 @@ function formatDate(dateString: string): string {
 
 export const SuccessPage: React.FC = (): JSX.Element => {
   // Set parameters
+  const token = window.localStorage.getItem('accessToken');
   const { orderId } = useParams<{ orderId: string }>();
-
-
-  type Params = 'images' | 'names' | 'sectionID' | 'row' | 'seat';
-  const params = useParams<Params>();
+  const [summaryLoaded, setLoaded]: any = useState(false)
+  const [orderSummary, setOrderSummary] : any = useState<OrderSummary | undefined>();
 
   useEffect(() => {
     completeOrder(orderId);
     orderInfo(orderId);
   }, []);
-
-  const token = window.localStorage.getItem('accessToken');
-  const [summaryLoaded, setLoaded]: any = useState(false)
-  const [orderSummary, setOrderSummary] : any = useState<OrderSummary | undefined>();
 
   // Call backend to complete order
   const completeOrder = async (orderId: any) => {
@@ -84,12 +80,6 @@ export const SuccessPage: React.FC = (): JSX.Element => {
       },
       method: 'PUT',
     })
-      .then(async (response) => {
-        if (response.status === 200) {
-          const apiResponse = await response.json();
-          const data = apiResponse.data;
-        }
-      })
       .catch((err) => {
         window.alert(err);
       });
@@ -97,6 +87,7 @@ export const SuccessPage: React.FC = (): JSX.Element => {
 
   // Call backend API to get order summary
   const orderInfo = async (orderId: any) => {
+    
     // Calling backend API
     await fetch(`${process.env.REACT_APP_BACKEND_URL}/order/${orderId}`, {
       headers: {
