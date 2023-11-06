@@ -90,20 +90,22 @@ export function SelectSeats(props: any) {
                 <div>
                     <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
                 </div>
-                <div>
-                    <Typography style={{ marginLeft: 590, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px' }}>
-                        Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
-                        {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'No Section Chosen')}
-                    </Typography>
-                    {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
-                        Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
-                            props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...'
-                        ) : 'Loading...'}
-                    </Typography> */}
-                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 520, marginTop: 0 }}>
-                        Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'No Section Chosen') : 'No Section Chosen'}
-                    </Typography>
-                </div>
+                <Grid style={{ display:'flex', justifyContent:'left', alignItems:'left', marginLeft:400 }}>
+                    <div style={{ position:'absolute' }}>
+                        <Typography style={{ marginLeft: 0, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px', position:'relative' }}>
+                            Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
+                            {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'No Section Chosen')}
+                        </Typography>
+                        {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
+                            Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
+                                props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...'
+                            ) : 'Loading...'}
+                        </Typography> */}
+                        <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 0, marginTop: 0, position:'relative' }}>
+                            Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'No Section Chosen') : 'No Section Chosen'}
+                        </Typography>
+                    </div>
+                </Grid>
             <div style={{ background: '#F8F8F8', height: '110px', width: '300px', borderRadius: '8px', alignContent: 'left', marginLeft: 650, marginTop: -375 }}>
                 <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
                     Ticket Quantity
