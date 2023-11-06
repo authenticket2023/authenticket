@@ -91,7 +91,7 @@ export function SelectSeats(props: any) {
                 <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
             </div>
             <div>
-                <Typography style={{ marginLeft: 520, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px' }}>
+                <Typography style={{ marginLeft: 590, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px' }}>
                     Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
                     {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'No Section Chosen')}
                 </Typography>
@@ -100,7 +100,7 @@ export function SelectSeats(props: any) {
                         props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...'
                     ) : 'Loading...'}
                 </Typography> */}
-                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 520, marginTop: 0 }}>
+                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 590, marginTop: 0 }}>
                     Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'No Section Chosen') : 'No Section Chosen'}
                 </Typography>
             </div>
