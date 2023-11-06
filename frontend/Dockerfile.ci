@@ -1,5 +1,5 @@
 # From the base Node.js image
-FROM --platform=linux/arm64/v6 node:18-alpine
+FROM --platform=linux/arm64/v6 node:18-buster-slim as build
 
 # Set the working directory
 WORKDIR /app
