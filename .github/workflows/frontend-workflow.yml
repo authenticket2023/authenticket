@@ -3,7 +3,7 @@ name: Authenticket Frontend Workflow
 on:
   push:
     branches:
-      - main
+      - CI-test
 
 jobs:
   build-and-push:
@@ -27,5 +27,5 @@ jobs:
         docker buildx build \
           --file ./images/Containerfile \
           --platform linux/arm64,linux/amd64 \
-          --tag authen2023/authenticket-frontend:test-arm64 \
+          --tag authen2023/authenticket-frontend:test \
           --push .
