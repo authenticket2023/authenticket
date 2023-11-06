@@ -93,7 +93,7 @@ export function SelectSeats(props: any) {
             <div>
                 <Typography style={{ marginLeft: 520, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px' }}>
                     Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
-                    {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'Loading...')}
+                    {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'No Section Chosen')}
                 </Typography>
                 {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
                     Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
@@ -101,7 +101,7 @@ export function SelectSeats(props: any) {
                     ) : 'Loading...'}
                 </Typography> */}
                 <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 520, marginTop: 0 }}>
-                    Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Loading...') : 'Loading...'}
+                    Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'No Section Chosen') : 'No Section Chosen'}
                 </Typography>
             </div>
             <div style={{ background: '#F8F8F8', height: '110px', width: '300px', borderRadius: '8px', alignContent: 'left', marginLeft: 650, marginTop: -375 }}>
