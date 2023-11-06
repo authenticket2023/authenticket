@@ -21,7 +21,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Configure the application.properties file
+      - name: Configure the secrets.properties file
         run: |
           cat >./src/main/resources/secrets.properties <<EOF
           authenticket.secret-key= ${{ AUTHENTICKET_SECRET_KEY }}
