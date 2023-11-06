@@ -15,7 +15,7 @@ export function SelectSeats(props: any) {
     //set variables
     const colorArray = ['#E5E23D', '#D74A50', '#30A1D3', '#E08D24', '#5BB443'];
     const [quantity, setQuantity] = React.useState('');
-    const [maxConsecutiveSeats, setMaxConsecutiveSeats] = React.useState(1);
+    const [maxConsecutiveSeats, setMaxConsecutiveSeats] = React.useState(5);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertType, setAlertType]: any = useState('info');
     const [alertMsg, setAlertMsg] = useState('');
@@ -121,7 +121,7 @@ export function SelectSeats(props: any) {
                                 style={{ fontSize: '13px' }}
                                 disabled={props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status === "Sold Out" || !selectedSection}
                             >
-                                {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
+                                {Array.from({ length: Math.min(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats || 5, 5) }, (_, index) => (
                                     <MenuItem key={index + 1} value={index + 1}>
                                         {index + 1}
                                     </MenuItem>
