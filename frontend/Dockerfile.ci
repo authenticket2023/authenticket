@@ -1,5 +1,5 @@
 # from base image node
-FROM arm64v8/node:18-alpine
+FROM --platform=linux/arm64/v6 node:18-alpine
 
 # set working directory
 WORKDIR /app
@@ -9,7 +9,7 @@ COPY frontend/package*.json ./
 RUN npm cache clean --force
 
 # Installs all node packages
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copies everything over to Docker environment
 COPY frontend/. .
