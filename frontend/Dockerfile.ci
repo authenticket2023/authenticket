@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copies package.json and package-lock.json to Docker environment
 COPY frontend/package*.json ./
-RUN npm cache clean --force
 
 # Installs all node packages
 RUN npm install --legacy-peer-deps
