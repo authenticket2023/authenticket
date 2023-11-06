@@ -24,7 +24,7 @@ jobs:
       - name: Configure the secrets.properties file
         run: |
           cat >./src/main/resources/secrets.properties <<EOF
-          authenticket.secret-key= ${{ AUTHENTICKET_SECRET_KEY }}
+          authenticket.secret-key= ${{ secrets.AUTHENTICKET_SECRET_KEY }}
           authenticket.database-id=${{ secrets.AUTHENTICKET_DATABASE_ID }}
           authenticket.frontend-dev-url=${{ secrets.AUTHENTICKET_FRONTEND_DEV_URL }}
           authenticket.frontend-production-url=${{ secrets.AUTHENTICKET_FRONTEND_PRODUCTION_URL }}
