@@ -1,5 +1,5 @@
 # from base image node
-FROM arm64v8/node:lts-bookworm-slim
+FROM arm64v8/node:18-alpine
 
 # set working directory
 WORKDIR /app
