@@ -58,6 +58,3 @@ jobs:
           dockerfile: ./backend/Dockerfile.ci
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      #- name: Set secrets
-       # run: docker run -d -p 8080:8080 --name authen2023/authenticket-backend ${{secrets.SECRETS_PROPERTIES}} ${{secrets.DOCKER_USERNAME}}/dockerhub:authen2023/authenticket-backend
