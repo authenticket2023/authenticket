@@ -21,6 +21,26 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Configure the application.properties file
+        run: |
+          cat >./src/main/resources/secrets.properties <<EOF
+          authenticket.secret-key= ${{ AUTHENTICKET_SECRET_KEY }}
+          authenticket.database-id=${{ secrets.AUTHENTICKET_DATABASE_ID }}
+          authenticket.frontend-dev-url=${{ secrets.AUTHENTICKET_FRONTEND_DEV_URL }}
+          authenticket.frontend-production-url=${{ secrets.AUTHENTICKET_FRONTEND_PRODUCTION_URL }}
+          authenticket.backend-dev-url=${{ secrets.AUTHENTICKET_BACKEND_DEV_URL }}
+          authenticket.backend-production-url=${{ secrets.AUTHENTICKET_BACKEND_PRODUCTION_URL }}
+          authenticket.loadbalancer-url=${{ secrets.AUTHENTICKET_LOADBALANCER_URL }}
+          authenticket.S3-bucket-name=${{ secrets.AUTHENTICKET_S3_BUCKET_NAME }}
+          authenticket.smtp-username=${{ secrets.AUTHENTICKET_SMTP_USERNAME }}
+          authenticket.smtp-password=${{ secrets.AUTHENTICKET_SMTP_PASSWORD }}
+          spring.datasource.username=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          spring.datasource.password=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          cloud.aws.credentials.access-key=${{ secrets.CLOUD_AWS_CREDENTIALS_ACCESS_KEY }}
+          cloud.aws.credentials.secret-key=${{ secrets.CLOUD_AWS_CREDENTIALS_SECRET_KEY }}
+          cloud.aws.region.static=${{ secrets.CLOUD_AWS_REGION_STATIC }}
+          EOF
+          
       - name: Build Backend
         working-directory: backend
         run: mvn clean install
@@ -28,12 +48,6 @@ jobs:
       - name: Junits Testing
         working-directory: backend
         run: mvn test
-
-      - name: Set secrets
-        run: |
-          docker run -d -p 8080:8080 --name authenticket-backend authen2023/authenticket-backend
-        env:
-          SECRETS_PROPERTIES: ${{ secrets.SECRETS_PROPERTIES }}
           
       - name: Build & Push Docker image
         uses: mr-smithers-excellent/docker-build-push@v6
