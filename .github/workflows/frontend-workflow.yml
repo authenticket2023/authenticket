@@ -1,33 +1,24 @@
 name: Authenticket Frontend Workflow
 
 on:
-  push:
+ push:
     branches:
       - CI-test
-  workflow_dispatch:
-
+ workflow_dispatch:
+ 
 jobs:
-  # Build, test, push to Docker Hub, and deploy for frontend
+  #build, test, push to dockerhub and deploy for frontend
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Set up Docker Buildx
-      run: |
-        docker buildx create --name mybuilder --use --platform linux/amd64,linux/arm64
-        docker buildx inspect mybuilder --bootstrap
-      env:
-        DOCKER_CLI_AARCH64: /usr/bin/docker
-
-    - name: Build & Push Multi-Arch Docker image
-      run: |
-        docker buildx build --platform linux/amd64,linux/arm64 -t authen2023/authenticket-frontend:test -f ./frontend/Dockerfile.ci .
-        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker push authen2023/authenticket-frontend:test
-      env:
-        DOCKER_CLI_AARCH64: /usr/bin/docker
-        DOCKER_CLI_ARM64: /usr/bin/docker
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - uses: actions/checkout@v2
+    - name: Build & Push Docker image
+      uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: authen2023/authenticket-frontend
+        tags: latest
+        platformsis: linux/arm64/v6
+        registry: docker.io
+        dockerfile: ./frontend/Dockerfile.ci
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
