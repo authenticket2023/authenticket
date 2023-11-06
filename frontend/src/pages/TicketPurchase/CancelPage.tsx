@@ -24,7 +24,7 @@ export const CancelPage: React.FC = (): JSX.Element => {
       ticketsetMetadata.forEach((metadata: any, index: any) => {
         removeFacialRecords(metadata.eventId, metadata.label);
       });
-      
+
     }
   }, []);
 
@@ -82,6 +82,10 @@ export const CancelPage: React.FC = (): JSX.Element => {
 
   return (
     <>
+      {
+        token != null ?
+          <Navigate to={`/cancel/${orderId}`} /> : <Navigate to="/Forbidden" />
+      }
       <NavbarLoggedIn />
       <Grid style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Grid style={{ background: '#F8F8F8', height: '300px', width: '650px', borderRadius: '8px', marginTop: 75, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -95,18 +99,18 @@ export const CancelPage: React.FC = (): JSX.Element => {
             Please return to the event page to purchase the tickets.
           </Typography>
           <Button variant="outlined" href={`/Event`}
-                sx={{
-                  border: '1px solid #FF5C35',
-                  borderRadius: '8px',
-                  color: '#FF5C35',
-                  height: 39.5,
-                  width: 295,
-                  marginTop: 2,
-                  ":hover": {
-                    bgcolor: "#FF5C35",
-                    color: 'white',
-                    BorderColor: '#FF5C35'
-                  }
+            sx={{
+              border: '1px solid #FF5C35',
+              borderRadius: '8px',
+              color: '#FF5C35',
+              height: 39.5,
+              width: 295,
+              marginTop: 2,
+              ":hover": {
+                bgcolor: "#FF5C35",
+                color: 'white',
+                BorderColor: '#FF5C35'
+              }
             }}>
             Return to Event
           </Button>
