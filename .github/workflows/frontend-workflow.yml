@@ -17,7 +17,7 @@ jobs:
       with:
         image: authen2023/authenticket-frontend
         platforms: linux/arm64
-        tags: latest
+        tags: test
         registry: docker.io
         dockerfile: ./frontend/Dockerfile.ci
         username: ${{ secrets.DOCKER_USERNAME }}
