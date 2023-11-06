@@ -28,8 +28,9 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          image: authen2023/authenticket-frontend
           platforms: linux/arm64
           push: true
-          tags: authen2023/authenticket-frontend:latest
+          tags: latest
+          registry: docker.io
           dockerfile: ./frontend/Dockerfile.ci
-
