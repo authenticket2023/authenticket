@@ -28,8 +28,8 @@ export const createCheckOutSession = async (req: any, res: any) => {
       line_items: finalProducts,
       payment_method_types: ["card", "paynow", "alipay", "grabpay"],
       mode: "payment",
-      success_url: `${process.env.DEV_FRONTEND_HOST}/success/${orderId}`,
-      cancel_url: `${process.env.DEV_FRONTEND_HOST}/cancel/${orderId}`,
+      success_url: `${process.env.LOAD_BALANCER_URL}/success/${orderId}`,
+      cancel_url: `${process.env.LOAD_BALANCER_URL}/cancel/${orderId}`,
     });
 
     return res.status(200).json({ id: session.id });
