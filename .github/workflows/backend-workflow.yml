@@ -3,7 +3,7 @@ name: Authenticket Backend Workflow
 on:
   push:
     branches:
-      - Liseon617-patch-1
+      - Dev
   workflow_dispatch:
 
 jobs:
