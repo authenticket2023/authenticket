@@ -16,8 +16,8 @@ jobs:
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: authen2023/authenticket-frontend
-        tags: latest
         platforms: linux/arm64
+        tags: latest
         registry: docker.io
         dockerfile: ./frontend/Dockerfile.ci
         username: ${{ secrets.DOCKER_USERNAME }}
