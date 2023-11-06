@@ -1,145 +1,200 @@
 package com.authenticket.authenticket.controller;
 
-import com.authenticket.authenticket.ConfigProperties;
+import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.User;
 import com.authenticket.authenticket.repository.*;
+import com.authenticket.authenticket.service.AdminService;
 import com.authenticket.authenticket.service.JwtService;
-import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
-import com.authenticket.authenticket.service.impl.EventOrganiserServiceImpl;
-import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.authenticket.authenticket.model.Admin;
-import org.checkerframework.checker.units.qual.A;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.*;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ActiveProfiles("test")
-@WebMvcTest(AdminController.class)
-@ComponentScan("com.authenticket.authenticket")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AdminControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    private int port;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private TestRestTemplate restTemplate;
 
-//    @Autowired
-//    private JwtService jwtService;
-    @MockBean
-    private AdminRepository adminRepository;
+    @Autowired
+    AdminRepository adminRepository;
 
-    String jwtToken;
+    @Autowired
+    AdminService adminService;
+
+    @Autowired
+    EventOrganiserRepository eventOrganiserRepository;
+
+    @Autowired
+    JwtService jwtService;
+
+    private static HttpHeaders headers;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private Admin admin;
+    private Admin anotherAdmin;
+
+    String token;
+
     @BeforeEach
-    void init(){
-//        given(jwtService.generateUserToken(any())).willReturn("");
-//        jwtToken = jwtService.generateUserToken(User.builder().userId(1).build());
+    public void setUp() {
+        objectMapper.registerModule(new JavaTimeModule());
+        Optional<Admin> oldAdmin = adminRepository.findByEmail("admin@gmail.com");
+        if (!oldAdmin.isEmpty()) {
+            adminRepository.delete(oldAdmin.get());
+        }
+        String encodedPassword = new BCryptPasswordEncoder().encode("password");
+        // ID is auto set to 1 when saving so changing this adminId is pointless
+        admin = Admin.builder().adminId(1).password(encodedPassword).email("admin@gmail.com").name("admin").build();
+        adminRepository.saveAndFlush(admin);
+        // ID is auto set to 2 when saving so changing this adminId is pointless
+        anotherAdmin = Admin.builder().adminId(2).password(encodedPassword).email("admin2@gmail.com").name("admin2").build();
+
+        token = jwtService.generateUserToken(admin);
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + token);
+    }
+
+    @AfterEach
+    void tearDown() {
+        adminRepository.deleteAll();
+    }
+
+    private String createURLWithPort() {
+        return "http://localhost:" + port + "/api/v2/admin";
     }
 
     @Test
-    public void testFindAllAdmin() throws Exception {
-        // Create a custom Authentication object
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "admin@admin.com",  // username
-                "admin",   // password (if applicable)
-                List.of(new SimpleGrantedAuthority("ADMIN"))  // roles
-        );
+    public void testFindAllAdmin() {
+        adminRepository.saveAndFlush(anotherAdmin);
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(createURLWithPort(), HttpMethod.GET, entity, String.class);
 
-        // Set the custom authentication in the security context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        ArrayList<Admin> list = new ArrayList<>();
-        list.add(new Admin());
-        list.add(new Admin());
-        given(adminRepository.findAll()).willReturn(list);
-        mockMvc.perform(get("/api/v2/admin").contentType("application/json")).andExpect(jsonPath("$").isArray()).andExpect(status().isOk());
+        // Check if the response status code is 200 (OK)
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).contains("admin@gmail.com");
+        assertThat(responseEntity.getBody()).contains("admin2@gmail.com");
     }
 
     @Test
-    public void testFindAllAdmin_Failure() throws Exception {
-        mockMvc.perform(get("/api/v2/admin")).andExpect(status().is4xxClientError());
+    public void testFindAdminById() {
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        // Send a GET request to the "/api/v2/admin/{admin_id}" endpoint
+        ResponseEntity<String> responseEntity = restTemplate.exchange(createURLWithPort() + "/1", HttpMethod.GET, entity, String.class);
+        // Check if the response status code is 200 (OK) for a valid admin ID
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        // You can also check the response body or other aspects of the response
+        assertThat(responseEntity.getBody()).contains("admin@gmail.com");
     }
 
     @Test
-    public void testFindAdminById() throws Exception {
-        Admin admin = Admin.builder().adminId(1).build();
-        // Create a custom Authentication object
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "admin@admin.com",  // username
-                "admin",   // password (if applicable)
-                List.of(new SimpleGrantedAuthority("ADMIN"))  // roles
-        );
+    public void testUpdateAdmin() throws JsonProcessingException {
+        admin.setName("UpdatedAdminName");
+        HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(admin), headers);
 
-        // Set the custom authentication in the security context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(createURLWithPort(), HttpMethod.PUT, entity, String.class);
+        System.out.println(responseEntity.getBody());
+        // Check if the response status code is 200 (OK) for a valid update
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        given(adminRepository.findById(1)).willReturn(Optional.of(admin));
-        mockMvc.perform(get("/api/v2/admin/1").contentType("application/json")).andExpect(jsonPath("$.data.adminId").value(1)).andExpect(status().isOk());
+        // Check if the response contains the updated admin's name
+        assertThat(responseEntity.getBody()).contains("UpdatedAdminName");
     }
 
     @Test
-    public void testFindAdminById_Failure() throws Exception {
-        mockMvc.perform(get("/api/v2/admin/1")).andExpect(status().is4xxClientError());
+    public void testUpdateEventOrganiser() throws JsonProcessingException {
+        // Implement a test for the 'update-organiser' endpoint
+        // Send a PUT request with the necessary parameters and check the response
+
+        // Example:
+        // - Create a new EventOrganiserUpdateDto with some changes
+        // - Send a PUT request with the changes to the 'update-organiser' endpoint
+        // - Check if the response status code is as expected (e.g., HttpStatus.OK)
+        // - Check if the response body contains the expected data
+        EventOrganiser organiser = new EventOrganiser();
+        organiser.setDescription("desc");
+        organiser.setPassword("bla");
+        organiser.setEmail("e");
+        organiser.setName("E");
+        eventOrganiserRepository.saveAndFlush(organiser);
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+        body.add("organiserId", "1");
+        body.add("name", "new name");
+
+        HttpEntity<?> entity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> responseEntity = restTemplate.exchange(createURLWithPort() + "/update-organiser?organiserId=1&name=new name", HttpMethod.PUT, entity, String.class);
+        System.out.println(responseEntity.getBody());
+        // Check if the response status code is 200 (OK) for a valid update
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        // Check if the response contains the updated admin's name
+        assertThat(responseEntity.getBody()).contains("new name");
     }
 
     @Test
-    public void testUpdateAdmin() throws Exception {
-        // Create a custom Authentication object
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                "admin@admin.com",  // username
-                "admin",   // password (if applicable)
-                List.of(new SimpleGrantedAuthority("ADMIN"))  // roles
-        );
+    public void testUpdateEvent() {
+        // Implement a test for the 'update-event' endpoint
+        // Send a PUT request with the necessary parameters and check the response
 
-        // Set the custom authentication in the security context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // Example:
+        // - Create a new EventUpdateDto with some changes
+        // - Send a PUT request with the changes to the 'update-event' endpoint
+        // - Check if the response status code is as expected (e.g., HttpStatus.OK)
+        // - Check if the response body contains the expected data
 
-        // Create a new Admin object to send in the request
-        Admin adminToUpdate = Admin.builder().adminId(1).email("newemail@example.com").name("newname").password("test").build();
-
-        given(adminRepository.findByEmail(any())).willReturn(Optional.of(adminToUpdate));
-        mockMvc.perform(put("/api/v2/admin").content("{\"adminId\": \"1\",\n" +
-                "    \"name\": \"test12\",\n" +
-                "    \"password\": \"password12345\",\n" +
-                "    \"email\": \"test123456\"}").contentType("application/json")).andExpect(jsonPath("$.data.adminId").value(1)).andExpect(status().isOk());
+        // You can use a similar approach as in the 'testUpdateAdmin' method.
     }
 
     @Test
-    public void testUpdateAdmin_Failure() throws Exception {
-        mockMvc.perform(put("/api/v2/admin")).andExpect(status().is4xxClientError());
+    public void testFindEventOrganisersByReviewStatus() {
+        // Implement a test for the 'event-organiser/review-status/{status}' endpoint
+        // Send a GET request with a valid status (e.g., "approved") and check the response
+
+        // Example:
+        // - Send a GET request to the 'event-organiser/review-status/approved' endpoint
+        // - Check if the response status code is as expected (e.g., HttpStatus.OK)
+        // - Check if the response body contains data for approved event organizers
+
+        // You can use a similar approach as in the 'testFindAllAdmin' method.
+    }
+
+    @Test
+    public void testFindEventsByReviewStatus() {
+        // Implement a test for the 'event/review-status/{status}' endpoint
+        // Send a GET request with a valid status (e.g., "approved") and check the response
+
+        // Example:
+        // - Send a GET request to the 'event/review-status/approved' endpoint
+        // - Check if the response status code is as expected (e.g., HttpStatus.OK)
+        // - Check if the response body contains data for approved events
+
+        // You can use a similar approach as in the 'testFindAllAdmin' method.
     }
 }

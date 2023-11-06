@@ -1,5 +1,6 @@
 package com.authenticket.authenticket.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -64,6 +65,7 @@ public class Admin extends BaseEntity implements UserDetails {
      * @return A collection of granted authorities (in this case, a single role authority).
      */
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
         return Collections.singletonList(authority);

@@ -115,6 +115,7 @@ public class EventOrganiser extends BaseEntity implements UserDetails {
      * @return A collection of granted authorities, with the role of "ORGANISER."
      */
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
                 new SimpleGrantedAuthority(role);
