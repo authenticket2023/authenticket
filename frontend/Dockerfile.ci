@@ -1,27 +1,29 @@
-# from base image node
+# From the base Node.js image
 FROM --platform=linux/arm64/v6 node:18-alpine
 
-# set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copies package.json and package-lock.json to Docker environment
+# Copy package.json and package-lock.json to Docker environment
 COPY frontend/package*.json ./
 
-# Installs all node packages
+# Update npm to the latest version
+RUN npm install -g npm
+
+# Install all node packages
 RUN npm install --legacy-peer-deps
 
-# Copies everything over to Docker environment
+# Copy everything over to the Docker environment
 COPY frontend/. .
 
-# Build for production.
+# Build for production
 RUN npm run build
 
-# Install `serve` to run the application.
+# Install `serve` to run the application
 RUN npm install -g serve
 
-# Uses port which is used by the actual application
+# Expose the port used by the application
 EXPOSE 3000
 
-# Run application
-# CMD [ "npm", "start" ]
+# Run the application
 CMD serve -s build
