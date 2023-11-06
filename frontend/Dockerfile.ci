@@ -8,7 +8,6 @@ WORKDIR /app
 COPY frontend/package.json ./
 
 # Installs all node packages
-RUN npm install -g npm@6
 RUN npm install --legacy-peer-deps
 
 # Copies everything over to Docker environment
@@ -17,7 +16,7 @@ COPY frontend/. .
 # Build for production.
 RUN npm run build
 
-# Install `serve` to run the application.
+# Install `serve` to run the application.th
 RUN npm install -g serve
 
 # Uses port which is used by the actual application
