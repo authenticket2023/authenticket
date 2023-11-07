@@ -76,8 +76,7 @@
   - Running the created jar file: `java -jar target/AuthenTicket-0.0.1-SNAPSHOT.jar` => this runs the built jar JAR file
 
 ### facial
-- To run this locally is very troublesome, as need to install a lot of dependencies, as the faceapi.js is running on top of tensorflow
-- So we strongly recommend running it via docker
+- Running this locally is very troublesome, as it requires installing a lot of dependencies since faceapi.js runs on top of TensorFlow. We strongly recommend running it via Docker.
 - cd to 'authenticket/microservice(payment)' => `docker compose up` 
   - this will build and run a hot reload docker => which will be able to reload the code changed without rebuild the docker image
 
