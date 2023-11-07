@@ -3,63 +3,23 @@ package com.authenticket.authenticket.controller;
 import com.authenticket.authenticket.model.Admin;
 import com.authenticket.authenticket.model.Venue;
 import com.authenticket.authenticket.repository.*;
-import com.authenticket.authenticket.service.AmazonS3Service;
-import com.authenticket.authenticket.service.EventOrganiserService;
 import com.authenticket.authenticket.service.JwtService;
-import com.authenticket.authenticket.service.VenueService;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
-import com.authenticket.authenticket.service.impl.EventOrganiserServiceImpl;
-import com.authenticket.authenticket.service.impl.EventServiceImpl;
 import com.authenticket.authenticket.service.impl.VenueServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.*;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class VenueControllerIntegrationTest {
@@ -114,7 +74,7 @@ public class VenueControllerIntegrationTest {
 
         String encodedPassword = new BCryptPasswordEncoder().encode("password");
         // ID is auto set to 1 when saving so changing this adminId is pointless
-        admin = Admin.builder().adminId(1).password(encodedPassword).email("admin@gmail.com").name("admin").build();
+        admin = Admin.builder().adminId(1).password(encodedPassword).email("admin1@gmail.com").name("admin").build();
         adminRepository.saveAndFlush(admin);
         token = jwtService.generateUserToken(admin);
         headers = new HttpHeaders();
