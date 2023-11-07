@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    Page<Order> findByUserAndOrderStatus(User user, String orderStatus,Pageable pageable);
+    Page<Order> findByUserAndOrderStatusOrderByOrderIdDesc(User user, String orderStatus,Pageable pageable);
 
     @Query(nativeQuery = true,
             value = "SELECT " +
