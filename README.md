@@ -1,6 +1,6 @@
 # CS203 - CSD (G3T7) : Authenticket
 ## Our production website (Works best in Google Chrome)
-- [![Production Link](http://authenticket-877250869.ap-southeast-1.elb.amazonaws.com/Home)](http://authenticket-877250869.ap-southeast-1.elb.amazonaws.com/Home)
+- [![Production Link](http://authenticket-877250869.ap-southeast-1.elb.amazonaws.com/Home)]
 - Since our website uses HTTP instead of HTTPS, Google Chrome treats it as insecure, which automatically blocks the camera. We need the camera for facial recognition and QR scanning.
 - To enable it, enter chrome://flags/#unsafely-treat-insecure-origin-as-secure in your Chrome browser.
 - Enable the "Insecure origins treated as secure" option and add our website to it, as shown in the image:
