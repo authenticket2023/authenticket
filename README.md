@@ -86,7 +86,6 @@
   - Install dependencies : `npm install`
   - Run the frontend: `npm start`
 
-# API Documention
-<strong>Swagger API URL: <http://localhost:8080/swagger-ui/index.html#/></strong>
+# API Documentation
+<strong>Swagger API URL: <http://localhost:8080/swagger-ui/index.html#/></strong>  
 <strong>Java Docs: navigate to /backend/doc and click on index.html to access</strong>
-
