@@ -88,3 +88,5 @@
 
 # API Documention
 <strong>Swagger API URL: <http://localhost:8080/swagger-ui/index.html#/></strong>
+<strong>Java Docs: navigate to /backend/doc and click on index.html to access</strong>
+
