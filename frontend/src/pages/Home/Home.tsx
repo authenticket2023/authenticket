@@ -502,10 +502,10 @@ export const Home = () => {
 
   return (
     <>
+            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
       {loaded ?
         <Box>
           <div>
-            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
             {
                 token != null && role == 'ADMIN' ?
                     <Navigate to="/HomeAdmin" /> : null
@@ -615,9 +615,9 @@ export const Home = () => {
               <UpcomingCarousell />
             </Grid>
           </Grid>
+          <Footer/>
         </Box>
         : null}
-        <Footer/>
     </>
   );
 };

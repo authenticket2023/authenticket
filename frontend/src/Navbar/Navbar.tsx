@@ -541,7 +541,7 @@ export const NavbarLoggedIn = () => {
               elevation={2}
             >
               <Box onClick={handleProfile} sx={{ border: 1, borderColor: "grey.300", borderRadius: 1 }} paddingBottom={1}>
-                <Box height={100} width={300} padding={2}>
+                <Box height={100} minWidth={300} padding={2} marginRight={4}>
                   <Grid container>
                     <Grid item xs={4}>
                       <Avatar
@@ -551,7 +551,7 @@ export const NavbarLoggedIn = () => {
                         sx={{ width: 75, height: 75 }}
                       />
                     </Grid>
-                    <Grid item>
+                    <Grid item xs={8}>
                       <Box>
                         <Typography
                           variant="h5"
