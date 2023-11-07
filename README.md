@@ -1,9 +1,9 @@
 # CS203 - CSD (G3T7) : Authenticket
-## Our production webiste (Working best in Google Chrome)
-- `http://authenticket-877250869.ap-southeast-1.elb.amazonaws.com/Home`
-- Since our one is http, not https, so Google Chrome treat our website as insecure, which auto block the camera, which we need for our facial recognition and QR scanner. 
-- To enable it, enter `chrome://flags/#unsafely-treat-insecure-origin-as-secure` in your chrome browser
-- Enable the Insecure origins treated as secure and add our website into it, as shown in the image
+## Our production website (Works best in Google Chrome)
+- `[http://authenticket-877250869.ap-southeast-1.elb.amazonaws.com/Home](http://authenticket-877250869.ap-southeast-1.elb.amazonaws.com/Home)`
+- Since our website uses HTTP instead of HTTPS, Google Chrome treats it as insecure, which automatically blocks the camera. We need the camera for facial recognition and QR scanning.
+- To enable it, enter chrome://flags/#unsafely-treat-insecure-origin-as-secure in your Chrome browser.
+- Enable the "Insecure origins treated as secure" option and add our website to it, as shown in the image:
 ![image](https://github.com/authenticket2023/authenticket/assets/53245147/89add3bc-bf4e-4df4-b26b-00eba2aac42d)
 
 
@@ -15,7 +15,7 @@
 - [PAN MINGWEI](https://github.com/xXxPMWxXx)
 - [PETRINA WONG JING TING](https://github.com/petrinawjt)
 ## prerequisite
-- Frontend (React) : Node V18 (Typescript)
+- Frontend (React) : Node v18 (Typescript)
 - Backend(Spring Boot) : Java JDK 17 
   - You need to add `secrets.properties` to `backend/src/main/resources/` . Please contact us to get the file.
 ### Accounts for development
@@ -33,14 +33,14 @@
 ### build and run both frontend & backend
 - At root directory => `docker compose up`
 ### Pull image from docker hub
-- `docker pull authen2023/authenticket-frontend` => OS/arch : linux/amd64 => auto build from our CI
-  - we tried to make this build as linux/arm64 as well using buildx , however as of 7 Nov 2023, we unable to make it work yet. 
-  - The main reason is because our EC2 instance is t4g.small which was using ARM64 (Amazon's Graviton2 processor) architecture
-  - if you want arm64 docker image => `docker pull georgiaxng/authenticket-frontend`
-- `docker pull authen2023/authenticket-backend` => OS/arch : linux/arm64 => auto build from our CI
-- `docker pull panmingwei/authenticket-facial` => OS/arch : linux/arm64 => manual build as we would not make change frequently 
-- `docker pull liseon/authenticket-payment` => OS/arch : linux/arm64 => manual build as we would not make change frequently 
-- To run these four docker image together, cd to `authenticket` and run `docker compose up` => make sure you have pull the correct docker image
+- `docker pull authen2023/authenticket-frontend` => OS/arch : linux/amd64 => automatically built from our CI
+  - We tried to make this build for linux/arm64 as well using buildx, but as of November 7, 2023, we were unable to make it work yet.
+  - The main reason is that our EC2 instance is t4g.small, which uses ARM64 (Amazon's Graviton2 processor) architecture.
+  - if you want our updated arm64 docker image => `docker pull georgiaxng/authenticket-frontend`
+- `docker pull authen2023/authenticket-backend` => OS/arch : linux/arm64 => automatically built from our CI
+- `docker pull panmingwei/authenticket-facial` => OS/arch : linux/arm64 => manually built as we do not make changes frequently
+- `docker pull liseon/authenticket-payment` => OS/arch : linux/arm64 => manually build as we do not make changes frequently 
+- To run these four docker image together, cd to `authenticket` and run `docker compose up` => make sure you have pull the correct docker images
 
 ## To build docker locally
 ### frontend
@@ -72,9 +72,8 @@
 
 ### backend
 - cd to 'authenticket/backend' => port 8080
-  - Generate jar file : `mvn clean install`  => this will build spring boot application into jar
-  - Build the image : `docker build -t authenticket-backend .` => name of the jar file need match in the Dockerfile
-  - Run the image : `docker run -dp 127.0.0.1:8080:8080 authenticket-backend`
+  - Generate jar file : `mvn clean install`  => this compile your Java source code, run tests, and package the application into a JAR file located in the target directory.
+  - Running the created jar file: `java -jar target/AuthenTicket-0.0.1-SNAPSHOT.jar` => this runs the built jar JAR file
 
 ### facial
 - To run this locally is very troublesome, as need to install a lot of dependencies, as the faceapi.js is running on top of tensorflow
@@ -86,3 +85,6 @@
 - cd to 'authenticket/microservice(payment)' => port 4242
   - Install dependencies : `npm install`
   - Run the frontend: `npm start`
+
+# API Documention
+<strong>Swagger API URL: <http://localhost:8080/swagger-ui/index.html#/></strong>
