@@ -72,7 +72,7 @@
 
 ### backend
 - cd to 'authenticket/backend' => port 8080
-  - Generate jar file : `mvn clean install`  => this compile your Java source code, run tests, and package the application into a JAR file located in the target directory.
+  - Generate jar file : `mvn clean install`  => this compiles your Java source code, run tests, and package the application into a JAR file located in the target directory.
   - Running the created jar file: `java -jar target/AuthenTicket-0.0.1-SNAPSHOT.jar` => this runs the built jar JAR file
 
 ### facial
