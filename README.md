@@ -4,7 +4,8 @@
 - Since our one is http, not https, so Google Chrome treat our website as insecure, which auto block the camera, which we need for our facial recognition and QR scanner. 
 - To enable it, enter `chrome://flags/#unsafely-treat-insecure-origin-as-secure` in your chrome browser
 - Enable the Insecure origins treated as secure and add our website into it, as shown in the image
-![Alt text](image.png)
+![image](https://github.com/authenticket2023/authenticket/assets/53245147/89add3bc-bf4e-4df4-b26b-00eba2aac42d)
+
 
 ## Team Member : 
 - [CHUA YI KAI](https://github.com/ChuaYiKai)
