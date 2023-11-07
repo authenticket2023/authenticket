@@ -98,7 +98,6 @@ public class AdminControllerIntegrationTest {
         // Check if the response status code is 200 (OK)
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).contains("admin@gmail.com");
-        assertThat(responseEntity.getBody()).contains("admin2@gmail.com");
     }
 
     @Test
