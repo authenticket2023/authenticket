@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import DisplayEvent from './displayEvent';
 import TuneIcon from '@mui/icons-material/Tune';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Footer } from '../../Footer';
 
 interface TabPanelProps {
   children?: React.ReactNode;
