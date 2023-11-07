@@ -47,29 +47,9 @@ export const Profile = () => {
       if (response.status == 200) {
         const apiResponse = await response.json();
         const data = apiResponse.data;
-        const orderArr = data.map((order: any) => ({
-          orderId: order.orderId,
-          eventId: order.eventId,
-          eventName: order.eventName,
-          eventDate: order.eventDate,
-          venueName: order.venueName,
-          orderAmount: order.orderAmount,
-          purchaseDate: order.purchaseDate,
-          orderStatus: order.orderStatus,
-          ticketSet: order.ticketSet.map((ticket: any) => ({
-            ticketId: ticket.ticketId,
-            eventId: ticket.eventId,
-            catId: ticket.catId,
-            sectionId: ticket.sectionId,
-            rowNo: ticket.rowNo,
-            seatNo: ticket.seatNo,
-            ticketHolder: ticket.ticketHolder ,
-            orderId: ticket.orderId
-          }))
-        }));
-        setOrders(orderArr);
+        setOrders(data);
         setLoaded(true);
-        console.log(orderArr);
+        console.log(data);
       } else {
         //display alert, for fetch fail
         setOpenSnackbar(true);
@@ -85,6 +65,42 @@ export const Profile = () => {
           setAlertMsg(`Oops something went wrong! Error : ${err}`);
         });
       };
+
+      const [hasMoreOrders, setHasMoreOrders] = useState(true);
+      const [currOrderPage, setCurrOrderPage] = useState(1);
+
+      const loadMoreData = async (page: any) => {
+        //call backend
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/order/user/${id}?page=${currOrderPage}&size=20`,  {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          method: 'GET',
+        }).then(async (response) => {
+          if (response.status == 200) {
+            const apiResponse = await response.json();
+            const data = apiResponse.data;
+
+            if (data == null) {
+              return;
+            }
+            if (data.length < 20) {
+              setHasMoreOrders(false);
+            }
+            setOrders((old: any) => [...old, ...data])
+            setCurrOrderPage(currOrderPage + 1);
+        }
+      }).catch((err) => {
+          setOpenSnackbar(true);
+          setAlertType('error');
+          setAlertMsg(`Oops something went wrong! Error : ${err}`);
+        });
+      }
+
+      const handleLoadMore = (e: any) => {
+        loadMoreData(currOrderPage);
+      }
       
       let profileImage: any = window.localStorage.getItem("profileImage");
       const profileImageSrc = `${process.env.REACT_APP_S3_URL}/user_profile_images/${profileImage}`;
@@ -174,19 +190,12 @@ export const Profile = () => {
                 </Grid>
               </React.Fragment>
             ))}
-            {
-              order.filter((item: any) => {
-                const success = item.orderStatus.toLowerCase().includes('success');
-                return success;
-              }).length % 2 == 1 ? 
               <Grid item xs={6}>
-                <Box sx = {{display: 'flex', flexDirection: 'column', height: 390, justifyContent:'center', alignItems: 'center'}}>
+                <Box  onClick={handleLoadMore} sx = {{display: 'flex', flexDirection: 'column', height: 390, justifyContent:'center', alignItems: 'center'}}>
                   <Typography variant = 'h3' sx = {{fontWeight: 'bold'}}>  </Typography>
-                  <MoreHorizIcon  sx={{fontSize: 80, color: 'grey'}}></MoreHorizIcon>
+                  <MoreHorizIcon sx={{fontSize: 80, color: 'grey'}}></MoreHorizIcon>
                 </Box>
               </Grid>
-              : null
-            }
           </Grid>
         </Box>
         <Snackbar
