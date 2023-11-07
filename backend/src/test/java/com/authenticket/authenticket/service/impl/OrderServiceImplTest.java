@@ -198,7 +198,7 @@ public class OrderServiceImplTest {
         orders.add(order);
 
         Page<Order> pageOfOrders = new PageImpl<>(orders);
-        when(orderRepository.findByUserAndOrderStatus(user,order.getOrderStatus(), pageable)).thenReturn(pageOfOrders);
+        when(orderRepository.findByUserAndOrderStatusOrderByOrderIdDesc(user,order.getOrderStatus(), pageable)).thenReturn(pageOfOrders);
 
         // Act
         List<OrderDisplayDto> result = underTest.findAllOrderByUserId(userId, pageable);
