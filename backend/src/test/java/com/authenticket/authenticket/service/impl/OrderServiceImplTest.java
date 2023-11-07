@@ -190,7 +190,7 @@ public class OrderServiceImplTest {
                 .orderId(1)
                 .orderAmount(100.0)
                 .purchaseDate(LocalDate.now())
-                .orderStatus(Order.Status.PROCESSING.getStatusValue())
+                .orderStatus(Order.Status.SUCCESS.getStatusValue())
                 .user(user)
                 .event(event)
                 .build();
@@ -198,7 +198,7 @@ public class OrderServiceImplTest {
         orders.add(order);
 
         Page<Order> pageOfOrders = new PageImpl<>(orders);
-        when(orderRepository.findByUser(user, pageable)).thenReturn(pageOfOrders);
+        when(orderRepository.findByUserAndOrderStatus(user,order.getOrderStatus(), pageable)).thenReturn(pageOfOrders);
 
         // Act
         List<OrderDisplayDto> result = underTest.findAllOrderByUserId(userId, pageable);
