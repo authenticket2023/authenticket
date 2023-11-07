@@ -101,7 +101,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDisplayDto> findAllOrderByUserId(Integer userId, Pageable pageable) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
-            Page<Order> orderHistory = orderRepository.findByUserAndOrderStatus(userOptional.get(), Order.Status.SUCCESS.getStatusValue(), pageable);
+            Page<Order> orderHistory = orderRepository.findByUserAndOrderStatusOrderByOrderIdDesc(userOptional.get(), Order.Status.SUCCESS.getStatusValue(), pageable);
             return orderDtoMapper.mapOrderHistoryDto(orderHistory.getContent());
         }
         throw new NonExistentException("User", userId);
