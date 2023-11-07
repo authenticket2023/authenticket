@@ -4,19 +4,16 @@ services:
     image: authen2023/authenticket-frontend
     ports:
       - "3000:3000"
-    # Add other configuration options specific to your application
 
   backend:
     image: authen2023/authenticket-backend
     ports:
       - "8080:8080"
-    # Add other configuration options specific to your application
 
   facial:
     image: panmingwei/authenticket-facial
     ports:
       - "8000:8000"
-    # Add other configuration options specific to your application
 
   payment:
     image: liseon/authenticket-payment
