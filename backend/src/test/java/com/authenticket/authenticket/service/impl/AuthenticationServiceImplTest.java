@@ -37,9 +37,6 @@ class AuthenticationServiceImplTest {
 
     private AuthenticationServiceImpl underTest;
 
-    private JwtServiceImpl jwtServiceImpl;
-
-    private EmailServiceImpl emailServiceImpl;
     @Mock
     private JavaMailSenderImpl mailSender;
 
@@ -55,10 +52,6 @@ class AuthenticationServiceImplTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
     @InjectMocks
     private UserDtoMapper userDtoMapper;
 
@@ -70,8 +63,8 @@ class AuthenticationServiceImplTest {
 
     @BeforeEach
     void setUp(){
-        jwtServiceImpl = new JwtServiceImpl();
-        emailServiceImpl = new EmailServiceImpl(mailSender);
+        JwtServiceImpl jwtServiceImpl = new JwtServiceImpl();
+        EmailServiceImpl emailServiceImpl = new EmailServiceImpl(mailSender);
         underTest = new AuthenticationServiceImpl(
                 userRepository,
                 adminRepository,

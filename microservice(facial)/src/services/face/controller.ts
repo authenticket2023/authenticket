@@ -14,9 +14,9 @@ const FormData = require('form-data');
 const crypto = require('crypto');
 const algorithm = 'aes-256-cbc'; //Using AES encryption
 
-// get encryption_key and IV from env variables
-const iv = process.env.INIT_VECTOR || '';
-const encryption_key = process.env.ENCRYPTION_KEY || '';
+// encryption_key and IV
+const iv = 'b26f905e15f3ee690c0df4e9dac0e0ca';
+const encryption_key = 'f5f79a2729f9b661c6d6bcf2a520ddd1203010ec4d2984f387d32eef0f868f4d';
 //need to convert to Buffer for Initialization Vector(IV) and key
 const bufferIV = Buffer.from(iv, 'hex');
 const bufferKey = Buffer.from(encryption_key, 'hex');
@@ -297,6 +297,44 @@ export const checkImage = async (req: any, res: any, next: NextFunction) => {
         });
     } catch (error: any) {
         return res.status(400).json({ message: String(error.message) });
+    }
+
+};
+
+// delete elderly profile
+export const deleteFacialInfo = async (req: any, res: Response, next: NextFunction) => {
+    try {
+        // get token from req
+        const token =
+            req.headers.authorization && req.headers.authorization.split(" ")[1];
+        const { email,eventId, label } = req.body;
+
+        //check if token is valid and match with the email
+        try {
+            const isTokenValid = await verifyToken(token, email);
+        } catch (error: any) {
+            //to remove all the \\ and \" in the message
+            return res.status(403).json({ message: error.message.replace(/\\/g, '').replace(/"/g, ' ') });
+        }
+
+        const facialRecord = await FaceModel.findOne({ eventID: eventId,label: label });
+        if (facialRecord == null) {
+            return res
+                .status(400)
+                .json({ message: `No such facial record for event ID: ${eventId} with label(${label}) in the Database, make sure you pass in the correct event ID and label!` });
+        }
+
+        try {
+            //remove from Face and Elderly table
+            await FaceModel.deleteOne({ eventID: eventId,label: label });
+            res.status(200).send({ message: `Facial label : ${label} deleted successfully!` });
+        } catch (error) {
+            res.status(400).json({ error: "Delete fail, please try again later!" });
+        }
+
+
+    } catch (error) {
+        res.status(400).json({ error, message: "Make sure your request body is correct" });
     }
 
 };

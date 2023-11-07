@@ -160,10 +160,4 @@ public class QueueServiceImpl implements QueueService {
             updatePurchasingUsersInQueue(event);
         }
     }
-
-//    @Override
-//    public Event findIfUserQueuing(User user) {
-//        queueRepository.f
-//        return null;
-//    }
 }

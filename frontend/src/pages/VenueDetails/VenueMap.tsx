@@ -6,20 +6,20 @@ import StadiumMap from "./StadiumMap.png";
 export function InitMap(props: any) {
   if (props.venueId == 1) {
     return (
-      <Box sx={{ width: 400, height: 400 }}>
-        <img src={StarMap}></img>
+      <Box>
+        <img src={StarMap} height={600}></img>
       </Box>
     );
   } else if (props.venueId == 2) {
     return (
-      <Box sx={{ width: 400, height: 400 }}>
-        <img src={CapitolMap}></img>
+      <Box>
+        <img src={CapitolMap} height={600}></img>
       </Box>
     );
   } else {
     return (
-      <Box sx={{ width: 400, height: 400 }}>
-        <img src={StadiumMap}></img>
+      <Box>
+        <img src={StadiumMap} height={600}></img>
       </Box>
     );
   }

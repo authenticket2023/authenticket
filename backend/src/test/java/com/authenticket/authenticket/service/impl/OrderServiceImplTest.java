@@ -190,7 +190,7 @@ public class OrderServiceImplTest {
                 .orderId(1)
                 .orderAmount(100.0)
                 .purchaseDate(LocalDate.now())
-                .orderStatus(Order.Status.PROCESSING.getStatusValue())
+                .orderStatus(Order.Status.SUCCESS.getStatusValue())
                 .user(user)
                 .event(event)
                 .build();
@@ -198,7 +198,7 @@ public class OrderServiceImplTest {
         orders.add(order);
 
         Page<Order> pageOfOrders = new PageImpl<>(orders);
-        when(orderRepository.findByUser(user, pageable)).thenReturn(pageOfOrders);
+        when(orderRepository.findByUserAndOrderStatusOrderByOrderIdDesc(user,order.getOrderStatus(), pageable)).thenReturn(pageOfOrders);
 
         // Act
         List<OrderDisplayDto> result = underTest.findAllOrderByUserId(userId, pageable);
@@ -282,7 +282,8 @@ public class OrderServiceImplTest {
                         user.getProfileImage(),
                         "USER"
                 ),
-                new HashSet<>()
+                new HashSet<>(),
+                true
         ));
 
         // Act
@@ -386,7 +387,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                false
         ));
 
         when(orderRepository.findById(order.getOrderId())).thenReturn(Optional.of(order));
@@ -941,7 +943,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                false
         ));
 
         when(ticketRepository.findById(ticket.getTicketId())).thenReturn(Optional.of(ticket));
@@ -1134,7 +1137,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                false
         ));
 
         when(orderRepository.findById(order.getOrderId())).thenReturn(Optional.of(order));
@@ -1425,7 +1429,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                true
         ));
         expectedOrderDisplayDtos.add(new OrderDisplayDto(
                 order.getOrderId(),
@@ -1437,7 +1442,8 @@ public class OrderServiceImplTest {
                 order.getPurchaseDate(),
                 order.getOrderStatus(),
                 userDisplayDto,
-                ticketDisplayDtos
+                ticketDisplayDtos,
+                true
         ));
 
         orders.add(order);

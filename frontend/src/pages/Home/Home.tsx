@@ -22,7 +22,10 @@ import BearCarousel, {
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
 import { Link } from 'react-router-dom';
+
 import backgroundImage from '../../images/backgroundImage-2.png';
+import { Footer } from "../../Footer/Footer";
+
 
 export const Home = () => {
 
@@ -499,10 +502,10 @@ export const Home = () => {
 
   return (
     <>
+            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
       {loaded ?
         <Box>
           <div>
-            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
             {
                 token != null && role == 'ADMIN' ?
                     <Navigate to="/HomeAdmin" /> : null
@@ -612,9 +615,9 @@ export const Home = () => {
               <UpcomingCarousell />
             </Grid>
           </Grid>
+          <Footer/>
         </Box>
         : null}
-
     </>
   );
 };

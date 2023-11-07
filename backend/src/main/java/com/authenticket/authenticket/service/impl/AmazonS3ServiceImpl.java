@@ -34,14 +34,12 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
     @Value("${authenticket.S3-bucket-name}")
     private String bucketName;
 
-//    public String generateUrl(String fileName, HttpMethod http){
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(new Date());
-//        cal.add(Calendar.MINUTE, 1);
-//        URL url = amazonS3.generatePresignedUrl(bucketName, fileName, cal.getTime(), http);
-//        return url.toString();
-//    }
-
+    /**
+     * Converts a Spring `MultipartFile` to a regular `File`.
+     *
+     * @param file The Spring `MultipartFile` to be converted.
+     * @return A `File` object representing the converted file.
+     */
     private File convertMultiPartFileToFile(MultipartFile file) {
         File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
         try (FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -144,6 +142,8 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
             fileName = "event_images/" + imageName;
         } else if (fileType.equals("user_profile")) {
             fileName = "user_profile/" + imageName;
+        } else if (fileType.equals("event_organiser_profile")) {
+            fileName = "event_organiser_profile/" + imageName;
         } else if (fileType.equals("venue_image")) {
             fileName = "venue_image/" + imageName;
         } else if (fileType.equals("artist_image")) {

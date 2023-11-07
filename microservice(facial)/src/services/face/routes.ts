@@ -9,3 +9,5 @@ faceRouter.route('/image-verification').post(controller.checkImage);
 faceRouter.route('/facial-creation').post(controller.createFacialInfo);
 /** POST /api/facial-verification */
 faceRouter.route('/facial-verification').post(controller.facialVerification);
+/** DELETE /api/facial-deletion */
+faceRouter.route('/facial-deletion').delete(controller.deleteFacialInfo);

@@ -15,7 +15,7 @@ export function SelectSeats(props: any) {
     //set variables
     const colorArray = ['#E5E23D', '#D74A50', '#30A1D3', '#E08D24', '#5BB443'];
     const [quantity, setQuantity] = React.useState('');
-    const [maxConsecutiveSeats, setMaxConsecutiveSeats] = React.useState(0);
+    const [maxConsecutiveSeats, setMaxConsecutiveSeats] = React.useState(5);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [alertType, setAlertType]: any = useState('info');
     const [alertMsg, setAlertMsg] = useState('');
@@ -65,6 +65,12 @@ export function SelectSeats(props: any) {
             setOpenSnackbar(true);
             setAlertType('error');
             setAlertMsg('Please select a quantity before proceeding.');
+        } else if (parseInt(quantity) > maxConsecutiveSeats) {
+            //check amount selected is more than maxConsecutiveSeats
+            // Show an error message
+            setOpenSnackbar(true);
+            setAlertType('error');
+            setAlertMsg('Quantity selected is more than what is available. Please pick a different quantity or section.');
         } else if (maxConsecutiveSeats == 0) {
             //check if section is sold out
             // Show an error message
@@ -81,23 +87,25 @@ export function SelectSeats(props: any) {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-            <div>
-                <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
-            </div>
-            <div>
-                <Typography style={{marginLeft:520, marginTop:-450, font:'roboto', fontWeight:500, fontSize:'16px'}}>
-                    Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
-                    {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'Loading...')}
-                </Typography>
-                {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
-                    Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
-                        props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...'
-                    ) : 'Loading...'}
-                </Typography> */}
-                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 520, marginTop: 0 }}>
-                    Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'Loading...') : 'Loading...'}
-                </Typography>
-            </div>
+                <div>
+                    <SGStad id={props.eventDetails.venue.venueId} setSelectedSection={setSelectedSection} />
+                </div>
+                <Grid style={{ display:'flex', justifyContent:'left', alignItems:'left', marginLeft:400 }}>
+                    <div style={{ position:'absolute' }}>
+                        <Typography style={{ marginLeft: 0, marginTop: -450, font: 'roboto', fontWeight: 500, fontSize: '16px', position:'relative' }}>
+                            Price: {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection) != null ? '$' : '')}
+                            {(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice.toFixed(2) || 'No Section Chosen')}
+                        </Typography>
+                        {/* <Typography style={{ marginLeft: 520, marginTop: -450, fontFamily: 'Roboto', fontWeight: 500, fontSize: 16 }}>
+                            Price: {!props.sectionDetails ? null : '$'} {props.sectionDetails ? (
+                                props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.ticketPrice || 'Loading...'
+                            ) : 'Loading...'}
+                        </Typography> */}
+                        <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '16px', marginLeft: 0, marginTop: 0, position:'relative' }}>
+                            Status: {props.sectionDetails ? (props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status || 'No Section Chosen') : 'No Section Chosen'}
+                        </Typography>
+                    </div>
+                </Grid>
             <div style={{ background: '#F8F8F8', height: '110px', width: '300px', borderRadius: '8px', alignContent: 'left', marginLeft: 650, marginTop: -375 }}>
                 <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 18 }}>
                     Ticket Quantity
@@ -106,20 +114,21 @@ export function SelectSeats(props: any) {
                     <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                         <InputLabel id="demo-select-small-label">Quantity</InputLabel>
                         <Select
-                            labelId="demo-select-small-label"
-                            id="demo-select-small"
-                            value={quantity}
-                            label="Quantity"
-                            onChange={handleChange}
-                            displayEmpty
-                            style={{ fontSize: '13px' }}
-                        >
-                            {Array.from({ length: Math.min(maxConsecutiveSeats || 5, 5) }, (_, index) => (
-                                <MenuItem key={index + 1} value={index + 1}>
-                                    {index + 1}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                                labelId="demo-select-small-label"
+                                id="demo-select-small"
+                                value={quantity}
+                                label="Quantity"
+                                onChange={handleChange}
+                                displayEmpty
+                                style={{ fontSize: '13px' }}
+                                disabled={props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.status === "Sold Out" || !selectedSection}
+                            >
+                                {Array.from({ length: Math.min(props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === selectedSection)?.maxConsecutiveSeats || 5, 5) }, (_, index) => (
+                                    <MenuItem key={index + 1} value={index + 1}>
+                                        {index + 1}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                     </FormControl>
                 </Box>
             </div>
@@ -404,7 +413,7 @@ export function EnterDetailsFace(props: any) {
                         <div key={sectionIndex} style={{ background: '#F8F8F8', width: '600px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                             <div>
                                 {sectionImages[sectionIndex] && sectionImages[sectionIndex].some((file) => file !== null) && (
-                                    <Stack sx={{ width: '45px', height: '45px', borderRadius:'100%'}} direction='column' spacing={2}>
+                                    <Stack sx={{ width: '45px', height: '45px', borderRadius: '100%' }} direction='column' spacing={2}>
                                         {sectionImages[sectionIndex].map((file, index) => (
                                             file !== null && (
                                                 <ImageListItem key={index}>
@@ -414,72 +423,47 @@ export function EnterDetailsFace(props: any) {
                                                         alt={`Selected ${index + 1}`}
                                                         loading="lazy"
                                                         style={{
-                                                            borderRadius:'100%',
-                                                            height:'55px',
-                                                            width:'55px',
-                                                            marginLeft:45, 
-                                                            marginTop:15, 
-                                                            marginBottom:30
+                                                            borderRadius: '100%',
+                                                            height: '55px',
+                                                            width: '55px',
+                                                            marginLeft: 45,
+                                                            marginTop: 15,
+                                                            marginBottom: 30
                                                         }}
                                                     />
                                                 </ImageListItem>
                                             )
                                         ))}
                                     </Stack>
-                                    )}
-                                <br/>
+                                )}
+                                <br />
                                 <Button
-                                variant="outlined"
-                                component="label"
-                                sx={{
-                                    fontSize: '10px',
-                                    border: '1px solid #FF5C35',
-                                    borderRadius: '8px',
-                                    color: '#FF5C35',
-                                    ":hover": {
-                                        bgcolor: "#FF5C35",
-                                        color: 'white',
-                                    },
-                                    marginLeft: 3,
-                                    marginTop: 2, 
-                                    marginBottom:2
-                                }}
-                                size="small"
-                            >
-                                Upload Image
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={(event) => handleFileChange(event, sectionIndex)}
-                                    accept="image/*"
-                                />
-                            </Button>
+                                    variant="outlined"
+                                    component="label"
+                                    sx={{
+                                        fontSize: '10px',
+                                        border: '1px solid #FF5C35',
+                                        borderRadius: '8px',
+                                        color: '#FF5C35',
+                                        ":hover": {
+                                            bgcolor: "#FF5C35",
+                                            color: 'white',
+                                        },
+                                        marginLeft: 3,
+                                        marginTop: 2,
+                                        marginBottom: 2
+                                    }}
+                                    size="small"
+                                >
+                                    Upload Image
+                                    <input
+                                        type="file"
+                                        hidden
+                                        onChange={(event) => handleFileChange(event, sectionIndex)}
+                                        accept="image/*"
+                                    />
+                                </Button>
                             </div>
-                            {/* <Button
-                                variant="outlined"
-                                component="label"
-                                sx={{
-                                    fontSize: '10px',
-                                    border: '1px solid #FF5C35',
-                                    borderRadius: '8px',
-                                    color: '#FF5C35',
-                                    ":hover": {
-                                        bgcolor: "#FF5C35",
-                                        color: 'white',
-                                    },
-                                    marginLeft: 3,
-                                    marginTop: 9
-                                }}
-                                size="small"
-                            >
-                                Upload Image
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={(event) => handleFileChange(event, sectionIndex)}
-                                    accept="image/*"
-                                />
-                            </Button> */}
                             <TextField
                                 label="Name"
                                 id="outlined-size-small"
@@ -530,8 +514,6 @@ export function EnterDetailsFace(props: any) {
 
 
 export function Confirmation(props: any) {
-    // console.log(props.quantity);
-    // console.log(props.eventDetails);
 
     const userId = window.localStorage.getItem('id');
     const token = window.localStorage.getItem('accessToken');
@@ -554,7 +536,6 @@ export function Confirmation(props: any) {
 
     const catPrice = props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
     const itemSubtotal = catPrice * props.quantity;
-    // console.log(props.quantity);
     const orderTotal = itemSubtotal + 5;
 
     const delay = (ms: number) => new Promise(
@@ -581,7 +562,7 @@ export function Confirmation(props: any) {
                 },
             ]
         }
-        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+        const response = await fetch(`${process.env.REACT_APP_PAYMENT_URL}/payment/create-checkout-session`, {
             method: "Post",
             headers: {
                 "Content-Type": "application/json"
@@ -604,7 +585,6 @@ export function Confirmation(props: any) {
         if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
-            console.log("hello");
 
             //call backend to create order
             const formData = new FormData();
@@ -630,6 +610,11 @@ export function Confirmation(props: any) {
                         const responseData = await response.json();
                         // Access the orderId from the response data
                         const orderId = responseData.data.orderId;
+                        const ticketSet = responseData.data.ticketSet;
+                        const ticketSetMetadata = ticketSet.map((entry: any) => ({
+                            eventId: entry.eventId,
+                        }));
+                        localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
 
                         setOpenSnackbar(true);
                         setAlertType('success');
@@ -740,8 +725,7 @@ export function ConfirmationFace(props: any) {
 
     const userId = window.localStorage.getItem('id');
     const token = window.localStorage.getItem('accessToken');
-    // console.log(userId);
-    // console.log(token);
+    const email: any = window.localStorage.getItem('email');
 
     useEffect(() => {
     }, []);
@@ -779,7 +763,7 @@ export function ConfirmationFace(props: any) {
                 },
             ]
         }
-        const response = await fetch("http://localhost:4242/api/payment/create-checkout-session", {
+        const response = await fetch(`${process.env.REACT_APP_PAYMENT_URL}/payment/create-checkout-session`, {
             method: "Post",
             headers: {
                 "Content-Type": "application/json"
@@ -799,7 +783,6 @@ export function ConfirmationFace(props: any) {
 
     const catPrice = props.sectionDetails.find((item: { sectionId: string }) => item.sectionId === props.selectedSection)?.ticketPrice;
     const itemSubtotal = catPrice * props.quantity;
-    // console.log(props.quantity);
     const orderTotal = itemSubtotal + 5;
 
     const delay = (ms: number) => new Promise(
@@ -812,7 +795,6 @@ export function ConfirmationFace(props: any) {
         if (!isClicked) {
             //Disable further clicks
             setIsClicked(true);
-            console.log("hello");
 
             //call backend to create order
             const formData = new FormData();
@@ -837,7 +819,16 @@ export function ConfirmationFace(props: any) {
                             const responseData = await response.json();
                             // Access the orderId from the response data
                             const orderId = responseData.data.orderId;
+                            const ticketSet = responseData.data.ticketSet;
 
+                            // Storing metadata in local storage, will be used for cancel order to remove the facial record in the database
+                            const ticketSetMetadata = ticketSet.map((entry: any) => ({
+                                eventId: entry.eventId,
+                                label: `${entry.ticketHolder}(${entry.sectionId}-${entry.rowNo}-${entry.seatNo})`,
+                                labelForCreation: `${entry.ticketHolder},${entry.sectionId},${entry.rowNo},${entry.seatNo}`,
+                            }));
+                            localStorage.setItem('ticketSetMetadata', JSON.stringify(ticketSetMetadata));
+                            createFacialRecords(ticketSetMetadata, responseData.data.eventId);
                             setOpenSnackbar(true);
                             setAlertType('success');
                             setAlertMsg('Order successful, your seat has been reserved while you make payment. You have 10 minutes to make payment.');
@@ -868,37 +859,74 @@ export function ConfirmationFace(props: any) {
         }
     }
 
+    // Call backend API to create facial info
+    const createFacialRecords = async (ticketSet: any, eventId: any) => {
+        const formData = new FormData();
+        formData.append('eventID', eventId);
+        // Iterate through ticketSet
+        ticketSet.forEach((ticket: any, index: any) => {
+            // Check if corresponding image and name exist
+            // Append the image using 'image' + (index + 1) as the key
+            formData.append(`image${index + 1}`, images[index]);
+            // Append the info using 'info' + (index + 1) as the key
+            formData.append(`info${index + 1}`, ticket.labelForCreation);
+            //add in email for facial api to verify the token
+        });
+        formData.append('email', email);
+         //call backend
+         fetch(`${process.env.REACT_APP_FACIAL_URL}/face/facial-creation`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            method: 'POST',
+            body: formData
+        })
+            .then(async (response) => {
+                if (response.status == 200 || response.status == 201) {
+                    const responseData = await response.json();
+                    console.log(responseData)
+                }else {
+                    const responseData = await response.json();
+                    console.log(responseData)
+                }
+            })
+            .catch((err) => {
+                window.alert(err);
+            })
+    }
     return (
         <Grid>
-            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft:380, marginTop:40 }}>
+            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 380, marginTop: 40 }}>
                 Attendee Details
             </Typography>
-        <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop:6 }}>
-            <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
-                {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
-                    <Grid item key={index} style={{ background: '#F8F8F8', height: '265px', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginRight: 5 }}>
-                        <img
-                            src={URL.createObjectURL(image)}
-                            alt={`Image ${index}`}
-                            style={{ width: '70px', height: '70px', borderRadius: '100%', marginLeft:40, marginTop:30 }}
-                        />
-                        {names[index] !== null && names[index] !== undefined && (
-                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems:'center', marginTop:47 }}>
+            <Grid style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginTop: 6 }}>
+                <Grid item style={{ justifyContent: 'left', display: 'flex', alignItems: 'left', marginRight: 0, flexDirection: 'column' }}>
+                    {images.map((image: Blob | MediaSource, index: number) => ( // Use index as a number
+                        <Grid item key={index} style={{ background: '#F8F8F8', width: '450px', borderRadius: '8px', justifyContent: 'left', display: 'flex', marginBottom: 10 }}>
+                            <div style={{ width: '70px', height: '70px', borderRadius: '100%', overflow: 'hidden', margin: 10 }}>
+                            <img
+                                src={URL.createObjectURL(image)}
+                                alt={`Image ${index}`}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                            </div>
+                            {names[index] !== null && names[index] !== undefined && (
+                            <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 10, alignItems: 'center', marginTop: 28 }}>
                                 {names[index]}
                             </Typography>
-                        )}
-                    </Grid>
-                ))}
-            </Grid>
-            <Grid item style={{ background: '#F8F8F8', height: '210px', width: '300px', borderRadius: '8px', marginLeft: 5 }}>
-                <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
-                    Summary
-                </Typography>
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
-                        Items Subtotal:
+                            )}
+                        </Grid>
+                    ))}
+                </Grid>
+                <Grid item style={{ background: '#F8F8F8', height: '210px', width: '300px', borderRadius: '8px', marginLeft: 5 }}>
+                    <Typography style={{ font: 'roboto', fontWeight: 500, fontSize: '18px', marginLeft: 25, marginTop: 24 }}>
+                        Summary
                     </Typography>
-                    <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
+                    <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 25, marginTop: 0 }}>
+                            Items Subtotal:
+                        </Typography>
+                        <Typography style={{ font: 'roboto', fontWeight: 400, fontSize: '15px', marginLeft: 120, marginTop: 0 }}>
                         ${itemSubtotal}
                     </Typography>
                 </div>
@@ -951,7 +979,7 @@ export function ConfirmationFace(props: any) {
                 </Alert>
             </Snackbar>
         </Grid>
-        </Grid>
+            </Grid>
     )
 }
 

@@ -8,6 +8,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import DisplayVenue from "./displayVenue";
+import { Footer } from "../../Footer";
 
 interface TabPanelProps {
   children?: React.ReactNode;
