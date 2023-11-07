@@ -56,9 +56,10 @@ export const Profile = () => {
           setOrders(data);
           setLoaded(true);
           if (data == null) {
+            setHasMoreOrders(false);
             return;
           }
-          if (data.length < 20) {
+          if (data.length < 6) {
             setHasMoreOrders(false);
           }
           setLoading(false);
@@ -101,9 +102,10 @@ export const Profile = () => {
           const data = apiResponse.data;
 
           if (data == null) {
+            setHasMoreOrders(false)
             return;
           }
-          if (data.length < 20) {
+          if (data.length < 6) {
             setHasMoreOrders(false);
           }
           setOrders((old: any) => [...old, ...data]);
@@ -269,7 +271,7 @@ export const Profile = () => {
           </Alert>
         </Snackbar>
       </Box>
-            <Footer/>
+      <Footer/>
     </div>
   );
 };
