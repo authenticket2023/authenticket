@@ -213,9 +213,9 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
             faces[i] = new faceapi.LabeledFaceDescriptors(faces[i].label, faces[i].descriptions);
         }
 
+        const threshold = 0.40;
         // Load face matcher to find the matching face
-        const faceMatcher = new faceapi.FaceMatcher(faces, 0.6);
-
+        const faceMatcher = new faceapi.FaceMatcher(faces,threshold);
         // Read the image using canvas or other method
         const img = await canvas.loadImage(file);
 
@@ -236,6 +236,7 @@ async function getDescriptorsFromDB(file: any, eventID: any) {
         const results = resizedDetections.map((d: any) => faceMatcher.findBestMatch(d.descriptor));
         console.log(`For Event ID : ${eventID}`);
         results.map((item: any) => {
+            console.log(item)
             console.log(`Found : ${item._label}`);
         });
 
@@ -261,6 +262,12 @@ export const facialVerification = async (req: any, res: any, next: NextFunction)
 
 
         let result = await getDescriptorsFromDB(image.data, eventID);
+
+        if(result[0]._label == 'unknown') {
+            return res.status(400).json({
+                message: `Facial information found : ${result[0]._label}`
+            });
+        }
 
         return res.status(200).json({
             message: `Facial information found : ${result[0]._label}`
