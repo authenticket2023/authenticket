@@ -7,6 +7,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Grid } from '@mui/material';
+import { Footer } from '../../Footer';
 
 export const FAQ = () => {
     useEffect(() => {
@@ -20,7 +21,7 @@ export const FAQ = () => {
             </h3>
 
             {/* FAQ section */}
-            <Grid sx={{ display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:3 }}>
+            <Grid marginBottom={4} sx={{ display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', marginTop:3 }}>
                 <Grid sx={{ width: '80%' }}>
                     <Accordion>
                         <AccordionSummary
@@ -328,6 +329,7 @@ export const FAQ = () => {
                     </Accordion>
                 </Grid>
             </Grid>
+            <Footer/>
         </div>
 
     )

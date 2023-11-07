@@ -11,7 +11,8 @@ import { InitMap } from "./VenueMap";
 import DisplayEvent from "./displayEvent";
 import CircularProgress from "@mui/material/CircularProgress";
 import DisplayPast from "./displayPast";
-import Card from "@mui/material/Card"
+import Card from "@mui/material/Card";
+import { Footer } from "../../Footer";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -328,11 +329,13 @@ export const VenueDetails: React.FC = (): JSX.Element => {
 
               {/* Tab 3: Location */}
               <CustomTabPanel value={value} index={2}>
+                <Box>
                 <Typography sx={{ fontWeight: "bold" }}>Address:</Typography>
                 <Typography marginBottom={2}>
                   {venueDetails.venueLocation}
                 </Typography>
                 <InitMap venueId={venueDetails.venueId}></InitMap>
+                </Box>
               </CustomTabPanel>
 
               {/* Tab 4: Future Events */}
@@ -388,6 +391,7 @@ export const VenueDetails: React.FC = (): JSX.Element => {
           {alertMsg}
         </Alert>
       </Snackbar>
+      <Footer/>
     </div>
   );
 };
