@@ -86,5 +86,5 @@
   - Run the frontend: `npm start`
 
 # API Documentation
-<strong>Swagger API URL: <http://localhost:8080/swagger-ui/index.html#/></strong>  
+<strong>Swagger API URL: <http://13.228.86.148:8080/swagger-ui/index.html#/></strong>  
 <strong>Java Docs: navigate to /backend/doc and click on index.html to access</strong>
