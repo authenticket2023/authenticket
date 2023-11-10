@@ -8,13 +8,15 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo(orange).png';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Snackbar, Alert, } from '@mui/material';
+import { TextField, Button, Snackbar, Alert, IconButton, InputAdornment} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import moment from 'moment';
 import Filter from 'bad-words';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 //image download
 import backgroundImage from '../../images/background.png';
@@ -91,8 +93,8 @@ export function Signup() {
   const validatePassword = (password : any) => {
     // Regular expression to validate password
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    const harmfulTextRegex = /[\t\r\n]|(--[^\r\n]*)|(\/\*[\w\W]*?(?=\*)\*\/)/gi;
-    return passwordRegex.test(password) && harmfulTextRegex.test(password);
+    
+    return passwordRegex.test(password);
   }
 
   //variables
@@ -113,6 +115,12 @@ export function Signup() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertType, setAlertType] : any= useState('info');
   const [alertMsg, setAlertMsg] = useState('');
+  //for show password icon
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   //handler method section
   const handleEmail = (e: any) => {
@@ -173,7 +181,7 @@ export function Signup() {
     formData.append('dateOfBirth', TimestampConverter(Number(dob)));
 
     // //calling backend API
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/userRegister`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/auth/user-register`, {
       method: 'POST',
       body: formData
     })
@@ -190,7 +198,7 @@ export function Signup() {
           setAlertMsg(`Email ${email} sign up successful! An email will be sent shortly, please verify your account`);
           setTimeout(() => {
             navigate('/login');
-          }, 4000);
+          }, 2000);
         }
 
       })
@@ -236,12 +244,27 @@ export function Signup() {
               <a href='/Home'>
                 <img src={logo} alt="Logo" width={70} height={45} style={{marginLeft:0}} />
               </a>
-              <Button sx={{color:'black', borderRadius:'18px', marginLeft:25}} href='/OrganiserLogin'>
-                Organiser
-              </Button>
-              <Button variant="outlined" sx={{borderColor:'black', borderRadius:'25px', color:'black'}} href='/AdminLogin'>
-                Admin
-              </Button>
+              <div
+                style={{
+                  backgroundColor: '#F2F2F2',
+                  height: '47px',
+                  width: '250px',
+                  display: 'flex',
+                  borderRadius: '25px',
+                  alignItems: 'flex-end',
+                  marginLeft:165
+                }}
+              >
+                  <Button sx={{ color: 'black', borderRadius: '18px', marginLeft:1, marginBottom:0.6 }} href='/OrganiserLogin'>
+                    Organiser
+                  </Button>
+                  <Button  sx={{ borderColor: 'black', borderRadius: '25px', color: 'black', marginBottom:0.6, marginLeft:1 }} href='/AdminLogin'>
+                    Admin
+                  </Button>
+                  <Button variant="contained" sx={{ borderColor: 'black', borderRadius: '25px', backgroundColor: 'black', marginRight:1, marginBottom:0.6 }} href='/logIn'>
+                    User
+                  </Button>
+              </div>
             </div>
             <Typography component="h1" variant="h5" sx={{ fontWeight: 'bold', fontSize: 45, letterSpacing: -2, marginTop: 8, marginBottom: 1 }}>
               Create your account
@@ -299,12 +322,22 @@ export function Signup() {
                 fullWidth
                 name="password"
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'} 
                 id="password"
                 autoComplete="current-password"
                 error={passwordError}
                 helperText={passwordHelperText}
                 onChange={handlePassword}
+                InputProps={{
+                  style: { color: '#2E475D' } ,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Button
                 type="submit"

@@ -19,12 +19,15 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
 
     @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
-                          AuthenticationProvider authenticationProvider) {
+                          AuthenticationProvider authenticationProvider,
+                          CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.authenticationProvider = authenticationProvider;
+        this.customBasicAuthenticationEntryPoint = customBasicAuthenticationEntryPoint;
     }
 
     @Bean
@@ -34,50 +37,76 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())//by default use bean of corsConfigurationSource
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v2/admin/**").hasAuthority("ADMIN")
 
-                        .requestMatchers("/api/aws/**").permitAll()
+                        .requestMatchers("/api/v2/aws/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/artist/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/artist/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/artist/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v2/artist/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v2/artist/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/artist/**").hasAuthority("ADMIN")
 
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/v2/auth/**").permitAll()
 
-                        .requestMatchers("api/public/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/event").hasAuthority( "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/event/featured").hasAuthority( "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/event").hasAuthority(  "ORGANISER")
-                        .requestMatchers(HttpMethod.POST, "/api/event").hasAuthority( "ORGANISER")
-                        .requestMatchers(HttpMethod.PUT, "/api/event/{eventId}").hasAnyAuthority(  "ADMIN","ORGANISER")
-                        .requestMatchers(HttpMethod.PUT, "/api/event/updateTicketCategory").hasAuthority(  "ORGANISER")
-                        .requestMatchers(HttpMethod.PUT, "/api/event/addTicketCategory").hasAuthority(  "ORGANISER")
-                        .requestMatchers(HttpMethod.PUT, "/api/event/addArtistToEvent").hasAuthority(  "ORGANISER")
+                        .requestMatchers("/api/v2/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v2/event/featured").hasAuthority( "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/event").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.POST, "/api/v2/event").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/event/delete").hasAnyAuthority("ADMIN","ORGANISER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/event/update-artist").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/event/interest").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/available").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/presale-event").permitAll()// to be review (isPresaleEvent)
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/presale-status").permitAll()//to be reviewed (checkPresaleStatus)
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/user-selected").hasAuthority("USER")//to be reviewed (checkIfUserSelected)
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/selected-users").hasAuthority("ADMIN")//to be reviewed (getEventSelectedUsers)
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/valid-qr").hasAuthority("ORGANISER")
 
-                        .requestMatchers(HttpMethod.GET,"/api/event-organiser").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser").hasAuthority("ORGANISER")
-                        .requestMatchers(HttpMethod.GET,"/api/event-organiser/{organiserId}").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser/delete").hasAnyAuthority("ADMIN","ORGANISER")//waiting for yikai
-                        .requestMatchers(HttpMethod.DELETE,"/api/event-organiser/{organiserId}").hasAnyAuthority("ADMIN","ORGANISER")
-                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser/image").hasAuthority("ORGANISER")
-                        .requestMatchers(HttpMethod.PUT,"/api/event-organiser/events/{organiserId}").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.GET, "/api/event/queue-position").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/event/queue-total").permitAll()
 
-                        .requestMatchers("/api/event-type/**").hasAnyAuthority("ADMIN", "ORGANISER")
+                        .requestMatchers(HttpMethod.PUT, "/api/event/enter-queue").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/event/leave-queue").hasAuthority("USER")
+                                       
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/enhanced").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.GET, "/api/v2/event/not-enhanced").hasAuthority("ORGANISER")
 
-                        .requestMatchers("/api/ticket-category/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/ticket/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/{organiserId}").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser/delete").hasAnyAuthority("ADMIN","ORGANISER")
+                        .requestMatchers(HttpMethod.PUT,"/api/v2/event-organiser/image").hasAuthority("ORGANISER")
 
-                        .requestMatchers(HttpMethod.PUT, "/api/user/updateUserProfile").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/user/updateUserImage").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET,"/api/user/{userId}").hasAnyAuthority("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/user/{userId}").hasAnyAuthority("ADMIN", "USER")
-                        .requestMatchers(HttpMethod.GET, "/api/user").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/events").hasAuthority("ORGANISER")
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-organiser/current-events").hasAuthority("ORGANISER")
 
-                        .requestMatchers(HttpMethod.GET, "/api/venue/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT,"/api/venue/update").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST,"/api/venue").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/venue/*").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v2/event-type").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v2/event-type").hasAuthority("ADMIN")//to be reviewed (saveEventType)
+
+                        .requestMatchers( "/api/v2/order/**").hasAnyAuthority("USER", "ADMIN","ORGANISER") //to be reviewed (all order services)
+
+                        .requestMatchers(HttpMethod.POST, "/api/v2/section/ticket-details").hasAuthority("USER")//to be reviewed (findTicketDetailsBySection)
+                        .requestMatchers(HttpMethod.POST, "/api/v2/section").hasAuthority("ADMIN")
+
+                        .requestMatchers("/api/v2/ticket-category/**").permitAll() //to be reviewed (all ticket category, remove all but GET)
+
+                        .requestMatchers(HttpMethod.GET, "/api/v2/ticket").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v2/ticket/{ticketId}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.POST,"/api/v2/ticket").hasAuthority("USER")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v2/user/interested-events").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/user").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/user/image").hasAuthority("USER")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v2/user/interested-events").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET,"/api/v2/user/{userId}").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v2/user/delete/{userId}").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v2/user").hasAuthority("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v2/venue/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT,"/api/v2/venue").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v2/venue").hasAuthority("ADMIN")
 
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
@@ -86,21 +115,8 @@ public class SecurityConfig {
                 ))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults());
-
+                .httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(customBasicAuthenticationEntryPoint));
 
         return http.build();
     }
-
-//    @Bean
-//    CorsConfigurationSource corsConfigurationSource(){
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
-//        configuration.setAllowedHeaders(Arrays.asList("Authorization"));
-//        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source =new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 }

@@ -1,11 +1,14 @@
 import {
-    Box, Modal, Button, TextField, Avatar, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment
+    Box, Button, TextField, Typography, Grid, TextareaAutosize, ImageList, ImageListItem, FormControl, InputLabel, Select, MenuItem, OutlinedInput, Checkbox, ListItemText, InputAdornment, Switch, FormControlLabel, ListItemAvatar, Avatar
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import BasicDatePicker from './dateElement';
+import BasicDatePicker from '../../utility/dateElement';
 import { Sheet } from '@mui/joy';
 import dayjs, { Dayjs } from 'dayjs';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { ReactComponent as CTSVG } from '../../utility/seatMap/Capitol Theatre.svg'
+import { ReactComponent as SNSSVG } from '../../utility/seatMap/Singapore National Stadium.svg'
+import { ReactComponent as TSTSVG } from '../../utility/seatMap/The Star Theatre.svg'
 
 export function EventDetails(props: any) {
     useEffect(() => {
@@ -13,7 +16,7 @@ export function EventDetails(props: any) {
         if (eventTypeList.length == 0) {
             eventTypeFetcher();
         }
-      
+
     }, [props.venue]);
     const handleEventName = (event: any) => {
         props.setEventName(event.target.value);
@@ -21,55 +24,32 @@ export function EventDetails(props: any) {
 
     const handleEventDescription = (event: any) => {
         props.setEventDescription(event.target.value);
-
     };
 
     const handleEventDate = (newDate: Dayjs | null) => {
         props.setEventDate(dayjs(newDate))
     };
 
-    const handleTicketNumberVIP = (event: any) => {
-        props.setTicketNumberVIP(event.target.value);
-    };
-
-    const handleTicketNumberCat1 = (event: any) => {
-        props.setTicketNumberCat1(event.target.value);
-    };
-
-    const handleTicketNumberCat2 = (event: any) => {
-        props.setTicketNumberCat2(event.target.value);
-    };
-
-    const handleTicketNumberCat3 = (event: any) => {
-        props.setTicketNumberCat3(event.target.value);
-    };
-
-    const handleTicketNumberCat4 = (event: any) => {
-        props.setTicketNumberCat4(event.target.value);
-    };
-
-    const handleVIPPrice = (event: any) => {
-        props.setVIPPrice(event.target.value);
-    };
-
-    const handleCat1Price = (event: any) => {
-        props.setCat1Price(event.target.value);
-    };
-
-    const handleCat2Price = (event: any) => {
-        props.setCat2Price(event.target.value);
-    };
-
-    const handleCat3Price = (event: any) => {
-        props.setCat3Price(event.target.value);
-    };
-
-    const handleCat4Price = (event: any) => {
-        props.setCat4Price(event.target.value);
-    };
-
     const handleSaleDate = (newDate: Dayjs | null) => {
         props.setSaleDate(dayjs(newDate))
+    };
+
+    const handleFacialCheckin = (event: any) => {
+        props.setFacialCheckIn(event.target.value);
+        if (props.facialCheckIn === true) {
+            props.setFacialCheckIn(false);
+        } else {
+            props.setFacialCheckIn(true);
+        }
+    };
+
+    const handlePresale = (event: any) => {
+        props.setPresale(event.target.value);
+        if (props.presale === true) {
+            props.setPresale(false);
+        } else {
+            props.setPresale(true);
+        }
     };
 
     const handleOtherInfo = (event: any) => {
@@ -95,7 +75,6 @@ export function EventDetails(props: any) {
                 props.setAlertMsg("error fetching data!!!");
             } else {
                 const data = await response.json();
-                console.log(data);
                 setEventTypeList(data['data']);
             }
         } catch (err) {
@@ -105,6 +84,7 @@ export function EventDetails(props: any) {
     const handleEventType = (event: any) => {
         props.setEventType(event.target.value);
     };
+
     const handleConfirm = (event: any) => {
         event.preventDefault();
         //input validation
@@ -134,6 +114,7 @@ export function EventDetails(props: any) {
         <form onSubmit={(handleConfirm)}>
             <Box sx={{ mt: 2 }}>
                 <Sheet>
+                    {/* Section 1 */}
                     <Typography variant="h6" gutterBottom sx={{ mb: 1 }}>
                         Basic Information
                     </Typography>
@@ -147,7 +128,7 @@ export function EventDetails(props: any) {
                                 onChange={handleEventName}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={2}>
                             <Box sx={{ minWidth: 120 }}>
                                 <FormControl fullWidth>
                                     <InputLabel>Event Type</InputLabel>
@@ -164,159 +145,36 @@ export function EventDetails(props: any) {
                                 </FormControl>
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid item xs={12} sm={3}>
                             <BasicDatePicker onDateChange={handleEventDate} value={dayjs(props.eventDate)} label="Event Date" />
                         </Grid>
-
+                        <Grid item xs={12} sm={3}>
+                            <BasicDatePicker onDateChange={handleSaleDate} value={dayjs(props.saleDate)} label="Ticket Sale Date" />
+                        </Grid>
                         <Grid item xs={12} sm={12}>
                             <TextareaAutosize required minRows="7" onChange={handleEventDescription}
                                 style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
                                 id='Description' className='StyledTextarea' value={props.eventDescription} placeholder="Event Description" />
                         </Grid>
                     </Grid>
+                    {/* Section 2 */}
                     <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
-                        Ticket Information
+                        Special Requirement
                     </Typography>
-                    <Grid container spacing={3}>
-                        {/* first row */}
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                type='number'
-                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                required
-                                label="Number of Ticket Avaliable (VIP)"
-                                fullWidth
-                                value={Number(props.ticketNumberVIP)}
-                                onChange={handleTicketNumberVIP}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <FormControl fullWidth>
-                                <InputLabel >VIP Price</InputLabel>
-                                <OutlinedInput
-                                    type='number'
-                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                    label="VIPPrice"
-                                    value={Number(props.VIPPrice)}
-                                    onChange={handleVIPPrice}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <BasicDatePicker onDateChange={handleSaleDate} value={dayjs(props.saleDate)} label="Ticket Sale Date" />
-                        </Grid>
-                        {/* second row*/}
-                        <Grid item xs={12} sm={3}>
-                            <TextField
-                                type='number'
-                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                required
-                                label="Number of Ticket Avaliable (Cat1)"
-                                fullWidth
-                                value={Number(props.ticketNumberCat1)}
-                                onChange={handleTicketNumberCat1}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <FormControl fullWidth>
-                                <InputLabel >Cat1 Price</InputLabel>
-                                <OutlinedInput
-                                    type='number'
-                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                    label="VIPPrice"
-                                    value={Number(props.cat1Price)}
-                                    onChange={handleCat1Price}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <TextField
-                                type='number'
-                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                required
-                                label="Number of Ticket Avaliable (Cat2)"
-                                fullWidth
-                                value={Number(props.ticketNumberCat2)}
-                                onChange={handleTicketNumberCat2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <FormControl fullWidth>
-                                <InputLabel >Cat2 Price</InputLabel>
-                                <OutlinedInput
-                                    type='number'
-                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                    label="VIPPrice"
-                                    value={Number(props.cat2Price)}
-                                    onChange={handleCat2Price}
-                                />
-                            </FormControl>
-                        </Grid>
-                        {/* third row */}
-                        <Grid item xs={12} sm={3}>
-                            <TextField
-                                type='number'
-                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                required
-                                label="Number of Ticket Avaliable (Cat3)"
-                                fullWidth
-                                value={Number(props.ticketNumberCat3)}
-                                onChange={handleTicketNumberCat3}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <FormControl fullWidth>
-                                <InputLabel >Cat3 Price</InputLabel>
-                                <OutlinedInput
-                                    type='number'
-                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                    label="VIPPrice"
-                                    value={Number(props.cat3Price)}
-                                    onChange={handleCat3Price}
-                                />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <TextField
-                                type='number'
-                                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                required
-                                label="Number of Ticket Avaliable (Cat4)"
-                                fullWidth
-                                value={Number(props.ticketNumberCat4)}
-                                onChange={handleTicketNumberCat4}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={3}>
-                            <FormControl fullWidth>
-                                <InputLabel >Cat4 Price</InputLabel>
-                                <OutlinedInput
-                                    type='number'
-                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                                    label="VIPPrice"
-                                    value={Number(props.cat4Price)}
-                                    onChange={handleCat4Price}
-                                />
-                            </FormControl>
-                        </Grid>
+                    <Grid item xs={12} sm={3}>
+                        <FormControlLabel control={<Switch checked={props.facialCheckIn} onChange={handleFacialCheckin} />} sx={{ mr: 5 }} label="Facial Verification(Prevent ticket scalpers)" />
+                        <FormControlLabel control={<Switch checked={props.presale} onChange={handlePresale} />} label="Offer presale (*Hot event)" />
                     </Grid>
-
+                    {/* Section 3 */}
                     <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
                         Other Information
                     </Typography>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={12}>
-                            <TextareaAutosize minRows="7" onChange={handleOtherInfo}
-                                style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
-                                className='StyledTextarea' value={props.otherInfo} placeholder="Other Event Info" />
-                        </Grid>
-
+                    <Grid item xs={12} sm={12}>
+                        <TextareaAutosize minRows="7" onChange={handleOtherInfo}
+                            style={{ width: "100%", fontSize: "inherit", font: "inherit", border: "1px solid light-grey", borderRadius: 4 }}
+                            className='StyledTextarea' value={props.otherInfo} placeholder="Other Event Info" />
                     </Grid>
+
                 </Sheet>
                 <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
                     <Button type='submit' fullWidth variant="contained" sx={{ p: 1.5, textTransform: "none", fontSize: "16px" }}>COMPLETE STEP</Button>
@@ -401,8 +259,10 @@ export function VenueArtist(props: any) {
                 props.setAlertType('error');
                 props.setAlertMsg("error fetching data!!!");
             } else {
-                const data = await response.json();
-                setVenueList(data['data']);
+                const apiResponse = await response.json();
+                const data = apiResponse.data;
+                const sortedData = data.sort((a: any, b: any) => a.venueId - b.venueId);
+                setVenueList(sortedData);
             }
         } catch (err) {
             window.alert(err);
@@ -419,6 +279,26 @@ export function VenueArtist(props: any) {
         props.setOtherVenue(event.target.value);
     };
 
+    const handleVIPPrice = (event: any) => {
+        props.setVIPPrice(event.target.value);
+    };
+
+    const handleCat1Price = (event: any) => {
+        props.setCat1Price(event.target.value);
+    };
+
+    const handleCat2Price = (event: any) => {
+        props.setCat2Price(event.target.value);
+    };
+
+    const handleCat3Price = (event: any) => {
+        props.setCat3Price(event.target.value);
+    };
+
+    const handleCat4Price = (event: any) => {
+        props.setCat4Price(event.target.value);
+    };
+
     const handleArtist = (event: any) => {
         const {
             target: { value },
@@ -432,8 +312,6 @@ export function VenueArtist(props: any) {
     const handleConfirm = (event: any) => {
         event.preventDefault();
         props.handleComplete();
-        console.log(props.artistList);
-        console.log(props.venue);
     };
 
     return (
@@ -442,7 +320,7 @@ export function VenueArtist(props: any) {
                 {/* Venue */}
                 <Sheet sx={{ marginTop: 2 }}>
                     <Typography variant="h6" gutterBottom sx={{ marginBottom: 2 }}>
-                        Veneue
+                        Venue
                     </Typography>
                     <Grid container spacing={3}>
                         <Grid item xs={12} sm={4}>
@@ -476,7 +354,82 @@ export function VenueArtist(props: any) {
                     </Grid>
 
                     <Grid container>
-                        <Typography> Here will show 3D</Typography>
+                        {props.venue == '1' ? <TSTSVG /> : null}
+                        {props.venue == '2' ? <CTSVG /> : null}
+                        {props.venue == '3' ? <SNSSVG /> : null}
+                    </Grid>
+                    {/* Ticket Price */}
+                    <Typography variant="h6" gutterBottom sx={{ mb: 1, mt: 1 }}>
+                        Ticket Price
+                    </Typography>
+                    <Grid container spacing={3}>
+                        {/* first row */}
+                        <Grid item xs={12} sm={4}>
+                            <FormControl fullWidth>
+                                <InputLabel >VIP Price</InputLabel>
+                                <OutlinedInput
+                                    type='number'
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                    label="VIPPrice"
+                                    value={Number(props.VIPPrice)}
+                                    onChange={handleVIPPrice}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <FormControl fullWidth>
+                                <InputLabel >Cat1 Price</InputLabel>
+                                <OutlinedInput
+                                    type='number'
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                    label="VIPPrice"
+                                    value={Number(props.cat1Price)}
+                                    onChange={handleCat1Price}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <FormControl fullWidth>
+                                <InputLabel >Cat2 Price</InputLabel>
+                                <OutlinedInput
+                                    type='number'
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                    label="VIPPrice"
+                                    value={Number(props.cat2Price)}
+                                    onChange={handleCat2Price}
+                                />
+                            </FormControl>
+                        </Grid>
+                        {/* second row*/}
+                        <Grid item xs={12} sm={4}>
+                            <FormControl fullWidth>
+                                <InputLabel >Cat3 Price</InputLabel>
+                                <OutlinedInput
+                                    type='number'
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                    label="VIPPrice"
+                                    value={Number(props.cat3Price)}
+                                    onChange={handleCat3Price}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <FormControl fullWidth>
+                                <InputLabel >Cat4 Price</InputLabel>
+                                <OutlinedInput
+                                    type='number'
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                                    startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                    label="VIPPrice"
+                                    value={Number(props.cat4Price)}
+                                    onChange={handleCat4Price}
+                                />
+                            </FormControl>
+                        </Grid>
                     </Grid>
                 </Sheet>
                 {/* Artist */}
@@ -508,6 +461,9 @@ export function VenueArtist(props: any) {
                                         <MenuItem key={data?.artistId} value={data?.artistId}>
                                             <Checkbox checked={props.artistList.indexOf(data.artistId) > -1} />
                                             <ListItemText primary={data?.artistName} />
+                                            <ListItemAvatar>
+                                                <Avatar src={`${process.env.REACT_APP_S3_URL}/artists/${data?.artistImage}`} alt={data?.artistName} />
+                                            </ListItemAvatar>
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -515,7 +471,6 @@ export function VenueArtist(props: any) {
                         </Grid>
 
                     </Grid>
-
                 </Sheet>
             </Box>
             <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
@@ -581,11 +536,11 @@ export function EventPoster(props: any) {
                         <Grid container spacing={2} sx={{ marginLeft: 2 }}>
                             <Grid item xs={12}></Grid>
                             {props.selectedFiles != null && (
-                                <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164} gap={2}>
+                                <ImageList sx={{ width: 575, height: "100%" }} cols={1} rowHeight={250}>
                                     {props.selectedFiles.map((file: any, index: any) => (
                                         <ImageListItem key={index}>
                                             <img
-                                                src={`${URL.createObjectURL(file)}?w=164&h=164&fit=crop&auto=format`}
+                                                src={`${URL.createObjectURL(file)}?w=575&h=250&fit=crop&auto=format`}
                                                 srcSet={`${URL.createObjectURL(file)}`}
                                                 alt={`Selected ${index + 1}`}
                                                 loading="lazy"

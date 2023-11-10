@@ -1,14 +1,29 @@
 package com.authenticket.authenticket.dto.event;
 
-import com.authenticket.authenticket.model.Artist;
-import com.authenticket.authenticket.model.EventTicketCategory;
-
 import java.time.LocalDateTime;
-import java.util.Set;
 
-public record FeaturedEventDto(Integer featuredId,
-                              EventHomeDto event,
-                              LocalDateTime startDate,
-                               LocalDateTime endDate
+/**
+ * A DTO representing a featured event.
+ */
+public record FeaturedEventDto(
+        /**
+         * The unique identifier of the featured event.
+         */
+        Integer featuredId,
+
+        /**
+         * The event details of the featured event, including its name, description, and more.
+         */
+        EventHomeDto event,
+
+        /**
+         * The start date and time for featuring this event.
+         */
+        LocalDateTime startDate,
+
+        /**
+         * The end date and time for featuring this event.
+         */
+        LocalDateTime endDate
 ) {
 }

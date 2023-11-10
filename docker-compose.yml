@@ -1,16 +1,21 @@
-version: "3"
+version: '3'
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: authenticket-backend
-    ports:
-      - "8080:8080"
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: authenticket-frontend
+    image: authen2023/authenticket-frontend
     ports:
       - "3000:3000"
+
+  backend:
+    image: authen2023/authenticket-backend
+    ports:
+      - "8080:8080"
+
+  facial:
+    image: panmingwei/authenticket-facial
+    ports:
+      - "8000:8000"
+
+  payment:
+    image: liseon/authenticket-payment
+    ports:
+      - "4242:4242"

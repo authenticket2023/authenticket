@@ -12,8 +12,8 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AuthenticationServiceImpl;
 import com.authenticket.authenticket.service.impl.JwtServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,7 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import io.jsonwebtoken.security.SignatureException;
 
+import java.net.URI;
 import java.time.LocalDate;
+
+/**This is the authentication controller class and the base path for this controller's endpoint is api/v2/auth.*/
 
 @RestController
 @CrossOrigin(
@@ -35,7 +38,7 @@ import java.time.LocalDate;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v2/auth")
 public class AuthenticationController extends Utility{
 
     private final AuthenticationServiceImpl service;
@@ -57,8 +60,19 @@ public class AuthenticationController extends Utility{
         this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping("token-check")
-    public ResponseEntity<GeneralApiResponse> tokenCheck(
+    /**
+     * Verify the validity of a JWT token and check if it is associated with a specific user.
+     *
+     * @param token The JWT token to be verified.
+     * @param userEmail The email of the user to which the token should be associated.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the result of token verification. If the token is valid
+     *         and associated with the provided user, it returns a success message along with user authorities. If the token
+     *         is invalid, it returns an error message. If the provided email is not registered, it returns an error message.
+     *         If the token's signature cannot be trusted, it returns an error message.
+     */
+
+    @PostMapping("token-verification")
+    public ResponseEntity<GeneralApiResponse<Object>> tokenCheck(
             @RequestParam("jwtToken") String token,
             @RequestParam("userEmail") String userEmail){
         try {
@@ -67,7 +81,7 @@ public class AuthenticationController extends Utility{
             if (jwtValidity) {
                 return ResponseEntity.status(200).body(generateApiResponse(true, "valid token." + userDetails.getAuthorities()));
             }
-            return ResponseEntity.status(200).body(generateApiResponse(false, "invalid token"));
+            return ResponseEntity.status(400).body(generateApiResponse(false, "invalid token"));
         }
         catch (UsernameNotFoundException e) {
             return ResponseEntity.status(400).body(generateApiResponse(null, "email not registered"));
@@ -76,8 +90,19 @@ public class AuthenticationController extends Utility{
         }
     }
 
-    @PostMapping("/userRegister")
-    public ResponseEntity<GeneralApiResponse> userRegister(
+    /**
+     * Register a new user with the provided information.
+     *
+     * @param name The name of the user to be registered.
+     * @param email The email address of the user to be registered.
+     * @param password The password for the user's account (will be securely hashed and stored).
+     * @param dob The date of birth of the user.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the success of user registration. The response
+     *         typically includes a message stating that user verification is required.
+     */
+
+    @PostMapping("/user-register")
+    public ResponseEntity<GeneralApiResponse<Object>> userRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
@@ -94,18 +119,37 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Verification required"));
     }
 
-    @GetMapping(path = "/userRegister/userConfirm")
-    public ResponseEntity<GeneralApiResponse> userConfirm(@RequestParam("token") String token){
+    /**
+     * Confirm a user's registration using a verification token and redirect to a specified URL. Used in email when a confirmation email is sent to the user's email to verify the user.
+     *
+     * @param token The verification token used to confirm the user's registration.
+     * @param redirect The URL to which the endpoint should redirect after confirmation.
+     * @return A ResponseEntity that typically performs a redirect response to the specified URL if confirmation is successful,
+     *         or returns an error response with a message if confirmation fails.
+     */
+    @GetMapping(path = "/user-register/confirm")
+    public ResponseEntity<GeneralApiResponse<Object>> userConfirm(@RequestParam("token") String token,
+                                                          @RequestParam("redirect") String redirect){
         try{
             AuthenticationUserResponse response = service.confirmUserToken(token);
-            return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome"));
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(redirect))
+                    .build();
         } catch (AwaitingVerificationException | IllegalStateException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, e.getMessage()));
         }
     }
 
-    @PostMapping("/userAuthenticate")
-    public ResponseEntity<GeneralApiResponse> userAuthenticate(
+    /**
+     * Authenticate a user by their email and password.
+     *
+     * @param email The email of the user to authenticate.
+     * @param password The password of the user for authentication.
+     * @return A ResponseEntity with a GeneralApiResponse indicating the result of user authentication. If successful, it returns a welcome message,
+     *         or an error message if authentication fails due to an unregistered email or account lock.
+     */
+    @PostMapping("/user")
+    public ResponseEntity<GeneralApiResponse<Object>> userAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ){
@@ -116,16 +160,22 @@ public class AuthenticationController extends Utility{
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
         }
-        catch (BadCredentialsException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
-        }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));
         }
     }
 
-    @PostMapping("/eventOrgRegister")
-    public ResponseEntity<GeneralApiResponse> orgRegister(
+    /**
+     * Register a new organization (event organizer) with the provided information.
+     *
+     * @param name The name of the organization to be registered.
+     * @param email The email address of the organization.
+     * @param description A description of the organization.
+     * @return A ResponseEntity indicating the success of organization registration.
+     */
+
+    @PostMapping("/org-register")
+    public ResponseEntity<GeneralApiResponse<Object>> orgRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
             @RequestParam("description") String description
@@ -143,8 +193,16 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Approval required"));
     }
 
-    @PostMapping("/eventOrgAuthenticate")
-    public ResponseEntity<GeneralApiResponse> eventOrgAuthenticate(
+    /**
+     * Authenticate an organization (event organizer) by their email and password.
+     *
+     * @param email The email of the organization.
+     * @param password The password for authentication.
+     * @return A ResponseEntity indicating the result of organization authentication.
+     */
+
+    @PostMapping("/org")
+    public ResponseEntity<GeneralApiResponse<Object>> eventOrgAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ){
@@ -154,16 +212,23 @@ public class AuthenticationController extends Utility{
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
         }
-        catch (BadCredentialsException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
-        }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Account not yet approved by company administrator"));
         }
     }
 
-    @PostMapping("/adminRegister")
-    public ResponseEntity<GeneralApiResponse> adminRegister(
+
+    /**
+     * Register a new admin with the provided information.
+     *
+     * @param name The name of the admin to be registered.
+     * @param email The email address of the admin.
+     * @param password The password for the admin's account (will be securely hashed and stored).
+     * @return A ResponseEntity indicating the success of admin registration.
+     */
+
+    @PostMapping("/admin-register")
+    public ResponseEntity<GeneralApiResponse<Object>> adminRegister(
             @RequestParam("name") String name,
             @RequestParam("email") String email,
             @RequestParam("password") String password
@@ -178,8 +243,18 @@ public class AuthenticationController extends Utility{
         return ResponseEntity.status(200).body(generateApiResponse(null, "Admin account created"));
     }
 
-    @PostMapping("/adminAuthenticate")
-    public ResponseEntity<GeneralApiResponse> adminAuthenticate(
+    /**
+     * Authenticate an admin by their email and password.
+     *
+     * @param email The email of the admin to authenticate.
+     * @param password The password of the admin for authentication.
+     * @return A ResponseEntity indicating the result of admin authentication. If successful, it returns a welcome message,
+     *         or an error message if authentication fails due to an unregistered email or account lock.
+     *
+     */
+
+    @PostMapping("/admin")
+    public ResponseEntity<GeneralApiResponse<Object>> adminAuthenticate(
             @RequestParam("email") String email,
             @RequestParam("password") String password
     ){
@@ -189,9 +264,6 @@ public class AuthenticationController extends Utility{
             return ResponseEntity.status(200).body(generateApiResponse(response, "Welcome " + email));
         } catch (UsernameNotFoundException e){
             return ResponseEntity.status(400).body(generateApiResponse(null,"email not registered"));
-        }
-        catch (BadCredentialsException e){
-            return ResponseEntity.status(400).body(generateApiResponse(null, "Credentials are invalid."));
         }
         catch(LockedException e){
             return ResponseEntity.status(400).body(generateApiResponse(null, "Please verify your account."));

@@ -67,7 +67,7 @@ export default function ReviewEvent(props: any) {
         formData.append('reviewRemarks', remarks);
         formData.append('reviewStatus', status);
         formData.append('reviewedBy', adminID );
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/updateEvent`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/update-event`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -209,7 +209,7 @@ export default function ReviewEvent(props: any) {
                             </Grid>
                             <Sheet sx={{ alignItems: "center", mb: 5, mt: 5 }}>
                                 <Button color="error" variant="contained" onClick={handleReject} >Reject</Button>
-                                <Button color="success" variant="contained" sx={{ ml: 10 }} onClick={handleAccept}>Accpet</Button>
+                                <Button color="success" variant="contained" sx={{ ml: 10 }} onClick={handleAccept}>Accept</Button>
                             </Sheet>
                         </Sheet>
                     </Box>

@@ -3,7 +3,6 @@ package com.authenticket.authenticket.controller;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.authenticket.authenticket.controller.response.GeneralApiResponse;
-import com.authenticket.authenticket.dto.venue.VenueDisplayDto;
 import com.authenticket.authenticket.exception.AlreadyExistsException;
 import com.authenticket.authenticket.exception.NonExistentException;
 import com.authenticket.authenticket.model.Venue;
@@ -12,7 +11,6 @@ import com.authenticket.authenticket.service.Utility;
 import com.authenticket.authenticket.service.impl.AmazonS3ServiceImpl;
 import com.authenticket.authenticket.service.impl.VenueServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+
+/**This is the venue controller class and the base path for this controller's endpoint is api/v2/venue.*/
 
 @RestController
 @CrossOrigin(
@@ -32,8 +32,7 @@ import java.util.Optional;
         allowedHeaders = {"Authorization", "Cache-Control", "Content-Type"},
         allowCredentials = "true"
 )
-@RequestMapping(path = "/api/venue")
-
+@RequestMapping(path = "/api/v2/venue")
 public class VenueController extends Utility {
     private final VenueServiceImpl venueService;
 
@@ -48,14 +47,24 @@ public class VenueController extends Utility {
         this.amazonS3Service = amazonS3Service;
     }
 
+    /**
+     * A test endpoint to check if the controller is operational.
+     *
+     * @return A simple test message indicating the operation was successful.
+     */
     @GetMapping("/test")
     public String test() {
         return "test successful";
     }
 
+    /**
+     * Retrieve a list of all venues in the system.
+     *
+     * @return A response containing a list of venue information.
+     */
     @GetMapping
     public ResponseEntity<GeneralApiResponse<Object>> findAllVenue() {
-        List<VenueDisplayDto> venueList = venueService.findAllVenue();
+        List<Venue> venueList = venueService.findAllVenue();
         if (venueList.isEmpty()) {
             return ResponseEntity.ok(generateApiResponse(venueList, "No venue found."));
         } else {
@@ -63,14 +72,30 @@ public class VenueController extends Utility {
         }
     }
 
+    /**
+     * Find a venue by its ID.
+     *
+     * @param venueId The ID of the venue to retrieve.
+     * @return An optional containing the venue information, if found.
+     */
     @GetMapping("/{venue_id}")
-    public Optional<VenueDisplayDto> findVenueById(@PathVariable("venue_id") Integer venueId) {
+    public Optional<Venue> findVenueById(@PathVariable("venue_id") Integer venueId) {
         return venueService.findById(venueId);
     }
 
+    /**
+     * Save a new venue, including venue image.
+     *
+     * @param venueName        The name of the venue.
+     * @param venueLocation    The location of the venue.
+     * @param venueDescription The description of the venue.
+     * @param venueImageFile   The image file for the venue.
+     * @return A response indicating the successful creation of the venue.
+     */
     @PostMapping
-    public ResponseEntity<?> saveVenue(@RequestParam(value = "venueName") String venueName,
+    public ResponseEntity<GeneralApiResponse<Object>> saveVenue(@RequestParam(value = "venueName") String venueName,
                                         @RequestParam(value = "venueLocation") String venueLocation,
+                                       @RequestParam(value = "venueDescription") String venueDescription,
                                         @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
         Optional<Venue> venueOptional = venueRepository.findByVenueName(venueName);
         if (venueOptional.isPresent()) {
@@ -81,7 +106,7 @@ public class VenueController extends Utility {
             throw new NonExistentException("Venue Image File is null");
         }
 
-        Venue savedVenue = venueService.saveVenue(new Venue(null, venueName, venueLocation, null));
+        Venue savedVenue = venueService.saveVenue(new Venue(null, venueName, venueLocation,venueDescription, null,null));
         //generating the file name with the extension
         String fileExtension = getFileExtension(venueImageFile.getContentType());
         String imageName = savedVenue.getVenueId() + fileExtension;
@@ -108,11 +133,20 @@ public class VenueController extends Utility {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateApiResponse(null, "An error occurred during S3 interaction: " + e.getMessage()));
         }
 
-        return ResponseEntity.ok(savedVenue);
+        return ResponseEntity.ok(generateApiResponse(savedVenue, "Venue created successfully"));
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateVenue(@RequestParam(value = "venueId") Integer venueId,
+    /**
+     * Update an existing venue, including the venue image.
+     *
+     * @param venueId        The ID of the venue to update.
+     * @param venueName      The updated name of the venue.
+     * @param venueLocation  The updated location of the venue.
+     * @param venueImageFile The updated image file for the venue.
+     * @return A response indicating the successful update of the venue.
+     */
+    @PutMapping
+    public ResponseEntity<GeneralApiResponse<Object>> updateVenue(@RequestParam(value = "venueId") Integer venueId,
                                          @RequestParam(value = "venueName") String venueName,
                                          @RequestParam(value = "venueLocation") String venueLocation,
                                          @RequestParam(value = "venueImage") MultipartFile venueImageFile) {
@@ -135,11 +169,5 @@ public class VenueController extends Utility {
             }
         }
         return ResponseEntity.ok(generateApiResponse(updatedVenue, "Venue updated successfully."));
-    }
-
-    @DeleteMapping("/{venueId}")
-    public String removeVenue(@PathVariable("venueId") Integer venueId) {
-        venueService.removeVenue(venueId);
-        return "Venue removed successfully.";
     }
 }

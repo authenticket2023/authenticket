@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the VenueService interface for managing and interacting with venue-related operations.
+ */
+
 @Service
 public class VenueServiceImpl implements VenueService {
 
@@ -28,27 +32,55 @@ public class VenueServiceImpl implements VenueService {
         this.venueDtoMapper = venueDtoMapper;
     }
 
-    public Optional<VenueDisplayDto> findById(Integer venueId) {
-        return venueRepository.findById(venueId).map(venueDtoMapper);
+    /**
+    * Retrieve a Venue by its unique identifier.
+    *
+    * @param venueId The unique identifier of the Venue to retrieve.
+    * @return An Optional containing the found Venue if it exists, or an empty Optional if not.
+    */
+    @Override
+    public Optional<Venue> findById(Integer venueId) {
+        return venueRepository.findById(venueId);
     }
 
-    public List<VenueDisplayDto> findAllVenue() {
-        return venueRepository.findAll()
-                .stream()
-                .map(venueDtoMapper)
-                .collect(Collectors.toList());
+    /**
+     * Retrieve a list of all Venue objects.
+     *
+     * @return A List of Venue objects representing all available venues.
+     */
+    @Override
+    public List<Venue> findAllVenue() {
+        return venueRepository.findAll();
     }
 
+    /**
+     * Save a new Venue to the repository.
+     *
+     * @param venue The Venue object to be saved.
+     * @return The saved Venue object.
+     */
+    @Override
     public Venue saveVenue(Venue venue) {
         return venueRepository.save(venue);
     }
 
+    /**
+     * Update the name and location of an existing Venue by its unique identifier.
+     *
+     * @param venueId       The unique identifier of the Venue to update.
+     * @param venueName     The new name for the Venue (can be empty to retain the old name).
+     * @param venueLocation The new location for the Venue (can be empty to retain the old location).
+     * @return The updated Venue object.
+     * @throws NonExistentException   If the specified Venue does not exist.
+     * @throws AlreadyExistsException If the new name is already in use by another Venue.
+     */
+    @Override
     public Venue updateVenue(Integer venueId, String venueName, String venueLocation) {
         Optional<Venue> optionalOldVenue = venueRepository.findById(venueId);
-        Venue oldVenue = optionalOldVenue.get();
         if (optionalOldVenue.isEmpty()) {
             throw new NonExistentException("Venue with ID " + venueId + " does not exist");
         }
+        Venue oldVenue = optionalOldVenue.get();
 
         Optional<Venue> venueUpdateNameCheck = venueRepository.findByVenueName(venueName);
         if (venueUpdateNameCheck.isPresent() && (optionalOldVenue.get() != venueUpdateNameCheck.get())) {
@@ -72,6 +104,13 @@ public class VenueServiceImpl implements VenueService {
         return venueRepository.save(oldVenue);
     }
 
+    /**
+     * Remove a Venue from the repository by its unique identifier.
+     *
+     * @param venueId The unique identifier of the Venue to remove.
+     * @throws NonExistentException If the specified Venue does not exist.
+     */
+    @Override
     public void removeVenue(Integer venueId){
         Optional<Venue> venueOptional = venueRepository.findById(venueId);
 
@@ -80,18 +119,5 @@ public class VenueServiceImpl implements VenueService {
         } else {
             throw new NonExistentException("Ticket does not exist");
         }
-//        Optional<Venue> venueOptional = venueRepository.findById(venueId);
-//
-//        if (venueOptional.isPresent()) {
-//            Venue venue = venueOptional.get();
-//            if(venue.getDeletedAt()!=null){
-//                throw new AlreadyDeletedException("Venue already deleted");
-//            }
-//
-//            venue.setDeletedAt(LocalDateTime.now());
-//            venueRepository.save(venue);
-//        } else {
-//            throw new NonExistentException("Venue does not exist");
-//        }
     }
 }

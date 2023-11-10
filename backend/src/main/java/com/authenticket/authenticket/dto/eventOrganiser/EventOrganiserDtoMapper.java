@@ -11,18 +11,34 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * A mapper class responsible for mapping between EventOrganiser entities and EventOrganiserDisplayDto objects.
+ * {@link EventOrganiserDisplayDto} DTOs and performing updates on event organiser entities.
+ */
 @Service
 public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOrganiserDisplayDto> {
     private final PasswordEncoder passwordEncoder;
 
     private final AdminDtoMapper adminDtoMapper;
 
+    /**
+     * Constructs an EventOrganiserDtoMapper with the specified dependencies.
+     *
+     * @param passwordEncoder The password encoder for encoding and decoding passwords.
+     * @param adminDtoMapper The mapper for Admin entities to AdminDisplayDto objects.
+     */
     @Autowired
     public EventOrganiserDtoMapper(PasswordEncoder passwordEncoder, AdminDtoMapper adminDtoMapper) {
         this.passwordEncoder = passwordEncoder;
         this.adminDtoMapper = adminDtoMapper;
     }
 
+    /**
+     * Maps an EventOrganiser entity to an EventOrganiserDisplayDto object.
+     *
+     * @param organiser The EventOrganiser entity to be mapped.
+     * @return An EventOrganiserDisplayDto representing the mapped data.
+     */
     public EventOrganiserDisplayDto apply(EventOrganiser organiser) {
         AdminDisplayDto adminDisplayDto = null;
 
@@ -31,13 +47,28 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
         }
 
         return new EventOrganiserDisplayDto(
-                organiser.getOrganiserId(), organiser.getName(), organiser.getEmail(),
-                organiser.getDescription(), organiser.getLogoImage(),
-                EventOrganiser.getRole(), organiser.getReviewStatus(), organiser.getReviewRemarks(),
-                adminDisplayDto, organiser.getEnabled(), organiser.getCreatedAt(), organiser.getUpdatedAt(), organiser.getDeletedAt());
-
+                organiser.getOrganiserId(),
+                organiser.getName(),
+                organiser.getEmail(),
+                organiser.getDescription(),
+                organiser.getLogoImage(),
+                EventOrganiser.getRole(),
+                organiser.getReviewStatus(),
+                organiser.getReviewRemarks(),
+                adminDisplayDto,
+                organiser.getEnabled(),
+                organiser.getCreatedAt(),
+                organiser.getUpdatedAt(),
+                organiser.getDeletedAt()
+        );
     }
 
+    /**
+     * Updates an EventOrganiser entity with the information provided in the EventOrganiserUpdateDto.
+     *
+     * @param updateDto The EventOrganiserUpdateDto containing the updated information.
+     * @param organiser The EventOrganiser entity to be updated.
+     */
     public void update(EventOrganiserUpdateDto updateDto, EventOrganiser organiser) {
         if (updateDto.name() != null) {
             organiser.setName(updateDto.name());
@@ -46,7 +77,7 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
             organiser.setDescription(updateDto.description());
         }
         if (updateDto.password() != null) {
-            organiser.setPassword(passwordEncoder.encode((updateDto.password())));
+            organiser.setPassword(passwordEncoder.encode(updateDto.password()));
         }
         if (updateDto.enabled() != null) {
             organiser.setEnabled(updateDto.enabled());
@@ -62,10 +93,15 @@ public class EventOrganiserDtoMapper implements Function<EventOrganiser, EventOr
         }
     }
 
-    public List<EventOrganiserDisplayDto> map (List<EventOrganiser> organiserList){
+    /**
+     * Maps a list of EventOrganiser entities to a list of EventOrganiserDisplayDto objects.
+     *
+     * @param organiserList The list of EventOrganiser entities to be mapped.
+     * @return A list of EventOrganiserDisplayDto objects representing the mapped data.
+     */
+    public List<EventOrganiserDisplayDto> map(List<EventOrganiser> organiserList) {
         return organiserList.stream()
                 .map(this::apply)
                 .collect(Collectors.toList());
     }
 }
-

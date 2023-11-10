@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public interface EventOrganiserService {
     List<EventOrganiserDisplayDto> findAllEventOrganisers();
-
     List<Event> findAllEventsByOrganiser(Integer organiserId);
+    List<Event> findAllCurrentEventsByOrganiser(Integer organiserId);
     List<EventOrganiserDisplayDto> findEventOrganisersByReviewStatus(String status);
     Optional<EventOrganiserDisplayDto> findOrganiserById(Integer organiserId);
     EventOrganiser saveEventOrganiser (EventOrganiser eventOrganiser);
@@ -20,8 +20,6 @@ public interface EventOrganiserService {
 
     //updates deleted_at field with datetime, DOES NOT really remove the event
     String deleteEventOrganiser (Integer organiserId);
-    //actually removes the event
-    String removeEventOrganiser (Integer organiserId);
 
 //    EventOrganiser approveOrganiser(Integer organiserId, Integer adminId, String status, String remarks);
 

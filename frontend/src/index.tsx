@@ -18,23 +18,32 @@ import { Profile } from './pages/Profile';
 import { Signup } from './pages/Signup';
 import { Support } from './pages/Support';
 import { Venue } from './pages/Venue';
+import { VenueDetails } from './pages/VenueDetails'
+import { EventDetails } from './pages/EventDetails';
+import { TicketPurchase } from './pages/TicketPurchase';
+import { SuccessPage } from './pages/TicketPurchase/SuccessPage';
+import { CancelPage } from './pages/TicketPurchase/CancelPage';
+import { WaitingRoom } from './pages/WaitingRoom/WaitingRoom';
 //for organiser user
 import { HomeOrganiser } from './pages/HomeOrganiser';
 import { EventOrganiser } from './pages/EventOrganiser';
+import { OrderOrganiser } from './pages/OrderOrganiser';
 import { OrganiserSignup } from './pages/OrganiserSignup';
 import { OrganiserLogin } from './pages/OrganiserLogin';
+import { CheckinOrganiser } from './pages/CheckinOrganiser';
+import { QRCheckinOrganiser } from './pages/QRCheckinOrganiser';
+import { FAQOrganiser } from './pages/FAQOrganiser';
 //for admin user
 import { HomeAdmin } from './pages/HomeAdmin';
 import { EventAdmin } from './pages/EventAdmin';
 import { ArtistAdmin } from './pages/ArtistAdmin';
-import { VenueAdmin } from './pages/VenueAdmin';
 import { AdminLogin } from './pages/AdminLogin';
 
 const container: any = document.getElementById('root');
 const root = createRoot(container);
 root.render(
-	<BrowserRouter>
-		<Routes>
+	<BrowserRouter >
+		<Routes >
 			<Route path="/Home" element={<Home />} />
 			<Route path="/" element={<Navigate to="/Home" />} />
 			<Route path="/About" element={<About />} />
@@ -50,13 +59,22 @@ root.render(
 			<Route path="/*" element={<Page404 />} />
 			<Route path="/HomeOrganiser" element={<HomeOrganiser />} />
 			<Route path="/EventOrganiser" element={<EventOrganiser />} />
+			<Route path="/OrderOrganiser" element={<OrderOrganiser />} />
+			<Route path="/CheckinOrganiser" element={<CheckinOrganiser />} />
+			<Route path="/QRCheckinOrganiser" element={<QRCheckinOrganiser />} />
 			<Route path="/HomeAdmin" element={<HomeAdmin />} />
 			<Route path="/EventAdmin" element={<EventAdmin />} />
-			<Route path="/VenueAdmin" element={<VenueAdmin />} />
 			<Route path="/ArtistAdmin" element={<ArtistAdmin />} />
 			<Route path="/OrganiserSignup" element={<OrganiserSignup />} />
 			<Route path="/OrganiserLogin" element={<OrganiserLogin />} />
 			<Route path="/AdminLogin" element={<AdminLogin />} />
+			<Route path="/EventDetails/:eventId" element={<EventDetails />} />
+			<Route path="/WaitingRoom/:eventId" element={<WaitingRoom />} />
+			<Route path="/VenueDetails/:venueId" element={<VenueDetails />} />
+			<Route path="/TicketPurchase/:eventId" element={<TicketPurchase />} />
+			<Route path="/success/:orderId" element={<SuccessPage />} />
+			<Route path="/cancel/:orderId" element={<CancelPage />} />
+			<Route path="/FAQOrganiser" element={<FAQOrganiser />} />
 		</Routes>
 	</BrowserRouter>);
 

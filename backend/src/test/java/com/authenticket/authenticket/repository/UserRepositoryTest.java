@@ -35,7 +35,6 @@ class UserRepositoryTest {
                 .dateOfBirth(LocalDate.now())
                 .profileImage(null)
                 .enabled(false)
-                .tickets(null)
                 .build();
 
         underTest.save(user);

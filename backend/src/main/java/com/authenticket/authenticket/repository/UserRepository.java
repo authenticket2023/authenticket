@@ -13,7 +13,9 @@ import java.util.*;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
+    Optional<User> findUserByUserId(Integer userId);
 
+    @Transactional
     @Modifying(clearAutomatically = true)
     @Query("UPDATE User a " +
             "SET a.enabled = TRUE WHERE a.email = ?1")

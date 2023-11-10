@@ -3,7 +3,6 @@ package com.authenticket.authenticket.service;
 import com.authenticket.authenticket.model.EventType;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface EventTypeService {
 

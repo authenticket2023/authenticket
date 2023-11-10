@@ -10,21 +10,22 @@ import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategory
 import com.authenticket.authenticket.dto.eventticketcategory.EventTicketCategoryDtoMapper;
 import com.authenticket.authenticket.dto.venue.VenueDtoMapper;
 import com.authenticket.authenticket.model.Event;
-import com.authenticket.authenticket.model.EventOrganiser;
 import com.authenticket.authenticket.model.FeaturedEvent;
-import com.authenticket.authenticket.repository.AdminRepository;
-import com.authenticket.authenticket.repository.EventRepository;
-import com.authenticket.authenticket.repository.EventTypeRepository;
+import com.authenticket.authenticket.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Service class responsible for mapping Event entities to various DTOs.
+ * {@link EventDisplayDto} DTOs and performing updates on event entities.
+ */
 @Service
 public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
@@ -32,35 +33,55 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     private final EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper;
 
-    private final VenueDtoMapper venueDtoMapper;
-
     private final ArtistDtoMapper artistDtoMapper;
 
     private final AdminDtoMapper adminDtoMapper;
 
     private final EventRepository eventRepository;
 
-    private final AdminRepository adminRepository;
+    private final VenueRepository venueRepository;
 
-    private final EventTypeRepository eventTypeRepository;
+    private final TicketRepository ticketRepository;
 
+
+    /**
+     * Constructs a new EventDtoMapper with the specified dependencies.
+     *
+     * @param eventOrganiserDtoMapper              The mapper for converting EventOrganiser entities to DTOs.
+     * @param eventTicketCategoryDisplayDtoMapper  The mapper for converting EventTicketCategory entities to DTOs.
+     * @param artistDtoMapper                      The mapper for converting Artist entities to DTOs.
+     * @param adminDtoMapper                       The mapper for converting Admin entities to DTOs.
+     * @param eventRepository                      The repository for Event entities.
+     * @param venueRepository                      The repository for Venue entities.
+     * @param ticketRepository                     The repository for Ticket entities.
+     */
     @Autowired
-    public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper, EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper, VenueDtoMapper venueDtoMapper, ArtistDtoMapper artistDtoMapper, AdminDtoMapper adminDtoMapper, EventRepository eventRepository, AdminRepository adminRepository, EventTypeRepository eventTypeRepository) {
+    public EventDtoMapper(EventOrganiserDtoMapper eventOrganiserDtoMapper,
+                          EventTicketCategoryDtoMapper eventTicketCategoryDisplayDtoMapper,
+                          ArtistDtoMapper artistDtoMapper,
+                          AdminDtoMapper adminDtoMapper,
+                          EventRepository eventRepository,
+                          VenueRepository venueRepository,
+                          TicketRepository ticketRepository) {
         this.eventOrganiserDtoMapper = eventOrganiserDtoMapper;
         this.eventTicketCategoryDisplayDtoMapper = eventTicketCategoryDisplayDtoMapper;
-        this.venueDtoMapper = venueDtoMapper;
         this.artistDtoMapper = artistDtoMapper;
         this.adminDtoMapper = adminDtoMapper;
         this.eventRepository = eventRepository;
-        this.adminRepository = adminRepository;
-        this.eventTypeRepository = eventTypeRepository;
+        this.venueRepository = venueRepository;
+        this.ticketRepository = ticketRepository;
     }
-
+    /**
+     * Maps an Event entity to an EventDisplayDto.
+     *
+     * @param event The Event entity to be mapped.
+     * @return The corresponding EventDisplayDto.
+     */
     public EventDisplayDto apply(Event event) {
 
         Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
-        if(event.getEventTicketCategorySet() != null){
-            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+        if(event.getTicketPricingSet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getTicketPricingSet());
 
         }
         return new EventDisplayDto(
@@ -76,6 +97,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 eventTicketCategorySet);
     }
 
+    /**
+     * Maps an Event entity to an EventHomeDto.
+     *
+     * @param event The Event entity to be mapped.
+     * @return The corresponding EventHomeDto.
+     */
     public EventHomeDto applyEventHomeDto(Event event) {
         return new EventHomeDto(
                 event.getEventId(),
@@ -84,10 +111,34 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventImage(),
                 event.getEventType().getEventTypeName(),
                 event.getEventDate(),
-                event.getTotalTickets(),
+                venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId()),
                 event.getVenue().getVenueName());
     }
 
+    /**
+     * Maps an Object array to an EventHomeDto.
+     *
+     * @param queryObj The Object array to be mapped.
+     * @return The corresponding EventHomeDto.
+     */
+    public EventHomeDto applyEventHomeDtoForObj(Object[] queryObj) {
+        return new EventHomeDto(
+                (Integer) queryObj[0],
+                (String) queryObj[1],
+                (String)queryObj[2],
+                (String)queryObj[3],
+                (String)queryObj[4],
+                ((Timestamp)queryObj[5]).toLocalDateTime(),
+                venueRepository.findNoOfSeatsByVenue((Integer)queryObj[6]),
+                (String)queryObj[7]);
+    }
+
+    /**
+     * Maps a FeaturedEvent entity to a FeaturedEventDto.
+     *
+     * @param featuredEvent The FeaturedEvent entity to be mapped.
+     * @return The corresponding FeaturedEventDto.
+     */
     public FeaturedEventDto applyFeaturedEventDto(FeaturedEvent featuredEvent) {
         return new FeaturedEventDto(
                 featuredEvent.getFeaturedId(),
@@ -98,6 +149,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     }
 
+    /**
+     * Maps an Event entity to an EventAdminDisplayDto.
+     *
+     * @param event The Event entity to be mapped.
+     * @return The corresponding EventAdminDisplayDto.
+     */
     public EventAdminDisplayDto applyEventAdminDisplayDto(Event event) {
         String organiserEmail = null;
         if(event.getOrganiser() != null){
@@ -123,25 +180,60 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
 
     }
 
-
+    /**
+     * Maps a list of Event entities to a list of EventHomeDto.
+     *
+     * @param eventList The list of Event entities to be mapped.
+     * @return The corresponding list of EventHomeDto.
+     */
     public List<EventDisplayDto> map(List<Event> eventList) {
         return eventList.stream()
                 .map(this::apply)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Maps a list of Event entities to a list of EventHomeDto.
+     *
+     * @param eventList The list of Event entities to be mapped.
+     * @return The corresponding list of EventHomeDto.
+     */
     public List<EventHomeDto> mapEventHomeDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyEventHomeDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Maps a list of Object arrays to a list of EventHomeDto.
+     *
+     * @param objList The list of Object arrays to be mapped.
+     * @return The corresponding list of EventHomeDto.
+     */
+    public List<EventHomeDto> mapEventHomeDtoForObj(List<Object[]> objList) {
+        return objList.stream()
+                .map(this::applyEventHomeDtoForObj)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Maps a list of FeaturedEvent entities to a list of FeaturedEventDto.
+     *
+     * @param featuredEventList The list of FeaturedEvent entities to be mapped.
+     * @return The corresponding list of FeaturedEventDto.
+     */
     public List<FeaturedEventDto> mapFeaturedEventDto(List<FeaturedEvent> featuredEventList) {
         return featuredEventList.stream()
                 .map(this::applyFeaturedEventDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates an Event entity with values from an EventUpdateDto.
+     *
+     * @param dto   The EventUpdateDto containing updated values.
+     * @param event The Event entity to be updated.
+     */
     public void update(EventUpdateDto dto, Event event) {
         if (dto.eventName() != null) {
             event.setEventName(dto.eventName());
@@ -175,7 +267,12 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         }
     }
 
-
+    /**
+     * Maps an Event entity to an OverallEventDto.
+     *
+     * @param event The Event entity to be mapped.
+     * @return The corresponding OverallEventDto.
+     */
     public OverallEventDto applyOverallEventDto(Event event) {
 
         Integer eventId = event.getEventId();
@@ -187,11 +284,10 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         }
         //map event ticket cat to dto
         Set<EventTicketCategoryDisplayDto> eventTicketCategorySet = new HashSet<>();
-        if(event.getEventTicketCategorySet() != null){
-            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getEventTicketCategorySet());
+        if(event.getTicketPricingSet() != null){
+            eventTicketCategorySet = eventTicketCategoryDisplayDtoMapper.map(event.getTicketPricingSet());
         }
         //convert admin to dto
-
         AdminDisplayDto adminDisplayDto = null;
         if(event.getReviewedBy() != null) {
             adminDisplayDto = adminDtoMapper.apply(event.getReviewedBy());
@@ -204,12 +300,15 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
                 event.getEventDate(),
                 event.getOtherEventInfo(),
                 event.getEventImage(),
-                event.getTotalTickets(),
-                event.getTotalTicketsSold(),
+                venueRepository.findNoOfSeatsByVenue(event.getVenue().getVenueId()),
+                ticketRepository.countAllByTicketPricingEventEventId(eventId),
                 event.getTicketSaleDate(),
                 event.getReviewStatus(),
                 event.getReviewRemarks(),
                 adminDisplayDto, //reviewBy
+                event.getIsEnhanced(),
+                event.getHasPresale(),
+                event.getHasPresaleUsers(),
                 eventTicketCategorySet, //ticket category set
                 organiserDisplayDto, //organiser
                 event.getVenue(), //venue
@@ -218,12 +317,24 @@ public class EventDtoMapper implements Function<Event, EventDisplayDto> {
         );
     }
 
+    /**
+     * Maps a list of Event entities to a list of OverallEventDto.
+     *
+     * @param eventList The list of Event entities to be mapped.
+     * @return The corresponding list of OverallEventDto.
+     */
     public List<OverallEventDto> mapOverallEventDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyOverallEventDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Maps a list of Event entities to a list of EventAdminDisplayDto.
+     *
+     * @param eventList The list of Event entities to be mapped.
+     * @return The corresponding list of EventAdminDisplayDto.
+     */
     public List<EventAdminDisplayDto> mapEventAdminDisplayDto(List<Event> eventList) {
         return eventList.stream()
                 .map(this::applyEventAdminDisplayDto)

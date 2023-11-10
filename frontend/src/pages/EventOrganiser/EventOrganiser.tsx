@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { NavbarOrganiser } from '../../Navbar';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
@@ -13,9 +13,12 @@ import { Alert, Snackbar } from '@mui/material';
 import { Sheet } from '@mui/joy';
 
 const steps = ['Event Details', 'Venue & Artist', 'Event Poster'];
+const delay = (ms: number) => new Promise(
+    resolve => setTimeout(resolve, ms)
+);
 
 export const EventOrganiser = () => {
-
+    let navigate = useNavigate();
     const [activeStep, setActiveStep] = React.useState(0);
     const [completed, setCompleted] = React.useState<{
         [k: number]: boolean;
@@ -78,25 +81,22 @@ export const EventOrganiser = () => {
     const [saleDate, setSaleDate] = React.useState<Dayjs>(dayjs(currentDateTime));
     const [eventDescription, setEventDescription] = useState('');
     const [otherInfo, setOtherInfo] = useState('');
-    const [ticketNumberVIP, setTicketNumberVIP] = useState(100);
-    const [ticketNumberCat1, setTicketNumberCat1] = useState(100);
-    const [ticketNumberCat2, setTicketNumberCat2] = useState(100);
-    const [ticketNumberCat3, setTicketNumberCat3] = useState(100);
-    const [ticketNumberCat4, setTicketNumberCat4] = useState(100);
-    const [VIPPrice, setVIPPrice] = useState(0);
-    const [cat1Price, setCat1Price] = useState(0);
-    const [cat2Price, setCat2Price] = useState(0);
-    const [cat3Price, setCat3Price] = useState(0);
-    const [cat4Price, setCat4Price] = useState(0);
+    const [facialCheckIn, setFacialCheckIn]: any = useState(true);
+    const [presale, setPresale]: any = useState(true);
+
     //for venue & artist
     const [venue, setVenue] = useState('');
     const [artistList, setartistList] = useState<string[]>([]);
     const [otherVenue, setOtherVenue] = useState('');
+    const [VIPPrice, setVIPPrice] = useState();
+    const [cat1Price, setCat1Price] = useState();
+    const [cat2Price, setCat2Price] = useState();
+    const [cat3Price, setCat3Price] = useState();
+    const [cat4Price, setCat4Price] = useState();
 
     //for EventPoster
     const [selectedFiles, setSelectedFiles]: any = useState(null);
 
-    //for testing
     useEffect(() => {
     }, []);
 
@@ -126,120 +126,78 @@ export const EventOrganiser = () => {
 
     const token = window.localStorage.getItem('accessToken');
     const role = window.localStorage.getItem('role');
-    const organiserId : any= window.localStorage.getItem('id');
+    const organiserId: any = window.localStorage.getItem('id');
+
+    const [isClicked, setIsClicked] = useState(false);
+
     const handleCreateEvent = () => {
-        //retrieve venue from DB
-        const addTicketCategory = async (eventId: any) => {
-            try {
-                const token = window.localStorage.getItem('accessToken');
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/event/addTicketCategory`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    method: 'PUT',
-                    body: JSON.stringify({
-                        "eventId": eventId,
-                        "data": [
-                            {
-                                "catId": "1",
-                                "price": VIPPrice,
-                                "availableTickets": ticketNumberVIP,
-                                "totalTicketsPerCat": ticketNumberVIP
-                            },
-                            {
-                                "catId": "2",
-                                "price": cat1Price,
-                                "availableTickets": ticketNumberCat1,
-                                "totalTicketsPerCat": ticketNumberCat1
-                            },
-                            {
-                                "catId": "3",
-                                "price": cat2Price,
-                                "availableTickets": ticketNumberCat2,
-                                "totalTicketsPerCat": ticketNumberCat2
-                            },
-                            {
-                                "catId": "4",
-                                "price": cat3Price,
-                                "availableTickets": ticketNumberCat3,
-                                "totalTicketsPerCat": ticketNumberCat3
-                            },
-                            {
-                                "catId": "5",
-                                "price": cat4Price,
-                                "availableTickets": ticketNumberCat4,
-                                "totalTicketsPerCat": ticketNumberCat4
-                            },
-                        ]
-                    })
-                });
-                if (response.status !== 200) {
-                    //show alert msg
-                    setOpenSnackbar(true);
-                    setAlertType('error');
-                    setAlertMsg("error on adding ticket category data!!!");
-                } else {
-                    setOpenSnackbar(true);
-                    setAlertType('success');
-                    setAlertMsg('Event created successfully!!! Please wait for our administrator to review!!!');
-                }
-            } catch (err) {
-                window.alert(err);
+        if (!isClicked) {
+            //Disable further clicks
+            setIsClicked(true);
+
+            //call backend to create events
+            const formData = new FormData();
+            formData.append('eventName', eventName);
+            formData.append('eventDate', TimestampConverter(Number(eventDate)));
+            formData.append('eventDescription', eventDescription);
+            formData.append('ticketSaleDate', TimestampConverter(Number(saleDate)));
+            formData.append('file', selectedFiles[0]);
+            formData.append('organiserId', organiserId);
+            formData.append('venueId', venue);
+            //if the event venue is not in the list, user will enter the venue, add it to other info
+            if (venue == '999') {
+                formData.append('otherEventInfo', `${otherInfo}; Other venue:${otherVenue}`);
+            } else {
+                formData.append('otherEventInfo', otherInfo);
             }
-        };
+            formData.append('artistId', artistList.toString());
+            formData.append('typeId', eventType);
+            formData.append('ticketPrices', `${VIPPrice},${cat1Price},${cat2Price},${cat3Price},${cat4Price}`);
+            formData.append('isEnhanced', facialCheckIn);
+            formData.append('hasPresale', presale);
 
-        //call backend to create events
-        const formData = new FormData();
-        formData.append('eventName', eventName);
-        formData.append('eventDate', TimestampConverter(Number(eventDate)));
-        formData.append('eventDescription', eventDescription);
-        formData.append('ticketSaleDate', TimestampConverter(Number(saleDate)));
-        formData.append('file', selectedFiles[0]);
-        formData.append('organiserId', organiserId);
-        formData.append('venueId', venue);
-        //if the event venue is not in the list, user will enter the venue, add it to other info
-        if(venue == '999') {
-            formData.append('otherEventInfo', `${otherInfo}; Other venue:${otherVenue}`);
-        }else {
-            formData.append('otherEventInfo', otherInfo);
-        }
-        formData.append('artistId', artistList.toString());
-        //TODO: pending
-        formData.append('typeId', eventType);
-
-        //calling create event backend API
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/event`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            method: 'POST',
-            body: formData
-        })
-            .then(async (response) => {
-                if (response.status == 200) {
-                    const eventResponse = await response.json();
-                    //if ok, call addTicketCategory
-                    addTicketCategory(eventResponse['data']['eventId']);
-                } else {
-                    const eventResponse = await response.json();
-                    setOpenSnackbar(true);
-                    setAlertType('warning');
-                    setAlertMsg(eventResponse.message);
-                }
+            //calling create event backend API
+            fetch(`${process.env.REACT_APP_BACKEND_URL}/event`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                method: 'POST',
+                body: formData
             })
-            .catch((err) => {
-                window.alert(err);
-            });
+                .then(async (response) => {
+                    if (response.status == 200 || response.status == 201) {
+                        setOpenSnackbar(true);
+                        setAlertType('success');
+                        if (venue == '999') {
+                            setAlertMsg(`Your event has been successfully created! Kindly await our administrator's review, and they will get in touch with you shortly to provide further information about the venue.`);
+                        } else {
+                            setAlertMsg('Event created successfully!!! Please wait for our administrator to review!!!');
+                        }
+                        await delay(2000);
+                        navigate('/HomeOrganiser');
+                    } else {
+                        const eventResponse = await response.json();
+                        setOpenSnackbar(true);
+                        setAlertType('warning');
+                        setAlertMsg(eventResponse.message);
+                        //if transaction faile, enable clickable
+                        setIsClicked(false);
+                    }
+                })
+                .catch((err) => {
+                    //if transaction faile, enable clickable
+                    setIsClicked(false);
+                    window.alert(err);
+                });
 
-
+        }
     };
 
     return (
         <div>
             {
                 token != null && role == 'ORGANISER' ?
-                 <Navigate to="/EventOrganiser" /> :  <Navigate to="/Forbidden" />
+                    <Navigate to="/EventOrganiser" /> : <Navigate to="/Forbidden" />
             }
             < NavbarOrganiser />
             <Box sx={{ mt: '5%', ml: '15%', mr: '15%', mb: '5%', width: '70%' }}>
@@ -259,7 +217,9 @@ export const EventOrganiser = () => {
                                 All steps completed - you&apos;re finished
                             </Typography>
                             <Sheet sx={{ alignItems: "center", mt: 2, mb: 2 }}>
-                                <Button onClick={handleCreateEvent} fullWidth variant="contained" sx={{ p: 1.5, textTransform: "none", fontSize: "16px" }}>Create Event</Button>
+                                <Button onClick={handleCreateEvent} fullWidth variant="contained" sx={{ p: 1.5, textTransform: "none", fontSize: "16px" }} disabled={isClicked}>
+                                    {isClicked ? 'Creating Event' : 'Create Event'}
+                                </Button>
                             </Sheet>
                         </React.Fragment>
                     ) : (
@@ -271,33 +231,17 @@ export const EventOrganiser = () => {
                                 eventType={eventType}
                                 eventDate={eventDate}
                                 eventDescription={eventDescription}
-                                ticketNumberVIP={ticketNumberVIP}
-                                ticketNumberCat1={ticketNumberCat1}
-                                ticketNumberCat2={ticketNumberCat2}
-                                ticketNumberCat3={ticketNumberCat3}
-                                ticketNumberCat4={ticketNumberCat4}
-                                VIPPrice={VIPPrice}
-                                cat1Price={cat1Price}
-                                cat2Price={cat2Price}
-                                cat3Price={cat3Price}
-                                cat4Price={cat4Price}
                                 saleDate={saleDate}
+                                facialCheckIn={facialCheckIn}
+                                presale={presale}
                                 otherInfo={otherInfo}
                                 setEventName={setEventName}
                                 setEventType={setEventType}
                                 setEventDescription={setEventDescription}
                                 setEventDate={setEventDate}
-                                setTicketNumberVIP={setTicketNumberVIP}
-                                setTicketNumberCat1={setTicketNumberCat1}
-                                setTicketNumberCat2={setTicketNumberCat2}
-                                setTicketNumberCat3={setTicketNumberCat3}
-                                setTicketNumberCat4={setTicketNumberCat4}
-                                setVIPPrice={setVIPPrice}
-                                setCat1Price={setCat1Price}
-                                setCat2Price={setCat2Price}
-                                setCat3Price={setCat3Price}
-                                setCat4Price={setCat4Price}
                                 setSaleDate={setSaleDate}
+                                setFacialCheckIn={setFacialCheckIn}
+                                setPresale={setPresale}
                                 setOtherInfo={setOtherInfo}
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg} />
@@ -307,9 +251,19 @@ export const EventOrganiser = () => {
                                 venue={venue}
                                 otherVenue={otherVenue}
                                 artistList={artistList}
+                                VIPPrice={VIPPrice}
+                                cat1Price={cat1Price}
+                                cat2Price={cat2Price}
+                                cat3Price={cat3Price}
+                                cat4Price={cat4Price}
                                 setVenue={setVenue}
                                 setartistList={setartistList}
                                 setOtherVenue={setOtherVenue}
+                                setVIPPrice={setVIPPrice}
+                                setCat1Price={setCat1Price}
+                                setCat2Price={setCat2Price}
+                                setCat3Price={setCat3Price}
+                                setCat4Price={setCat4Price}
                                 handleComplete={handleComplete}
                                 setOpenSnackbar={setOpenSnackbar} setAlertType={setAlertType} setAlertMsg={setAlertMsg}
                             /> : null}
@@ -322,18 +276,6 @@ export const EventOrganiser = () => {
                             /> : null}
 
                             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                                <Button
-                                    color="inherit"
-                                    disabled={activeStep === 0}
-                                    onClick={handleBack}
-                                    sx={{ mr: 1 }}
-                                >
-                                    Back
-                                </Button>
-                                <Box sx={{ flex: '1 1 auto' }} />
-                                <Button onClick={handleNext} sx={{ mr: 1 }}>
-                                    Next
-                                </Button>
                                 {activeStep !== steps.length &&
                                     (completed[activeStep] ? (
                                         <Typography variant="caption" sx={{ display: 'inline-block' }}>
@@ -349,7 +291,7 @@ export const EventOrganiser = () => {
             </Box>
 
             {/* success / error feedback */}
-            <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleSnackbarClose}>
+            <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity={alertType} sx={{ width: '100%' }}>
                     {alertMsg}
                 </Alert>

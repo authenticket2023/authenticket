@@ -21,10 +21,16 @@ import BearCarousel, {
 } from "bear-react-carousel";
 import { async } from "q";
 import { CardActionArea } from "@mui/material";
+import { Link } from 'react-router-dom';
+
+import backgroundImage from '../../images/backgroundImage-2.png';
+import { Footer } from "../../Footer/Footer";
+
 
 export const Home = () => {
 
   const token = window.localStorage.getItem('accessToken');
+  const role = window.localStorage.getItem('role');
   const [featured, setFeatured]: any = React.useState([]);
   const [bestSellers, setBestSellers]: any = React.useState([]);
   const [recents, setRecents]: any = React.useState([]);
@@ -92,6 +98,7 @@ export const Home = () => {
         if (response.status == 200) {
           const apiResponse = await response.json();
           const data = apiResponse.data;
+          // console.log(data);
           const bsArr = data.map((bestseller: any) => ({
             eventId: bestseller.eventId,
             eventName: bestseller.eventName,
@@ -106,7 +113,7 @@ export const Home = () => {
           setBestSellers(bsArr);
           setBSLoaded(true);
           //console.log(data);
-          //bsArr.map((item: any) => console.log(item));
+          // bsArr.map((item: any) => console.log(item));
         } else {
           //passing to parent component
         }
@@ -189,106 +196,81 @@ export const Home = () => {
   }
 
   const CustomBanner = () => {
-    const bearSlideItemData: TBearSlideItemDataList = featured.map((row: any) => {
-      return {
-        key: row.id,
-        children: (
-          <BearSlideCard>
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              height: '400px',
-            }}>
-              <img
-                src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                }}
-              />
-            </div>
-          </BearSlideCard>
-
-        ),
-      };
-    });
+    const bearSlideItemData: TBearSlideItemDataList = featured.map(
+      (row: any) => {
+        return {
+          key: row.id,
+          children: (
+            <Box bgcolor="#FF5C35">
+              <Grid container justifyContent={"center"}>
+                <Grid item xs={6} bgcolor="#FF5C35">
+                  <BearSlideCard>
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        height: "400px",
+                      }}
+                    >
+                      <img
+                        src={`https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${row.eventImage}`}
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                        }}
+                      />
+                    </div>
+                  </BearSlideCard>
+                </Grid>
+                <Grid item xs={5} marginLeft={4}>
+                  <Box bgcolor="#FF5C35" marginTop={12}>
+                    <Typography variant="h6" color="white" marginLeft={2}>
+                      Featured
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      color="white"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {row.eventName}
+                    </Typography>
+                    <Typography
+                      variant="subtitle2"
+                      justifyItems="center"
+                      color="white"
+                    >
+                      {row.eventDescription}
+                    </Typography>
+                    <Box marginTop={2} marginLeft={2}>
+                      <Button
+                        variant="outlined"
+                         href={`/EventDetails/${row.eventId}`}
+                        sx={{ color: "white", borderColor: "white" }}
+                      >
+                        Get tickets
+                      </Button>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          ),
+        };
+      });
     return (
       <BearCarousel
         data={bearSlideItemData}
         height="400px"
-        isEnableLoop
-        isEnableAutoPlay
-      />
-    );
-  };
-
-  const TextAnimationsCarousel = () => {
-    const slideItemData: TBearSlideItemDataList = featured.map((row: any) => {
-      return {
-        key: row.featuredId,
-        children: (
-          <Box bgcolor="#FF5C35" marginTop={8}>
-            <Typography variant="h6" color="white" marginLeft={2}>
-              Featured
-            </Typography>
-            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
-              {row.eventName}
-            </Typography>
-            <Typography variant="subtitle2" justifyItems="center" color="white">
-              {row.eventDescription}
-            </Typography>
-            <Box marginTop={2} marginLeft={2}>
-              <Button
-                variant="outlined"
-                href='#'
-                sx={{ color: "white", borderColor: "white" }}
-              >
-                Get tickets
-              </Button>
-            </Box>
-          </Box>
-        ),
-      };
-    });
-    return (
-      <BearCarousel
-        data={slideItemData}
-        height="400px"
         isEnableAutoPlay
         isEnableLoop
 
       />
     );
   };
-
-  const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.5),
-    "&:hover": {
-      backgroundColor: alpha(theme.palette.common.white, 0.6),
-    },
-    marginLeft: 0,
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      marginLeft: theme.spacing(1),
-      width: "100%",
-    },
-  }));
-
-  const SearchIconWrapper = styled("div")(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }));
 
   const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: "black",
@@ -302,6 +284,7 @@ export const Home = () => {
   function TicketItem(props: any) {
     return (
       <Box marginTop={2} marginRight={1}>
+      <Link to={`/EventDetails/${props.eventId}`} style={{ textDecoration: 'none' }}>
         <Card sx={{
           minHeight: 175,
           minWidth: 400,
@@ -310,9 +293,8 @@ export const Home = () => {
           backgroundImage: `url(https://authenticket.s3.ap-southeast-1.amazonaws.com/event_images/${props.eventImage})`,
           backgroundSize: 'contain',
         }}>
-          <CardActionArea href='#'>
-          </CardActionArea>
         </Card>
+      </Link>
         <Typography>
           {props.eventName}
         </Typography>
@@ -375,10 +357,11 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {bestSellers.map((bs: { eventName: any; eventImage: any; }) => (
+      {bestSellers.map((bs: { eventName: any; eventImage: any; eventId: any; }) => (
         <TicketItem
           eventName={bs.eventName}
           eventImage={bs.eventImage}
+          eventId={bs.eventId}
         />
       ))}
     </Carousel>;
@@ -439,10 +422,11 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {recents.map((bs: { eventName: any; eventImage: any; }) => (
+      {recents.map((bs: { eventName: any; eventImage: any; eventId: any;}) => (
         <TicketItem
           eventName={bs.eventName}
           eventImage={bs.eventImage}
+          eventId={bs.eventId}
         />
       ))}
     </Carousel>;
@@ -503,10 +487,11 @@ export const Home = () => {
       slidesToSlide={1}
       swipeable
     >
-      {upcoming.map((bs: { eventName: any; eventImage: any; }) => (
+      {upcoming.map((bs: { eventName: any; eventImage: any; eventId: any;}) => (
         <TicketItem
           eventName={bs.eventName}
           eventImage={bs.eventImage}
+          eventId={bs.eventId}
         />
       ))}
     </Carousel>;
@@ -517,10 +502,18 @@ export const Home = () => {
 
   return (
     <>
+            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
       {loaded ?
         <Box>
           <div>
-            {token != null ? <NavbarLoggedIn /> : <NavbarNotLoggedIn />}
+            {
+                token != null && role == 'ADMIN' ?
+                    <Navigate to="/HomeAdmin" /> : null
+            }
+            {
+                token != null && role == 'ORGANISER' ?
+                    <Navigate to="/HomeOrganiser" /> :  null
+            }
             <Paper
               elevation={5}
               sx={{
@@ -531,7 +524,8 @@ export const Home = () => {
                 backgroundSize: "cover",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "center",
-                backgroundImage: `url(https://i.imgur.com/UKi8jbp.png)`,
+                backgroundImage: `url(${backgroundImage})`,
+                height: '250px'
               }}
             >
               <Box
@@ -559,13 +553,18 @@ export const Home = () => {
                       pr: { md: 0 },
                     }}
                   >
-                    <br />
-                    <br />
                     <Typography
                       component="h1"
                       variant="h3"
                       color="inherit"
                       align="center"
+                      style={{
+                        whiteSpace:'nowrap',
+                        overflow:'hidden',
+                        width:'100%',
+                        fontSize:'45px',
+                        fontWeight:'500'
+                      }}
                     >
                       Unlock Unforgettable Experiences
                     </Typography>
@@ -575,22 +574,12 @@ export const Home = () => {
                       color="inherit"
                       gutterBottom
                       align="center"
+                      style={{
+                        fontWeight:'400'
+                      }}
                     >
                       your gateway to premier event adventures
                     </Typography>
-                    <br />
-                    <br />
-                    <br />
-                    <Search>
-                      <SearchIconWrapper>
-                        <SearchIcon sx={{ color: "#3b3b3b" }} />
-                      </SearchIconWrapper>
-                      <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ "aria-label": "search" }}
-                        fullWidth
-                      />
-                    </Search>
                     <br />
                     <br />
                     <br />
@@ -599,7 +588,7 @@ export const Home = () => {
               </Grid>
             </Paper>
           </div>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             Best Sellers
           </Typography>
           <Grid container>
@@ -607,7 +596,7 @@ export const Home = () => {
               <BestSellersCarousell />
             </Grid>
           </Grid>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             New on AuthenTicket
           </Typography>
           <Grid container>
@@ -615,17 +604,10 @@ export const Home = () => {
               <RecentCarousell />
             </Grid>
           </Grid>
-          <Box bgcolor="#FF5C35" marginTop={12}>
-            <Grid container justifyContent="center" alignItems="center">
-              <Grid item xs={5} marginTop={4} marginBottom={4} >
-                <CustomBanner />
-              </Grid>
-              <Grid item xs={5} marginLeft={4}>
-                <TextAnimationsCarousel />
-              </Grid>
-            </Grid>
+          <Box bgcolor="#FF5C35" marginTop={12} >
+             <CustomBanner></CustomBanner>
           </Box>
-          <Typography marginLeft={10} marginTop={8} sx={{ fontWeight: "bold" }}>
+          <Typography marginLeft={15} marginTop={8} sx={{ fontWeight: "bold" }}>
             Recently Added
           </Typography>
           <Grid container>
@@ -633,9 +615,9 @@ export const Home = () => {
               <UpcomingCarousell />
             </Grid>
           </Grid>
+          <Footer/>
         </Box>
         : null}
-
     </>
   );
 };
